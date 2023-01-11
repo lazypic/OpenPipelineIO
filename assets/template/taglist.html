@@ -1,0 +1,70 @@
+{{define "taglist" }}
+
+<div class="text-right mb-1 mr-3">
+	<span class="text-badge">Asset tags:</span>
+	{{range .Assettags}}
+		<div class="btn-group">
+			<button class="btn btn-darkmode btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				{{.}}
+			</button>
+			<div class="dropdown-menu">
+				<a class="dropdown-item" href="/inputmode?project={{$.SearchOption.Project}}&
+					searchword=assettags:{{.}}&
+					sortkey={{$.SearchOption.Sortkey}}&
+					sortkey={{$.SearchOption.Sortkey}}&
+					assign={{$.SearchOption.Assign}}&
+					ready={{$.SearchOption.Ready}}&
+					wip={{$.SearchOption.Wip}}&
+					confirm={{$.SearchOption.Confirm}}&
+					done={{$.SearchOption.Done}}&
+					omit={{$.SearchOption.Omit}}&
+					hold={{$.SearchOption.Hold}}&
+					out={{$.SearchOption.Out}}&
+					none={{$.SearchOption.None}}&
+					searchbartemplate={{$.SearchOption.SearchbarTemplate}}&
+					truestatus={{Join $.AllStatusIDs "," }}&
+					task={{$.SearchOption.Task}}">Go to Tag Page</a>
+				<a class="dropdown-item" href="#" onclick="addAssetTagAtSearchbox('{{.}}')">Add Searchbox</a>
+			</div>
+		</div>
+	{{end}}
+</div>
+
+
+<div class="text-right mb-1 mr-2">
+	{{range .Tags}}
+		{{if eq . "" }}
+		{{else}}
+			{{$tag := AddTagColon .}}
+				<div class="btn-group">
+					<button class="btn {{if eq $tag $.SearchOption.Searchword}}btn-darkmode{{else}}btn-outline-darkmode{{end}} btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						{{.}}
+					</button>
+					<div class="dropdown-menu">
+						<a class="dropdown-item" href="/inputmode?project={{$.SearchOption.Project}}&
+							searchword=tag:{{.}}&
+							sortkey={{$.SearchOption.Sortkey}}&
+							assign={{$.SearchOption.Assign}}&
+							ready={{$.SearchOption.Ready}}&
+							wip={{$.SearchOption.Wip}}&
+							confirm={{$.SearchOption.Confirm}}&
+							done={{$.SearchOption.Done}}&
+							omit={{$.SearchOption.Omit}}&
+							hold={{$.SearchOption.Hold}}&
+							out={{$.SearchOption.Out}}&
+							none={{$.SearchOption.None}}&
+							searchbartemplate={{$.SearchOption.SearchbarTemplate}}&
+							truestatus={{Join $.SearchOption.TrueStatus "," }}&
+							task={{$.SearchOption.Task}}">Go to Tag Page</a>
+						<a class="dropdown-item" href="#" onclick="addTagAtSearchbox('{{.}}')">Add Searchbox</a>
+					</div>
+				</div>
+		{{end}}
+	{{end}}
+	{{if eq $.User.AccessLevel 4 5 6 7 8 9 10 11}}
+		<span class="btn btn-outline-danger btn-sm m-1" data-toggle="modal" data-target="#modal-renametag" onclick="setRenameTagModal('{{$.SearchOption.Project}}')">RenameTag</span>
+	{{end}}
+</div>
+
+
+{{end}}

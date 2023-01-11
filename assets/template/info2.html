@@ -1,0 +1,31 @@
+{{define "info2"}}
+<div class="ml-4 mr-4 pb-3">
+    {{if .Projectinfo.Message}}
+        <div class="text-darkmode">
+            notice : {{.Projectinfo.Message}}
+        </div>
+    {{end}}
+    <div class="">
+        {{if .Projectinfo.Wiki}}
+            <a href="{{.Projectinfo.Wiki}}" class="badge badge-darkmode">wiki</a>
+        {{end}}
+    
+        <a href="mailto:{{.Projectinfo.ID}}@{{.MailDNS}}?subject=[{{if .Projectinfo.MailHead -}}{{.Projectinfo.MailHead}}{{- else -}}{{.Projectinfo.ID}}{{- end}}]" class="badge badge-darkmode">mail</a>
+
+        {{if .Projectinfo.Daily}}
+            <a href="{{$.Setting.Protocol}}://{{.Projectinfo.Daily}}" class="badge badge-darkmode">daily</a>
+        {{else}}
+            <a href="{{$.Setting.Protocol}}:///show/{{.Projectinfo.ID}}/product/daily" class="badge badge-darkmode">daily</a>
+        {{end}}
+        
+        {{if .Projectinfo.Edit}}
+            <a href="{{$.Setting.Protocol}}://{{.Projectinfo.EditDir}}" id="edit" title="Ctrl + Alt + Shift + e" class="badge badge-darkmode">edit</a>
+        {{else}}
+            <a href="{{$.Setting.Protocol}}:///show/{{.Projectinfo.ID}}/product/edit" id="edit" class="badge badge-darkmode">edit</a>
+        {{end}}
+        <span class="select" title="Ctrl + Alt + Shift + a" onclick="selectCheckboxAll()">Select All</span>
+        <span class="select" title="Ctrl + Alt + Shift + d" onclick="selectCheckboxNone()">Select None</span>
+        <span class="select" title="Ctrl + Alt + Shift + i" onclick="selectCheckboxInvert()">Select Invert</span>
+    </div>
+</div>
+{{end}}

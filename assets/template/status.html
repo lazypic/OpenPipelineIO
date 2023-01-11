@@ -1,0 +1,59 @@
+{{define "status" }}
+{{template "headBootstrap5"}}
+{{template "navbar-bootstrap5" .}}
+{{template "svg"}}
+<body>
+<div class="p-2">
+	<div class="text-center mt-5 mb-3">
+		<span class="text-darkmode">
+			프로젝트 진행에 사용되는 상태(Status) 목록입니다.<br>
+			<a href="/addstatus" class="add text-decoration-none ml-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Status 추가">＋</a> 버튼을 눌러 상태(Status)를 추가할 수 있습니다.
+		</span>
+	</div>
+	{{if .Status}}
+		{{range .Status}}
+			<div class="text-darkmode p-2">
+				<div class="row">
+					<div class="col-12" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{.Description}}">
+						<a href="/editstatus?id={{.ID}}" class="btn w-100" style="color: {{.TextColor}};background-color: {{.BGColor}};border: 1px solid {{.BorderColor}};">
+							{{if .DefaultOn}}
+								<svg class="bi flex-shrink-0 me-2" style="color: {{.TextColor}};" width="20" height="20" role="img" aria-label=""><use xlink:href="#check-box"/></svg>
+							{{end}}
+							{{.ID}}
+							{{if .ProgressCategory}}
+							 - {{.ProgressCategory}}
+							{{end}}
+							<span class="badge rounded-pill bg-light text-dark">{{.Order}}</span>
+							{{if .InitStatus}}
+								<span class="badge bg-danger">초기 상태값 / Default Status</span>
+							{{end}}
+						</a>
+					</div>
+				</div>
+			</div>
+		{{end}}
+	{{else}}
+		<div class="col-lg-4 col-md-6 col-sm-12 mx-auto">
+			<div class="text-center mt-5">
+				<span class="text-darkmode">Status가 존재하지 않습니다. Status를 생성해주세요.</span>
+			</div>
+			<div class="text-center">
+				{{if eq $.User.AccessLevel 4 5 6 7 8 9 10}}
+					<a href="/addstatus" class="mt-5 mb-5 btn btn-outline-warning">Add Status</a>
+				{{end}}
+			</div>
+		</div>
+	{{end}}
+</div>
+
+{{template "footerBootstrap"}}
+</body>
+<script src="/assets/bootstrap-5.0.2/js/bootstrap.bundle.min.js"></script>
+<script>
+	let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+	let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+		return new bootstrap.Tooltip(tooltipTriggerEl)
+	})
+</script>
+</html>
+{{end}}

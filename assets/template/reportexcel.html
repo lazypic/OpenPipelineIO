@@ -1,0 +1,96 @@
+{{define "reportexcel"}}
+
+{{template "headBootstrap"}}
+{{template "navbar" .}}
+
+<body>
+    <div class="p-5">
+        <div class="col-12 mx-auto">
+            <div class="pt-3 pb-3">
+                <h2 class="section-heading">Report Excel - {{.Sheet}}</h2>
+            </div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col" class="text-darkmode">Name</th>
+                        <th scope="col" class="text-darkmode">Rollnum</th>
+                        <th scope="col" class="text-darkmode">Type</th>
+                        <th scope="col" class="text-darkmode">작업내용</th>
+                        <th scope="col" class="text-darkmode">수정사항</th>
+                        <th scope="col" class="text-darkmode">Tags</th>
+                        <th scope="col" class="text-darkmode">Source(제목:경로)</th>
+                        <th scope="col" class="text-darkmode">JustTCIn</th>
+                        <th scope="col" class="text-darkmode">JustTCOut</th>
+                        <th scope="col" class="text-darkmode">2D마감</th>
+                        <th scope="col" class="text-darkmode">3D마감</th>
+                        <th scope="col" class="text-darkmode">Final Date</th>
+                        <th scope="col" class="text-darkmode">Final Version</th>
+                        <th scope="col" class="text-darkmode">HandleIn</th>
+                        <th scope="col" class="text-darkmode">HandleOut</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .Rows}}
+                        <tr>
+                            <td class="{{if .NameError}}text-danger{{else}}text-darkmode{{end}}" title="{{.NameError}}">{{if .Name}}{{.Name}}{{else}}NO_NAME{{end}}</td>
+                            <td class="{{if .RnumError}}text-danger{{else}}text-darkmode{{end}}" title="{{.RnumError}}">{{.Rnum}}</td>
+                            <td class="{{if .ShottypeError}}text-danger{{else}}text-darkmode{{end}}" title="{{.ShottypeError}}">{{.Shottype}}</td>
+                            <td class="text-darkmode small">{{range Split .Note "\n" -}}{{.}}<br>{{- end}}</td>
+                            <td class="text-darkmode small">{{range Split .Comment "\n" -}}{{.}}<br>{{- end}}</td>
+                            <td class="text-darkmode small">{{.Tags}}</td>
+                            <td class="small {{if .LinkError}}text-danger{{else}}text-darkmode{{end}}" title="{{.LinkError}}">{{range Split .Link "\n" -}}{{.}}<br>{{- end}}</td>
+                            <td class="{{if .JustTimecodeInError}}text-danger{{else}}text-darkmode{{end}}" title="{{.JustTimecodeInError}}">{{.JustTimecodeIn}}</td>
+                            <td class="{{if .JustTimecodeOutError}}text-danger{{else}}text-darkmode{{end}}" title="{{.JustTimecodeOutError}}">{{.JustTimecodeOut}}</td>
+                            <td class="{{if .Ddline2DError}}text-danger{{else}}text-darkmode{{end}}" title="{{.Ddline2DError}}">{{ToNormalTime .Ddline2D}}</td>
+                            <td class="{{if .Ddline3DError}}text-danger{{else}}text-darkmode{{end}}" title="{{.Ddline3DError}}">{{ToNormalTime .Ddline3D}}</td>
+                            <td class="{{if .FindateError}}text-danger{{else}}text-darkmode{{end}}" title="{{.FindateError}}">{{ToNormalTime .Findate}}</td>
+                            <td class="{{if .FinverError}}text-danger{{else}}text-darkmode{{end}}" title="{{.FinverError}}">{{.Finver}}</td>
+                            <td class="{{if .HandleInError}}text-danger{{else}}text-darkmode{{end}}" title="{{.HandleInError}}">{{.HandleIn}}</td>
+                            <td class="{{if .HandleOutError}}text-danger{{else}}text-darkmode{{end}}" title="{{.HandleOutError}}">{{.HandleOut}}</td>
+                        </tr>
+                    {{end}}
+                </tbody>
+            </table>
+            
+        </div>
+        {{if eq .Errornum 0}}
+            <div class="col-lg-4 col-md-8 col-sm-12 mx-auto">
+                <form action="/excel-submit" method="POST">
+                    <div class="form-group">
+                        <label>Project</label>
+                        <select name="project" class="form-control">
+                            {{range .Projectlist}}
+                                <option value="{{.}}" {{if eq $.SearchOption.Project .}}selected{{end}}>{{.}}</option>
+                            {{end}}
+                        </select>
+                        <small class="form-text text-muted">import 대상 프로젝트를 선택해주세요.</small>
+                    </div>
+                    <div class="col-sm">
+                        <div class="form-check">
+                            <input type="checkbox" id="overwrite" name="overwrite" class="form-check-input" value="true">
+                            <label class="form-check-label" for="overwrite">작업내용 덮어쓰기</label>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-outline-warning mt-5">Process Excel</button>
+                    </div>
+                </form>
+            </div>
+        {{else}}
+            <div class="text-center pt-5">
+                <span class="btn btn-outline-danger">Error ({{.Errornum}})</span>
+            </div>
+        {{end}}
+    </div>
+
+{{template "footerBootstrap"}}
+</body>
+<script src="/assets/js/jquery-3.1.1.min.js"></script>
+<script src="/assets/bootstrap-4/js/bootstrap.min.js"></script>
+<script src="/assets/js/input.js"></script>
+<script src="/assets/js/csi_v02.js"></script>
+<script src="/assets/js/dropzone.js"></script>
+</html>
+
+{{end}}

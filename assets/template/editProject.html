@@ -1,0 +1,684 @@
+{{define "editProject" }}
+{{template "headBootstrap5"}}
+{{template "navbar-bootstrap5" .}}
+<body>
+
+<!--User Data List-->
+<datalist id="userlist">
+	{{range .Users}}
+		{{if eq .IsLeave false}}
+			{{$team := ""}}
+			{{range .Organizations}}				
+				{{$team = .Team.Name}}
+			{{end}}
+			{{range .Organizations}}
+				{{if .Primary}}
+					{{$team = .Team.Name}}
+				{{end}}
+			{{end}}
+			<option value="{{.ID}}({{.LastNameKor}}{{.FirstNameKor}},{{$team}})">
+		{{end}}
+	{{end}}
+</datalist>
+
+<input type="hidden" id="token" value="{{$.User.Token}}">
+<div class="p-3">
+	<form action="/editproject_submit" method="POST" enctype="multipart/form-data">
+		<div class="pt-2 pb-3">
+			<h2 class="section-heading text-center">Edit {{.Project.ID}}</h2>
+		</div>
+		<input type="text" name="Id" value={{.Project.ID}} style="display:none">
+		<div class="row mx-auto">
+			<div class="col-lg-3 col-md-6 col-sm-12">
+				<div class="form-group">
+					<label>기본정보</label>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">Status</small>
+							<select name="Status" class="form-control">
+								<option value="0" {{if eq .Project.Status 0}}selected{{end}}>테스트</option>
+								<option value="1" {{if eq .Project.Status 1}}selected{{end}}>준비중</option>
+								<option value="2" {{if eq .Project.Status 2}}selected{{end}}>진행중</option>
+								<option value="3" {{if eq .Project.Status 3}}selected{{end}}>중단</option>
+								<option value="4" {{if eq .Project.Status 4}}selected{{end}}>백업중</option>
+								<option value="5" {{if eq .Project.Status 5}}selected{{end}}>종료</option>
+								<option value="6" {{if eq .Project.Status 6}}selected{{end}}>소송중</option>
+							</select>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">Type</small>
+							<select name="Style" class="form-control">
+								<option value="영화" {{if eq .Project.Style "영화" }}selected{{end}}>영화</option>
+								<option value="드라마" {{if eq .Project.Style "드라마" }}selected{{end}}>드라마</option>
+								<option value="애니메이션" {{if eq .Project.Style "애니메이션" }}selected{{end}}>애니메이션</option>
+								<option value="netflix" {{if eq .Project.Style "netflix" }}selected{{end}}>Netflix</option>
+								<option value="youtube" {{if eq .Project.Style "youtube" }}selected{{end}}>Youtube</option>
+								<option value="cinematic" {{if eq .Project.Style "cinematic" }}selected{{end}}>Cinematic</option>
+								<option value="mediafacade" {{if eq .Project.Style "mediafacade" }}selected{{end}}>Media Fasade</option>
+								<option value="광고" {{if eq .Project.Style "광고" }}selected{{end}}>광고</option>
+								<option value="공연" {{if eq .Project.Style "공연" }}selected{{end}}>공연</option>
+								<option value="게임" {{if eq .Project.Style "게임" }}selected{{end}}>게임</option>
+								<option value="VR" {{if eq .Project.Style "VR" }}selected{{end}}>VR</option>
+								<option value="AR" {{if eq .Project.Style "AR" }}selected{{end}}>AR</option>
+								<option value="MR" {{if eq .Project.Style "MR" }}selected{{end}}>MR</option>
+								<option value="R&D" {{if eq .Project.Style "R&D" }}selected{{end}}>R&D</option>
+								<option value="Sound" {{if eq .Project.Style "Sound" }}selected{{end}}>Sound</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">한글 프로젝트명</small>
+							<input type="text" name="Name" class="form-control" placeholder="한글 프로젝트명" value={{.Project.Name}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">E-mail 헤더</small>
+							<input type="text" name="MailHead" class="form-control" placeholder="메일헤더" value={{.Project.MailHead}}>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">넷플릭스 Show ID</small>
+							<input type="text" name="NetflixShowID" class="form-control" placeholder="넷플릭스 Show ID" value={{.Project.NetflixShowID}}>
+						</div>
+						<div class="col">
+							<div class="form-group">
+								<small class="form-text text-muted">ProjectType</small>
+								<select class="form-control" name="ProjectType">
+									<option value="" {{ if eq .ProjectType "" }}selected{{end}}>Unknown</option>
+									<option value="A" {{ if eq .ProjectType "A" }}selected{{end}}>A</option>
+									<option value="B" {{ if eq .ProjectType "B" }}selected{{end}}>B</option>
+									<option value="C" {{ if eq .ProjectType "C" }}selected{{end}}>C</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">마감일</small>
+							<input type="date" name="Deadline" class="form-control" placeholder="YYYY-MM-DD" value="{{ToNormalTime .Project.Deadline }}">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">프로젝트 주요 기술이슈를 작성합니다.</small>
+							<input type="text" name="Issue" class="form-control" placeholder="이슈" value={{.Project.Issue}}>
+						</div>		
+					</div>
+					<div class="row pt-3">
+						<div class="from-group col">
+							<div class="form-check form-switch">
+								<input class="form-check-input" type="checkbox" id="Stereo" name="Stereo" value="true" {{if eq .Project.Stereo true}}checked{{end}}>
+								<label class="form-check-label" for="Stereo">입체(Stereo)</label>
+							</div>
+						</div>
+						<div class="from-group col">
+							<div class="form-check form-switch">
+								<input class="form-check-input" type="checkbox" id="FlexibleStatus" name="FlexibleStatus" value="true" {{if eq .Project.FlexibleStatus true}}checked{{end}}>
+								<label class="form-check-label" for="FlexibleStatus">유연한 Status</label>
+							</div>
+						</div>
+					</div>
+					<div class="row pt-3">
+						<div class="from-group col">
+							<div class="form-check form-switch">
+								<input class="form-check-input" type="checkbox" id="AnnounceIR" name="AnnounceIR" value="true" {{if eq .Project.AnnounceIR true}}checked{{end}}>
+								<label class="form-check-label" for="AnnounceIR">IR공시</label>
+							</div>
+							<small>프로젝트 매출이 전년매출의 10%를 넘으면 IR공시 필요</small>
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-group pt-3">
+					<label>인원정보</label>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">감독</small>
+							<input type="text" list="userlist" name="Director" class="form-control" placeholder="감독" autocomplete="off" value={{.Project.Director}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">슈퍼바이져</small>
+							<input type="text" list="userlist" name="Super" class="form-control" placeholder="슈퍼바이져" value={{.Project.Super}}>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">Onset 슈퍼바이져</small>
+							<input type="text" list="userlist" name="OnsetSuper" class="form-control" placeholder="Onset 슈퍼바이져" value={{.Project.OnsetSuper}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">CG 슈퍼바이져</small>
+							<input type="text" list="userlist" name="CgSuper" class="form-control" placeholder="CG 슈퍼바이져" value={{.Project.CgSuper}}>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">PM</small>
+							<input type="text" list="userlist" name="Pm" class="form-control" placeholder="PM" value={{.Project.Pm}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">프로젝트 CC메일, 그룹메일</small>
+							<input type="email" name="PmEmail" class="form-control" placeholder="PM Email" value={{.Project.PmEmail}}>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">PD</small>
+							<input type="text" list="userlist" name="Pd" class="form-control" placeholder="PD" value={{.Project.Pd}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">PA</small>
+							<input type="text" list="userlist" name="Pa" class="form-control" placeholder="PA" value={{.Project.Pa}}>
+						</div>
+					</div>
+					<div class="form-group pt-4">
+						<label class="pb-2">카메라정보</label>
+						<input type="text" name="Camera" class="form-control" placeholder="Camera" value={{.Project.Camera}}>
+					</div>
+					<label class="pt-3">협력사 정보</label>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">DI회사/담당자</small>
+							<input type="text" list="userlist" name="Di" class="form-control" placeholder="DI회사, 담당자" value={{.Project.Di}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">DI실 연락처</small>
+							<input type="text" name="DiContact" class="form-control" placeholder="연락처" value={{.Project.DiContact}}>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">편집실/담당자</small>
+							<input type="text" list="userlist" name="Edit" class="form-control" placeholder="Edit회사, 담당자" value={{.Project.Edit}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">편집실 연락처</small>
+							<input type="text" name="EditContact" class="form-control" placeholder="연락처" value={{.Project.EditContact}}>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">사운드실/담당자</small>
+							<input type="text" list="userlist" name="Sound" class="form-control" placeholder="Sound회사, 담당자" value={{.Project.Sound}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">사운드실 연락처</small>
+							<input type="text" name="SoundContact" class="form-control" placeholder="연락처" value={{.Project.SoundContact}}>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--2번째열-->
+        	<div class="col-lg-3 col-md-6 col-sm-12">
+				<label>공지사항 / 기본정보</label>
+				<div class="form-group">
+					<small class="form-text text-muted">설명 / Description</small>
+					<input type="text" name="Description" class="form-control" placeholder="Description" value={{.Project.Description}}>
+					<small class="form-text text-muted">공지사항(OpenPipelineIO 상단에 표기됩니다.)</small>
+					<input type="text" name="Message" class="form-control" placeholder="공지사항" value={{.Project.Message}}>
+					<small class="form-text text-muted">프로젝트 위키 URL</small>
+					<input type="text" name="Wiki" class="form-control" placeholder="위키주소" value={{.Project.Wiki}}>
+					<small class="form-text text-muted">데일리 경로</small>
+					<input type="text" name="Daily" class="form-control" placeholder="데일리경로" value={{.Project.Daily}}>
+					<small class="form-text text-muted">편집본 영상 경로</small>
+					<input type="text" name="EditDir" class="form-control" placeholder="편집본경로" value={{.Project.EditDir}}>
+					<!--프로젝트 FPS-->
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">Fps</small>
+							<select name="Fps" class="form-control">
+								<option value="0" {{if eq .Project.Fps 0.0}}selected{{end}}>Unknown</option>
+								<option value="23.976" {{if eq .Project.Fps 23.976}}selected{{end}}>23.976</option>
+								<option value="23.98" {{if eq .Project.Fps 23.98}}selected{{end}}>23.98</option>
+								<option value="24" {{if eq .Project.Fps 24.0}}selected{{end}}>24</option>
+								<option value="25" {{if eq .Project.Fps 25.0}}selected{{end}}>25</option>
+								<option value="29.97" {{if eq .Project.Fps 29.97}}selected{{end}}>29.97</option>
+								<option value="30" {{if eq .Project.Fps 30.0}}selected{{end}}>30</option>
+								<option value="59.94" {{if eq .Project.Fps 59.94}}selected{{end}}>59.94</option>
+								<option value="60" {{if eq .Project.Fps 60.0}}selected{{end}}>60</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="form-group pt-3">
+					<label class="pt-3">아웃풋 옵션</label>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">Pixel Aspect Ratio</small>
+							<input type="text" name="AspectRatio" class="form-control" placeholder="Aspect Ratio" value={{.Project.AspectRatio}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">Crop AspectRatio</small>
+							<input type="text" name="CropAspectRatio" class="form-control" placeholder="Crop AspectRatio" value={{.Project.CropAspectRatio}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">Proxy Codec</small>
+							<select name="PostProductionProxyCodec" class="form-control">
+								<option value="Apple_Prores_422HQ" {{if eq .Project.PostProductionProxyCodec "Apple_Prores_422HQ"}}selected{{end}}>Apple_Prores_422HQ</option>
+								<option value="Apple_Prores_4444" {{if eq .Project.PostProductionProxyCodec "Apple_Prores_4444"}}selected{{end}}>Apple_Prores_4444</option>
+								<option value="Apple_Prores_422" {{if eq .Project.PostProductionProxyCodec "Apple_Prores_422"}}selected{{end}}>Apple_Prores_422</option>
+								<option value="Apple_Prores_422LT" {{if eq .Project.PostProductionProxyCodec "Apple_Prores_422LT"}}selected{{end}}>Apple_Prores_422LT</option>
+								<option value="Apple_Prores_422Proxy" {{if eq .Project.PostProductionProxyCodec "Apple_Prores_422Proxy"}}selected{{end}}>Apple_Prores_422Proxy</option>
+								<option value="H.264" {{if eq .Project.PostProductionProxyCodec "H.264"}}selected{{end}}>H.264</option>
+								<option value="Avid_DNxHD_Codec" {{if eq .Project.PostProductionProxyCodec "Avid_DNxHD_Codec"}}selected{{end}}>Avid_DNxHD_Codec</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">버전 자리수</small>
+							<input type="text" name="VersionNum" class="form-control" placeholder="Version number" value={{.Project.VersionNum}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">시퀀스 자리수</small>
+							<input type="text" name="SeqNum" class="form-control" placeholder="Seq number" value={{.Project.SeqNum}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">시작프레임</small>
+							<input type="text" name="StartFrame" class="form-control" placeholder="Start Frame" value={{.Project.StartFrame}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">확장자</small>
+							<select name="PlateExt" class="form-control">
+								<option value="exr" {{if eq .Project.PlateExt "exr" }}selected{{end}}>exr</option>
+								<option value="dpx" {{if eq .Project.PlateExt "dpx" }}selected{{end}}>dpx</option>
+								<option value="mov" {{if eq .Project.PlateExt "mov" }}selected{{end}}>mov</option>
+								<option value="tga" {{if eq .Project.PlateExt "tga" }}selected{{end}}>tga</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">Width</small>
+							<input type="text" name="PlateWidth" class="form-control" placeholder="Width" value={{.Project.PlateWidth}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">Height</small>
+							<input type="text" name="PlateHeight" class="form-control" placeholder="Height" value={{.Project.PlateHeight}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">Resize 방식</small>
+							<select name="ResizeType" class="form-control">
+								<option value="fill" {{if eq .Project.ResizeType "" "fill" }}selected{{end}}>fill</option>
+								<option value="fit" {{if eq .Project.ResizeType "" "fit" }}selected{{end}}>fit</option>
+								<option value="width" {{if eq .Project.ResizeType "width" }}selected{{end}}>width</option>
+								<option value="distort" {{if eq .Project.ResizeType "distort" }}selected{{end}}>distort</option>
+								<option value="none" {{if eq .Project.ResizeType "none" }}selected{{end}}>none</option>
+							</select>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">EXR 압축</small>
+							<select name="ExrCompression" class="form-control">
+								<option value="none" {{if eq .Project.ExrCompression "none" }}selected{{end}}>none</option>
+								<option value="Zip (1 scanline)" {{if eq .Project.ExrCompression "" "Zip (1 scanline)" }}selected{{end}}>Zip (1 scanline)</option>
+								<option value="Zip (16 scanlines)" {{if eq .Project.ExrCompression "" "Zip (16 scanlines)" }}selected{{end}}>Zip (16 scanlines)</option>
+								<option value="PIZ Wavelet (32 scanlines)" {{if eq .Project.ExrCompression "" "PIZ Wavelet (32 scanlines)" }}selected{{end}}>PIZ Wavelet (32 scanlines)</option>
+								<option value="RLE" {{if eq .Project.ExrCompression "" "RLE" }}selected{{end}}>RLE</option>
+								<option value="B44" {{if eq .Project.ExrCompression "" "B44" }}selected{{end}}>B44</option>
+								<option value="B44A" {{if eq .Project.ExrCompression "" "B44A" }}selected{{end}}>B44A</option>
+								<option value="DWAA" {{if eq .Project.ExrCompression "" "DWAA" }}selected{{end}}>DWAA</option>
+								<option value="DWAB" {{if eq .Project.ExrCompression "" "DWAB" }}selected{{end}}>DWAB</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">Crop Width</small>
+							<input type="text" name="PlateCropWidth" class="form-control" placeholder="Width" value={{.Project.PlateCropWidth}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">Crop Height</small>
+							<input type="text" name="PlateCropHeight" class="form-control" placeholder="Height" value={{.Project.PlateCropHeight}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">Oparcity</small>
+							<input type="number" step="0.1" name="LetterBoxOparcity" class="form-control" placeholder="0.5" value={{.Project.LetterBoxOparcity}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">LetterBox</small>
+							<select name="LetterBox" class="form-control">
+								{{if .Project.LetterBox}}
+									<option value="true" selected>on</option>
+									<option value="false">off</option>
+								{{else}}
+									<option value="true">on</option>
+									<option value="false" selected>off</option>
+								{{end}}
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">Plate IN Colorspace</small>
+							<select name="PlateInColorspace" class="form-control">
+								<optgroup label="OCIO Colorspaces">
+									{{range .OCIOColorspaces}}<option value="{{.}}" {{if eq $.Project.PlateInColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+								<optgroup label="Default Colorspaces(제거예정)">
+									{{range .DefaultColorspaces}}<option value="{{.}}" {{if eq $.Project.PlateInColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">Plate OUT Colorspace</small>
+							<select name="PlateOutColorspace" class="form-control">
+								<optgroup label="OCIO Colorspaces">
+									{{range .OCIOColorspaces}}<option value="{{.}}" {{if eq $.Project.PlateOutColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+								<optgroup label="Default Colorspaces">
+									{{range .DefaultColorspaces}}<option value="{{.}}" {{if eq $.Project.PlateOutColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">Proxy OUT Colorspace</small>
+							<select name="ProxyOutColorspace" class="form-control">
+								<optgroup label="OCIO Colorspaces">
+									{{range .OCIOColorspaces}}<option value="{{.}}" {{if eq $.Project.ProxyOutColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+								<optgroup label="Default Colorspaces">
+									{{range .DefaultColorspaces}}<option value="{{.}}" {{if eq $.Project.ProxyOutColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--3번째열-->
+			<div class="col-lg-3 col-md-6 col-sm-12">
+				<div class="form-group">
+					<label class="pb-2">OCIO Path</label> <!--프로젝트에서 사용하는 Custom OCIO Path를 설정한다.-->
+					<input type="text" name="OCIOPath" class="form-control" placeholder="OCIO PATH" value={{.Project.OCIOPath}}>
+					<label class="pt-2 pb-2">LUT 경로</label>
+					<!--lut In,Out 컬러스페이스는 default값이 없다. 뉴크에서 lut를 적용할 때 사용하는 Vectorfield 노드에 default 값이 없기 때문이다.-->
+					<input type="text" name="Lut" class="form-control" placeholder="Lut path" value={{.Project.Lut}}>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">LUT IN Colorspace</small>
+							<select name="LutInColorspace" class="form-control">
+								<optgroup label="OCIO Colorspaces">
+									{{range .OCIOColorspaces}}<option value="{{.}}" {{if eq $.Project.LutInColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+								<optgroup label="Default Colorspaces">
+									{{range .DefaultColorspaces}}<option value="{{.}}" {{if eq $.Project.LutInColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">LUT OUT Colorspace</small>
+							<select name="LutOutColorspace" class="form-control">
+								<optgroup label="OCIO Colorspaces">
+									{{range .OCIOColorspaces}}<option value="{{.}}" {{if eq $.Project.LutOutColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+								<optgroup label="Default Colorspaces(제거예정)">
+									{{range .DefaultColorspaces}}<option value="{{.}}" {{if eq $.Project.LutOutColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+							</select>
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-group pt-3">
+					<label class="pt-3">컨펌용 MOV 포멧</label><br>
+					<small class="text-muted">컨펌, 감독이 보는 mov 포멧을 설정합니다.</small>
+					<div class="row">
+						<div class="col-3">
+							<small class="form-text text-muted">Width</small>
+							<input type="text" name="OutputMov.Width" class="form-control" placeholder="Width" value={{.Project.OutputMov.Width}}>
+						</div>
+						<div class="col-3">
+							<small class="form-text text-muted">Height</small>
+							<input type="text" name="OutputMov.Height" class="form-control" placeholder="Height" value={{.Project.OutputMov.Height}}>
+						</div>
+						<div class="col-6">
+							<small class="form-text text-muted">Codec</small>
+							<select name="OutputMov.Codec" class="form-control">
+								<option value="Apple_Prores_422HQ" {{if eq .Project.OutputMov.Codec "Apple_Prores_422HQ" }}selected{{end}}>Apple_Prores_422HQ</option>
+								<option value="Apple_Prores_4444" {{if eq .Project.OutputMov.Codec "Apple_Prores_4444" }}selected{{end}}>Apple_Prores_4444</option>
+								<option value="Apple_Prores_422" {{if eq .Project.OutputMov.Codec "Apple_Prores_422" }}selected{{end}}>Apple_Prores_422</option>
+								<option value="Apple_Prores_422LT" {{if eq .Project.OutputMov.Codec "Apple_Prores_422LT" }}selected{{end}}>Apple_Prores_422LT</option>
+								<option value="Apple_Prores_422Proxy" {{if eq .Project.OutputMov.Codec "Apple_Prores_422Proxy" }}selected{{end}}>Apple_Prores_422Proxy</option>
+								<option value="H.264" {{if eq .Project.OutputMov.Codec "H.264" }}selected{{end}}>H.264</option>
+								<option value="Avid_DNxHD_Codec" {{if eq .Project.OutputMov.Codec "Avid_DNxHD_Codec" }}selected{{end}}>Avid_DNxHD_Codec</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">Crop Width</small>
+							<input type="text" name="OutputMov.CropWidth" class="form-control" placeholder="Width" value={{.Project.OutputMov.CropWidth}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">Crop Height</small>
+							<input type="text" name="OutputMov.CropHeight" class="form-control" placeholder="Height" value={{.Project.OutputMov.CropHeight}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">Oparcity</small>
+							<input type="number" step="0.1" name="OutputMov.LetterBoxOparcity" class="form-control" placeholder="0.5" value={{.Project.OutputMov.LetterBoxOparcity}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">LetterBox</small>
+							<select name="OutputMov.LetterBox" class="form-control">
+								{{if .OutputMov.LetterBox}}
+									<option value="true" selected>on</option>
+									<option value="false">off</option>
+								{{else}}
+									<option value="true">on</option>
+									<option value="false" selected>off</option>
+								{{end}}
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">Fps</small>
+							<select name="OutputMov.Fps" class="form-control">
+								<option value="0" {{if eq .Project.OutputMov.Fps 0.0}}selected{{end}}>Unknown</option>
+								<option value="23.976" {{if eq .Project.OutputMov.Fps 23.976}}selected{{end}}>23.976</option>
+								<option value="23.98" {{if eq .Project.OutputMov.Fps 23.98}}selected{{end}}>23.98</option>
+								<option value="24" {{if eq .Project.OutputMov.Fps 24.0}}selected{{end}}>24</option>
+								<option value="25" {{if eq .Project.OutputMov.Fps 25.0}}selected{{end}}>25</option>
+								<option value="29.97" {{if eq .Project.OutputMov.Fps 29.97}}selected{{end}}>29.97</option>
+								<option value="30" {{if eq .Project.OutputMov.Fps 30.0}}selected{{end}}>30</option>
+								<option value="59.94" {{if eq .Project.OutputMov.Fps 59.94}}selected{{end}}>59.94</option>
+								<option value="60" {{if eq .Project.OutputMov.Fps 60.0}}selected{{end}}>60</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">InColorspace</small>
+							<select name="OutputMov.InColorspace" class="form-control">
+								<optgroup label="OCIO Colorspaces">
+									{{range .OCIOColorspaces}}<option value="{{.}}" {{if eq $.Project.OutputMov.InColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+								<optgroup label="Default Colorspaces(제거예정)">
+									{{range .DefaultColorspaces}}<option value="{{.}}" {{if eq $.Project.OutputMov.InColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">OutColorspace</small>
+							<select name="OutputMov.OutColorspace" class="form-control">
+								<optgroup label="OCIO Colorspaces">
+									{{range .OCIOColorspaces}}<option value="{{.}}" {{if eq $.Project.OutputMov.OutColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+								<optgroup label="Default Colorspaces(제거예정)">
+									{{range .DefaultColorspaces}}<option value="{{.}}" {{if eq $.Project.OutputMov.OutColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+							</select>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group pt-3">
+					<label class="pt-3">편집실로 보내는 MOV 포멧</label><br>
+					<small class="form-text text-muted">일부 편집실은 방송용 포멧(1080p,720p) 형태로 모니터링 합니다.</small>
+					<div class="row">
+						<div class="col-3">
+							<small class="form-text text-muted">Width</small>
+							<input type="text" name="EditMov.Width" class="form-control" placeholder="Width" value={{.Project.EditMov.Width}}>
+						</div>
+						<div class="col-3">
+							<small class="form-text text-muted">Height</small>
+							<input type="text" name="EditMov.Height" class="form-control" placeholder="Height" value={{.Project.EditMov.Height}}>
+						</div>
+						<div class="col-6">
+							<small class="form-text text-muted">Codec</small>
+							<select name="EditMov.Codec" class="form-control">
+								<option value="Apple_Prores_422HQ" {{if eq .Project.EditMov.Codec "Apple_Prores_422HQ" }}selected{{end}}>Apple_Prores_422HQ</option>
+								<option value="Apple_Prores_4444" {{if eq .Project.EditMov.Codec "Apple_Prores_4444" }}selected{{end}}>Apple_Prores_4444</option>
+								<option value="Apple_Prores_422" {{if eq .Project.EditMov.Codec "Apple_Prores_422" }}selected{{end}}>Apple_Prores_422</option>
+								<option value="Apple_Prores_422LT" {{if eq .Project.EditMov.Codec "Apple_Prores_422LT" }}selected{{end}}>Apple_Prores_422LT</option>
+								<option value="Apple_Prores_422Proxy" {{if eq .Project.EditMov.Codec "Apple_Prores_422Proxy" }}selected{{end}}>Apple_Prores_422Proxy</option>
+								<option value="H.264" {{if eq .Project.EditMov.Codec "H.264" }}selected{{end}}>H.264</option>
+								<option value="Avid_DNxHD_Codec" {{if eq .Project.EditMov.Codec "Avid_DNxHD_Codec" }}selected{{end}}>Avid_DNxHD_Codec</option>
+								<option value="" {{if eq .Project.EditMov.Codec "" }}selected{{end}}>Unknown</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">Crop Width</small>
+							<input type="text" name="EditMov.CropWidth" class="form-control" placeholder="Width" value={{.Project.EditMov.CropWidth}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">Crop Height</small>
+							<input type="text" name="EditMov.CropHeight" class="form-control" placeholder="Height" value={{.Project.EditMov.CropHeight}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">Oparcity</small>
+							<input type="number" step="0.1" name="EditMov.LetterBoxOparcity" class="form-control" placeholder="0.5" value={{.Project.EditMov.LetterBoxOparcity}}>
+						</div>
+						<div class="col">
+							<small class="form-text text-muted">LetterBox</small>
+							<select name="EditMov.LetterBox" class="form-control">
+								{{if .EditMov.LetterBox}}
+									<option value="true" selected>on</option>
+									<option value="false">off</option>
+								{{else}}
+									<option value="true">on</option>
+									<option value="false" selected>off</option>
+								{{end}}
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">Fps</small>
+							<select name="EditMov.Fps" class="form-control">
+								<option value="0" {{if eq .Project.EditMov.Fps 0.0}}selected{{end}}>Unknown</option>
+								<option value="23.976" {{if eq .Project.EditMov.Fps 23.976}}selected{{end}}>23.976</option>
+								<option value="23.98" {{if eq .Project.EditMov.Fps 23.98}}selected{{end}}>23.98</option>
+								<option value="24" {{if eq .Project.EditMov.Fps 24.0}}selected{{end}}>24</option>
+								<option value="25" {{if eq .Project.EditMov.Fps 25.0}}selected{{end}}>25</option>
+								<option value="29.97" {{if eq .Project.EditMov.Fps 29.97}}selected{{end}}>29.97</option>
+								<option value="30" {{if eq .Project.EditMov.Fps 30.0}}selected{{end}}>30</option>
+								<option value="59.94" {{if eq .Project.OutputMov.Fps 59.94}}selected{{end}}>59.94</option>
+								<option value="60" {{if eq .Project.EditMov.Fps 60.0}}selected{{end}}>60</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">InColorspace</small>
+							<select name="EditMov.InColorspace" class="form-control">
+								<optgroup label="OCIO Colorspaces">
+									{{range .OCIOColorspaces}}<option value="{{.}}" {{if eq $.Project.EditMov.InColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+								<optgroup label="Default Colorspaces(제거예정)">
+									{{range .DefaultColorspaces}}<option value="{{.}}" {{if eq $.Project.EditMov.InColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<small class="form-text text-muted">OutColorspace</small>
+							<select name="EditMov.OutColorspace" class="form-control">
+								<optgroup label="OCIO Colorspaces">
+									{{range .OCIOColorspaces}}<option value="{{.}}" {{if eq $.Project.EditMov.OutColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+								<optgroup label="Default Colorspaces(제거예정)">
+									{{range .DefaultColorspaces}}<option value="{{.}}" {{if eq $.Project.EditMov.OutColorspace .}}selected{{end}}>{{.}}</option>{{end}}
+								</optgroup>
+							</select>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+			<!--4번째열-->
+			<div class="col-lg-3 col-md-6 col-sm-12">
+				<div class="form-group">
+					<label>ScreenX 셋팅</label>
+					<div class="form-check form-switch">
+						<input class="form-check-input" type="checkbox" id="Screenx" name="Screenx" value="true" {{if eq .Project.Screenx true}}checked{{end}}>
+						<label class="form-check-label" for="Screenx">ScreenX 여부</label>
+					</div>
+					<small class="form-text text-muted">ScreenX의 카메라 Overlay값. 기본값 1.0</small>
+					<input type="text" id='screenxoverlay' name="ScreenxOverlay" class="form-control" placeholder="ScreenX Overlay" value="{{.Project.ScreenxOverlay}}">
+				</div>
+				<div class="form-group pt-3">
+					<label>Nuke 셋팅</label><br>
+					<small class="form-text text-muted">프로젝트에 사용하는 슬레이트 기즈모 ex) slate_default</small>
+					<input type="text" name="NukeGizmo" class="form-control" placeholder="gizmo name" value={{.Project.NukeGizmo}}>
+				</div>
+				<div class="form-group pt-3">
+					<label>Maya 셋팅</label><br>
+					<small class="form-text text-muted">마야 뷰포트 크롭마스크 플러그인 해상도 ex) 1920x1080, 2048x1152 ...</small>
+					<input type="text" name="MayaCropMaskSize" class="form-control" placeholder="maya cropmask size" value="{{.Project.MayaCropMaskSize}}" onkeyup="star2mult(event)">
+				</div>
+				<div class="form-group pt-3">
+					<label>FX 셋팅</label>
+					<small class="form-text text-muted" hidden>프로젝트에서 자주 사용하는 FX팀 후디니 테스크. ex) fire, water, splash ...</small><br><!--legacy-->
+					<input type="text" name="FxElement" class="form-control" placeholder="maya cropmask size" value="{{.Project.FxElement}}" hidden><!--legacy-->
+					<small class="form-text text-muted">Houdini Import Scale. 기본값 0.1</small>
+					<input type="text" name="HoudiniImportScale" class="form-control" placeholder="Houdini Import Scale" value="{{.Project.HoudiniImportScale}}">
+				</div>
+				<div class="form-group pt-3">
+					<label>AWS Setting</label><br>
+					<small class="form-text text-muted">AWS S3 Address</small>
+					<input type="text" name="AWSS3" class="form-control" placeholder="s3://project-bucketname" value="{{.Project.AWSS3}}">
+					<small class="form-text text-muted">AWS Profile</small>
+					<input type="text" name="AWSProfile" class="form-control" placeholder="profile name" value="{{.Project.AWSProfile}}">
+					<small class="form-text text-muted">Local Path</small>
+					<input type="text" name="AWSLocalpath" class="form-control" placeholder="~/project" value="{{.Project.AWSLocalpath}}">
+				</div>
+				<div class="form-group pt-3">
+					<label>Slack</label><br>
+					<small class="form-text text-muted"><a href="https://api.slack.com/apps/AEGKLE3T3/incoming-webhooks?" class="text-warning">Slack Webhook URL</a></small>
+					<input type="text" name="SlackWebhookURL" class="form-control" placeholder="https://hooks.slack.com/services/..." value="{{.Project.SlackWebhookURL}}">
+				</div>
+				
+				<div class="form-group pt-3">
+					<label>RocketChat Channel</label>
+					<div class="input-group mb-3">
+						<div class="input-group-prepend">
+						  <span class="input-group-text" id="basic-addon1">#</span>
+						</div>
+						<input type="text" class="form-control" placeholder="RocketChat Channel" name="RocketChatChannel" value="{{.Project.RocketChatChannel}}">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="text-center p-3">
+			<button type="submit" class="btn btn-darkmode">UPDATE</button>
+		</div>
+	</form>
+</div>
+
+{{template "footerBootstrap"}}
+</body>
+<script src="/assets/bootstrap-5.0.2/js/bootstrap.min.js"></script>
+</html>
+{{end}}

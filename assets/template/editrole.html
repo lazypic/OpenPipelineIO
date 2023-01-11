@@ -1,0 +1,41 @@
+{{define "editrole" }}
+{{template "headBootstrap5"}}
+{{template "navbar-bootstrap5" .}}
+<body>
+
+
+<div class="container p-5">
+    <form action="/editrolesubmit" method="POST">
+    <div class="pt-3 pb-5">
+        <h2 class="section-heading">Edit Role</h2>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <div class="form-group">
+                <label>ID: {{.Role.ID}}</label>
+                <input type="hidden" name="ID" value="{{.Role.ID}}">
+            </div>
+            <div class="form-group">
+                <label>표기명 / Name</label>
+                <input type="text" name="Name" class="form-control" placeholder="표기명" value="{{.Role.Name}}">
+                <small class="form-text text-muted">직책 이름</small>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="text" name="Email" class="form-control" placeholder="Email" value="{{.Role.Email}}">
+                <small class="form-text text-muted">Group Email</small>
+            </div>
+        </div>
+    </div>     
+    <div class="text-center">
+        <button type="submit" class="btn btn-darkmode mt-5">Update Role</button>
+    </div>
+    </form>
+</div>
+
+{{template "footerBootstrap"}}
+</body>
+<script src="/assets/bootstrap-5.0.2/js/bootstrap.min.js"></script>
+</html>
+{{end}}
+

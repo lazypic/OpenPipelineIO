@@ -1,0 +1,97 @@
+{{define "addAsset" }}
+{{template "headBootstrap5"}}
+<body>
+    {{template "navbar-bootstrap5" .}}
+    <div class="container p-5">
+        <div class="col-lg-6 col-md-8 col-sm-12 mx-auto">
+            <form action="/addasset_submit" method="POST">
+            <div class="pt-3 pb-5">
+                <h2 class="section-heading">Add Asset</h2>
+            </div>
+            <div class="form-group">
+                <label><span class="text-danger">*</span>Project</label>
+                <select name="Project" class="form-control">
+                {{range .Projectlist}}
+                    <option value="{{.}}" {{if eq $.SearchOption.Project .}}selected{{end}}>{{.}}</option>
+                {{end}}
+                </select>
+            </div>
+            <div class="row pt-3">
+                <div class="col">
+                    <div class="form-group">
+                        <label><span class="text-danger">*</span>Asset Name</label>
+                        <input type="text" name="Name" class="form-control" placeholder="ex) stone">
+                    </div>
+                </div>
+            </div>
+            <div class="row pt-3">
+                <div class="col">
+                    <div class="form-group">
+                        <label><span class="text-danger">*</span>Asset Type</label>
+                        <select name="Assettype" class="form-control">
+                            <option value="prop">Prop (소품)</option>
+                            <option value="char">Char (캐릭터, 크리쳐)</option>
+                            <option value="env">Env (환경에셋)</option>
+                            <option value="comp">Comp (합성 노드에셋)</option>
+                            <option value="plant">Plant (식물)</option>
+                            <option value="vehicle">Vehicle (탈것)</option>
+                            <option value="global">Global</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label>Pixar USD type</label>
+                        <select name="Construction" class="form-control">
+                            <option value="component">Component</option>
+                            <option value="group">Group</option>
+                            <option value="assembly">Assembly</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row pt-3">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="netflixid">Netflix ID</label>
+                        <input type="text" class="form-control" id="netflixid" name="NetflixID" placeholder="NetflixID">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row pt-3">
+                <div class="col">
+                    <div class="from-group">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="CrowdAsset" name="CrowdAsset" value="true">
+                            <label class="form-check-label" for="CrowdAsset">Crowd Asset</label>
+                        </div>
+                    </div>
+                    <div class="from-group">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="Mkdir" name="Mkdir" value="true">
+                            <label class="form-check-label" for="Mkdir">Create Asset Folder</label>
+                        </div>
+                    </div>
+                    <div class="from-group">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="GenTask" name="GenTask" value="true" checked>
+                            <label class="form-check-label" for="GenTask">Create Registered Tasks</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="text-center">
+                <button type="submit" class="btn btn-darkmode mt-5">Add Asset</button>
+            </div>
+            </form>
+        </div>
+    </div>
+    {{template "footerBootstrap"}}
+</body>
+<script src="/assets/bootstrap-5.0.2/js/bootstrap.bundle.min.js"></script>
+</html>
+{{end}}
+

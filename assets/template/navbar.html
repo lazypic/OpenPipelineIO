@@ -1,0 +1,233 @@
+{{define "navbar" }}
+<input type="hidden" id="token" value="{{$.User.Token}}">
+<input type="hidden" id="userid" value="{{$.User.ID}}">
+<input type="hidden" id="protocol" value="{{$.Setting.Protocol}}">
+
+<nav class="navbar navbar-expand-lg navbar-darkmode">
+    <a class="navbar-brand" href="/">{{.Setting.AppName}}</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        
+        {{if eq .User.AccessLevel 3 4 5 6 7 8 9 10 11}}
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                File
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/scanplate">ScanPlate(Alpha)</a>
+                <a class="dropdown-item" href="/process">Process(Alpha)</a>
+                <a class="dropdown-item text-muted" href="/filebrowser">FileBrowser(Sendbox)</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/importexcel">Import .xlsx</a>
+                <span class="dropdown-item finger" onclick="exportExcelCurrentPage()">Export Current .xlsx</span>
+                <a class="dropdown-item" href="/exportexcel">Export All .xlsx</a>
+                <div class="dropdown-divider"></div>
+                <span class="dropdown-item finger" data-toggle="modal" data-target="#modal-exportcurrentcsv">Export Current .csv</span>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/importjson">Import .json</a>
+                <span class="dropdown-item finger" onclick="exportJsonCurrentPage()">Export Current .json</span>
+                <a class="dropdown-item" href="/exportjson">Export All .json</a>
+                <div class="dropdown-divider"></div>
+                <span class="dropdown-item finger" onclick="exportDumpProject()">DB Dump</span>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item text-muted" href="/report">Report(Sendbox)</a>
+              </div>
+          </li>
+        {{end}}
+        {{if eq .User.AccessLevel 3 4 5 6 7 8 9 10 11}}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Review
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            {{if .Setting.ReviewStageMode}}
+            <span class="dropdown-item finger" data-toggle="modal" data-target="#modal-addreview-stagemode">Add Review Stage Mode</span>
+            {{end}}
+            {{if .Setting.ReviewStatusMode}}
+            <span class="dropdown-item finger" data-toggle="modal" data-target="#modal-addreview-statusmode">Add Review Status Mode</span>
+            {{end}}
+            {{if eq .User.AccessLevel 4 5 6 7 8 9 10 11}}
+              <div class="dropdown-divider"></div>
+              <span class="dropdown-item finger" onclick="setReviewAgainForWaitStatusToday()">Review again for wait status</span>
+            {{end}}
+            {{if .Setting.ReviewStageMode}}
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/daily-review-stage">Daily - Stage Mode</a>
+              <a class="dropdown-item" href="/daily-review-stage" target="_blank">Daily - Stage Mode (New Windows)</a>
+            {{end}}
+            {{if .Setting.ReviewStatusMode}}
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/daily-review-status">Daily - Status Mode</a>
+              <a class="dropdown-item" href="/daily-review-status" target="_blank">Daily - Status Mode (New Windows)</a>
+            {{end}}
+          </div>
+        </li>
+        {{end}}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            List
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/projectinfo">Projects</a>
+            <div class="dropdown-divider"></div>
+            {{if eq .User.AccessLevel 3 4 5 6 7 8 9 10 11}}
+              {{if eq .User.ID "guest" "demo" }}
+                <span class="fade dropdown-item">Users</span>
+                <div class="dropdown-divider"></div>
+              {{else}}
+                <a class="dropdown-item" href="/users">Users</a>
+                <div class="dropdown-divider"></div>
+              {{end}}
+            {{end}}
+            {{if eq .User.AccessLevel 4 5 6 7 8 9 10 11}}
+              <a class="dropdown-item" href="/tasksettings">Task</a>
+              <a class="dropdown-item" href="/status">Status</a>
+              <a class="dropdown-item" href="/stage">Review Stage</a>
+              <a class="dropdown-item" href="/publishkey">Publish Key</a>
+              <a class="dropdown-item" href="/pipelinesteps">Pipelinestep</a>
+              <div class="dropdown-divider"></div>
+            {{end}}
+            {{if eq .User.AccessLevel 4 5 6 7 8 9 10 11}}
+              <a class="dropdown-item" href="/partners">Partner</a>
+              <a class="dropdown-item" href="/projectsforpartner">Projects For Partner</a>
+              {{if .Setting.EnableEndpoint}}
+                <a class="dropdown-item" href="/endpoints">Endpoint</a>
+              {{end}}
+              <a class="dropdown-item text-muted" href="/equipments">Equipments(Sendbox)</a>
+              <div class="dropdown-divider"></div>
+            {{end}}
+            {{if eq .User.AccessLevel 4 5 6 7 8 9 10 11}}
+              <a class="dropdown-item" href="/statistics">Statistics(본부장)</a>
+              <a class="dropdown-item" href="/statistics/pipelinestep">Statistics(팀장)</a>
+              <a class="dropdown-item" href="/statistics/user">Statistics(아티스트)</a>
+              <div class="dropdown-divider"></div>
+            {{end}}
+            {{if eq .User.AccessLevel 4 5 6 7 8 9 10 11}}
+              <a class="dropdown-item text-muted" href="/software">Software(Sendbox)</a>
+              <a class="dropdown-item text-muted" href="/environment">Environment(Sendbox)</a>
+              <div class="dropdown-divider"></div>
+            {{end}}
+            <a class="dropdown-item" href="/divisions">Divisions(본부)</a>
+            <a class="dropdown-item" href="/departments">Departments(부서)</a>
+            <a class="dropdown-item" href="/teams">Teams(팀)</a>
+            <a class="dropdown-item" href="/roles">Roles(직책)</a>
+            <a class="dropdown-item" href="/positions">Positions(직급)</a>
+          </div>
+        </li>
+        {{if eq .User.AccessLevel 4 5 6 7 8 9 10 11}}
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+               Add
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="/uploadsetellite">Setellite</a>
+              
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/addproject">Project</a>
+                <a class="dropdown-item" href="/addshot">Shot</a>
+                <a class="dropdown-item" href="/addasset">Asset</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/addtasksetting">Task</a>
+                <a class="dropdown-item" href="/addstatus">Status</a>
+                <a class="dropdown-item" href="/addstage">Review Stage</a>
+                <a class="dropdown-item" href="/addpublishkey">Publish Key</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/adddivision">Division(본부)</a>
+                <a class="dropdown-item" href="/adddepartment">Department(부서)</a>
+                <a class="dropdown-item" href="/addteam">Team(팀)</a>
+                <a class="dropdown-item" href="/addrole">Role(직책)</a>
+                <a class="dropdown-item" href="/addposition">Position(직급)</a>
+            </div>
+        </li>
+        {{end}}
+        {{if eq .User.AccessLevel 5 7 8 10 11}}
+          {{if eq .User.ID "guest" "demo" }}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle text-danger" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Remove
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <span class="dropdown-item text-danger fade">Project</span>
+                <div class="dropdown-divider"></div>
+                <span class="dropdown-item text-danger fade">Item</span>
+                <div class="dropdown-divider"></div>
+                <span class="dropdown-item text-danger fade">Task</span>
+                <span class="dropdown-item text-danger fade">Status</span>
+                <span class="dropdown-item text-danger fade">Review Stage</span>
+                <span class="dropdown-item text-danger fade">Publish Key</span>
+                <div class="dropdown-divider"></div>
+                <span class="dropdown-item text-danger fade">Organization</span>
+              </div>
+            </li>
+          {{else}}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle text-danger" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Remove
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                {{if eq .User.AccessLevel 11}}
+                  <a class="dropdown-item text-danger" href="/rmproject">Project</a>
+                {{end}}
+                {{if eq .User.AccessLevel 5 6 7 8 9 10 11}}
+                  <div class="dropdown-divider"></div>
+                  <span class="dropdown-item finger text-danger" onclick="rmItem()">Item</span>
+                {{end}}
+                {{if eq .User.AccessLevel 5 6 8 9 10 11}}
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item text-danger" href="/rmtasksetting">Task</a>
+                  <a class="dropdown-item text-danger" href="/rmstatus">Status</a>
+                  <a class="dropdown-item text-danger" href="/rmstage">Review Stage</a>
+                  <a class="dropdown-item text-danger" href="/rmpublishkey">Publish Key</a>
+                {{end}}
+                {{if eq .User.AccessLevel 10 11}}
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item text-danger" href="/rmorganization">Organization</a>
+                {{end}}
+              </div>
+            </li>
+          {{end}}
+        {{end}}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             Link
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="https://contenthub.netflixstudios.com" target="_blank">Netflix Content Hub</a>
+            <a class="dropdown-item" href="https://portal.shield.ise.io/login" target="_blank">Disney Vendor Portal</a>
+            <a class="dropdown-item" href="https://account.shotgunsoftware.com/login" target="_blank">Shotgrid Account Center</a>
+            <a class="dropdown-item" href="https://studio.youtube.com" target="_blank">YouTube Studio</a>
+            <a class="dropdown-item" href="https://beta.dreamstudio.ai/dream" target="_blank">Dream Studio</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/help">Help</a>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+               {{.User.ID}}
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item text-muted" href="/inbox">InBox(Sendbox)</a>
+              <a class="dropdown-item" href="/user?id={{.User.ID}}">Profile</a>
+              <a class="dropdown-item" href="/edituser?id={{.User.ID}}">Edit</a>
+              {{if eq .User.ID "guest" "demo" }}
+                <span class="dropdown-item text-danger fade">Update Password</span>
+              {{else}}
+                <a class="dropdown-item text-danger" href="/updatepassword?id={{.User.ID}}">Update Password</a>
+              {{end}}
+              {{if eq .User.AccessLevel 10 11}}
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item text-danger" href="/adminsetting">Admin Setting</a>
+              {{end}}
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/signout">SignOut</a>
+            </div>
+        </li>
+      </ul>
+      <span id="foldoption" class="btn btn-sm btn-outline-success my-2 my-sm-0" onclick="foldingmenu();" >Collapse Searchbox ▲</span>
+    </div>
+  </nav>
+{{end}}

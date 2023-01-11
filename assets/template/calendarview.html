@@ -1,0 +1,222 @@
+{{define "calendarview" }}
+
+<p id='calendarImageZone'>
+	<img id="calendarThumbnail" src=''>
+</p>
+
+<div id="calendarview">
+	<div id='calendar' class="p-3"></div>
+<div>
+
+
+<script>
+	function calendarview() {
+		document.getElementById("listview").style.display="none";
+		document.getElementById("page").style.display="none";
+		var calendarEl = document.getElementById('calendar');
+		var calendar = new FullCalendar.Calendar(calendarEl, {
+			eventClick: function(info) { // 아이템을 클릭할 때 발생하는 이벤트
+				//console.log('Event: ' + info.event.title);
+				//console.log('Event: ' + info.event.start);
+				//console.log('Event: ' + info.event.end);
+				//console.log('Coordinates: ' + info.jsEvent.pageX + ',' + info.jsEvent.pageY);
+				//console.log('View: ' + info.view.type);
+			},
+			eventDrop: function(info) { // 드레그를 멈출 때 출력하는 이벤트
+				if (info.event.extendedProps.key == "deadline2d") {
+					fetch('/api/setdeadline2d', {
+						method: 'POST',
+						headers: {
+							"Authorization": "Basic "+ document.getElementById("token").value,
+						},
+						body: new URLSearchParams({
+							project: info.event.extendedProps.project,
+							name: info.event.extendedProps.itemname,
+							date: info.event.startStr,
+						})
+					})
+					.then((response) => {
+						if (!response.ok) {
+							throw Error(response.statusText + " - " + response.url);
+						}
+						return response.json()
+					})
+					.then((data) => {
+						document.getElementById("deadline2d-"+data.name).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline2d" onclick="setDeadline2dModal('${data.project}','${data.id}')">2D:${data.shortdate}</span>`;
+						
+					})
+					.catch((err) => {
+						alert(err)
+					});
+				}
+				if (info.event.extendedProps.key == "tasks") { // 테스크를 드레그할 때
+					d = new Date(info.event.endStr)
+					d = new Date(d.getTime() - (60 * 60 * 24 * 1000))
+					let endStr = d.toISOString().split('T')[0]
+					fetch('/api/taskduration', {
+						method: 'POST',
+						headers: {
+							"Authorization": "Basic "+ document.getElementById("token").value,
+						},
+						body: new URLSearchParams({
+							project: info.event.extendedProps.project,
+							id: info.event.extendedProps.itemid,
+							task: info.event.extendedProps.task,
+							deadlinetype: info.event.extendedProps.deadlinetype,
+							start: info.event.startStr,
+							end: endStr,
+						})
+					})
+					.then((response) => {
+						if (!response.ok) {
+							throw Error(response.statusText + " - " + response.url);
+						}
+						return response.json()
+					})
+					.then((data) => {
+						document.getElementById(`${data.id}-task-${data.task}-date`).innerHTML = `<span class="mt-1 ml-1 badge badge-darkmode">${data.shortend}</span>`;
+						// 이곳에서 이벤트를 업데이트 해야한다.
+						console.log(info)
+					})
+					.catch((err) => {
+						alert(err)
+					});
+				}
+			},
+			eventMouseEnter: function(info) {
+				let offsetX = -220
+				let offsetY = -240
+				let doc = document.documentElement;
+				let scrollX = (window.pageXOffset || doc.scrollLeft) - (doc.clientLeft || 0);
+				let scrollY = (window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
+				let p = document.getElementById("calendarImageZone")
+				p.hidden = false
+				p.style.width = 192
+				p.style.height = 108
+				p.style.top = offsetY - scrollY + info.jsEvent.pageY + "px"
+				p.style.left = offsetX - scrollX + info.jsEvent.pageX + "px"
+				let pathToImage = "/thumbnail/"+info.event.extendedProps.project+"/"+info.event.extendedProps.itemid+".jpg"
+				document.getElementById("calendarThumbnail").src = pathToImage
+				//console.log(info.event.extendedProps.project)
+				//console.log(info.event.extendedProps.itemid)
+			},
+			eventMouseLeave: function(info) {
+				document.getElementById("calendarImageZone").hidden = true
+				
+			},
+			eventDragStart: function(info) {
+				document.getElementById("calendarImageZone").hidden = true
+				
+			},
+			eventResizeStart: function(info) {
+				document.getElementById("calendarImageZone").hidden = true
+				
+			},
+			eventResize: function(info) { // 드레그를 리사이즈할 때 출력하는 이벤트
+				if (info.event.extendedProps.key == "tasks") {
+					d = new Date(info.event.endStr)
+					d = new Date(d.getTime() - (60 * 60 * 24 * 1000))
+					let endStr = d.toISOString().split('T')[0]
+					fetch('/api/taskduration', {
+						method: 'POST',
+						headers: {
+							"Authorization": "Basic "+ document.getElementById("token").value,
+						},
+						body: new URLSearchParams({
+							project: info.event.extendedProps.project,
+							id: info.event.extendedProps.itemid,
+							task: info.event.extendedProps.task,
+							deadlinetype: info.event.extendedProps.deadlinetype,
+							start: info.event.startStr,
+							end: endStr,
+						})
+					})
+					.then((response) => {
+						if (!response.ok) {
+							throw Error(response.statusText + " - " + response.url);
+						}
+						return response.json()
+					})
+					.then((data) => {
+						document.getElementById(`${data.id}-task-${data.task}-date`).innerHTML = `<span class="mt-1 ml-1 badge badge-darkmode">${data.shortend}</span>`;
+						
+					})
+					.catch((err) => {
+						alert(err)
+					});
+				}
+				
+			},
+			dateClick: function(info) {
+				console.log('Clicked on: ' + info.dateStr);
+				console.log('Coordinates: ' + info.jsEvent.pageX + ',' + info.jsEvent.pageY);
+				console.log('Current view: ' + info.view.type);
+			},
+
+			customButtons: {
+				addEventButton: {
+					text: '+',
+					click: function() {
+						var title = prompt('Enter title');
+						var dateStr = prompt('Enter a date in YYYY-MM-DD format');
+						var date = new Date(dateStr + 'T00:00:00'); // will be in local time
+
+						if (!isNaN(date.valueOf())) { // valid?
+							calendar.addEvent({
+								title: title,
+								start: date,
+								resourceId: "",
+								allDay: true
+							});
+							alert('Great. Now, update your database...');
+						} else {
+							alert('Invalid date.');
+						}
+					}
+				},
+			},
+			initialView: 'Gantt',
+			schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
+			timeZone: 'local', // 'UTC'
+			selectable: true,
+			aspectRatio: 2.35,
+			headerToolbar: {
+				left: 'prev,next today addEventButton',
+				center: 'title',
+				right: 'Gantt Gantt3M Month List'
+			},
+			views: {
+				Gantt: {
+					type: 'resourceTimelineMonth',
+					duration: { days: 40 },
+					buttonText: 'Gantt'
+				},
+				Gantt3M: {
+					type: 'resourceTimeline',
+					duration: { days: 90 },
+					buttonText: 'Gantt3M'
+				},
+				Month: {
+					type: 'dayGridMonth',
+					buttonText: 'Month'
+				},
+				List: {
+					type: 'listWeek',
+					buttonText: 'List'
+				},
+			},
+			editable: true,
+			resourceAreaWidth: "8%",
+			resourcesInitiallyExpanded: true, // false라면 다 접힌상태로 열린다.
+			resourceAreaHeaderContent: 'Items',
+			resourceGroupField: 'resourcegroup',
+			//resources: 'https://fullcalendar.io/api/demo-feeds/resources.json?with-nesting&with-colors',
+			resources: JSON.parse({{.FullCalendarResourceJson}}),
+			//events: 'https://fullcalendar.io/api/demo-feeds/events.json?single-day&for-resource-timeline',
+			events: JSON.parse({{.FullCalendarEventJson}}),
+		});
+		
+		calendar.render();
+	}
+</script>
+{{end}}
