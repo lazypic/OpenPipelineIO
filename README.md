@@ -15,21 +15,7 @@ OpenPipelineIO는 영화, 드라마, 전시영상, 애니메이션, 게임 등 �
 - 내부, 외부 서버에 설치가 가능합니다.
 - 리뷰 시스템
 - 사용자별 토큰키, 암호화키, 직급별 접근권한 사용이 가능합니다.
-
-## Roadmap
-
-브라우저 지원 우선순위: 크롬 > 사파리 > 파이어폭스
-
-1. 파트너 관리툴 추가 - 진행중
-1. 통계, 레포트 - 진행중
-1. 달력, 간트챠트 <https://fullcalendar.io> - 진행중
-1. InBox 구조: 메시지, 팔로우 기능: <https://github.com/gorilla/websocket>
-1. 장비관리 툴
-1. 소프트웨어 등록, 환경변수 관리 -> JWT토큰 정보를 uri로 보내는 형태의 웹프로토콜
-1. 샷 파일 브라우져
-1. Data Mining: Machine learning을 위한 데이터 수집
-1. Machine learning(AI) 조직의 보안 및 프라이버시를 위해 데이터를 섞어서 학습시키지 말것.
-1. [Collaborate with other open sources](https://landscape.aswf.io/?category=aswf-member-company&grouping=category&fullscreen=yes)
+- [Collaborate with other open sources](https://landscape.aswf.io/?category=aswf-member-company&grouping=category&fullscreen=yes)
 
 ### 데이터베이스(mongoDB) 설치 및 서비스 실행
 
