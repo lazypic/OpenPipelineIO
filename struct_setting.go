@@ -16,7 +16,6 @@ type Setting struct {
 	Iinfo                          string `json:"iinfo"`                          // iinfo 경로
 	Curl                           string `json:"curl"`                           // curl 경로
 	RVPath                         string `json:"rvpath"`                         // RV 경로 셋팅
-	Umask                          string `json:"umask"`                          // Umask 값. 예) 0002
 	RootPath                       string `json:"rootpath"`                       // Root경로 예) /show
 	ProjectPath                    string `json:"projectpath"`                    // Project경로 예) /show/{{.Project}}
 	ProjectPathPermission          string `json:"projectpathpermission"`          // Project경로의 권한
