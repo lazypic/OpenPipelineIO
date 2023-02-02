@@ -12,7 +12,6 @@ import (
 	"strconv"
 
 	"github.com/disintegration/imaging"
-	"golang.org/x/sys/unix"
 	"gopkg.in/mgo.v2"
 )
 
@@ -38,11 +37,6 @@ func handleAPIUploadThumbnail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// 어드민 셋팅을 불러온다.
-	umask, err := strconv.Atoi(CachedAdminSetting.Umask)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	uid, err := strconv.Atoi(CachedAdminSetting.ThumbnailImagePathUID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -112,7 +106,6 @@ func handleAPIUploadThumbnail(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 			defer file.Close()
-			unix.Umask(umask)
 			switch f.Header.Get("Content-Type") {
 			case "image/jpeg", "image/png":
 				data, err := ioutil.ReadAll(file)

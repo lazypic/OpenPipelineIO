@@ -1,6 +1,6 @@
 # OpenPipelineIO
-![example workflow](https://github.com/digital-idea/OpenPipelineIO/actions/workflows/go.yml/badge.svg)
-[![Go Report Card](https://goreportcard.com/badge/github.com/digital-idea/OpenPipelineIO)](https://goreportcard.com/report/github.com/digital-idea/OpenPipelineIO)
+![example workflow](https://github.com/lazypic/OpenPipelineIO/actions/workflows/go.yml/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/lazypic/OpenPipelineIO)](https://goreportcard.com/report/github.com/lazypic/OpenPipelineIO)
 
 ![screenshot](figures/screenshot.png)
 
@@ -38,12 +38,11 @@ OpenPipelineIO는 영화, 드라마, 전시영상, 애니메이션, 게임 등 �
 - [macOS에서 설치하기](documents/install_macOS.md)
 
 
-### 실행하기
+### 간단하게 실행하기
 
 ```bash
-sudo openpipelineio -http :80 # 웹서버를 실행합니다.
-sudo openpipelineio -http :80 -reviewrender # 웹서버 및 FFmpeg를 이용하여 리뷰를 렌더링하는 서버
-sudo openpipelineio -http :80 &> openpipelineio.log& # openpipelineio.log 파일에 로그가 생성되면서 서비스 실행
+openpipelineio -http :80 # 웹서버를 실행합니다.
+openpipelineio -http :80 -reviewrender # 웹서버 및 FFmpeg를 이용하여 리뷰를 렌더링하는 서버
 ```
 
 > 여러분이 macOS를 사용한다면 기본적으로 80포트는 아파치 서버가 사용중일 수 있습니다. 80포트에 실행되는 아파치 서버를 종료하기 위해서 `$ sudo apachectl stop` 를 터미널에 입력해주세요.

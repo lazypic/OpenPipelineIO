@@ -19,7 +19,6 @@ import (
 	"strings"
 
 	"github.com/agorman/go-timecode/v2"
-	"golang.org/x/sys/unix"
 )
 
 // userTemppath 함수는 id를 받아서 각 유저별 Temp 경로를 생성 반환한다.
@@ -846,15 +845,6 @@ func GenPlatePath(path string) error {
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		return nil
 	}
-	if CachedAdminSetting.Umask == "" {
-		unix.Umask(0)
-	} else {
-		umask, err := strconv.Atoi(CachedAdminSetting.Umask)
-		if err != nil {
-			return err
-		}
-		unix.Umask(umask)
-	}
 	// 퍼미션을 가지고 온다.
 	per, err := strconv.ParseInt(CachedAdminSetting.PlatePathPermission, 8, 64)
 	if err != nil {
@@ -885,15 +875,6 @@ func GenShotRootPath(path string) error {
 	// 존재하면 폴더를 만들필요가 없다. 바로 리턴한다.
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		return nil
-	}
-	if CachedAdminSetting.Umask == "" {
-		unix.Umask(0)
-	} else {
-		umask, err := strconv.Atoi(CachedAdminSetting.Umask)
-		if err != nil {
-			return err
-		}
-		unix.Umask(umask)
 	}
 	// 퍼미션을 가지고 온다.
 	per, err := strconv.ParseInt(CachedAdminSetting.ShotRootPathPermission, 8, 64)
@@ -926,15 +907,6 @@ func GenShotPath(path string) error {
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		return nil
 	}
-	if CachedAdminSetting.Umask == "" {
-		unix.Umask(0)
-	} else {
-		umask, err := strconv.Atoi(CachedAdminSetting.Umask)
-		if err != nil {
-			return err
-		}
-		unix.Umask(umask)
-	}
 	// 퍼미션을 가지고 온다.
 	per, err := strconv.ParseInt(CachedAdminSetting.ShotPathPermission, 8, 64)
 	if err != nil {
@@ -965,15 +937,6 @@ func GenSeqPath(path string) error {
 	// 존재하면 폴더를 만들필요가 없다. 바로 리턴한다.
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		return nil
-	}
-	if CachedAdminSetting.Umask == "" {
-		unix.Umask(0)
-	} else {
-		umask, err := strconv.Atoi(CachedAdminSetting.Umask)
-		if err != nil {
-			return err
-		}
-		unix.Umask(umask)
 	}
 	// 퍼미션을 가지고 온다.
 	per, err := strconv.ParseInt(CachedAdminSetting.SeqPathPermission, 8, 64)
@@ -1006,15 +969,6 @@ func GenAssetRootPath(path string) error {
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		return nil
 	}
-	if CachedAdminSetting.Umask == "" {
-		unix.Umask(0)
-	} else {
-		umask, err := strconv.Atoi(CachedAdminSetting.Umask)
-		if err != nil {
-			return err
-		}
-		unix.Umask(umask)
-	}
 	// 퍼미션을 가지고 온다.
 	per, err := strconv.ParseInt(CachedAdminSetting.AssetRootPathPermission, 8, 64)
 	if err != nil {
@@ -1046,15 +1000,6 @@ func GenAssetTypePath(path string) error {
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		return nil
 	}
-	if CachedAdminSetting.Umask == "" {
-		unix.Umask(0)
-	} else {
-		umask, err := strconv.Atoi(CachedAdminSetting.Umask)
-		if err != nil {
-			return err
-		}
-		unix.Umask(umask)
-	}
 	// 퍼미션을 가지고 온다.
 	per, err := strconv.ParseInt(CachedAdminSetting.AssetTypePathPermission, 8, 64)
 	if err != nil {
@@ -1085,15 +1030,6 @@ func GenAssetPath(path string) error {
 	// 존재하면 폴더를 만들필요가 없다. 바로 리턴한다.
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		return nil
-	}
-	if CachedAdminSetting.Umask == "" {
-		unix.Umask(0)
-	} else {
-		umask, err := strconv.Atoi(CachedAdminSetting.Umask)
-		if err != nil {
-			return err
-		}
-		unix.Umask(umask)
 	}
 	// 퍼미션을 가지고 온다.
 	per, err := strconv.ParseInt(CachedAdminSetting.AssetPathPermission, 8, 64)
