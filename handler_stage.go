@@ -26,8 +26,7 @@ func handleAddStage(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		SearchOption
 		Stages []Stage
 		Setting
@@ -39,7 +38,6 @@ func handleAddStage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -124,14 +122,12 @@ func handleStage(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
-		Stages  []Stage
+		User   User
+		Stages []Stage
 		Setting
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	rcp.Devmode = *flagDevmode
 	rcp.Stages, err = AllStages(session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -169,8 +165,7 @@ func handleRmStage(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		SearchOption
 		Setting
 	}
@@ -181,7 +176,6 @@ func handleRmStage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -240,8 +234,7 @@ func handleEditStage(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		SearchOption
 		Stage
 		Stages  []Stage
@@ -254,7 +247,6 @@ func handleEditStage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

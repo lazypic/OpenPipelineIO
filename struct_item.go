@@ -8,29 +8,6 @@ import (
 	"strings"
 )
 
-const ( // legacy
-	// CLIENT 클라이언트 컨펌상태
-	CLIENT = "9"
-	// OMIT 작업취소 상태
-	OMIT = "8"
-	// CONFIRM 내부 컨펌상태
-	CONFIRM = "7"
-	// WIP 작업중 상태
-	WIP = "6"
-	// READY 작업준비중 상태
-	READY = "5"
-	// ASSIGN 작업자 배정을 기다리는 상태
-	ASSIGN = "4"
-	// OUT 외주상태(삭제예정이다.)
-	OUT = "3"
-	// DONE 작업완료 상태
-	DONE = "2"
-	// HOLD 작업중단 상태
-	HOLD = "1"
-	// NONE 상태없음. 예) 소스
-	NONE = "0"
-)
-
 // TaskLevel 은 태스크 난이도이다.
 type TaskLevel int
 
@@ -104,7 +81,6 @@ type Item struct {
 	Rendersize       string          `json:"rendersize"`       // 특수상황시 렌더사이즈. 예) 5k플레이트를 3D에서 2k영역만 잡아서 최종 아웃풋까지 이어질 때
 	Undistortionsize string          `json:"undistortionsize"` // 언디스토션 사이즈
 	OverscanRatio    float64         `json:"overscanratio"`    // 오버스캔 비율
-	Status           string          `json:"status"`           // 샷 상태. legacy
 	StatusV2         string          `json:"statusv2"`         // 샷 상태.
 	Updatetime       string          `json:"updatetime"`       // 업데이트 시간 RFC3339
 	Focal            string          `json:"focal"`            // 렌즈 미리수
@@ -163,7 +139,6 @@ type Task struct {
 	UserID       string               `json:"userid"`       // 아티스트ID
 	User         string               `json:"user"`         // 아티스트명
 	UserComment  string               `json:"usercomment"`  // 아티스트 코멘트
-	Status       string               `json:"status"`       // 상태 legacy
 	StatusV2     string               `json:"statusv2"`     // 샷 상태.
 	ReviewStatus string               `json:"reviewstatus"` // 리뷰상태
 	BeforeStatus string               `json:"beforestatus"` // 이전상태
@@ -179,17 +154,6 @@ type Task struct {
 	TaskLevel    `json:"tasklevel"`   // 샷 레벨
 	Publishes    map[string][]Publish // 퍼블리쉬 정보, string값은 "Primary Key"가 된다.
 	Pipelinestep string               `json:"pipelinestep"` // pipelinestep 이름
-}
-
-// updateStatus는 각 팀의 상태를 조합해서 샷 상태를 업데이트하는 함수이다. // legacy
-func (item *Item) updateStatus() {
-	maxstatus := "0"
-	for _, value := range item.Tasks {
-		if value.Status > maxstatus {
-			maxstatus = value.Status
-		}
-	}
-	item.Status = maxstatus
 }
 
 // updateStatusV2 메소드는 글로벌 Status 리스트를 입력받아서 샷 상태를 업데이트하는 함수이다.

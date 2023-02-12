@@ -34,8 +34,6 @@ var funcMap = template.FuncMap{
 	"Join":                         strings.Join,
 	"Parentpath":                   filepath.Dir,
 	"projectStatus2color":          projectStatus2color,
-	"Status2capString":             Status2capString, // regacy
-	"Status2string":                Status2string,
 	"name2seq":                     name2seq,
 	"note2body":                    note2body,
 	"pmnote2body":                  pmnote2body,
@@ -109,8 +107,7 @@ func handleHelp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		SearchOption
 		Sha1ver   string
 		BuildTime string
@@ -137,7 +134,6 @@ func handleHelp(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	rcp.User = u
 	rcp.Stages, err = AllStages(session)
 	if err != nil {

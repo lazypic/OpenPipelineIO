@@ -6,16 +6,6 @@
 		<a href="/inputmode?project={{$.SearchOption.Project}}&
 				searchword=deadline3d:{{.}}&
 				sortkey={{$.SearchOption.Sortkey}}&
-				assign={{$.SearchOption.Assign}}&
-				ready={{$.SearchOption.Ready}}&
-				wip={{$.SearchOption.Wip}}&
-				confirm={{$.SearchOption.Confirm}}&
-				done={{$.SearchOption.Done}}&
-				omit={{$.SearchOption.Omit}}&
-				hold={{$.SearchOption.Hold}}&
-				out={{$.SearchOption.Out}}&
-				none={{$.SearchOption.None}}&
-				searchbartemplate={{$.SearchOption.SearchbarTemplate}}&
 				truestatus={{Join $.SearchOption.TrueStatus "," }}&
 				task={{$.SearchOption.Task}}" class="statusuri badge badge-{{CheckDdlinev2 .}}">{{ToShortTime .}}</a>
 	{{end}}
@@ -27,16 +17,6 @@
 		<a href="/inputmode?project={{$.SearchOption.Project}}&
 				searchword=deadline2d:{{.}}&
 				sortkey={{$.SearchOption.Sortkey}}&
-				assign={{$.SearchOption.Assign}}&
-				ready={{$.SearchOption.Ready}}&
-				wip={{$.SearchOption.Wip}}&
-				confirm={{$.SearchOption.Confirm}}&
-				done={{$.SearchOption.Done}}&
-				omit={{$.SearchOption.Omit}}&
-				hold={{$.SearchOption.Hold}}&
-				out={{$.SearchOption.Out}}&
-				none={{$.SearchOption.None}}&
-				searchbartemplate={{$.SearchOption.SearchbarTemplate}}&
 				truestatus={{ Join $.SearchOption.TrueStatus "," }}&
 				task={{$.SearchOption.Task}}" class="statusuri badge badge-{{CheckDdlinev2 .}}">{{ToShortTime .}}</a>
 	{{end}}

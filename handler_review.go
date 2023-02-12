@@ -68,7 +68,6 @@ func handleReviewStage(w http.ResponseWriter, r *http.Request) {
 	type recipe struct {
 		User        User
 		Projectlist []string
-		Devmode     bool
 		SearchOption
 		Searchword       string
 		Status           []Status // css 생성을 위해서 필요함
@@ -92,7 +91,6 @@ func handleReviewStage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -406,7 +404,6 @@ func handleReviewStatus(w http.ResponseWriter, r *http.Request) {
 	type recipe struct {
 		User        User
 		Projectlist []string
-		Devmode     bool
 		SearchOption
 		Searchword       string
 		Status           []Status // css 생성을 위해서 필요함
@@ -430,7 +427,6 @@ func handleReviewStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

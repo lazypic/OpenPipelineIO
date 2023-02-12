@@ -44,7 +44,6 @@ func addItem(session *mgo.Session, project string, i Item) error {
 func setItem(session *mgo.Session, project string, i Item) error {
 	session.SetMode(mgo.Monotonic, true)
 	i.Updatetime = time.Now().Format(time.RFC3339)
-	i.updateStatus() // legacy
 	status, err := AllStatus(session)
 	if err != nil {
 		return err
@@ -415,61 +414,13 @@ func SearchKey(session *mgo.Session, op SearchOption, key string) ([]Item, error
 		query = append(query, bson.M{"shottype": &bson.RegEx{Pattern: "3d", Options: "i"}})
 	case "asset":
 		query = append(query, bson.M{"type": &bson.RegEx{Pattern: "asset", Options: "i"}})
-	case "assign":
-		query = append(query, bson.M{"status": ASSIGN})
-	case "ready":
-		query = append(query, bson.M{"status": READY})
-	case "wip":
-		query = append(query, bson.M{"status": WIP})
-	case "confirm":
-		query = append(query, bson.M{"status": CONFIRM})
-	case "done":
-		query = append(query, bson.M{"status": DONE})
-	case "omit":
-		query = append(query, bson.M{"status": OMIT})
-	case "hold":
-		query = append(query, bson.M{"status": HOLD})
-	case "out":
-		query = append(query, bson.M{"status": OUT})
-	case "none":
-		query = append(query, bson.M{"status": NONE})
 	default:
 		query = append(query, bson.M{key: op.Searchword})
 	}
 
 	var results []Item
-	if !op.Assign && !op.Ready && !op.Wip && !op.Confirm && !op.Done && !op.Omit && !op.Hold && !op.Out && !op.None {
-		// 체크박스가 아무것도 켜있지 않다면 바로 빈 값을 리턴한다.
-		return results, nil
-	}
+
 	status := []bson.M{}
-	if op.Assign {
-		status = append(status, bson.M{"status": ASSIGN})
-	}
-	if op.Ready {
-		status = append(status, bson.M{"status": READY})
-	}
-	if op.Wip {
-		status = append(status, bson.M{"status": WIP})
-	}
-	if op.Confirm {
-		status = append(status, bson.M{"status": CONFIRM})
-	}
-	if op.Done {
-		status = append(status, bson.M{"status": DONE})
-	}
-	if op.Omit {
-		status = append(status, bson.M{"status": OMIT})
-	}
-	if op.Hold {
-		status = append(status, bson.M{"status": HOLD})
-	}
-	if op.Out {
-		status = append(status, bson.M{"status": OUT})
-	}
-	if op.None {
-		status = append(status, bson.M{"status": NONE})
-	}
 
 	q := bson.M{"$and": []bson.M{
 		{"$or": query},
@@ -497,33 +448,6 @@ func SearchDdline(session *mgo.Session, op SearchOption, part string) ([]Item, e
 	}
 
 	status := []bson.M{}
-	if op.Assign {
-		status = append(status, bson.M{"status": ASSIGN})
-	}
-	if op.Ready {
-		status = append(status, bson.M{"status": READY})
-	}
-	if op.Wip {
-		status = append(status, bson.M{"status": WIP})
-	}
-	if op.Confirm {
-		status = append(status, bson.M{"status": CONFIRM})
-	}
-	if op.Done {
-		status = append(status, bson.M{"status": DONE})
-	}
-	if op.Omit {
-		status = append(status, bson.M{"status": OMIT})
-	}
-	if op.Hold {
-		status = append(status, bson.M{"status": HOLD})
-	}
-	if op.Out {
-		status = append(status, bson.M{"status": OUT})
-	}
-	if op.None {
-		status = append(status, bson.M{"status": NONE})
-	}
 
 	q := bson.M{"$and": []bson.M{
 		{"$or": query},
@@ -556,56 +480,12 @@ func SearchStatusNum(op SearchOption, items []Item) (Infobarnum, error) {
 			results.Shot++
 		}
 		if op.Task == "" {
-			// legacy statusV1
-			switch item.Status {
-			case ASSIGN:
-				results.Assign++
-			case READY:
-				results.Ready++
-			case WIP:
-				results.Wip++
-			case CONFIRM:
-				results.Confirm++
-			case DONE:
-				results.Done++
-			case OMIT:
-				results.Omit++
-			case HOLD:
-				results.Hold++
-			case OUT:
-				results.Out++
-			case NONE:
-				results.None++
-			}
-			// statusV2
 			results.StatusNum[item.StatusV2]++
 		} else {
 			// task가 존재하지 않으면 넘긴다.
 			if _, ok := item.Tasks[op.Task]; !ok {
 				continue
 			}
-			// legacy statusV1
-			switch item.Tasks[op.Task].Status {
-			case ASSIGN:
-				results.Assign++
-			case READY:
-				results.Ready++
-			case WIP:
-				results.Wip++
-			case CONFIRM:
-				results.Confirm++
-			case DONE:
-				results.Done++
-			case OMIT:
-				results.Omit++
-			case HOLD:
-				results.Hold++
-			case OUT:
-				results.Out++
-			case NONE:
-				results.None++
-			}
-			// statusV2
 			results.StatusNum[item.Tasks[op.Task].StatusV2]++
 		}
 	}
@@ -621,114 +501,11 @@ func Totalnum(session *mgo.Session, project string) (Infobarnum, error) {
 	c := session.DB("project").C(project)
 
 	var results Infobarnum
-	//진행률 출력.
-	assign := bson.M{"$and": []bson.M{
-		{"status": ASSIGN},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}}},
-	}}
-	var assignnum int
-	assignnum, err := c.Find(assign).Count()
+	totalnum, err := c.Find(bson.M{"$or": []bson.M{{"type": "org"}, {"type": "left"}}}).Count()
 	if err != nil {
 		return Infobarnum{}, err
 	}
-
-	ready := bson.M{"$and": []bson.M{
-		{"status": READY},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}}},
-	}}
-	var readynum int
-	readynum, err = c.Find(ready).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	wip := bson.M{"$and": []bson.M{
-		{"status": WIP},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}}},
-	}}
-	var wipnum int
-	wipnum, err = c.Find(wip).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	confirm := bson.M{"$and": []bson.M{
-		{"status": CONFIRM},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}}},
-	}}
-	var confirmnum int
-	confirmnum, err = c.Find(confirm).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	done := bson.M{"$and": []bson.M{
-		{"status": DONE},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}}},
-	}}
-	var donenum int
-	donenum, err = c.Find(done).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	omit := bson.M{"$and": []bson.M{
-		{"status": OMIT},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}}},
-	}}
-	var omitnum int
-	omitnum, err = c.Find(omit).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	hold := bson.M{"$and": []bson.M{
-		{"status": HOLD},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}}},
-	}}
-	var holdnum int
-	holdnum, err = c.Find(hold).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	out := bson.M{"$and": []bson.M{
-		{"status": OUT},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}}},
-	}}
-	var outnum int
-	outnum, err = c.Find(out).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	none := bson.M{"$and": []bson.M{
-		{"status": NONE},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}}},
-	}}
-	var nonenum int
-	nonenum, err = c.Find(none).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	var totalnum int
-	totalnum, err = c.Find(bson.M{"$or": []bson.M{{"type": "org"}, {"type": "left"}}}).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	results.Assign = assignnum
-	results.Ready = readynum
-	results.Wip = wipnum
-	results.Confirm = confirmnum
-	results.Done = donenum
-	results.Omit = omitnum
-	results.Hold = holdnum
-	results.Out = outnum
-	results.None = nonenum
 	results.Total = totalnum
-
 	return results, nil
 }
 
@@ -742,103 +519,6 @@ func TotalTaskStatusnum(session *mgo.Session, project, task string) (Infobarnum,
 
 	var results Infobarnum
 	results.StatusNum = make(map[string]int)
-	// legacy
-	//진행률 출력.
-	assign := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": ASSIGN},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-
-	assignnum, err := c.Find(assign).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	ready := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": READY},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-
-	readynum, err := c.Find(ready).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	wip := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": WIP},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-
-	wipnum, err := c.Find(wip).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	confirm := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": CONFIRM},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-
-	confirmnum, err := c.Find(confirm).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	done := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": DONE},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-
-	donenum, err := c.Find(done).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	omit := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": OMIT},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-
-	omitnum, err := c.Find(omit).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	hold := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": HOLD},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-	holdnum, err := c.Find(hold).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	out := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": OUT},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-	outnum, err := c.Find(out).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	none := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": NONE},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-	nonenum, err := c.Find(none).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-	results.Assign = assignnum
-	results.Ready = readynum
-	results.Wip = wipnum
-	results.Confirm = confirmnum
-	results.Done = donenum
-	results.Omit = omitnum
-	results.Hold = holdnum
-	results.Out = outnum
-	results.None = nonenum
 
 	// statusv2
 	statuslist, err := AllStatus(session)
@@ -909,114 +589,7 @@ func TotalTaskAndUserStatusnum(session *mgo.Session, project, task, user string)
 
 	var results Infobarnum
 	results.StatusNum = make(map[string]int)
-	// legacy
-	//진행률 출력.
-	assign := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": ASSIGN},
-		{"tasks." + task + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
 
-	assignnum, err := c.Find(assign).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	ready := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": READY},
-		{"tasks." + task + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-
-	readynum, err := c.Find(ready).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	wip := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": WIP},
-		{"tasks." + task + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-
-	wipnum, err := c.Find(wip).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	confirm := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": CONFIRM},
-		{"tasks." + task + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-
-	confirmnum, err := c.Find(confirm).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	done := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": DONE},
-		{"tasks." + task + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-
-	donenum, err := c.Find(done).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	omit := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": OMIT},
-		{"tasks." + task + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-
-	omitnum, err := c.Find(omit).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	hold := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": HOLD},
-		{"tasks." + task + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-	holdnum, err := c.Find(hold).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	out := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": OUT},
-		{"tasks." + task + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-	outnum, err := c.Find(out).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	none := bson.M{"$and": []bson.M{
-		{"tasks." + task + ".status": NONE},
-		{"tasks." + task + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-	nonenum, err := c.Find(none).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-	results.Assign = assignnum
-	results.Ready = readynum
-	results.Wip = wipnum
-	results.Confirm = confirmnum
-	results.Done = donenum
-	results.Omit = omitnum
-	results.Hold = holdnum
-	results.Out = outnum
-	results.None = nonenum
-
-	// statusv2
 	statuslist, err := AllStatus(session)
 	if err != nil {
 		return Infobarnum{}, err
@@ -1104,143 +677,6 @@ func TotalUserStatusnum(session *mgo.Session, project, user string) (Infobarnum,
 	if err != nil {
 		return Infobarnum{}, err
 	}
-	// legacy
-
-	//진행률 출력.
-	var assignQuerys []bson.M
-	for _, t := range tasks {
-		assignQuery := bson.M{"$and": []bson.M{
-			{"tasks." + t.Name + ".status": ASSIGN},
-			{"tasks." + t.Name + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-			{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-		}}
-		assignQuerys = append(assignQuerys, assignQuery)
-	}
-	assignnum, err := c.Find(bson.M{"$or": assignQuerys}).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	var readyQuerys []bson.M
-	for _, t := range tasks {
-		readyQuery := bson.M{"$and": []bson.M{
-			{"tasks." + t.Name + ".status": READY},
-			{"tasks." + t.Name + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-			{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-		}}
-		readyQuerys = append(readyQuerys, readyQuery)
-	}
-	readynum, err := c.Find(bson.M{"$or": readyQuerys}).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	var wipQuerys []bson.M
-	for _, t := range tasks {
-		wipQuery := bson.M{"$and": []bson.M{
-			{"tasks." + t.Name + ".status": WIP},
-			{"tasks." + t.Name + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-			{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-		}}
-		wipQuerys = append(wipQuerys, wipQuery)
-	}
-	wipnum, err := c.Find(bson.M{"$or": wipQuerys}).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	var confirmQuerys []bson.M
-	for _, t := range tasks {
-		confirmQuery := bson.M{"$and": []bson.M{
-			{"tasks." + t.Name + ".status": CONFIRM},
-			{"tasks." + t.Name + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-			{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-		}}
-		confirmQuerys = append(confirmQuerys, confirmQuery)
-	}
-	confirmnum, err := c.Find(bson.M{"$or": confirmQuerys}).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	var doneQuerys []bson.M
-	for _, t := range tasks {
-		doneQuery := bson.M{"$and": []bson.M{
-			{"tasks." + t.Name + ".status": DONE},
-			{"tasks." + t.Name + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-			{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-		}}
-		doneQuerys = append(doneQuerys, doneQuery)
-	}
-	donenum, err := c.Find(bson.M{"$or": doneQuerys}).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	var omitQuerys []bson.M
-	for _, t := range tasks {
-		omitQuery := bson.M{"$and": []bson.M{
-			{"tasks." + t.Name + ".status": OMIT},
-			{"tasks." + t.Name + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-			{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-		}}
-		omitQuerys = append(omitQuerys, omitQuery)
-	}
-	omitnum, err := c.Find(bson.M{"$or": omitQuerys}).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	var holdQuerys []bson.M
-	for _, t := range tasks {
-		holdQuery := bson.M{"$and": []bson.M{
-			{"tasks." + t.Name + ".status": HOLD},
-			{"tasks." + t.Name + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-			{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-		}}
-		holdQuerys = append(holdQuerys, holdQuery)
-	}
-	holdnum, err := c.Find(bson.M{"$or": holdQuerys}).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	var outQuerys []bson.M
-	for _, t := range tasks {
-		outQuery := bson.M{"$and": []bson.M{
-			{"tasks." + t.Name + ".status": OUT},
-			{"tasks." + t.Name + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-			{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-		}}
-		outQuerys = append(outQuerys, outQuery)
-	}
-	outnum, err := c.Find(bson.M{"$or": outQuerys}).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	var noneQuerys []bson.M
-	for _, t := range tasks {
-		noneQuery := bson.M{"$and": []bson.M{
-			{"tasks." + t.Name + ".status": NONE},
-			{"tasks." + t.Name + ".user": &bson.RegEx{Pattern: user, Options: "i"}},
-			{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-		}}
-		noneQuerys = append(noneQuerys, noneQuery)
-	}
-	nonenum, err := c.Find(bson.M{"$or": noneQuerys}).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-	results.Assign = assignnum
-	results.Ready = readynum
-	results.Wip = wipnum
-	results.Confirm = confirmnum
-	results.Done = donenum
-	results.Omit = omitnum
-	results.Hold = holdnum
-	results.Out = outnum
-	results.None = nonenum
 
 	// statusv2
 	statuslist, err := AllStatus(session)
@@ -1356,103 +792,6 @@ func TotalStatusnum(session *mgo.Session, project string) (Infobarnum, error) {
 
 	var results Infobarnum
 	results.StatusNum = make(map[string]int)
-	// legacy
-	//진행률 출력.
-	assign := bson.M{"$and": []bson.M{
-		{"status": ASSIGN},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-
-	assignnum, err := c.Find(assign).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	ready := bson.M{"$and": []bson.M{
-		{"status": READY},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-
-	readynum, err := c.Find(ready).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	wip := bson.M{"$and": []bson.M{
-		{"status": WIP},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-
-	wipnum, err := c.Find(wip).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	confirm := bson.M{"$and": []bson.M{
-		{"status": CONFIRM},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-
-	confirmnum, err := c.Find(confirm).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	done := bson.M{"$and": []bson.M{
-		{"status": DONE},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-
-	donenum, err := c.Find(done).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	omit := bson.M{"$and": []bson.M{
-		{"status": OMIT},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-
-	omitnum, err := c.Find(omit).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	hold := bson.M{"$and": []bson.M{
-		{"status": HOLD},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-	holdnum, err := c.Find(hold).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	out := bson.M{"$and": []bson.M{
-		{"status": OUT},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-	outnum, err := c.Find(out).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-
-	none := bson.M{"$and": []bson.M{
-		{"status": NONE},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-	}}
-	nonenum, err := c.Find(none).Count()
-	if err != nil {
-		return Infobarnum{}, err
-	}
-	results.Assign = assignnum
-	results.Ready = readynum
-	results.Wip = wipnum
-	results.Confirm = confirmnum
-	results.Done = donenum
-	results.Omit = omitnum
-	results.Hold = holdnum
-	results.Out = outnum
-	results.None = nonenum
 
 	// statusv2
 	statuslist, err := AllStatus(session)
@@ -1999,7 +1338,7 @@ func SetEditmov(session *mgo.Session, project, id, path string) error {
 	return nil
 }
 
-// SetTaskStatus 함수는 item에 task의 status 값을 셋팅한다. // legacy
+// SetTaskStatus 함수는 item에 task의 status 값을 셋팅한다.
 func SetTaskStatus(session *mgo.Session, project, id, task, status string) error {
 	session.SetMode(mgo.Monotonic, true)
 	err := HasProject(session, project)
@@ -2011,26 +1350,7 @@ func SetTaskStatus(session *mgo.Session, project, id, task, status string) error
 		return err
 	}
 	statusNum := ""
-	switch strings.ToLower(status) {
-	case READY, "ready":
-		statusNum = READY
-	case ASSIGN, "assign":
-		statusNum = ASSIGN
-	case WIP, "wip":
-		statusNum = WIP
-	case CONFIRM, "confirm":
-		statusNum = CONFIRM
-	case DONE, "done":
-		statusNum = DONE
-	case OMIT, "omit":
-		statusNum = OMIT
-	case HOLD, "hold":
-		statusNum = HOLD
-	case OUT, "out":
-		statusNum = OUT
-	case NONE, "none":
-		statusNum = NONE
-	}
+
 	if statusNum == "" {
 		return errors.New("올바른 status가 아닙니다")
 	}
@@ -2038,14 +1358,11 @@ func SetTaskStatus(session *mgo.Session, project, id, task, status string) error
 		return errors.New("task가 존재하지 않습니다")
 	}
 	t := item.Tasks[task]
-	t.BeforeStatus = t.Status
-	t.Status = statusNum // legacy
 	t.StatusV2 = status
 	item.Tasks[task] = t
 
 	c := session.DB("project").C(project)
 	item.Updatetime = time.Now().Format(time.RFC3339)
-	item.updateStatus() // legacy
 	globalStatus, err := AllStatus(session)
 	if err != nil {
 		return err
@@ -2160,7 +1477,6 @@ func AddTask(session *mgo.Session, project, id, task, status, pipelinestep strin
 	if _, found := item.Tasks[task]; !found {
 		t := Task{}
 		t.Title = taskname
-		t.Status = ASSIGN // legacy
 		t.StatusV2 = status
 		t.Pipelinestep = pipelinestep
 		item.Tasks[task] = t
@@ -2169,7 +1485,6 @@ func AddTask(session *mgo.Session, project, id, task, status, pipelinestep strin
 	}
 	c := session.DB("project").C(project)
 	item.Updatetime = time.Now().Format(time.RFC3339)
-	item.updateStatus() // legacy
 	globalStatus, err := AllStatus(session)
 	if err != nil {
 		return err
@@ -2192,7 +1507,6 @@ func RmTask(session *mgo.Session, project, id, taskname string) error {
 	delete(item.Tasks, taskname)
 	c := session.DB("project").C(project)
 	item.Updatetime = time.Now().Format(time.RFC3339)
-	item.updateStatus() // legacy
 	status, err := AllStatus(session)
 	if err != nil {
 		return err

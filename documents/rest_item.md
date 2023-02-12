@@ -13,8 +13,7 @@ restAPI의 장점은 웹서비스의 URI를 이용하기 때문에 네트워크�
 | URI | Description | Attributes | Curl Example |
 | --- | --- | --- | --- |
 | /api2/item | 아이템 가지고 오기 | project, name or id, (type) | `$ curl -H "Authorization: Basic <Token>" "https://openpipeline.io/api2/item?project=TEMP&name=SS_0020&type=org"` |
-| /api3/items | 아이템을 검색하고 가지고 오기 | project, searchword, status상태 | `$ curl -H "Authorization: Basic <Token>" "https://openpipeline.io/api3/items?project=TEMP&searchword=SS&wip=true"` 또는 `$ curl -H "Authorization: Basic <Token>" "https://openpipeline.io/api3/items?project=TEMP&searchword=task:mm+user:jason&assign=true&wip=true"` |
-| /api3/items | 아이템을 검색하고 가지고 오기(유연한 Status) | project, searchword, searchbartemplate, truestatus | `$ curl -H "Authorization: Basic <Token>" "https://openpipeline.io/api3/items?project=TEMP&searchword=SS&searchbartemplate=searchbarV2&truestatus=assing,wip"` |
+| /api3/items | 아이템을 검색하고 가지고 오기 | project, searchword, truestatus | `$ curl -H "Authorization: Basic <Token>" "https://openpipeline.io/api3/items?project=TEMP&searchword=SS&truestatus=assing,wip"` |
 | /api/shot | 샷 정보 가지고 오기 | project, name | `$ curl -H "Authorization: Basic <Token>" "https://openpipeline.io/api/shot?project=TEMP&name=SS_0010"` |
 | /api2/shots | 샷 리스트를 가지고 오기 | project, seq | `$ curl -H "Authorization: Basic <Token>" "https://openpipeline.io/api/shots?project=TEMP&seq=SS"` |
 | /api/allshots | 전체 샷 리스트를 가지고 오기 | project | `$ curl -H "Authorization: Basic <Token>" "https://openpipeline.io/api/allshots?project=TEMP"` |
@@ -187,7 +186,7 @@ print(r.json())
 #coding:utf8
 import json
 import urllib2
-endpoint = "https://openpipeline.io/api3/items?project=circle&searchword=SS&searchbartemplate=searchbarV2&truestatus=assign,wip"
+endpoint = "https://openpipeline.io/api3/items?project=circle&searchword=SS&truestatus=assign,wip"
 data = json.load(urllib2.urlopen(endpoint))
 print(data)
 ```
@@ -204,7 +203,6 @@ values = {}
 values["project"] = "TEMP"
 values["searchword"] = "SS"
 values["truestatus"] = "assign,wip"
-values["searchbartemplate"] = "searchbarV2"
 
 endpoint = "https://openpipeline.io/api3/items"
 query = urllib.urlencode(values)
@@ -216,7 +214,7 @@ print(data)
 - 서치키워드에 다중 문자열 검색시 공백이 들어가면 공백을 + 사용
 
 ```
-endpoint = "https://openpipeline.io/api3/items?project=TEMP&searchword=comp+배서영&searchbartemplate=searchbarV2&truestatus=wip"
+endpoint = "https://openpipeline.io/api3/items?project=TEMP&searchword=comp+배서영&truestatus=wip"
 ```
 
 

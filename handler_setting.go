@@ -27,7 +27,6 @@ func handleAdminSetting(w http.ResponseWriter, r *http.Request) {
 	type recipe struct {
 		User        User
 		Projectlist []string
-		Devmode     bool
 		SearchOption
 		Setting
 	}
@@ -37,7 +36,6 @@ func handleAdminSetting(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -227,8 +225,7 @@ func handleAdminSettingSubmit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		SearchOption
 		Setting
 	}
@@ -239,7 +236,6 @@ func handleAdminSettingSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -275,7 +271,6 @@ func handleSetAdminSetting(w http.ResponseWriter, r *http.Request) {
 	type recipe struct {
 		User        User
 		Projectlist []string
-		Devmode     bool
 		SearchOption
 		Setting
 	}
@@ -286,7 +281,6 @@ func handleSetAdminSetting(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

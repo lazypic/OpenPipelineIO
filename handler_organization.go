@@ -27,8 +27,7 @@ func handleAddOrganization(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		SearchOption
 		Setting
 	}
@@ -39,7 +38,6 @@ func handleAddOrganization(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -72,8 +70,7 @@ func handleRmOrganization(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		SearchOption
 		Setting
 	}
@@ -84,7 +81,6 @@ func handleRmOrganization(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -178,8 +174,7 @@ func handleEditDepartment(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		Department
 		SearchOption
 		Setting Setting
@@ -191,7 +186,6 @@ func handleEditDepartment(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	rcp.User, err = getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -230,8 +224,7 @@ func handleEditTeam(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		Team
 		SearchOption
 		Setting Setting
@@ -243,7 +236,6 @@ func handleEditTeam(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	rcp.User, err = getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -282,8 +274,7 @@ func handleEditRole(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		Role
 		SearchOption
 		Setting Setting
@@ -295,7 +286,6 @@ func handleEditRole(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	rcp.User, err = getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -334,8 +324,7 @@ func handleEditPosition(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		Position
 		SearchOption
 		Setting Setting
@@ -347,7 +336,6 @@ func handleEditPosition(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	rcp.User, err = getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -563,7 +551,6 @@ func handleDivisions(w http.ResponseWriter, r *http.Request) {
 	defer session.Close()
 	type recipe struct {
 		Divisions []Division
-		Devmode   bool
 		User
 		MailDNS string
 		SearchOption
@@ -576,7 +563,6 @@ func handleDivisions(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	rcp.MailDNS = *flagMailDNS
 	rcp.Divisions, err = allDivisions(session)
 	if err != nil {
@@ -616,7 +602,6 @@ func handleDepartments(w http.ResponseWriter, r *http.Request) {
 	defer session.Close()
 	type recipe struct {
 		Departments []Department
-		Devmode     bool
 		User
 		MailDNS string
 		SearchOption
@@ -629,7 +614,6 @@ func handleDepartments(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	rcp.MailDNS = *flagMailDNS
 	rcp.Departments, err = allDepartments(session)
 	if err != nil {
@@ -668,8 +652,7 @@ func handleTeams(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		Teams   []Team
-		Devmode bool
+		Teams []Team
 		User
 		MailDNS string
 		SearchOption
@@ -682,7 +665,6 @@ func handleTeams(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	rcp.MailDNS = *flagMailDNS
 	rcp.Teams, err = allTeams(session)
 	if err != nil {
@@ -721,8 +703,7 @@ func handleRoles(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		Roles   []Role
-		Devmode bool
+		Roles []Role
 		User
 		MailDNS string
 		SearchOption
@@ -735,7 +716,6 @@ func handleRoles(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	rcp.MailDNS = *flagMailDNS
 	rcp.Roles, err = allRoles(session)
 	if err != nil {
@@ -775,7 +755,6 @@ func handlePositions(w http.ResponseWriter, r *http.Request) {
 	defer session.Close()
 	type recipe struct {
 		Positions []Position
-		Devmode   bool
 		User
 		MailDNS string
 		SearchOption
@@ -788,7 +767,6 @@ func handlePositions(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	rcp.MailDNS = *flagMailDNS
 	rcp.Positions, err = allPositions(session)
 	if err != nil {
@@ -829,15 +807,12 @@ func handleEditDivision(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		Division
 		SearchOption
 		Setting Setting
 	}
-	rcp := recipe{
-		Devmode: *flagDevmode,
-	}
+	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
 	err = rcp.SearchOption.LoadCookie(session, r)
 	if err != nil {

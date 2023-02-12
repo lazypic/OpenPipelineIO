@@ -30,8 +30,7 @@ func handleAddProject(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		SearchOption
 		Setting
 	}
@@ -42,7 +41,6 @@ func handleAddProject(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -110,7 +108,6 @@ func handleProjectinfo(w http.ResponseWriter, r *http.Request) {
 		Projects []Project
 		MailDNS  string
 		User
-		Devmode bool
 		SearchOption
 		Setting Setting
 	}
@@ -128,7 +125,6 @@ func handleProjectinfo(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.User = u
 	rcp.MailDNS = *flagMailDNS
-	rcp.Devmode = *flagDevmode
 	if status != "" {
 		rcp.Projects, err = getStatusProjects(session, ToProjectStatus(status))
 		if err != nil {
@@ -223,9 +219,6 @@ func handleEditProjectSubmit(w http.ResponseWriter, r *http.Request) {
 	}
 	if current.AnnounceIR != str2bool(r.FormValue("AnnounceIR")) {
 		renewal.AnnounceIR = str2bool(r.FormValue("AnnounceIR"))
-	}
-	if current.FlexibleStatus != str2bool(r.FormValue("FlexibleStatus")) {
-		renewal.FlexibleStatus = str2bool(r.FormValue("FlexibleStatus"))
 	}
 	if current.Screenx != str2bool(r.FormValue("Screenx")) {
 		renewal.Screenx = str2bool(r.FormValue("Screenx"))
@@ -428,7 +421,6 @@ func handleEditProject(w http.ResponseWriter, r *http.Request) {
 	type recipe struct {
 		Project            `json:"project"`
 		User               `json:"user"`
-		Devmode            bool `json:"devmode"`
 		SearchOption       `json:"searchoption"`
 		DefaultColorspaces []string `json:"defaultcolorspace"`
 		OCIOColorspaces    []string `json:"ociocolorspaces"`
@@ -442,7 +434,6 @@ func handleEditProject(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	p, err := getProject(session, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -495,7 +486,6 @@ func handleRmProject(w http.ResponseWriter, r *http.Request) {
 	type recipe struct {
 		User        User
 		Projectlist []string
-		Devmode     bool
 		SearchOption
 		Setting
 	}
@@ -506,7 +496,6 @@ func handleRmProject(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -546,8 +535,7 @@ func handleRmProjectSubmit(w http.ResponseWriter, r *http.Request) {
 	project := r.FormValue("Project")
 	rmReviews := str2bool(r.FormValue("rmreviews"))
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		SearchOption
 		Error   string
 		Project string
@@ -560,7 +548,6 @@ func handleRmProjectSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	rcp.Project = project
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
@@ -638,8 +625,7 @@ func handleNoOnProject(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		SearchOption
 		Setting
 	}
@@ -650,7 +636,6 @@ func handleNoOnProject(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

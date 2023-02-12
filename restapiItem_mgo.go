@@ -382,15 +382,6 @@ func handleAPI2Items(w http.ResponseWriter, r *http.Request) {
 		Project:    q.Get("project"),
 		Searchword: q.Get("searchword"),
 		Sortkey:    q.Get("sortkey"),
-		Assign:     str2bool(q.Get("assign")),
-		Ready:      str2bool(q.Get("ready")),
-		Wip:        str2bool(q.Get("wip")),
-		Confirm:    str2bool(q.Get("confirm")),
-		Done:       str2bool(q.Get("done")),
-		Omit:       str2bool(q.Get("omit")),
-		Hold:       str2bool(q.Get("hold")),
-		Out:        str2bool(q.Get("out")),
-		None:       str2bool(q.Get("none")),
 		Shot:       str2bool(q.Get("shot")),
 		Assets:     str2bool(q.Get("asset")),
 		Type3d:     str2bool(q.Get("type3d")),
@@ -437,28 +428,15 @@ func handleAPI3Items(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	op := SearchOption{
-		Project:           q.Get("project"),
-		Searchword:        q.Get("searchword"),
-		Sortkey:           "id",
-		Assign:            str2bool(q.Get("assign")),
-		Ready:             str2bool(q.Get("ready")),
-		Wip:               str2bool(q.Get("wip")),
-		Confirm:           str2bool(q.Get("confirm")),
-		Done:              str2bool(q.Get("done")),
-		Omit:              str2bool(q.Get("omit")),
-		Hold:              str2bool(q.Get("hold")),
-		Out:               str2bool(q.Get("out")),
-		None:              str2bool(q.Get("none")),
-		Type3d:            str2bool(q.Get("type3d")),
-		Type2d:            str2bool(q.Get("type2d")),
-		TrueStatus:        strings.Split(q.Get("truestatus"), ","),
-		SearchbarTemplate: "searchbarV1",
+		Project:    q.Get("project"),
+		Searchword: q.Get("searchword"),
+		Sortkey:    "id",
+		Type3d:     str2bool(q.Get("type3d")),
+		Type2d:     str2bool(q.Get("type2d")),
+		TrueStatus: strings.Split(q.Get("truestatus"), ","),
 	}
 	if q.Get("sortkey") != "" {
 		op.Sortkey = "id"
-	}
-	if q.Get("searchbartemplate") == "searchbarV2" {
-		op.SearchbarTemplate = "searchbarV2"
 	}
 	items, err := Search(session, op)
 	if err != nil {
@@ -3234,7 +3212,6 @@ func handleAPISetTaskStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// json 으로 결과 전송
-	rcp.Status = Status2string(rcp.Status) // "2"형태의 숫자라면 문자로 바꾼다.
 	data, err := json.Marshal(rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -7002,19 +6979,9 @@ func handleAPISearch(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	searchOp := SearchOption{
-		Project:           project,
-		Searchword:        searchword,
-		Sortkey:           sortkey,
-		Assign:            true,
-		Ready:             true,
-		Wip:               true,
-		Confirm:           true,
-		Done:              true,
-		Omit:              true,
-		Hold:              true,
-		Out:               true,
-		None:              true,
-		SearchbarTemplate: "searchbarV1",
+		Project:    project,
+		Searchword: searchword,
+		Sortkey:    sortkey,
 	}
 	items, err := Search(session, searchOp)
 	if err != nil {

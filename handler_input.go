@@ -25,7 +25,6 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 	type recipe struct {
 		User
 		SessionID   string
-		Devmode     bool
 		Projectlist []string
 		Items       []Item
 		Ddline3d    []string
@@ -53,7 +52,6 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
 	_, rcp.OS, _ = GetInfoFromRequestHeader(r)
-	rcp.Devmode = *flagDevmode
 	rcp.MailDNS = *flagMailDNS
 
 	rcp.SessionID = ssid.ID
@@ -240,60 +238,6 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 	cookie = http.Cookie{
 		Name:   "Searchword",
 		Value:  base64.StdEncoding.EncodeToString([]byte(rcp.SearchOption.Searchword)), //  쿠키는 UTF-8을 저장할 때 에러가 발생한다.
-		MaxAge: 0,
-	}
-	http.SetCookie(w, &cookie)
-	cookie = http.Cookie{
-		Name:   "Assign",
-		Value:  bool2str(rcp.SearchOption.Assign),
-		MaxAge: 0,
-	}
-	http.SetCookie(w, &cookie)
-	cookie = http.Cookie{
-		Name:   "Ready",
-		Value:  bool2str(rcp.SearchOption.Ready),
-		MaxAge: 0,
-	}
-	http.SetCookie(w, &cookie)
-	cookie = http.Cookie{
-		Name:   "Wip",
-		Value:  bool2str(rcp.SearchOption.Wip),
-		MaxAge: 0,
-	}
-	http.SetCookie(w, &cookie)
-	cookie = http.Cookie{
-		Name:   "Confirm",
-		Value:  bool2str(rcp.SearchOption.Confirm),
-		MaxAge: 0,
-	}
-	http.SetCookie(w, &cookie)
-	cookie = http.Cookie{
-		Name:   "Done",
-		Value:  bool2str(rcp.SearchOption.Done),
-		MaxAge: 0,
-	}
-	http.SetCookie(w, &cookie)
-	cookie = http.Cookie{
-		Name:   "Omit",
-		Value:  bool2str(rcp.SearchOption.Omit),
-		MaxAge: 0,
-	}
-	http.SetCookie(w, &cookie)
-	cookie = http.Cookie{
-		Name:   "Hold",
-		Value:  bool2str(rcp.SearchOption.Hold),
-		MaxAge: 0,
-	}
-	http.SetCookie(w, &cookie)
-	cookie = http.Cookie{
-		Name:   "Out",
-		Value:  bool2str(rcp.SearchOption.Out),
-		MaxAge: 0,
-	}
-	http.SetCookie(w, &cookie)
-	cookie = http.Cookie{
-		Name:   "None",
-		Value:  bool2str(rcp.SearchOption.None),
 		MaxAge: 0,
 	}
 	http.SetCookie(w, &cookie)

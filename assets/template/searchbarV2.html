@@ -1,4 +1,4 @@
-{{define "searchbarV2"}}
+{{define ""}}
 <form action="/searchsubmitv2" method="POST">
 	<div class="row justify-content-center align-items-center m-3">
 		<div class="col-lg-7">
@@ -32,12 +32,6 @@
 					</select>
 				</div>
 				<div class="input-group-append">
-					<select name="SearchbarTemplate" id="searchbox-searchbar-template" class="custom-select">
-						<option value="searchbarV1" {{if eq $.SearchOption.SearchbarTemplate "searchbarV1" }}selected{{end}}>ver1</option>
-						<option value="searchbarV2" {{if eq $.SearchOption.SearchbarTemplate "searchbarV2" }}selected{{end}}>ver2</option>
-					</select>
-				</div>
-				<div class="input-group-append">
 					<button class="btn btn-darkmode" id="button">
 						Search
 						{{if .Searchnum.Search}}
@@ -58,7 +52,6 @@
 												project={{$.SearchOption.Project}}&
 												searchword=status:{{.ID}}&
 												sortkey={{$.SearchOption.Sortkey}}&
-												searchbartemplate=searchbarV2&
 												truestatus={{.ID}}&
 												task={{$.SearchOption.Task}}">
 												{{.ID}}</a>
@@ -77,28 +70,24 @@
 																	project={{.SearchOption.Project}}&
 																	searchword=shottype:2d&
 																	sortkey={{.SearchOption.Sortkey}}&
-																	searchbartemplate=searchbarV2&
 																	truestatus={{Join .SearchOption.TrueStatus "," }}&
 																	task={{.SearchOption.Task}}">2D <span class="badge badge-darkmode">{{.Searchnum.Shot2d}}</span></a>
                 <a class="btn btn-sm btn-outline-darkmode mb-2 statusuri" href="/inputmode?
 																	project={{.SearchOption.Project}}&
 																	searchword=shottype:3d&
 																	sortkey={{.SearchOption.Sortkey}}&
-																	searchbartemplate=searchbarV2&
 																	truestatus={{Join .SearchOption.TrueStatus "," }}&
 																	task={{.SearchOption.Task}}">3D <span class="badge badge-darkmode">{{.Searchnum.Shot3d}}</span></a>
 				<a class="btn btn-sm btn-outline-darkmode mb-2 statusuri" href="/inputmode?
 																	project={{.SearchOption.Project}}&
 																	searchword=type:shot&
 																	sortkey={{.SearchOption.Sortkey}}&
-																	searchbartemplate=searchbarV2&
 																	truestatus={{Join .SearchOption.TrueStatus "," }}&
 																	task={{.SearchOption.Task}}">Shot <span class="badge badge-darkmode">{{.Searchnum.Shot}}</span></a>
 				<a class="btn btn-sm btn-outline-darkmode mb-2 statusuri" href="/inputmode?
 																	project={{.SearchOption.Project}}&
 																	searchword=type:asset&
 																	sortkey={{.SearchOption.Sortkey}}&
-																	searchbartemplate=searchbarV2&
 																	truestatus={{Join .SearchOption.TrueStatus "," }}&
 																	task={{.SearchOption.Task}}">Asset <span class="badge badge-darkmode">{{.Searchnum.Assets}}</span></a>
             </div>

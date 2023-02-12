@@ -23,11 +23,7 @@
 				<div class="thumbnailbox ml-1">
 					<!--org,left,asset 만 선택할 수 있어야 한다.-->
 					<label class="p-0 m-0 thumbnail" for="{{$.Item.ID}}" onclick="selectCheckbox()">
-						{{if eq $.SearchbarTemplate "searchbarV1"}}
-							<img src="/thumbnail/{{$.Item.Project}}/{{$.Item.Name}}_{{if $.Item.UseType}}{{$.Item.UseType}}{{else}}{{$.Item.Type}}{{end}}.jpg" onerror="this.src='/assets/img/none.jpg'" class="thumbnail border-{{Status2string $.Item.Status}}">
-						{{else}}
-							<img src="/thumbnail/{{$.Item.Project}}/{{$.Item.Name}}_{{if $.Item.UseType}}{{$.Item.UseType}}{{else}}{{$.Item.Type}}{{end}}.jpg" onerror="this.src='/assets/img/none.jpg'" class="thumbnail border-{{$.Item.StatusV2}}">
-						{{end}}
+						<img src="/thumbnail/{{$.Item.Project}}/{{$.Item.Name}}_{{if $.Item.UseType}}{{$.Item.UseType}}{{else}}{{$.Item.Type}}{{end}}.jpg" onerror="this.src='/assets/img/none.jpg'" class="thumbnail border-{{$.Item.StatusV2}}">
 					</label>
 					<div class="top-left">
 						{{if eq $.Item.Type "org" "left"}}
@@ -66,27 +62,17 @@
 						</div>
 					</div>
 					<div class="centered">
-						{{if eq $.SearchbarTemplate "searchbarV1"}}
-							{{if eq $.Item.Status "2"}}
-								{{if $.Item.Finver}}
-									Finver: {{$.Item.Finver}}
-								{{end}}
-								{{if $.Item.Findate}}
-									<br>
-									Date: {{ToNormalTime $.Item.Findate}}
-								{{end}}
+						
+						{{if eq $.Item.StatusV2 "done"}}
+							{{if $.Item.Finver}}
+								Finver: {{$.Item.Finver}}
 							{{end}}
-						{{else}}
-							{{if eq $.Item.StatusV2 "done"}}
-								{{if $.Item.Finver}}
-									Finver: {{$.Item.Finver}}
-								{{end}}
-								{{if $.Item.Findate}}
-									<br>
-									Date: {{ToNormalTime $.Item.Findate}}
-								{{end}}
+							{{if $.Item.Findate}}
+								<br>
+								Date: {{ToNormalTime $.Item.Findate}}
 							{{end}}
 						{{end}}
+						
 					</div>
 					<div class="centered-bottom row">
 						{{if eq $.Item.Type "asset"}}
@@ -257,15 +243,9 @@
 					{{range mapToSlice $.Item.Tasks $.TasksettingOrderMap}}
 						<div class="row" id="{{$.Item.ID}}-task-{{.Title}}">
 							<div id="{{$.Item.ID}}-task-{{.Title}}-status">
-								{{if eq $.SearchOption.SearchbarTemplate "searchbarV1" }}
-									<span class="finger mt-1 badge badge-{{Status2string .Status}} statusbox{{CheckDate .Predate .Date .Mdate $.SearchOption.Searchword}}" data-toggle="tooltip" data-placement="left" title="{{Status2string .Status}}"
-									onclick="wfs('{{$.Setting.WFS}}', '{{.Title}}', '{{$type}}', '{{$assettype}}', '{{$.SearchOption.Project}}', '{{$.Item.Name}}', '{{$.Item.Seq}}', '{{$.Item.Cut}}', '{{$.User.Token}}');"
-									>{{.Title}}</span>
-								{{else}}
-									<span class="finger mt-1 badge badge-{{.StatusV2}} statusbox{{CheckDate .Predate .Date .Mdate $.SearchOption.Searchword}}" data-toggle="tooltip" data-placement="left" title="{{.StatusV2}}"
-									onclick="wfs('{{$.Setting.WFS}}', '{{.Title}}', '{{$type}}', '{{$assettype}}', '{{$.SearchOption.Project}}', '{{$.Item.Name}}', '{{$.Item.Seq}}', '{{$.Item.Cut}}', '{{$.User.Token}}');"
-									>{{.Title}}</span>
-								{{end}}
+								<span class="finger mt-1 badge badge-{{.StatusV2}} statusbox{{CheckDate .Predate .Date .Mdate $.SearchOption.Searchword}}" data-toggle="tooltip" data-placement="left" title="{{.StatusV2}}"
+								onclick="wfs('{{$.Setting.WFS}}', '{{.Title}}', '{{$type}}', '{{$assettype}}', '{{$.SearchOption.Project}}', '{{$.Item.Name}}', '{{$.Item.Seq}}', '{{$.Item.Cut}}', '{{$.User.Token}}');"
+								>{{.Title}}</span>
 							</div>
 							<div id="{{$.Item.ID}}-task-{{.Title}}-predate">
 								<span class="mt-1 ml-1 badge badge-{{CheckDdlinev2 .Predate}}" title="1차마감">{{ToShortTime .Predate}}</span>
@@ -319,17 +299,6 @@
 								<a href="/inputmode?project={{$.SearchOption.Project}}&
 								searchword=assettags:{{.}}&
 								sortkey={{$.SearchOption.Sortkey}}&
-								sortkey={{$.SearchOption.Sortkey}}&
-								assign={{$.SearchOption.Assign}}&
-								ready={{$.SearchOption.Ready}}&
-								wip={{$.SearchOption.Wip}}&
-								confirm={{$.SearchOption.Confirm}}&
-								done={{$.SearchOption.Done}}&
-								omit={{$.SearchOption.Omit}}&
-								hold={{$.SearchOption.Hold}}&
-								out={{$.SearchOption.Out}}&
-								none={{$.SearchOption.None}}&
-								searchbartemplate={{$.SearchOption.SearchbarTemplate}}&
 								truestatus={{Join $.AllStatusIDs "," }}&
 								task={{$.SearchOption.Task}}" class="badge badge-outline-darkmode">{{.}}</a>
 							</div>
@@ -342,17 +311,6 @@
 							<a href="/inputmode?project={{$.SearchOption.Project}}&
 							searchword=tag:{{.}}&
 							sortkey={{$.SearchOption.Sortkey}}&
-							sortkey={{$.SearchOption.Sortkey}}&
-							assign={{$.SearchOption.Assign}}&
-							ready={{$.SearchOption.Ready}}&
-							wip={{$.SearchOption.Wip}}&
-							confirm={{$.SearchOption.Confirm}}&
-							done={{$.SearchOption.Done}}&
-							omit={{$.SearchOption.Omit}}&
-							hold={{$.SearchOption.Hold}}&
-							out={{$.SearchOption.Out}}&
-							none={{$.SearchOption.None}}&
-							searchbartemplate={{$.SearchOption.SearchbarTemplate}}&
 							truestatus={{Join $.AllStatusIDs "," }}&
 							task={{$.SearchOption.Task}}" class="badge badge-outline-darkmode">{{.}}</a>
 						</div>
