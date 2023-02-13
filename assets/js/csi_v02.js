@@ -22,11 +22,7 @@ function changeProject() {
         return response.json()
     })
     .then((data) => {
-		if (data.flexiblestatus === true) {
-			document.getElementById("searchbox-searchbar-template").value = "searchbarV2"
-		} else {
-			document.getElementById("searchbox-searchbar-template").value = "searchbarV1"
-		}
+		
     })
     .catch((error) => {
         alert(error)
@@ -34,38 +30,9 @@ function changeProject() {
 }
 
 
-// selectmode 함수는 SearchbarV2 검색바에 "선택모드" 버튼을 눌렀을 때 실행되는 함수이다. // legacy
-function selectmode() {
-	var onnum = 0
-	// 체크가 되어있는 갯수를 구한다.
-	for(var i=0; i<document.getElementsByClassName('StatusCheckBox').length;i++) {
-		if (document.getElementsByClassName('StatusCheckBox')[i].checked == true) {
-			onnum = onnum + 1
-		}
-	}
-	if (onnum == 9) {
-		for(var i=0; i<document.getElementsByClassName('StatusCheckBox').length;i++) {
-			document.getElementsByClassName('StatusCheckBox')[i].checked=false
-		}
-	} else if (onnum == 0) {
-		// 이 모드는 자주 사용하는 사용자 선택패턴이다.
-		document.getElementsByClassName('StatusCheckBox')[0].checked=true // assign
-		document.getElementsByClassName('StatusCheckBox')[1].checked=true // ready
-		document.getElementsByClassName('StatusCheckBox')[2].checked=true // wip
-		document.getElementsByClassName('StatusCheckBox')[3].checked=true // confirm
-		document.getElementsByClassName('StatusCheckBox')[4].checked=false // done
-		document.getElementsByClassName('StatusCheckBox')[5].checked=false // out
-		document.getElementsByClassName('StatusCheckBox')[6].checked=false // omit
-		document.getElementsByClassName('StatusCheckBox')[7].checked=false // hold
-		document.getElementsByClassName('StatusCheckBox')[8].checked=false // none
-	} else {
-		for(var i=0; i<document.getElementsByClassName('StatusCheckBox').length;i++) {
-			document.getElementsByClassName('StatusCheckBox')[i].checked=true
-		}
-	}
-}
 
-// selectmodeV2 함수는 SearchbarV2 검색바에 "선택모드" 버튼을 눌렀을 때 실행되는 함수이다.
+
+// selectmodeV2 함수는 검색바에서 "선택모드" 버튼을 눌렀을 때 실행되는 함수이다.
 function selectmodeV2() {
 	var checknum = 0
 	// 체크된 Status 수를 구한다.

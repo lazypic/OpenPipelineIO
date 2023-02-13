@@ -26,8 +26,7 @@ func handleAddStatus(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		SearchOption
 		Setting
 	}
@@ -38,7 +37,6 @@ func handleAddStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -117,14 +115,12 @@ func handleStatus(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
-		Status  []Status
+		User   User
+		Status []Status
 		Setting
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	rcp.Devmode = *flagDevmode
 	rcp.Status, err = AllStatus(session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -162,8 +158,7 @@ func handleRmStatus(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		SearchOption
 		Setting
 	}
@@ -174,7 +169,6 @@ func handleRmStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -233,8 +227,7 @@ func handleEditStatus(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		SearchOption
 		Status
 		Setting Setting
@@ -246,7 +239,6 @@ func handleEditStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

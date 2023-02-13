@@ -30,84 +30,6 @@ func projectStatus2color(status ProjectStatus) string {
 	}
 }
 
-// Status2capString 템플릿함수는 status 값을 받아서 대문자를 반환한다.
-func Status2capString(num string) string {
-	switch num {
-	case OMIT:
-		return "OMIT"
-	case CONFIRM:
-		return "CONFIRM"
-	case WIP:
-		return "WIP"
-	case READY:
-		return "READY"
-	case ASSIGN:
-		return "ASSIGN"
-	case OUT:
-		return "OUT"
-	case DONE:
-		return "DONE"
-	case HOLD:
-		return "HOLD"
-	case NONE:
-		return "NONE"
-	default:
-		return "NONE"
-	}
-}
-
-// Status2string 템플릿함수는 status 값을 받아서 소문자를 반환한다.
-func Status2string(status string) string {
-	switch status {
-	case OMIT, "omit":
-		return "omit"
-	case CONFIRM, "confirm":
-		return "confirm"
-	case WIP, "wip":
-		return "wip"
-	case READY, "ready":
-		return "ready"
-	case ASSIGN, "assign":
-		return "assign"
-	case OUT, "out":
-		return "out"
-	case DONE, "done":
-		return "done"
-	case HOLD, "hold":
-		return "hold"
-	case NONE, "none":
-		return "none"
-	default:
-		return "none"
-	}
-}
-
-// StatusString2string 템플릿함수는 status 문자를 받아서 Status 값을 반환한다.
-func StatusString2string(status string) string {
-	switch status {
-	case "omit":
-		return OMIT
-	case "confirm":
-		return CONFIRM
-	case "wip":
-		return WIP
-	case "ready":
-		return READY
-	case "assign":
-		return ASSIGN
-	case "out":
-		return OUT
-	case "done":
-		return DONE
-	case "hold":
-		return HOLD
-	case "none":
-		return NONE
-	default:
-		return NONE
-	}
-}
-
 // name2seq 함수는 "SS_0010"을 받아서 "SS" 이름을 반환한다.
 func name2seq(name string) string {
 	if strings.Contains(name, "_") {
@@ -581,7 +503,6 @@ func AddTagColon(tag string) string {
 
 // Username2Elements 함수는 element 이름들을 반환한다.
 // 김한웅(fire),박지섭(smoke) 형태의 문자라면 fire,smoke를 반환한다.
-// 이 함수는 유연한 task 구조가 되기 전까지만 활용한다.
 func Username2Elements(str string) string {
 	var elements []string
 	re := regexp.MustCompile(`\(([0-9a-z]+)\)`)

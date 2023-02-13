@@ -11,17 +11,6 @@
 				<a class="dropdown-item" href="/inputmode?project={{$.SearchOption.Project}}&
 					searchword=assettags:{{.}}&
 					sortkey={{$.SearchOption.Sortkey}}&
-					sortkey={{$.SearchOption.Sortkey}}&
-					assign={{$.SearchOption.Assign}}&
-					ready={{$.SearchOption.Ready}}&
-					wip={{$.SearchOption.Wip}}&
-					confirm={{$.SearchOption.Confirm}}&
-					done={{$.SearchOption.Done}}&
-					omit={{$.SearchOption.Omit}}&
-					hold={{$.SearchOption.Hold}}&
-					out={{$.SearchOption.Out}}&
-					none={{$.SearchOption.None}}&
-					searchbartemplate={{$.SearchOption.SearchbarTemplate}}&
 					truestatus={{Join $.AllStatusIDs "," }}&
 					task={{$.SearchOption.Task}}">Go to Tag Page</a>
 				<a class="dropdown-item" href="#" onclick="addAssetTagAtSearchbox('{{.}}')">Add Searchbox</a>
@@ -44,16 +33,6 @@
 						<a class="dropdown-item" href="/inputmode?project={{$.SearchOption.Project}}&
 							searchword=tag:{{.}}&
 							sortkey={{$.SearchOption.Sortkey}}&
-							assign={{$.SearchOption.Assign}}&
-							ready={{$.SearchOption.Ready}}&
-							wip={{$.SearchOption.Wip}}&
-							confirm={{$.SearchOption.Confirm}}&
-							done={{$.SearchOption.Done}}&
-							omit={{$.SearchOption.Omit}}&
-							hold={{$.SearchOption.Hold}}&
-							out={{$.SearchOption.Out}}&
-							none={{$.SearchOption.None}}&
-							searchbartemplate={{$.SearchOption.SearchbarTemplate}}&
 							truestatus={{Join $.SearchOption.TrueStatus "," }}&
 							task={{$.SearchOption.Task}}">Go to Tag Page</a>
 						<a class="dropdown-item" href="#" onclick="addTagAtSearchbox('{{.}}')">Add Searchbox</a>

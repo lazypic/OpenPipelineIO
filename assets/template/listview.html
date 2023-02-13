@@ -29,11 +29,7 @@
 				<div class="thumbnailbox ml-1">
 					<!--org,left,asset 만 선택할 수 있어야 한다.-->
 					<label class="p-0 m-0 thumbnail" for="{{.ID}}" onclick="selectCheckbox('{{.ID}}')">
-						{{if eq $.SearchOption.SearchbarTemplate "searchbarV1" }}
-							<img src="/thumbnail/{{.Project}}/{{.Name}}_{{if .UseType}}{{.UseType}}{{else}}{{.Type}}{{end}}.jpg" onerror="this.src='/assets/img/none.jpg'" class="thumbnail border-{{Status2string .Status}}">
-						{{else}}
-							<img src="/thumbnail/{{.Project}}/{{.Name}}_{{if .UseType}}{{.UseType}}{{else}}{{.Type}}{{end}}.jpg" onerror="this.src='/assets/img/none.jpg'" class="thumbnail border-{{.StatusV2}}">
-						{{end}}
+						<img src="/thumbnail/{{.Project}}/{{.Name}}_{{if .UseType}}{{.UseType}}{{else}}{{.Type}}{{end}}.jpg" onerror="this.src='/assets/img/none.jpg'" class="thumbnail border-{{.StatusV2}}">
 					</label>
 					<div class="top-left">
 						{{if eq .Type "org" "left"}}
@@ -72,25 +68,13 @@
 						</div>
 					</div>
 					<div class="centered">
-						{{if eq $.SearchOption.SearchbarTemplate "searchbarV1" }}
-							{{if eq .Status "2"}}
-								{{if .Finver}}
-									Finver: {{.Finver}}
-								{{end}}
-								{{if .Findate}}
-									<br>
-									Date: {{ToNormalTime .Findate}}
-								{{end}}
+						{{if eq .StatusV2 "done"}}
+							{{if .Finver}}
+								Finver: {{.Finver}}
 							{{end}}
-						{{else}}
-							{{if eq .StatusV2 "done"}}
-								{{if .Finver}}
-									Finver: {{.Finver}}
-								{{end}}
-								{{if .Findate}}
-									<br>
-									Date: {{ToNormalTime .Findate}}
-								{{end}}
+							{{if .Findate}}
+								<br>
+								Date: {{ToNormalTime .Findate}}
 							{{end}}
 						{{end}}
 					</div>
@@ -215,7 +199,7 @@
 						</div>
 					{{end}}
 					<div id="button-detail-{{.Name}}">
-						<a href="/detail?project={{.Project}}&id={{.ID}}&searchbartemplate={{$.SearchOption.SearchbarTemplate}}" class="badge badge-darkmode ml-1">D</a>
+						<a href="/detail?project={{.Project}}&id={{.ID}}" class="badge badge-darkmode ml-1">D</a>
 					</div>
 					<div id="button-dir-{{.Name}}">
 						{{if eq .Type "asset" -}}	
@@ -266,15 +250,9 @@
 					{{range mapToSlice .Tasks $.TasksettingOrderMap}}
 						<div class="row" id="{{$id}}-task-{{.Title}}">
 							<div id="{{$id}}-task-{{.Title}}-status">
-								{{if eq $.SearchOption.SearchbarTemplate "searchbarV1" }}
-									<span class="finger mt-1 badge badge-{{Status2string .Status}} statusbox{{CheckDate .Predate .Date .Mdate $.SearchOption.Searchword}}" data-toggle="tooltip" data-placement="left" title="{{Status2string .Status}}"
-									onclick="wfs('{{$.Setting.WFS}}', '{{.Title}}', '{{$type}}', '{{$assettype}}', '{{$.SearchOption.Project}}', '{{$name}}', '{{$seq}}', '{{$cut}}', '{{$.User.Token}}');"
-									>{{.Title}}</span>
-								{{else}}
-									<span class="finger mt-1 badge badge-{{.StatusV2}} statusbox{{CheckDate .Predate .Date .Mdate $.SearchOption.Searchword}}" data-toggle="tooltip" data-placement="left" title="{{.StatusV2}}"
-									onclick="wfs('{{$.Setting.WFS}}', '{{.Title}}', '{{$type}}', '{{$assettype}}', '{{$.SearchOption.Project}}', '{{$name}}', '{{$seq}}', '{{$cut}}', '{{$.User.Token}}');"
-									>{{.Title}}</span>
-								{{end}}
+								<span class="finger mt-1 badge badge-{{.StatusV2}} statusbox{{CheckDate .Predate .Date .Mdate $.SearchOption.Searchword}}" data-toggle="tooltip" data-placement="left" title="{{.StatusV2}}"
+								onclick="wfs('{{$.Setting.WFS}}', '{{.Title}}', '{{$type}}', '{{$assettype}}', '{{$.SearchOption.Project}}', '{{$name}}', '{{$seq}}', '{{$cut}}', '{{$.User.Token}}');"
+								>{{.Title}}</span>
 							</div>
 							<div id="{{$id}}-task-{{.Title}}-predate">
 								<span class="mt-1 ml-1 badge badge-{{CheckDdlinev2 .Predate}}" title="1차마감">{{ToShortTime .Predate}}</span>
@@ -297,7 +275,7 @@
 							</div>
 							<div id="{{$id}}-task-{{.Title}}-publish">
 								{{if .Publishes }}
-									<a href="/detail?project={{$project}}&id={{$id}}&searchbartemplate={{$.SearchOption.SearchbarTemplate}}#publish-{{.Title}}" class="ml-1 publish">Pub</a>
+									<a href="/detail?project={{$project}}&id={{$id}}&#publish-{{.Title}}" class="ml-1 publish">Pub</a>
 								{{end}}
 							</div>
 							{{if eq $.User.AccessLevel 3 4 5 6 7 8 9 10 11}}
@@ -329,16 +307,6 @@
 							<a href="/inputmode?project={{$.SearchOption.Project}}&
 							searchword=tag:{{.}}&
 							sortkey={{$.SearchOption.Sortkey}}&
-							assign={{$.SearchOption.Assign}}&
-							ready={{$.SearchOption.Ready}}&
-							wip={{$.SearchOption.Wip}}&
-							confirm={{$.SearchOption.Confirm}}&
-							done={{$.SearchOption.Done}}&
-							omit={{$.SearchOption.Omit}}&
-							hold={{$.SearchOption.Hold}}&
-							out={{$.SearchOption.Out}}&
-							none={{$.SearchOption.None}}&
-							searchbartemplate={{$.SearchOption.SearchbarTemplate}}&
 							truestatus={{Join $.SearchOption.TrueStatus "," }}&
 							task={{$.SearchOption.Task}}" class="badge badge-outline-darkmode">{{.}}</a>
 						</div>

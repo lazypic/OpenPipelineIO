@@ -110,11 +110,7 @@ document.onkeyup = function(e) {
     } else if (e.ctrlKey && e.altKey && e.shiftKey && e.which == 84) {
         scroll(0,0)
     } else if (e.ctrlKey && e.altKey && e.shiftKey && e.which == 77) {
-        if (document.getElementById("searchbox-searchbar-template").value == "searchbarV1") {
-            selectmode()
-        } else {
-            selectmodeV2()
-        }
+        selectmodeV2()
     } else if (e.ctrlKey && e.altKey && e.shiftKey && e.which == 69) {
         OpenEditfolder()
     } else if (e.which == 119) { // F8

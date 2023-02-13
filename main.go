@@ -46,7 +46,6 @@ var (
 	flagMailDNS    = flag.String("maildns", MAILDNS, "mail DNS name")
 
 	flagDebug          = flag.Bool("debug", false, "디버그모드 활성화")
-	flagDevmode        = flag.Bool("devmode", false, "dev mode")
 	flagHTTPPort       = flag.String("http", "", "Web Service Port number.")          // 웹서버 포트
 	flagCompany        = flag.String("company", COMPANY, "Web Service Port number.")  // 회사이름
 	flagVersion        = flag.Bool("version", false, "Print Version")                 // 버전
@@ -413,12 +412,6 @@ func main() {
 			op := SearchOption{
 				Project:    project,
 				Searchword: *flagDate,
-				Assign:     true,
-				Ready:      true,
-				Wip:        true,
-				Confirm:    true,
-				Done:       true,
-				Out:        true,
 				Sortkey:    "name",
 			}
 			items, err := Search(session, op)

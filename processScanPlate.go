@@ -134,7 +134,6 @@ func processingScanPlateImageItem(scan ScanPlate) {
 	item.UseType = scan.Type
 	item.Project = scan.Project
 	item.ID = scan.Name + "_" + scan.Type
-	item.Status = ASSIGN
 	item.StatusV2 = initStatusID
 	item.Scantime = time.Now().Format(time.RFC3339)
 	item.Updatetime = time.Now().Format(time.RFC3339)
@@ -242,7 +241,6 @@ func processingScanPlateImageItem(scan ScanPlate) {
 		}
 		t := Task{
 			Title:        task.Name,
-			Status:       ASSIGN, // legacy, 샷의 경우 합성팀을 무조건 거쳐야 한다. Assign상태로 만든다.
 			StatusV2:     initStatusID,
 			Pipelinestep: task.Pipelinestep, // 파이프라인 스텝을 설정한다.
 		}

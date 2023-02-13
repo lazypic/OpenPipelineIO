@@ -25,8 +25,7 @@ func handleAddPublishKey(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		SearchOption
 		Setting
 	}
@@ -37,7 +36,6 @@ func handleAddPublishKey(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -106,13 +104,11 @@ func handlePublishKey(w http.ResponseWriter, r *http.Request) {
 	defer session.Close()
 	type recipe struct {
 		User        User
-		Devmode     bool
 		PublishKeys []PublishKey
 		Setting
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	rcp.Devmode = *flagDevmode
 	rcp.PublishKeys, err = AllPublishKeys(session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -151,8 +147,7 @@ func handleRmPublishKey(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		SearchOption
 		Setting
 	}
@@ -163,7 +158,6 @@ func handleRmPublishKey(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -222,8 +216,7 @@ func handleEditPublishKey(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 	type recipe struct {
-		User    User
-		Devmode bool
+		User User
 		SearchOption
 		PublishKey
 		Setting Setting
@@ -235,7 +228,6 @@ func handleEditPublishKey(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

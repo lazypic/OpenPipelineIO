@@ -108,7 +108,6 @@ type Project struct {
 	DiContact                string        `json:"dicontact"`                // DI실 연락처
 	Sound                    string        `json:"sound"`                    // Sound실이름, 담당자
 	SoundContact             string        `json:"soundcontact"`             // Sound실 연락처
-	FlexibleStatus           bool          `json:"flexiblestatus"`           // 유연한 상태 처리
 	RocketChatChannel        string        `json:"rocketchatchannel"`        // 로켓쳇 채널
 	Budget                   float64       `json:"budget"`                   // 총예산
 	AnnounceIR               bool          `json:"announceir"`               // 프로젝트의 매출이 작년매출액 기준 10%를 넘으면 IR공시를 진행해야한다.
@@ -129,6 +128,5 @@ func NewProject(name string) *Project {
 		FxElement:                "explosion,destruction,smoke,dust",
 		HoudiniImportScale:       0.1,
 		ScreenxOverlay:           1.0,
-		FlexibleStatus:           true,
 	}
 }

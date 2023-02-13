@@ -356,84 +356,10 @@ func handleAPI1StatisticsShot(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := Recipe{}
 	rcp.Projects = make(map[string]Statusnum)
-	shotFilter := bson.A{bson.D{{"type", "org"}}, bson.D{{"type", "left"}}}
-	noneStatusFilter := bson.A{bson.D{{"status", NONE}}, bson.D{{"status", ""}}}
-	noneFilter := bson.D{{"$or", noneStatusFilter}, {"$or", shotFilter}}
-	holdFilter := bson.D{{"status", HOLD}, {"$or", shotFilter}}
-	doneFilter := bson.D{{"status", DONE}, {"$or", shotFilter}}
-	outFilter := bson.D{{"status", OUT}, {"$or", shotFilter}}
-	assignFilter := bson.D{{"status", ASSIGN}, {"$or", shotFilter}}
-	readyFilter := bson.D{{"status", READY}, {"$or", shotFilter}}
-	wipFilter := bson.D{{"status", WIP}, {"$or", shotFilter}}
-	confirmFilter := bson.D{{"status", CONFIRM}, {"$or", shotFilter}}
-	omitFilter := bson.D{{"status", OMIT}, {"$or", shotFilter}}
-	clientFilter := bson.D{{"status", CLIENT}, {"$or", shotFilter}}
 
 	for _, project := range projects {
-		collection := client.Database("project").Collection(project)
-		noneCount, err := collection.CountDocuments(ctx, noneFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		holdCount, err := collection.CountDocuments(ctx, holdFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		doneCount, err := collection.CountDocuments(ctx, doneFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		outCount, err := collection.CountDocuments(ctx, outFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		assignCount, err := collection.CountDocuments(ctx, assignFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		readyCount, err := collection.CountDocuments(ctx, readyFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		wipCount, err := collection.CountDocuments(ctx, wipFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		confirmCount, err := collection.CountDocuments(ctx, confirmFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		omitCount, err := collection.CountDocuments(ctx, omitFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		clientCount, err := collection.CountDocuments(ctx, clientFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		// 전체 누적하기
-		rcp.Total.None += noneCount
-		rcp.Total.Hold += holdCount
-		rcp.Total.Done += doneCount
-		rcp.Total.Out += outCount
-		rcp.Total.Assign += assignCount
-		rcp.Total.Ready += readyCount
-		rcp.Total.Wip += wipCount
-		rcp.Total.Confirm += confirmCount
-		rcp.Total.Omit += omitCount
-		rcp.Total.Client += clientCount
 		// 프로젝트별로 설정하기.
 		currentProjectNum := Statusnum{}
-		currentProjectNum.None += noneCount
-		currentProjectNum.Hold += holdCount
-		currentProjectNum.Done += doneCount
-		currentProjectNum.Out += outCount
-		currentProjectNum.Assign += assignCount
-		currentProjectNum.Ready += readyCount
-		currentProjectNum.Wip += wipCount
-		currentProjectNum.Confirm += confirmCount
-		currentProjectNum.Omit += omitCount
-		currentProjectNum.Client += clientCount
 		rcp.Projects[project] = currentProjectNum
 	}
 
@@ -477,7 +403,6 @@ func handleAPI1StatisticsTag(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	q := r.URL.Query()
 	project := q.Get("project")
-	tagName := q.Get("name")
 	typ := q.Get("type")
 	if typ == "" {
 		typ = "shot"
@@ -508,75 +433,6 @@ func handleAPI1StatisticsTag(w http.ResponseWriter, r *http.Request) {
 		Client  int64 `json:"client"`
 	}
 	rcp := Recipe{}
-	typeFilter := bson.A{bson.D{{"type", "org"}}, bson.D{{"type", "left"}}}
-	if typ == "asset" {
-		typeFilter = bson.A{bson.D{{"type", "asset"}}}
-	}
-	noneStatusFilter := bson.A{bson.D{{"status", NONE}}, bson.D{{"status", ""}}}
-	noneFilter := bson.D{{"$or", noneStatusFilter}, {"tag", tagName}, {"$or", typeFilter}}
-	holdFilter := bson.D{{"status", HOLD}, {"tag", tagName}, {"$or", typeFilter}}
-	doneFilter := bson.D{{"status", DONE}, {"tag", tagName}, {"$or", typeFilter}}
-	outFilter := bson.D{{"status", OUT}, {"tag", tagName}, {"$or", typeFilter}}
-	assignFilter := bson.D{{"status", ASSIGN}, {"tag", tagName}, {"$or", typeFilter}}
-	readyFilter := bson.D{{"status", READY}, {"tag", tagName}, {"$or", typeFilter}}
-	wipFilter := bson.D{{"status", WIP}, {"tag", tagName}, {"$or", typeFilter}}
-	confirmFilter := bson.D{{"status", CONFIRM}, {"tag", tagName}, {"$or", typeFilter}}
-	omitFilter := bson.D{{"status", OMIT}, {"tag", tagName}, {"$or", typeFilter}}
-	clientFilter := bson.D{{"status", CLIENT}, {"tag", tagName}, {"$or", typeFilter}}
-
-	for _, project := range projects {
-		collection := client.Database("project").Collection(project)
-		noneCount, err := collection.CountDocuments(ctx, noneFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		holdCount, err := collection.CountDocuments(ctx, holdFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		doneCount, err := collection.CountDocuments(ctx, doneFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		outCount, err := collection.CountDocuments(ctx, outFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		assignCount, err := collection.CountDocuments(ctx, assignFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		readyCount, err := collection.CountDocuments(ctx, readyFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		wipCount, err := collection.CountDocuments(ctx, wipFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		confirmCount, err := collection.CountDocuments(ctx, confirmFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		omitCount, err := collection.CountDocuments(ctx, omitFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		clientCount, err := collection.CountDocuments(ctx, clientFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		rcp.None += noneCount
-		rcp.Hold += holdCount
-		rcp.Done += doneCount
-		rcp.Out += outCount
-		rcp.Assign += assignCount
-		rcp.Ready += readyCount
-		rcp.Wip += wipCount
-		rcp.Confirm += confirmCount
-		rcp.Omit += omitCount
-		rcp.Client += clientCount
-	}
 
 	data, err := json.Marshal(rcp)
 	if err != nil {
@@ -618,7 +474,6 @@ func handleAPI1StatisticsUser(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	q := r.URL.Query()
 	project := q.Get("project")
-	name := q.Get("name")
 	task := q.Get("task")
 	if task == "" {
 		http.Error(w, "Need task name", http.StatusBadRequest)
@@ -643,97 +498,8 @@ func handleAPI1StatisticsUser(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	type Recipe struct {
-		None    int64 `json:"none"`
-		Hold    int64 `json:"hold"`
-		Done    int64 `json:"done"`
-		Out     int64 `json:"out"`
-		Assign  int64 `json:"assign"`
-		Ready   int64 `json:"ready"`
-		Wip     int64 `json:"wip"`
-		Confirm int64 `json:"confirm"`
-		Omit    int64 `json:"omit"`
-		Client  int64 `json:"client"`
 	}
 	rcp := Recipe{}
-	typeFilter := bson.A{bson.D{{"type", "org"}}, bson.D{{"type", "left"}}}
-	if typ == "asset" {
-		typeFilter = bson.A{bson.D{{"type", "asset"}}}
-	}
-	noneStatusFilter := bson.A{bson.D{{"status", NONE}}, bson.D{{"status", ""}}}
-	noneFilter := bson.D{{"$or", noneStatusFilter}, {"tasks." + task + ".user", primitive.Regex{Pattern: name, Options: "i"}}, {"$or", typeFilter}}
-	holdFilter := bson.D{{"status", HOLD}, {"tasks." + task + ".user", primitive.Regex{Pattern: name, Options: "i"}}, {"$or", typeFilter}}
-	doneFilter := bson.D{{"status", DONE}, {"tasks." + task + ".user", primitive.Regex{Pattern: name, Options: "i"}}, {"$or", typeFilter}}
-	outFilter := bson.D{{"status", OUT}, {"tasks." + task + ".user", primitive.Regex{Pattern: name, Options: "i"}}, {"$or", typeFilter}}
-	assignFilter := bson.D{{"status", ASSIGN}, {"tasks." + task + ".user", primitive.Regex{Pattern: name, Options: "i"}}, {"$or", typeFilter}}
-	readyFilter := bson.D{{"status", READY}, {"tasks." + task + ".user", primitive.Regex{Pattern: name, Options: "i"}}, {"$or", typeFilter}}
-	wipFilter := bson.D{{"status", WIP}, {"tasks." + task + ".user", primitive.Regex{Pattern: name, Options: "i"}}, {"$or", typeFilter}}
-	confirmFilter := bson.D{{"status", CONFIRM}, {"tasks." + task + ".user", primitive.Regex{Pattern: name, Options: "i"}}, {"$or", typeFilter}}
-	omitFilter := bson.D{{"status", OMIT}, {"tasks." + task + ".user", primitive.Regex{Pattern: name, Options: "i"}}, {"$or", typeFilter}}
-	clientFilter := bson.D{{"status", CLIENT}, {"tasks." + task + ".user", primitive.Regex{Pattern: name, Options: "i"}}, {"$or", typeFilter}}
-
-	for _, project := range projects {
-		collection := client.Database("project").Collection(project)
-		noneCount, err := collection.CountDocuments(ctx, noneFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		holdCount, err := collection.CountDocuments(ctx, holdFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		doneCount, err := collection.CountDocuments(ctx, doneFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		outCount, err := collection.CountDocuments(ctx, outFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		assignCount, err := collection.CountDocuments(ctx, assignFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		readyCount, err := collection.CountDocuments(ctx, readyFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		wipCount, err := collection.CountDocuments(ctx, wipFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		confirmCount, err := collection.CountDocuments(ctx, confirmFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		omitCount, err := collection.CountDocuments(ctx, omitFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		clientCount, err := collection.CountDocuments(ctx, clientFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		rcp.None += noneCount
-		rcp.Hold += holdCount
-		rcp.Done += doneCount
-		rcp.Out += outCount
-		rcp.Assign += assignCount
-		rcp.Ready += readyCount
-		rcp.Wip += wipCount
-		rcp.Confirm += confirmCount
-		rcp.Omit += omitCount
-		rcp.Client += clientCount
-	}
 
 	data, err := json.Marshal(rcp)
 	if err != nil {
@@ -775,7 +541,6 @@ func handleAPI1StatisticsTask(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	q := r.URL.Query()
 	project := q.Get("project")
-	task := q.Get("task")
 	typ := q.Get("type")
 	if typ == "" {
 		typ = "shot"
@@ -795,97 +560,8 @@ func handleAPI1StatisticsTask(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	type Recipe struct {
-		None    int64 `json:"none"`
-		Hold    int64 `json:"hold"`
-		Done    int64 `json:"done"`
-		Out     int64 `json:"out"`
-		Assign  int64 `json:"assign"`
-		Ready   int64 `json:"ready"`
-		Wip     int64 `json:"wip"`
-		Confirm int64 `json:"confirm"`
-		Omit    int64 `json:"omit"`
-		Client  int64 `json:"client"`
 	}
 	rcp := Recipe{}
-	typeFilter := bson.A{bson.D{{"type", "org"}}, bson.D{{"type", "left"}}}
-	if typ == "asset" {
-		typeFilter = bson.A{bson.D{{"type", "asset"}}}
-	}
-	noneStatusFilter := bson.A{bson.D{{"tasks." + task + ".status", NONE}}, bson.D{{"tasks." + task + ".status", ""}}}
-	noneFilter := bson.D{{"$or", noneStatusFilter}, {"$or", typeFilter}}
-	holdFilter := bson.D{{"tasks." + task + ".status", HOLD}, {"$or", typeFilter}}
-	doneFilter := bson.D{{"tasks." + task + ".status", DONE}, {"$or", typeFilter}}
-	outFilter := bson.D{{"tasks." + task + ".status", OUT}, {"$or", typeFilter}}
-	assignFilter := bson.D{{"tasks." + task + ".status", ASSIGN}, {"$or", typeFilter}}
-	readyFilter := bson.D{{"tasks." + task + ".status", READY}, {"$or", typeFilter}}
-	wipFilter := bson.D{{"tasks." + task + ".status", WIP}, {"$or", typeFilter}}
-	confirmFilter := bson.D{{"tasks." + task + ".status", CONFIRM}, {"$or", typeFilter}}
-	omitFilter := bson.D{{"tasks." + task + ".status", OMIT}, {"$or", typeFilter}}
-	clientFilter := bson.D{{"tasks." + task + ".status", CLIENT}, {"$or", typeFilter}}
-
-	for _, project := range projects {
-		collection := client.Database("project").Collection(project)
-		noneCount, err := collection.CountDocuments(ctx, noneFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		holdCount, err := collection.CountDocuments(ctx, holdFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		doneCount, err := collection.CountDocuments(ctx, doneFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		outCount, err := collection.CountDocuments(ctx, outFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		assignCount, err := collection.CountDocuments(ctx, assignFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		readyCount, err := collection.CountDocuments(ctx, readyFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		wipCount, err := collection.CountDocuments(ctx, wipFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		confirmCount, err := collection.CountDocuments(ctx, confirmFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		omitCount, err := collection.CountDocuments(ctx, omitFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		clientCount, err := collection.CountDocuments(ctx, clientFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		rcp.None += noneCount
-		rcp.Hold += holdCount
-		rcp.Done += doneCount
-		rcp.Out += outCount
-		rcp.Assign += assignCount
-		rcp.Ready += readyCount
-		rcp.Wip += wipCount
-		rcp.Confirm += confirmCount
-		rcp.Omit += omitCount
-		rcp.Client += clientCount
-	}
 
 	data, err := json.Marshal(rcp)
 	if err != nil {
@@ -928,8 +604,6 @@ func handleAPI1StatisticsPipelinestep(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	q := r.URL.Query()
 	project := q.Get("project")
-	task := q.Get("task")
-	pipelinestep := q.Get("pipelinestep")
 	typ := q.Get("type")
 	if typ == "" {
 		typ = "shot"
@@ -949,99 +623,8 @@ func handleAPI1StatisticsPipelinestep(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	type Recipe struct {
-		None    int64 `json:"none"`
-		Hold    int64 `json:"hold"`
-		Done    int64 `json:"done"`
-		Out     int64 `json:"out"`
-		Assign  int64 `json:"assign"`
-		Ready   int64 `json:"ready"`
-		Wip     int64 `json:"wip"`
-		Confirm int64 `json:"confirm"`
-		Omit    int64 `json:"omit"`
-		Client  int64 `json:"client"`
 	}
 	rcp := Recipe{}
-	typeFilter := bson.A{bson.D{{"type", "org"}}, bson.D{{"type", "left"}}}
-	if typ == "asset" {
-		typeFilter = bson.A{bson.D{{"type", "asset"}}}
-	}
-	// 파이프라인스탭에 등록된 이름을 가지고 온다.
-	// 해당 task 이름으로으로 array를 생성하고 등록한다.
-	noneStatusFilter := bson.A{bson.D{{"tasks." + task + ".status", NONE}}, bson.D{{"tasks." + task + ".status", ""}}}
-	noneFilter := bson.D{{"$or", noneStatusFilter}, {"tasks." + task + ".pipelinestep", pipelinestep}, {"$or", typeFilter}}
-	holdFilter := bson.D{{"tasks." + task + ".status", HOLD}, {"tasks." + task + ".pipelinestep", pipelinestep}, {"$or", typeFilter}}
-	doneFilter := bson.D{{"tasks." + task + ".status", DONE}, {"tasks." + task + ".pipelinestep", pipelinestep}, {"$or", typeFilter}}
-	outFilter := bson.D{{"tasks." + task + ".status", OUT}, {"tasks." + task + ".pipelinestep", pipelinestep}, {"$or", typeFilter}}
-	assignFilter := bson.D{{"tasks." + task + ".status", ASSIGN}, {"tasks." + task + ".pipelinestep", pipelinestep}, {"$or", typeFilter}}
-	readyFilter := bson.D{{"tasks." + task + ".status", READY}, {"tasks." + task + ".pipelinestep", pipelinestep}, {"$or", typeFilter}}
-	wipFilter := bson.D{{"tasks." + task + ".status", WIP}, {"tasks." + task + ".pipelinestep", pipelinestep}, {"$or", typeFilter}}
-	confirmFilter := bson.D{{"tasks." + task + ".status", CONFIRM}, {"tasks." + task + ".pipelinestep", pipelinestep}, {"$or", typeFilter}}
-	omitFilter := bson.D{{"tasks." + task + ".status", OMIT}, {"tasks." + task + ".pipelinestep", pipelinestep}, {"$or", typeFilter}}
-	clientFilter := bson.D{{"tasks." + task + ".status", CLIENT}, {"tasks." + task + ".pipelinestep", pipelinestep}, {"$or", typeFilter}}
-
-	for _, project := range projects {
-		collection := client.Database("project").Collection(project)
-		noneCount, err := collection.CountDocuments(ctx, noneFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		holdCount, err := collection.CountDocuments(ctx, holdFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		doneCount, err := collection.CountDocuments(ctx, doneFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		outCount, err := collection.CountDocuments(ctx, outFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		assignCount, err := collection.CountDocuments(ctx, assignFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		readyCount, err := collection.CountDocuments(ctx, readyFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		wipCount, err := collection.CountDocuments(ctx, wipFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		confirmCount, err := collection.CountDocuments(ctx, confirmFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		omitCount, err := collection.CountDocuments(ctx, omitFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		clientCount, err := collection.CountDocuments(ctx, clientFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		rcp.None += noneCount
-		rcp.Hold += holdCount
-		rcp.Done += doneCount
-		rcp.Out += outCount
-		rcp.Assign += assignCount
-		rcp.Ready += readyCount
-		rcp.Wip += wipCount
-		rcp.Confirm += confirmCount
-		rcp.Omit += omitCount
-		rcp.Client += clientCount
-	}
 
 	data, err := json.Marshal(rcp)
 	if err != nil {
@@ -1644,93 +1227,8 @@ func handleAPI1StatisticsAsset(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	type Recipe struct {
-		None    int64 `json:"none"`
-		Hold    int64 `json:"hold"`
-		Done    int64 `json:"done"`
-		Out     int64 `json:"out"`
-		Assign  int64 `json:"assign"`
-		Ready   int64 `json:"ready"`
-		Wip     int64 `json:"wip"`
-		Confirm int64 `json:"confirm"`
-		Omit    int64 `json:"omit"`
-		Client  int64 `json:"client"`
 	}
 	rcp := Recipe{}
-	noneStatusFilter := bson.A{bson.D{{"status", NONE}}, bson.D{{"status", ""}}}
-	noneFilter := bson.D{{"$or", noneStatusFilter}, {"type", "asset"}}
-	holdFilter := bson.D{{"status", HOLD}, {"type", "asset"}}
-	doneFilter := bson.D{{"status", DONE}, {"type", "asset"}}
-	outFilter := bson.D{{"status", OUT}, {"type", "asset"}}
-	assignFilter := bson.D{{"status", ASSIGN}, {"type", "asset"}}
-	readyFilter := bson.D{{"status", READY}, {"type", "asset"}}
-	wipFilter := bson.D{{"status", WIP}, {"type", "asset"}}
-	confirmFilter := bson.D{{"status", CONFIRM}, {"type", "asset"}}
-	omitFilter := bson.D{{"status", OMIT}, {"type", "asset"}}
-	clientFilter := bson.D{{"status", CLIENT}, {"type", "asset"}}
-
-	for _, project := range projects {
-		collection := client.Database("project").Collection(project)
-		noneCount, err := collection.CountDocuments(ctx, noneFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		holdCount, err := collection.CountDocuments(ctx, holdFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		doneCount, err := collection.CountDocuments(ctx, doneFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		outCount, err := collection.CountDocuments(ctx, outFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		assignCount, err := collection.CountDocuments(ctx, assignFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		readyCount, err := collection.CountDocuments(ctx, readyFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		wipCount, err := collection.CountDocuments(ctx, wipFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		confirmCount, err := collection.CountDocuments(ctx, confirmFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		omitCount, err := collection.CountDocuments(ctx, omitFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		clientCount, err := collection.CountDocuments(ctx, clientFilter)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		rcp.None += noneCount
-		rcp.Hold += holdCount
-		rcp.Done += doneCount
-		rcp.Out += outCount
-		rcp.Assign += assignCount
-		rcp.Ready += readyCount
-		rcp.Wip += wipCount
-		rcp.Confirm += confirmCount
-		rcp.Omit += omitCount
-		rcp.Client += clientCount
-	}
 
 	data, err := json.Marshal(rcp)
 	if err != nil {

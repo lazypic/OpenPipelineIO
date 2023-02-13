@@ -35,13 +35,11 @@ func handleImportExcel(w http.ResponseWriter, r *http.Request) {
 	type recipe struct {
 		User
 		SessionID   string
-		Devmode     bool
 		Projectlist []string
 		Setting     Setting
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	rcp.Devmode = *flagDevmode
 	rcp.SessionID = ssid.ID
 	session, err := mgo.Dial(*flagDBIP)
 	if err != nil {
@@ -106,13 +104,11 @@ func handleImportJSON(w http.ResponseWriter, r *http.Request) {
 	type recipe struct {
 		User
 		SessionID   string
-		Devmode     bool
 		Projectlist []string
 		Setting     Setting
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	rcp.Devmode = *flagDevmode
 	rcp.SessionID = ssid.ID
 	session, err := mgo.Dial(*flagDBIP)
 	if err != nil {
@@ -319,7 +315,6 @@ func handleReportExcel(w http.ResponseWriter, r *http.Request) {
 		Rows      []Excelrow
 		User
 		SessionID string
-		Devmode   bool
 		SearchOption
 		Errornum    int
 		Projectlist []string
@@ -330,7 +325,6 @@ func handleReportExcel(w http.ResponseWriter, r *http.Request) {
 	rcp.Sheet = "Sheet1"
 
 	rcp.SessionID = ssid.ID
-	rcp.Devmode = *flagDevmode
 	rcp.SearchOption = handleRequestToSearchOption(r)
 	rcp.User, err = getUser(session, ssid.ID)
 	if err != nil {
@@ -522,7 +516,6 @@ func handleReportJSON(w http.ResponseWriter, r *http.Request) {
 		Rows      []Item
 		User
 		SessionID string
-		Devmode   bool
 		SearchOption
 		Projectlist []string
 		Setting     Setting
@@ -531,7 +524,6 @@ func handleReportJSON(w http.ResponseWriter, r *http.Request) {
 	rcp.Setting = CachedAdminSetting
 	rcp.Project = project
 	rcp.SessionID = ssid.ID
-	rcp.Devmode = *flagDevmode
 	rcp.SearchOption = handleRequestToSearchOption(r)
 	rcp.User, err = getUser(session, ssid.ID)
 	if err != nil {
@@ -640,7 +632,6 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 		Sheet    string
 		User
 		SessionID string
-		Devmode   bool
 		SearchOption
 		ErrorItems []ErrorItem
 		Setting    Setting
@@ -648,7 +639,6 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
 	rcp.SessionID = ssid.ID
-	rcp.Devmode = *flagDevmode
 	rcp.SearchOption = handleRequestToSearchOption(r)
 	rcp.User, err = getUser(session, ssid.ID)
 	if err != nil {
@@ -1044,14 +1034,12 @@ func handleJSONSubmit(w http.ResponseWriter, r *http.Request) {
 		Filename string
 		User
 		SessionID string
-		Devmode   bool
 		SearchOption
 		Setting Setting
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
 	rcp.SessionID = ssid.ID
-	rcp.Devmode = *flagDevmode
 	rcp.SearchOption = handleRequestToSearchOption(r)
 	rcp.User, err = getUser(session, ssid.ID)
 	if err != nil {
@@ -1114,12 +1102,10 @@ func handleExportExcel(w http.ResponseWriter, r *http.Request) {
 		User
 		Projectlist []string
 		SessionID   string
-		Devmode     bool
 		Setting     Setting
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	rcp.Devmode = *flagDevmode
 	rcp.SessionID = ssid.ID
 	session, err := mgo.Dial(*flagDBIP)
 	if err != nil {
@@ -1175,12 +1161,10 @@ func handleExportJSON(w http.ResponseWriter, r *http.Request) {
 		User
 		Projectlist []string
 		SessionID   string
-		Devmode     bool
 		Setting     Setting
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	rcp.Devmode = *flagDevmode
 	rcp.SessionID = ssid.ID
 	session, err := mgo.Dial(*flagDBIP)
 	if err != nil {
@@ -1245,7 +1229,6 @@ func handleExportExcelSubmit(w http.ResponseWriter, r *http.Request) {
 	format := r.FormValue("format")
 	sortkey := r.FormValue("sortkey")
 	task := r.FormValue("task")
-	statusv2 := str2bool(r.FormValue("statusv2"))
 
 	var searchItems []Item
 	switch format {
@@ -1410,43 +1393,23 @@ func handleExportExcelSubmit(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		// 기존에 Static한 상태의 컬러를 사용한다. // legacy
+
 		statusStyle, err := f.NewStyle(
 			fmt.Sprintf(`{
 				"alignment":{"horizontal":"center","vertical":"center"},
+				"font":{"color":"%s"},
 				"fill":{"type":"pattern","color":["%s"],"pattern":1},
 				"border":[
 					{"type":"left","color":"888888","style":1},
 					{"type":"top","color":"888888","style":1},
 					{"type":"bottom","color":"888888","style":1},
 					{"type":"right","color":"888888","style":1}]
-				}`, bgcolor[i.Status]))
+				}`, textcolor[i.StatusV2], bgcolor[i.StatusV2]))
 		if err != nil {
 			log.Println(err)
 		}
-		// 다이나나믹 Status가 설정되어 있다면 해당 컬러를 사용한다.
-		if statusv2 {
-			statusStyle, err = f.NewStyle(
-				fmt.Sprintf(`{
-					"alignment":{"horizontal":"center","vertical":"center"},
-					"font":{"color":"%s"},
-					"fill":{"type":"pattern","color":["%s"],"pattern":1},
-					"border":[
-						{"type":"left","color":"888888","style":1},
-						{"type":"top","color":"888888","style":1},
-						{"type":"bottom","color":"888888","style":1},
-						{"type":"right","color":"888888","style":1}]
-					}`, textcolor[i.StatusV2], bgcolor[i.StatusV2]))
-			if err != nil {
-				log.Println(err)
-			}
-		}
-		if statusv2 {
-			f.SetCellValue(sheet, pos, i.StatusV2)
-		} else {
-			f.SetCellValue(sheet, pos, Status2capString(i.Status)) // legacy
-		}
 
+		f.SetCellValue(sheet, pos, i.StatusV2)
 		f.SetCellStyle(sheet, pos, pos, statusStyle)
 		// 작업내용
 		pos, err = excelize.CoordinatesToCellName(8, n+2)
@@ -1525,43 +1488,25 @@ func handleExportExcelSubmit(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Println(err)
 			}
-			// 기존 Static Status 일 때. // legacy
+
 			statusStyle, err = f.NewStyle(
 				fmt.Sprintf(`{
 					"alignment":{"horizontal":"center","vertical":"center","wrap_text":true},
+					"font":{"color":"%s"},
 					"fill":{"type":"pattern","color":["%s"],"pattern":1},
 					"border":[
 						{"type":"left","color":"888888","style":1},
 						{"type":"top","color":"888888","style":1},
 						{"type":"bottom","color":"888888","style":1},
 						{"type":"right","color":"888888","style":1}]
-					}`, bgcolor[i.Tasks[t].Status]))
+					}`, textcolor[i.Tasks[t].StatusV2], bgcolor[i.Tasks[t].StatusV2]))
 			if err != nil {
 				log.Println(err)
 			}
-			// 만약 다이나믹 Status 일 때는 해당 컬러를 사용한다.
-			if statusv2 {
-				statusStyle, err = f.NewStyle(
-					fmt.Sprintf(`{
-						"alignment":{"horizontal":"center","vertical":"center","wrap_text":true},
-						"font":{"color":"%s"},
-						"fill":{"type":"pattern","color":["%s"],"pattern":1},
-						"border":[
-							{"type":"left","color":"888888","style":1},
-							{"type":"top","color":"888888","style":1},
-							{"type":"bottom","color":"888888","style":1},
-							{"type":"right","color":"888888","style":1}]
-						}`, textcolor[i.Tasks[t].StatusV2], bgcolor[i.Tasks[t].StatusV2]))
-				if err != nil {
-					log.Println(err)
-				}
-			}
+
 			var text string
-			if statusv2 {
-				text = i.Tasks[t].StatusV2
-			} else {
-				text = Status2capString(i.Tasks[t].Status) // legacy
-			}
+			text = i.Tasks[t].StatusV2
+
 			text += "\n" + i.Tasks[t].User
 			text += "\n" + ToNormalTime(i.Tasks[t].Predate)
 			text += "\n" + ToNormalTime(i.Tasks[t].Date)
@@ -1702,16 +1647,6 @@ func handleDownloadExcelFile(w http.ResponseWriter, r *http.Request) {
 	}
 	op.Searchword = searchword
 	op.Sortkey = q.Get("sortkey")
-	op.SearchbarTemplate = q.Get("searchbartemplate") // legacy
-	op.Assign = str2bool(q.Get("assign"))             // legacy
-	op.Ready = str2bool(q.Get("ready"))               // legacy
-	op.Wip = str2bool(q.Get("wip"))                   // legacy
-	op.Confirm = str2bool(q.Get("confirm"))           // legacy
-	op.Done = str2bool(q.Get("done"))                 // legacy
-	op.Omit = str2bool(q.Get("omit"))                 // legacy
-	op.Hold = str2bool(q.Get("hold"))                 // legacy
-	op.Out = str2bool(q.Get("out"))                   // legacy
-	op.None = str2bool(q.Get("none"))                 // legacy
 	op.TrueStatus = strings.Split(q.Get("truestatus"), ",")
 	op.Shot = true
 	op.Assets = true
@@ -1721,10 +1656,6 @@ func handleDownloadExcelFile(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-	}
-	statusv2 := false
-	if op.SearchbarTemplate == "searchbarV2" {
-		statusv2 = true
 	}
 
 	// status에 필요한 컬러를 불러온다.
@@ -1857,43 +1788,23 @@ func handleDownloadExcelFile(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		// 기존에 Static한 상태의 컬러를 사용한다. // legacy
+
 		statusStyle, err := f.NewStyle(
 			fmt.Sprintf(`{
 					"alignment":{"horizontal":"center","vertical":"center"},
+					"font":{"color":"%s"},
 					"fill":{"type":"pattern","color":["%s"],"pattern":1},
 					"border":[
 						{"type":"left","color":"888888","style":1},
 						{"type":"top","color":"888888","style":1},
 						{"type":"bottom","color":"888888","style":1},
 						{"type":"right","color":"888888","style":1}]
-					}`, bgcolor[i.Status]))
+					}`, textcolor[i.StatusV2], bgcolor[i.StatusV2]))
 		if err != nil {
 			log.Println(err)
 		}
-		// 다이나나믹 Status가 설정되어 있다면 해당 컬러를 사용한다.
-		if statusv2 {
-			statusStyle, err = f.NewStyle(
-				fmt.Sprintf(`{
-						"alignment":{"horizontal":"center","vertical":"center"},
-						"font":{"color":"%s"},
-						"fill":{"type":"pattern","color":["%s"],"pattern":1},
-						"border":[
-							{"type":"left","color":"888888","style":1},
-							{"type":"top","color":"888888","style":1},
-							{"type":"bottom","color":"888888","style":1},
-							{"type":"right","color":"888888","style":1}]
-						}`, textcolor[i.StatusV2], bgcolor[i.StatusV2]))
-			if err != nil {
-				log.Println(err)
-			}
-		}
-		if statusv2 {
-			f.SetCellValue(sheet, pos, i.StatusV2)
-		} else {
-			f.SetCellValue(sheet, pos, Status2capString(i.Status)) // legacy
-		}
 
+		f.SetCellValue(sheet, pos, i.StatusV2)
 		f.SetCellStyle(sheet, pos, pos, statusStyle)
 		// 작업내용
 		pos, err = excelize.CoordinatesToCellName(8, n+2)
@@ -1972,43 +1883,28 @@ func handleDownloadExcelFile(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Println(err)
 			}
-			// 기존 Static Status 일 때. // legacy
+
+			// 만약 다이나믹 Status 일 때는 해당 컬러를 사용한다.
+
 			statusStyle, err = f.NewStyle(
 				fmt.Sprintf(`{
 						"alignment":{"horizontal":"center","vertical":"center","wrap_text":true},
+						"font":{"color":"%s"},
 						"fill":{"type":"pattern","color":["%s"],"pattern":1},
 						"border":[
 							{"type":"left","color":"888888","style":1},
 							{"type":"top","color":"888888","style":1},
 							{"type":"bottom","color":"888888","style":1},
 							{"type":"right","color":"888888","style":1}]
-						}`, bgcolor[i.Tasks[t].Status]))
+						}`, textcolor[i.Tasks[t].StatusV2], bgcolor[i.Tasks[t].StatusV2]))
 			if err != nil {
 				log.Println(err)
 			}
-			// 만약 다이나믹 Status 일 때는 해당 컬러를 사용한다.
-			if statusv2 {
-				statusStyle, err = f.NewStyle(
-					fmt.Sprintf(`{
-							"alignment":{"horizontal":"center","vertical":"center","wrap_text":true},
-							"font":{"color":"%s"},
-							"fill":{"type":"pattern","color":["%s"],"pattern":1},
-							"border":[
-								{"type":"left","color":"888888","style":1},
-								{"type":"top","color":"888888","style":1},
-								{"type":"bottom","color":"888888","style":1},
-								{"type":"right","color":"888888","style":1}]
-							}`, textcolor[i.Tasks[t].StatusV2], bgcolor[i.Tasks[t].StatusV2]))
-				if err != nil {
-					log.Println(err)
-				}
-			}
+
 			var text string
-			if statusv2 {
-				text = i.Tasks[t].StatusV2
-			} else {
-				text = Status2capString(i.Tasks[t].Status) // legacy
-			}
+
+			text = i.Tasks[t].StatusV2
+
 			text += "\n" + i.Tasks[t].User
 			text += "\n" + ToNormalTime(i.Tasks[t].Predate)
 			text += "\n" + ToNormalTime(i.Tasks[t].Date)
@@ -2068,16 +1964,6 @@ func handleDownloadJSONFile(w http.ResponseWriter, r *http.Request) {
 	}
 	op.Searchword = searchword
 	op.Sortkey = q.Get("sortkey")
-	op.SearchbarTemplate = q.Get("searchbartemplate") // legacy
-	op.Assign = str2bool(q.Get("assign"))             // legacy
-	op.Ready = str2bool(q.Get("ready"))               // legacy
-	op.Wip = str2bool(q.Get("wip"))                   // legacy
-	op.Confirm = str2bool(q.Get("confirm"))           // legacy
-	op.Done = str2bool(q.Get("done"))                 // legacy
-	op.Omit = str2bool(q.Get("omit"))                 // legacy
-	op.Hold = str2bool(q.Get("hold"))                 // legacy
-	op.Out = str2bool(q.Get("out"))                   // legacy
-	op.None = str2bool(q.Get("none"))                 // legacy
 	op.TrueStatus = strings.Split(q.Get("truestatus"), ",")
 	op.Shot = true
 	op.Assets = true
@@ -2147,16 +2033,6 @@ func handleDownloadCsvFile(w http.ResponseWriter, r *http.Request) {
 	}
 	op.Searchword = searchword
 	op.Sortkey = q.Get("sortkey")
-	op.SearchbarTemplate = q.Get("searchbartemplate") // legacy
-	op.Assign = str2bool(q.Get("assign"))             // legacy
-	op.Ready = str2bool(q.Get("ready"))               // legacy
-	op.Wip = str2bool(q.Get("wip"))                   // legacy
-	op.Confirm = str2bool(q.Get("confirm"))           // legacy
-	op.Done = str2bool(q.Get("done"))                 // legacy
-	op.Omit = str2bool(q.Get("omit"))                 // legacy
-	op.Hold = str2bool(q.Get("hold"))                 // legacy
-	op.Out = str2bool(q.Get("out"))                   // legacy
-	op.None = str2bool(q.Get("none"))                 // legacy
 	op.TrueStatus = strings.Split(q.Get("truestatus"), ",")
 	op.Shot = true
 	op.Assets = true

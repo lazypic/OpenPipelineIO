@@ -37,65 +37,15 @@ func handleSearchSubmit(w http.ResponseWriter, r *http.Request) {
 	project := r.FormValue("Project")
 	searchword := r.FormValue("Searchword")
 	sortkey := r.FormValue("Sortkey")
-	assign := str2bool(r.FormValue("Assign"))   // legacy
-	ready := str2bool(r.FormValue("Ready"))     // legacy
-	wip := str2bool(r.FormValue("Wip"))         // legacy
-	confirm := str2bool(r.FormValue("Confirm")) // legacy
-	done := str2bool(r.FormValue("Done"))       // legacy
-	omit := str2bool(r.FormValue("Omit"))       // legacy
-	hold := str2bool(r.FormValue("Hold"))       // legacy
-	out := str2bool(r.FormValue("Out"))         // legacy
-	none := str2bool(r.FormValue("None"))       // legacy
-	searchbarTemplate := r.FormValue("SearchbarTemplate")
 	task := r.FormValue("Task")
 	truestatus := r.FormValue("truestatus")
 	// 아래 코드는 임시로 사용한다.
-	if truestatus == "" {
-		var statuslist []string
-		if assign {
-			statuslist = append(statuslist, "assign")
-		}
-		if ready {
-			statuslist = append(statuslist, "ready")
-		}
-		if wip {
-			statuslist = append(statuslist, "wip")
-		}
-		if confirm {
-			statuslist = append(statuslist, "confirm")
-		}
-		if done {
-			statuslist = append(statuslist, "done")
-		}
-		if omit {
-			statuslist = append(statuslist, "omit")
-		}
-		if out {
-			statuslist = append(statuslist, "out")
-		}
-		if hold {
-			statuslist = append(statuslist, "hold")
-		}
-		if none {
-			statuslist = append(statuslist, "none")
-		}
-		truestatus = strings.Join(statuslist, ",")
-	}
-	redirectURL := fmt.Sprintf(`/inputmode?project=%s&searchword=%s&sortkey=%s&assign=%t&ready=%t&wip=%t&confirm=%t&done=%t&omit=%t&hold=%t&out=%t&none=%t&task=%s&searchbartemplate=%s&truestatus=%s`,
+
+	redirectURL := fmt.Sprintf(`/inputmode?project=%s&searchword=%s&sortkey=%s&task=%s&truestatus=%s`,
 		project,
 		searchword,
 		sortkey,
-		assign,
-		ready,
-		wip,
-		confirm,
-		done,
-		omit,
-		hold,
-		out,
-		none,
 		task,
-		searchbarTemplate,
 		truestatus,
 	)
 	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
@@ -119,7 +69,6 @@ func handleSearchSubmitV2(w http.ResponseWriter, r *http.Request) {
 	project := r.FormValue("Project")
 	searchword := r.FormValue("Searchword")
 	sortkey := r.FormValue("Sortkey")
-	searchbarTemplate := r.FormValue("SearchbarTemplate")
 	task := r.FormValue("Task")
 	// status를 체크할 때 마다 truestatus form에 값이 추가되어야 한다.
 	session, err := mgo.Dial(*flagDBIP)
@@ -139,12 +88,11 @@ func handleSearchSubmitV2(w http.ResponseWriter, r *http.Request) {
 			truestatus = append(truestatus, status.ID)
 		}
 	}
-	redirectURL := fmt.Sprintf(`/inputmode?project=%s&searchword=%s&sortkey=%s&task=%s&searchbartemplate=%s&truestatus=%s`,
+	redirectURL := fmt.Sprintf(`/inputmode?project=%s&searchword=%s&sortkey=%s&task=%s&truestatus=%s`,
 		project,
 		searchword,
 		sortkey,
 		task,
-		searchbarTemplate,
 		strings.Join(truestatus, ","),
 	)
 	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
@@ -168,7 +116,6 @@ func handleItemDetail(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	project := q.Get("project")
 	id := q.Get("id")
-	searchbarTemplate := q.Get("searchbartemplate")
 	session, err := mgo.Dial(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -178,7 +125,6 @@ func handleItemDetail(w http.ResponseWriter, r *http.Request) {
 	type recipe struct {
 		User        User
 		Projectlist []string
-		Devmode     bool
 		Projectinfo Project
 		SearchOption
 		Item                Item
@@ -196,7 +142,6 @@ func handleItemDetail(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -215,7 +160,6 @@ func handleItemDetail(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	rcp.SearchOption.SearchbarTemplate = searchbarTemplate
 	tasks, err := AllTaskSettings(session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -280,14 +224,12 @@ func handleEditItem(w http.ResponseWriter, r *http.Request) {
 		ID      string
 		Project Project
 		Item    Item
-		Devmode bool
 		User
 		SearchOption
 		Setting Setting
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	rcp.Devmode = *flagDevmode
 	rcp.User, err = getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -360,14 +302,6 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// 아무 상태도 선택되어있지 않다면 기본 상태설정으로 변경한다. // legacy
-	if rcp.SearchOption.isStatusOff() {
-		err := rcp.SearchOption.setStatusDefaultV1()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-	}
 
 	// 아무 상태도 선택되어있지 않다면 기본 상태설정으로 변경한다. // V2
 	if len(rcp.SearchOption.TrueStatus) == 0 {
@@ -378,17 +312,6 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// 만약 SearchbarTempate 값이 설정되어 있다면 해당 SearchbarTemplate으로 변경한다.
-	rcp.SearchOption.SearchbarTemplate = "searchbarV1" // legacy
-	// 개발 모드로 프로그램을 실행하면 항상 검색바 searchbarV2로 실행한다.
-	if *flagDevmode {
-		rcp.SearchOption.SearchbarTemplate = "searchbarV2"
-	}
-	q := r.URL.Query()
-	searchbarTemplate := q.Get("searchbartemplate")
-	if searchbarTemplate != "" {
-		rcp.SearchOption.SearchbarTemplate = searchbarTemplate
-	}
 	// 혹시나 프로젝트가 삭제되면 프로젝트가 존재하지 않을 수 있다. DB에 프로젝트가 존재하는지 체크한다.
 	plist, err := Projectlist(session)
 	if err != nil {
@@ -415,19 +338,9 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 리다이렉션 한다.
-	url := fmt.Sprintf("/inputmode?project=%s&sortkey=%s&template=index&searchbartemplate=%s&endpoint=searchv2&assign=%t&ready=%t&wip=%t&confirm=%t&done=%t&omit=%t&hold=%t&out=%t&none=%t&task=%s&searchword=%s&truestatus=%s&page=%d",
+	url := fmt.Sprintf("/inputmode?project=%s&sortkey=%s&template=index&task=%s&searchword=%s&truestatus=%s&page=%d",
 		rcp.SearchOption.Project,
 		rcp.SearchOption.Sortkey,
-		rcp.SearchOption.SearchbarTemplate,
-		rcp.SearchOption.Assign,  // legacy
-		rcp.SearchOption.Ready,   // legacy
-		rcp.SearchOption.Wip,     // legacy
-		rcp.SearchOption.Confirm, // legacy
-		rcp.SearchOption.Done,    // legacy
-		rcp.SearchOption.Omit,    // legacy
-		rcp.SearchOption.Hold,    // legacy
-		rcp.SearchOption.Out,     // legacy
-		rcp.SearchOption.None,    // legacy
 		rcp.SearchOption.Task,
 		rcp.SearchOption.Searchword,
 		strings.Join(rcp.SearchOption.TrueStatus, ","),
@@ -458,7 +371,6 @@ func handleAddShot(w http.ResponseWriter, r *http.Request) {
 	type recipe struct {
 		User        User
 		Projectlist []string
-		Devmode     bool
 		SearchOption
 		Setting
 	}
@@ -469,7 +381,6 @@ func handleAddShot(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -622,7 +533,6 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 		i.Scantime = now
 		i.Updatetime = now
 		if i.Type == "org" || i.Type == "left" {
-			i.Status = ASSIGN // legacy
 			i.StatusV2 = initStatus
 			if setRendersize {
 				width := int(float64(pinfo.PlateWidth) * admin.DefaultScaleRatioOfUndistortionPlate)
@@ -633,7 +543,6 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 				i.Rendersize = fmt.Sprintf("%dx%d", width, height)
 			}
 		} else {
-			i.Status = NONE // legacy
 			i.StatusV2 = "none"
 		}
 		if genTask {
@@ -649,7 +558,6 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 					}
 					t := Task{
 						Title:        task.Name,
-						Status:       ASSIGN, // legacy
 						StatusV2:     initStatus,
 						Pipelinestep: task.Pipelinestep, // 파이프라인 스텝을 설정한다.
 					}
@@ -721,7 +629,6 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 		Success []Shot
 		Fails   []Shot
 		User    User
-		Devmode bool
 		SearchOption
 		TrueStatus []string
 		Setting
@@ -733,7 +640,6 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	rcp.Success = success
 	rcp.Fails = fails
 	u, err := getUser(session, ssid.ID)
@@ -782,7 +688,6 @@ func handleAddAsset(w http.ResponseWriter, r *http.Request) {
 	type recipe struct {
 		User        User
 		Projectlist []string
-		Devmode     bool
 		SearchOption
 		Setting
 	}
@@ -793,7 +698,6 @@ func handleAddAsset(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	u, err := getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -875,7 +779,6 @@ func handleAddAssetSubmit(w http.ResponseWriter, r *http.Request) {
 		i.Type = "asset"
 		i.Project = project
 		i.ID = i.Name + "_" + i.Type
-		i.Status = ASSIGN
 		i.StatusV2 = initStatusID
 		i.Updatetime = time.Now().Format(time.RFC3339)
 		i.Assettype = assettype
@@ -894,7 +797,6 @@ func handleAddAssetSubmit(w http.ResponseWriter, r *http.Request) {
 				}
 				t := Task{
 					Title:        task.Name,
-					Status:       ASSIGN, // legacy
 					StatusV2:     initStatusID,
 					Pipelinestep: task.Pipelinestep, // 파이프라인 스텝을 설정한다.
 				}
@@ -955,7 +857,6 @@ func handleAddAssetSubmit(w http.ResponseWriter, r *http.Request) {
 		Success []Asset
 		Fails   []Asset
 		User    User
-		Devmode bool
 		SearchOption
 		TrueStatus []string
 		Setting
@@ -967,7 +868,6 @@ func handleAddAssetSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Devmode = *flagDevmode
 	rcp.Success = success
 	rcp.Fails = fails
 	u, err := getUser(session, ssid.ID)
