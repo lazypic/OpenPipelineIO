@@ -4281,12 +4281,7 @@ func handleAPISetTaskDate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.Task = task
-	date := r.FormValue("date")
-	if date == "" {
-		http.Error(w, "need date", http.StatusBadRequest)
-		return
-	}
-	rcp.Date = date
+	rcp.Date = r.FormValue("date")
 
 	err = HasTask(session, rcp.Project, rcp.ID, rcp.Task)
 	if err != nil {
