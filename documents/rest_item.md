@@ -104,11 +104,11 @@ restAPI의 장점은 웹서비스의 URI를 이용하기 때문에 네트워크�
 | /api/setepisode | episode를 설정한다. | project, id, episode | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&id=SS_0010_org&episode=E01" https://openpipeline.io/api/setepisode`|
 | /api/setnetflixid | netflixid를 설정한다. | project, id, netflixid | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&id=SS_0010_org&netflixid=123456" https://openpipeline.io/api/setnetflixid`|
 | /api/uploadthumbnail | 썸네일 업로드 | project, name, (type) | `$ curl -X POST -H "Authorization: Basic <Token>" -F project=TEMP -F name=SS_0010 -F "image=@/path/thumbnail.png" "https://openpipeline.io/api/uploadthumbnail"`|
-| /api/item | 샷 추가 | json | `$ curl -X POST -H "Authorization: Basic <Token>" -d '{"project":"TEMP","id":"SS_0010_org","name":"SS_0010","type":"org","status":"4","statusv2":"assign","tasks":{"mm":{"title":"mm","status":"4","statusv2":"assign"}}}' "https://openpipeline.io/api/item"`|
-
+| /api/item | 샷 추가 | json | `$ curl -X POST -H "Authorization: Basic <Token>" -d '{"project":"TEMP","id":"SS_0010_org","name":"SS_0010","type":"org","statusv2":"assign","tasks":{"mm":{"title":"mm","statusv2":"assign"}}}' "https://openpipeline.io/api/item"`|
 
 
 #### URL Encode
+
 `/path/test.%04d.exr` 형태의 데이터를 보내고 싶다면 url-encode를 처리해야합니다.
 `%` 문자는 `%25` 값에 해당한다. 일일이 변환할 수 없기 때문에 curl에서는 --data-urlencode 명령어를 사용하면 됩니다.
 
