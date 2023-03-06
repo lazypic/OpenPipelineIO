@@ -209,8 +209,6 @@ func handleAdminSettingSubmit(w http.ResponseWriter, r *http.Request) {
 	s.NetflixVendorID = r.FormValue("NetflixVendorID")
 	s.ZimbraWebmailEndpoint = r.FormValue("ZimbraWebmailEndpoint")
 	s.MongodumpPath = r.FormValue("MongodumpPath")
-	s.ReviewStageMode = str2bool(r.FormValue("ReviewStageMode"))
-	s.ReviewStatusMode = str2bool(r.FormValue("ReviewStatusMode"))
 	s.RocketChatWebHookURL = r.FormValue("RocketChatWebHookURL")
 	s.RocketChatToken = r.FormValue("RocketChatToken")
 	s.EnableRocketChat = str2bool(r.FormValue("EnableRocketChat"))

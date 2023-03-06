@@ -283,16 +283,14 @@ func handleEditStatusSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s := Status{
-		ID:                r.FormValue("id"),
-		Description:       r.FormValue("description"),
-		TextColor:         "#" + r.FormValue("textcolor"),
-		BGColor:           "#" + r.FormValue("bgcolor"),
-		BorderColor:       "#" + r.FormValue("bordercolor"),
-		Order:             order,
-		DefaultOn:         str2bool(r.FormValue("defaulton")),
-		InitStatus:        str2bool(r.FormValue("initstatus")),
-		ReviewStatusEvent: r.FormValue("reviewstatusevent"),
-		ProgressCategory:  r.FormValue("progresscategory"),
+		ID:          r.FormValue("id"),
+		Description: r.FormValue("description"),
+		TextColor:   "#" + r.FormValue("textcolor"),
+		BGColor:     "#" + r.FormValue("bgcolor"),
+		BorderColor: "#" + r.FormValue("bordercolor"),
+		Order:       order,
+		DefaultOn:   str2bool(r.FormValue("defaulton")),
+		InitStatus:  str2bool(r.FormValue("initstatus")),
 	}
 	err = s.CheckError()
 	if err != nil {

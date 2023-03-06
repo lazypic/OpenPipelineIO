@@ -46,7 +46,6 @@ func handleStatistics(w http.ResponseWriter, r *http.Request) {
 		Partners         []Partner
 		Projectlist      []string
 		TasksettingNames []string
-		Stages           []Stage
 		Status           []Status
 	}
 	rcp := recipe{}
@@ -61,11 +60,6 @@ func handleStatistics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.Status, err = AllStatusV2(client)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	rcp.Stages, err = AllStagesV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -124,7 +118,6 @@ func handleStatisticsStatusPerProject(w http.ResponseWriter, r *http.Request) {
 		Partners         []Partner
 		Projectlist      []string
 		TasksettingNames []string
-		Stages           []Stage
 		Status           []Status
 	}
 	rcp := recipe{}
@@ -139,11 +132,6 @@ func handleStatisticsStatusPerProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.Status, err = AllStatusV2(client)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	rcp.Stages, err = AllStagesV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -202,7 +190,6 @@ func handleStatisticsUser(w http.ResponseWriter, r *http.Request) {
 		Partners         []Partner
 		Projectlist      []string
 		TasksettingNames []string
-		Stages           []Stage
 		Status           []Status
 	}
 	rcp := recipe{}
@@ -217,11 +204,6 @@ func handleStatisticsUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.Status, err = AllStatusV2(client)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	rcp.Stages, err = AllStagesV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -280,7 +262,6 @@ func handleStatisticsPipelinestep(w http.ResponseWriter, r *http.Request) {
 		Partners         []Partner
 		Projectlist      []string
 		TasksettingNames []string
-		Stages           []Stage
 		Status           []Status
 	}
 	rcp := recipe{}
@@ -295,11 +276,6 @@ func handleStatisticsPipelinestep(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.Status, err = AllStatusV2(client)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	rcp.Stages, err = AllStagesV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

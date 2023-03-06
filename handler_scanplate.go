@@ -55,7 +55,6 @@ func handleScanPlate(w http.ResponseWriter, r *http.Request) {
 		Pipelinesteps    []Pipelinestep
 		Projectlist      []string
 		TasksettingNames []string
-		Stages           []Stage
 		Status           []Status
 		Colorspaces      []string `json:"colorspaces"`
 	}
@@ -71,11 +70,6 @@ func handleScanPlate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.Status, err = AllStatusV2(client)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	rcp.Stages, err = AllStagesV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -139,7 +133,6 @@ func handleProcess(w http.ResponseWriter, r *http.Request) {
 		Pipelinesteps        []Pipelinestep
 		Projectlist          []string
 		TasksettingNames     []string
-		Stages               []Stage
 		Status               []Status
 		ProcessingScanPlates []ScanPlate
 	}
@@ -155,11 +148,6 @@ func handleProcess(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.Status, err = AllStatusV2(client)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	rcp.Stages, err = AllStagesV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

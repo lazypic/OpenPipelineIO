@@ -112,7 +112,6 @@ func handleHelp(w http.ResponseWriter, r *http.Request) {
 		Sha1ver   string
 		BuildTime string
 		Status    []Status
-		Stages    []Stage
 		DBIP      string
 		DBVer     string
 		ServerIP  string
@@ -135,11 +134,6 @@ func handleHelp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.User = u
-	rcp.Stages, err = AllStages(session)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	rcp.Status, err = AllStatus(session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -266,13 +260,10 @@ func webserver(port string) {
 	r.HandleFunc("/detail", handleItemDetail)
 
 	// Review
-	r.HandleFunc("/daily-review-stage", handleDailyReviewStage)
 	r.HandleFunc("/daily-review-status", handleDailyReviewStatus)
-	r.HandleFunc("/reviewstage", handleReviewStage)
 	r.HandleFunc("/reviewstatus", handleReviewStatus)
 	r.HandleFunc("/reviewdata", handleReviewData)
 	r.HandleFunc("/reviewdrawingdata", handleReviewDrawingData)
-	r.HandleFunc("/review-stage-submit", handleReviewStageSubmit)
 	r.HandleFunc("/review-status-submit", handleReviewStatusSubmit)
 	r.HandleFunc("/upload-reviewfile", handleUploadReviewFile)
 
@@ -385,15 +376,6 @@ func webserver(port string) {
 	r.HandleFunc("/editstatus-submit", handleEditStatusSubmit)
 	r.HandleFunc("/rmstatus", handleRmStatus)
 	r.HandleFunc("/rmstatus-submit", handleRmStatusSubmit)
-
-	// Stage
-	r.HandleFunc("/stage", handleStage)
-	r.HandleFunc("/addstage", handleAddStage)
-	r.HandleFunc("/addstage-submit", handleAddStageSubmit)
-	r.HandleFunc("/editstage", handleEditStage)
-	r.HandleFunc("/editstage-submit", handleEditStageSubmit)
-	r.HandleFunc("/rmstage", handleRmStage)
-	r.HandleFunc("/rmstage-submit", handleRmStageSubmit)
 
 	// Publish Key
 	r.HandleFunc("/publishkey", handlePublishKey)
@@ -594,16 +576,12 @@ func webserver(port string) {
 	r.HandleFunc("/api/getpublish", handleAPIGetPublish)
 
 	// restAPI Review
-	r.HandleFunc("/api/addreview", handleAPIAddReviewStageMode) // legacy
-	r.HandleFunc("/api/addreviewstagemode", handleAPIAddReviewStageMode)
 	r.HandleFunc("/api/addreviewstatusmode", handleAPIAddReviewStatusMode)
 	r.HandleFunc("/api/review", handleAPIReview)
 	r.HandleFunc("/api/searchreview", handleAPISearchReview)
 	r.HandleFunc("/api/setreviewstatus", handleAPISetReviewStatus)
 	r.HandleFunc("/api/setreviewitemstatus", handleAPISetReviewItemStatus)
-	r.HandleFunc("/api/setreviewstage", handleAPISetReviewStage)
 	r.HandleFunc("/api/setreviewnextstatus", handleAPISetReviewNextStatus)
-	r.HandleFunc("/api/setreviewnextstage", handleAPISetReviewNextStage)
 	r.HandleFunc("/api/addreviewcomment", handleAPIAddReviewComment)
 	r.HandleFunc("/api/addreviewstatusmodecomment", handleAPIAddReviewStatusModeComment)
 	r.HandleFunc("/api/editreviewcomment", handleAPIEditReviewComment)

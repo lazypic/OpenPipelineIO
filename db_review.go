@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"strings"
-	"time"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -51,32 +50,6 @@ func getReview(session *mgo.Session, id string) (Review, error) {
 		return r, err
 	}
 	return r, nil
-}
-
-func setReviewStatus(session *mgo.Session, id, status string) error {
-	if !(status == "wait" || status == "comment" || status == "approve" || status == "closed") {
-		return errors.New("wait, comment, approve, closed 상태만 사용가능합니다")
-	}
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
-	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"status": status}})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// setReviewStage는 Stage를 변경합니다.
-func setReviewStage(session *mgo.Session, id, stage string) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
-	// Stage가 바뀌면 다시 해당 스테이지에서 리뷰를 해야한다. 시간을 바꾼다.
-	// Stage가 바뀌면 Status가 다시 wait(리뷰대기)가 되어야 한다.
-	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"stage": stage, "updatetime": time.Now().Format(time.RFC3339)}})
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func setReviewProcessStatus(session *mgo.Session, id, status string) error {
@@ -141,8 +114,6 @@ func searchReview(session *mgo.Session, searchword string) ([]Review, error) {
 			orQueries = append(orQueries, bson.M{"createtime": &bson.RegEx{Pattern: strings.TrimPrefix(word, "daily:")}})
 		} else if strings.HasPrefix(word, "status:") {
 			orQueries = append(orQueries, bson.M{"status": &bson.RegEx{Pattern: strings.TrimPrefix(word, "status:")}})
-		} else if strings.HasPrefix(word, "stage:") {
-			orQueries = append(orQueries, bson.M{"stage": &bson.RegEx{Pattern: strings.TrimPrefix(word, "stage:")}})
 		} else if strings.HasPrefix(word, "itemstatus:") {
 			orQueries = append(orQueries, bson.M{"itemstatus": &bson.RegEx{Pattern: strings.TrimPrefix(word, "itemstatus:")}})
 		} else if strings.HasPrefix(word, "project:") {

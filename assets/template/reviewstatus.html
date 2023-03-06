@@ -45,20 +45,9 @@
                             {{if gt .SubVersion 0 }} <!-- SubVersion 값이 0 이상이면 보인다.-->
                                 <span class="ms-1 badge badge-darkmode" id="{{.ID.Hex}}-subversion">w{{ProductionVersionFormat .SubVersion}}</span>
                             {{end}}
-                            {{if eq .Status "comment" }}
-                                <span id="review-itemstatus-{{.ID.Hex}}" class="ms-1 badge badge-{{.ItemStatus}}">{{.ItemStatus}}</span>
-                                <span id="reviewstatus-{{.ID.Hex}}" class="ms-1 badge badge-warning">{{.Status}}</span>
-                            {{else if eq .Status "approve" }}
-                                <span id="review-itemstatus-{{.ID.Hex}}" class="ms-1 badge badge-{{.ItemStatus}}">{{.ItemStatus}}</span>
-                                <span id="reviewstatus-{{.ID.Hex}}" class="ms-1 badge badge-success">{{.Status}}</span>
-                            {{else}}
-                                {{if eq .ProcessStatus "wait" "processing" }}
-                                    <span id="reviewstatus-{{.ID.Hex}}" class="ms-1 badge badge-danger">{{.ProcessStatus}}</span>
-                                {{else}}
-                                    <span id="review-itemstatus-{{.ID.Hex}}" class="ms-1 badge badge-{{.ItemStatus}}">{{.ItemStatus}}</span>
-                                    <span id="reviewstatus-{{.ID.Hex}}" class="ms-1 badge badge-secondary">{{.Status}}</span>
-                                {{end}}
-                            {{end}}
+                            
+                            <span id="review-itemstatus-{{.ID.Hex}}" class="ms-1 badge badge-{{.ItemStatus}}">{{.ItemStatus}}</span>
+                            
                         </div>
                         <div class="col-1 p-0">
                             <!-- 리뷰 수정버튼 -->
