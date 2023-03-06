@@ -92,7 +92,7 @@ function NeedDeadlinenum() {
 }
 
 
-function TotalShotProgress() {
+function TotalShotProgress() { // legacy
     fetch("/api1/statistics/shot", {
         method: 'GET',
         headers: {"Authorization": "Basic "+ document.getElementById("token").value},

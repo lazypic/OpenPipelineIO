@@ -4883,78 +4883,12 @@ function addReviewStatusMode() {
 }
 
 function clickCommentButton() {
-    setReviewStatus('comment')
     addReviewComment()
 }
 
 function clickReviewStatusModeCommentButton() {
-    setReviewStatus('comment')
     addReviewStatusModeComment()
 }
-
-function setReviewStatus(status) {
-    $.ajax({
-        url: "/api/setreviewstatus",
-        type: "post",
-        data: {
-            status: status,
-            id: document.getElementById("current-review-id").value,
-        },
-        headers: {
-            "Authorization": "Basic "+ document.getElementById("token").value
-        },
-        dataType: "json",
-        success: function(data) {
-            let item = document.getElementById("reviewstatus-"+data.id)
-            // 상태 내부 글씨를 바꾼다.
-            item.innerHTML = data.status
-            // 상태의 색상을 바꾼다.
-            if (data.status === "approve") {
-                item.setAttribute("class","ml-1 badge badge-success")
-                setReviewNextStatus(data.id) // 다음 Status를 설정한다.
-            } else if (data.status === "comment") {
-                item.setAttribute("class","ml-1 badge badge-warning")
-            } else {
-                item.setAttribute("class","ml-1 badge badge-secondary")
-            }
-        },
-        error: function(request,status,error){
-            alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-        }
-    });
-}
-
-function setReviewNextStatus(id) {
-    $.ajax({
-        url: "/api/setreviewnextstatus",
-        type: "post",
-        data: {
-            id: id,
-        },
-        headers: {
-            "Authorization": "Basic "+ document.getElementById("token").value
-        },
-        dataType: "json",
-        success: function(data) {
-            let item = document.getElementById("reviewstatus-"+data.id)
-            // 상태 내부 글씨를 바꾼다.
-            item.innerHTML = data.status
-            // 상태의 색상을 바꾼다.
-            if (data.status === "approve") {
-                item.setAttribute("class","ml-1 badge badge-success")
-            } else if (data.status === "comment") {
-                item.setAttribute("class","ml-1 badge badge-warning")
-            } else {
-                item.setAttribute("class","ml-1 badge badge-secondary")
-            }
-        },
-        error: function(request,status,error){
-            alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-        }
-    });
-}
-
-
 
 function setReviewProcessStatus(id, status) {
     $.ajax({
