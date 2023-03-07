@@ -17,9 +17,8 @@
                 File
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="/scanplate">ScanPlate(Alpha)</a></li>
-                <li><a class="dropdown-item" href="/process">Process(Alpha)</a></li>
-                <li><a class="dropdown-item text-muted" href="/filebrowser">FileBrowser(Sendbox)</a></li>
+                <li><a class="dropdown-item" href="/scanplate">ScanPlate</a></li>
+                <li><a class="dropdown-item" href="/process">Process</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="/importexcel">Import .xlsx</a></li>
                 <li><span class="dropdown-item finger" onclick="exportExcelCurrentPage()">Export Current .xlsx</span></li>
@@ -32,8 +31,6 @@
                 <li><a class="dropdown-item" href="/exportjson">Export All .json</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><span class="dropdown-item finger" onclick="exportDumpProject()">DB Dump</span></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item text-muted" href="/report">Report(Sendbox)</a></li>
               </ul>
           </li>
         {{end}}
@@ -43,27 +40,17 @@
             Review
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            {{if .Setting.ReviewStageMode}}
-            <li><span class="dropdown-item finger" data-bs-toggle="modal" data-bs-target="#modal-addreview-stagemode">Add Review Stage Mode</span></li>
-            {{end}}
-            {{if .Setting.ReviewStatusMode}}
-            <li><span class="dropdown-item finger" data-bs-toggle="modal" data-bs-target="#modal-addreview-statusmode">Add Review Status Mode</span></li>
-            {{end}}
+            <li><span class="dropdown-item finger" data-bs-toggle="modal" data-bs-target="#modal-addreview-statusmode">Add Review</span></li>
             {{if eq .User.AccessLevel 4 5 6 7 8 9 10 11}}
               <li><hr class="dropdown-divider"></li>
               <li><span class="dropdown-item finger" onclick="setReviewAgainForWaitStatusToday()">Review again for wait status</span></li>
             {{end}}
             
-            {{if .Setting.ReviewStageMode}}
+            
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="/daily-review-stage">Daily - Stage Mode</a></li>
-              <li><a class="dropdown-item" href="/daily-review-stage" target="_blank">Daily- Stage Mode(New Windows)</a></li>
-            {{end}}
-            {{if .Setting.ReviewStatusMode}}
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="/daily-review-status">Daily - Status Mode</a></li>
-              <li><a class="dropdown-item" href="/daily-review-status" target="_blank">Daily- Status Mode(New Windows)</a></li>
-            {{end}}
+              <li><a class="dropdown-item" href="/daily-review-status">Daily</a></li>
+              <li><a class="dropdown-item" href="/daily-review-status" target="_blank">Daily - New Windows</a></li>
+            
           </ul>
         </li>
         {{end}}
@@ -86,7 +73,6 @@
             {{if eq .User.AccessLevel 4 5 6 7 8 9 10 11}}
               <li><a class="dropdown-item" href="/tasksettings">Task</a></li>
               <li><a class="dropdown-item" href="/status">Status</a></li>
-              <li><a class="dropdown-item" href="/stage">Review Stage</a></li>
               <li><a class="dropdown-item" href="/publishkey">Publish Key</a></li>
               <li><a class="dropdown-item" href="/pipelinesteps">Pipelinestep</a></li>
               <li><hr class="dropdown-divider"></li>
@@ -97,7 +83,6 @@
               {{if .Setting.EnableEndpoint}}
                 <li><a class="dropdown-item" href="/endpoints">Endpoint</a></li>
               {{end}}
-              <li><a class="dropdown-item text-muted" href="/equipments">Equipments(Sendbox)</a></li>
               <li><hr class="dropdown-divider"></li>
             {{end}}
             {{if eq .User.AccessLevel 4 5 6 7 8 9 10 11}}
@@ -105,11 +90,6 @@
               <li><a class="dropdown-item" href="/statistics/pipelinestep">Statistics(팀장)</a></li>
               <li><a class="dropdown-item" href="/statistics/user">Statistics(아티스트)</a></li>
               
-              <li><hr class="dropdown-divider"></li>
-            {{end}}
-            {{if eq .User.AccessLevel 4 5 6 7 8 9 10 11}}
-              <li><a class="dropdown-item text-muted" href="/software">Software(Sendbox)</a></li>
-              <li><a class="dropdown-item text-muted" href="/environment">Environment(Sendbox)</a></li>
               <li><hr class="dropdown-divider"></li>
             {{end}}
             <li><a class="dropdown-item" href="/divisions">Divisions(본부)</a></li>
@@ -133,7 +113,6 @@
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="/addtasksetting">Task</a></li>
               <li><a class="dropdown-item" href="/addstatus">Status</a></li>
-              <li><a class="dropdown-item" href="/addstage">Review Stage</a></li>
               <li><a class="dropdown-item" href="/addpublishkey">Publish Key</a></li>
               <li><span class="dropdown-item finger" onclick="AddMode()" data-bs-toggle="modal" data-bs-target="#modal-pipelinestep">Pipelinestep</span></li>
               <li><hr class="dropdown-divider"></li>
@@ -164,7 +143,6 @@
                 <li><hr class="dropdown-divider"></li>
                 <li><span class="dropdown-item text-danger fade">Task</span></li>
                 <li><span class="dropdown-item text-danger fade">Status</span></li>
-                <li><span class="dropdown-item text-danger fade">Review Stage</span></li>
                 <li><span class="dropdown-item text-danger fade">Publish Key</span></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><span class="dropdown-item text-danger fade">Organization</span></li>
@@ -187,7 +165,6 @@
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item text-danger" href="/rmtasksetting">Task</a></li>
                   <li><a class="dropdown-item text-danger" href="/rmstatus">Status</a></li>
-                  <li><a class="dropdown-item text-danger" href="/rmstage">Review Stage</a></li>
                   <li><a class="dropdown-item text-danger" href="/rmpublishkey">Publish Key</a></li>
                 {{end}}
                 {{if eq .User.AccessLevel 10 11}}
@@ -198,18 +175,7 @@
             </li>
           {{end}}
         {{end}}
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-             Link
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="https://contenthub.netflixstudios.com" target="_blank">Netflix Content Hub</a></li>
-            <li><a class="dropdown-item" href="https://portal.shield.ise.io/login" target="_blank">Disney Vendor Portal</a></li>
-            <li><a class="dropdown-item" href="https://account.shotgunsoftware.com/login" target="_blank">Shotgrid Account Center</a></li>
-            <li><a class="dropdown-item" href="https://studio.youtube.com" target="_blank">YouTube Studio</a></li>
-            <li><a class="dropdown-item" href="https://beta.dreamstudio.ai/dream" target="_blank">Dream Studio</a></li>
-          </ul>
-        </li>
+        
         <li class="nav-item">
             <a class="nav-link" href="/help">Help</a>
         </li>

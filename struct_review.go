@@ -13,7 +13,6 @@ type Review struct {
 	Author             string        `json:"author"`                  // 작성자
 	AuthorNameKor      string        `json:"authornamekor"`           // 작성자 한글 이름
 	Path               string        `json:"path"`                    // 리뷰경로
-	Status             string        `json:"status"`                  // 상태 approve, comment, waiting
 	ItemStatus         string        `json:"itemstatus"`              // Item(shot, asset) 상태
 	ProcessStatus      string        `json:"processstatus"`           // 연산상태. wait, error, done
 	Sketches           []Sketch      `json:"sketches"`                // 스케치 프레임
@@ -27,7 +26,6 @@ type Review struct {
 	Log                string        `json:"log"`                     // Log 예로 Errlog가 있다.
 	MainVersion        int           `json:"mainversion"`             // Main Version
 	SubVersion         int           `json:"subversion"`              // Sub Version
-	Stage              string        `json:"stage"`                   // 현재 리뷰 Stage 단계
 	RemoveAfterProcess bool          `json:"removeafterprocess"`      // 프로세스 처리후 제거하는 옵션
 	Type               string        `json:"type"`                    // review type: clip, image 가 존재한다. 추후 3D 데이터도 리뷰에 포함될 수 있다.
 	Ext                string        `json:"ext"`                     // 웹서버에서 보일 최종 reviewdata의 확장자

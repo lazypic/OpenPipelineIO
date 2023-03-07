@@ -46,7 +46,6 @@ func handleEndpoints(w http.ResponseWriter, r *http.Request) {
 		Endpoints        []Endpoint
 		Projectlist      []string
 		TasksettingNames []string
-		Stages           []Stage
 		Status           []Status
 	}
 	rcp := recipe{}
@@ -61,11 +60,6 @@ func handleEndpoints(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.Status, err = AllStatusV2(client)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	rcp.Stages, err = AllStagesV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

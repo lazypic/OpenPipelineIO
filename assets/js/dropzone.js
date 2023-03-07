@@ -3531,44 +3531,6 @@ function __guardMethod__(obj, methodName, transform) {
   }
 }
 
-// Add Review Stage Mode 리뷰파일을 드레그엔 드롭할 때 설정값
-Dropzone.options.reviewStageModeFileDropzone = {
-  autoProcessQueue: true,
-  maxFiles: 1, // 최대 업로드 파일 개수를 1개로 제한한다.
-  init: function() {
-    this.on("sending", function(file, xhr, formData){
-      formData.append("project", document.getElementById("modal-addreview-stagemode-project").value);
-      formData.append("task", document.getElementById("modal-addreview-stagemode-task").value);
-    });
-    this.on("success", function(file, response) {
-      document.getElementById("modal-addreview-stagemode-path").value = response.path;
-      document.getElementById("modal-addreview-stagemode-type").value = response.type;
-      switch(response.ext) {
-        case ".jpg":
-          document.getElementById("modal-addreview-stagemode-ext").value = ".jpg";
-          break;
-        case ".jpeg":
-          document.getElementById("modal-addreview-stagemode-ext").value = ".jpg";
-          break;
-        case ".png":
-          document.getElementById("modal-addreview-stagemode-ext").value = ".png";
-          break;
-        case ".mov":
-          document.getElementById("modal-addreview-stagemode-ext").value = ".mp4";
-          break;
-        case ".mp4":
-          document.getElementById("modal-addreview-stagemode-ext").value = ".mp4";
-          break;
-        default:
-          document.getElementById("modal-addreview-stagemode-ext").value = ".mp4";
-      }
-      document.getElementById("modal-addreview-stagemode-path").disabled = true;
-      document.getElementById("modal-addreview-stagemode-removeafterprocess").disabled = false;
-      document.getElementById("modal-addreview-stagemode-removeafterprocess").checked = true;
-    });
-  }
-}
-
 // Add Review Status Mode 리뷰파일을 드레그엔 드롭할 때 설정값
 Dropzone.options.reviewStatusModeFileDropzone = {
   autoProcessQueue: true,

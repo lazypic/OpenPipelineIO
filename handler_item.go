@@ -132,7 +132,6 @@ func handleItemDetail(w http.ResponseWriter, r *http.Request) {
 		TasksettingOrderMap map[string]float64
 		Status              []Status
 		AllStatusIDs        []string
-		Stages              []Stage
 		Setting
 	}
 	rcp := recipe{}
@@ -178,11 +177,6 @@ func handleItemDetail(w http.ResponseWriter, r *http.Request) {
 		rcp.AllStatusIDs = append(rcp.AllStatusIDs, status.ID)
 	}
 	rcp.TasksettingNames, err = TasksettingNames(session)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	rcp.Stages, err = AllStages(session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

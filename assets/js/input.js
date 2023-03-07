@@ -1400,7 +1400,6 @@ function setEditReviewModal(id) {
         document.getElementById("modal-editreview-project").value = data.project;
         document.getElementById("modal-editreview-task").value = data.task;
         document.getElementById("modal-editreview-name").value = data.name;
-        document.getElementById("modal-editreview-stage").value = data.stage;
         document.getElementById("modal-editreview-itemstatus").value = data.itemstatus;
         document.getElementById("modal-editreview-createtime").value = data.createtime;
         document.getElementById("modal-editreview-path").value = data.path;
@@ -4848,42 +4847,6 @@ function addPublish() {
     });
 }
 
-function addReviewStageMode() {
-    let token = document.getElementById("token").value
-    let reviewFps = document.getElementById("modal-addreview-stagemode-fps")
-    $.ajax({
-        url: "/api/addreviewstagemode",
-        type: "post",
-        data: {
-            project: document.getElementById("modal-addreview-stagemode-project").value,
-            name: document.getElementById("modal-addreview-stagemode-name").value,
-            stage: document.getElementById("modal-addreview-stagemode-stage").value,
-            task: document.getElementById("modal-addreview-stagemode-task").value,
-            type: document.getElementById("modal-addreview-stagemode-type").value,
-            ext: document.getElementById("modal-addreview-stagemode-ext").value,
-            author: document.getElementById("modal-addreview-stagemode-author").value,
-            path: document.getElementById("modal-addreview-stagemode-path").value,
-            description: document.getElementById("modal-addreview-stagemode-description").value,
-            camerainfo: document.getElementById("modal-addreview-stagemode-camerainfo").value,
-            fps: reviewFps.options[reviewFps.selectedIndex].value,
-            mainversion: document.getElementById("modal-addreview-stagemode-mainversion").value,
-            subversion: document.getElementById("modal-addreview-stagemode-subversion").value,
-            outputdatapath: document.getElementById("modal-addreview-stagemode-outputdatapath").value,
-            removeafterprocess: document.getElementById("modal-addreview-stagemode-removeafterprocess").checked,
-        },
-        headers: {
-            "Authorization": "Basic "+ token
-        },
-        dataType: "json",
-        success: function() {
-            alert("리뷰가 정상적으로 등록되었습니다.");
-        },
-        error: function(request,status,error){
-            alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-        }
-    });
-}
-
 function addReviewStatusMode() {
     let token = document.getElementById("token").value
     let reviewFps = document.getElementById("modal-addreview-statusmode-fps")
@@ -4920,129 +4883,11 @@ function addReviewStatusMode() {
 }
 
 function clickCommentButton() {
-    setReviewStatus('comment')
     addReviewComment()
 }
 
 function clickReviewStatusModeCommentButton() {
-    setReviewStatus('comment')
     addReviewStatusModeComment()
-}
-
-function setReviewStatus(status) {
-    $.ajax({
-        url: "/api/setreviewstatus",
-        type: "post",
-        data: {
-            status: status,
-            id: document.getElementById("current-review-id").value,
-        },
-        headers: {
-            "Authorization": "Basic "+ document.getElementById("token").value
-        },
-        dataType: "json",
-        success: function(data) {
-            let item = document.getElementById("reviewstatus-"+data.id)
-            // 상태 내부 글씨를 바꾼다.
-            item.innerHTML = data.status
-            // 상태의 색상을 바꾼다.
-            if (data.status === "approve") {
-                item.setAttribute("class","ml-1 badge badge-success")
-                addReviewCommentText("Approved " + data.stage + " Stage.") // comment를 남긴다.
-                setReviewNextStatus(data.id) // 다음 Status를 설정한다.
-                setReviewNextStage(data.id) // 다음 Stage를 설정한다.
-            } else if (data.status === "comment") {
-                item.setAttribute("class","ml-1 badge badge-warning")
-            } else {
-                item.setAttribute("class","ml-1 badge badge-secondary")
-            }
-        },
-        error: function(request,status,error){
-            alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-        }
-    });
-}
-
-function setReviewNextStatus(id) {
-    $.ajax({
-        url: "/api/setreviewnextstatus",
-        type: "post",
-        data: {
-            id: id,
-        },
-        headers: {
-            "Authorization": "Basic "+ document.getElementById("token").value
-        },
-        dataType: "json",
-        success: function(data) {
-            let item = document.getElementById("reviewstatus-"+data.id)
-            // 상태 내부 글씨를 바꾼다.
-            item.innerHTML = data.status
-            // 상태의 색상을 바꾼다.
-            if (data.status === "approve") {
-                item.setAttribute("class","ml-1 badge badge-success")
-            } else if (data.status === "comment") {
-                item.setAttribute("class","ml-1 badge badge-warning")
-            } else {
-                item.setAttribute("class","ml-1 badge badge-secondary")
-            }
-        },
-        error: function(request,status,error){
-            alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-        }
-    });
-}
-
-function setReviewNextStage(id) {
-    $.ajax({
-        url: "/api/setreviewnextstage",
-        type: "post",
-        data: {
-            id: id,
-        },
-        headers: {
-            "Authorization": "Basic "+ document.getElementById("token").value
-        },
-        dataType: "json",
-        success: function(data) {
-            let item = document.getElementById("review-stage-"+data.id)
-            // 상태 내부 글씨를 바꾼다.
-            item.innerHTML = data.stage
-            // 상태의 색상을 바꾼다.
-            item.setAttribute("class","ml-1 badge badge-stage-"+data.stage)
-            // 현재 띄워진 화면의 우측하단의 Stage 상태를 변경한다.
-            document.getElementById("current-review-stage").value = data.stage
-        },
-        error: function(request,status,error){
-            alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-        }
-    });
-}
-
-function setReviewStage(stage) {
-    $.ajax({
-        url: "/api/setreviewstage",
-        type: "post",
-        data: {
-            stage: stage,
-            id: document.getElementById("current-review-id").value,
-        },
-        headers: {
-            "Authorization": "Basic "+ document.getElementById("token").value
-        },
-        dataType: "json",
-        success: function(data) {
-            // 해당 id의 stage 글씨와 색상을 바꾼다.
-            let itemStage = document.getElementById("review-stage-"+data.id)
-            itemStage.innerHTML = data.stage
-            itemStage.setAttribute("class","ml-1 badge badge-stage-"+data.stage)
-            // 현재 띄워진 화면의 우측하단의 Stage 상태를 변경한다.
-            document.getElementById("current-review-stage").value = data.stage
-        },
-        error: function(request,status,error){
-            alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-        }
-    });
 }
 
 function setReviewProcessStatus(id, status) {
@@ -5372,7 +5217,6 @@ function addReviewComment() {
             id: document.getElementById("current-review-id").value,
             text: document.getElementById("review-comment").value,
             media: document.getElementById("review-media").value,
-            stage: document.getElementById("current-review-stage").value,
             frame: document.getElementById("currentframe").innerHTML,
             framecomment: document.getElementById("review-framecomment").checked,
         },
@@ -5388,7 +5232,7 @@ function addReviewComment() {
             <span class="edit" data-toggle="modal" data-target="#modal-editreviewcomment" onclick="setEditReviewCommentModal('${data.id}', '${data.date}')">≡</span>
             <span class="remove" data-toggle="modal" data-target="#modal-rmreviewcomment" onclick="setRmReviewCommentModal('${data.id}','${data.date}')">×</span>
             <br>
-            <span class="badge badge-stage-${data.stage}">${data.stage}</span>`
+            `
             if (data.framecomment) {
                 newComment += `<span class="badge badge-secondary m-1 finger" id="reviewcomment-${data.id}-${data.date}-frame" data-toggle="modal" data-target="#modal-gotoframe" onclick="setModalGotoFrame()">${data.frame}f / ${data.frame+data.productionstartframe-1}f</span>`
             }
@@ -5597,13 +5441,6 @@ function selectReviewItem(id) {
     let gotoFrameInput = document.getElementById("modal-gotoframe-frame");
     let prevDrawing = document.getElementById("drawing-prev");
     let nextDrawing = document.getElementById("drawing-next");
-
-    // fouseReview 함수는 리뷰 ID를 받아서 해당 ID를 가진 리뷰아이템의 스크롤을 포커싱 한다.
-    if (id !== "") {
-        document.getElementById('review-' + id).scrollIntoView(); // 해당아이템을 포커스한다.
-        window.scrollTo({top:0, left:0, behavior:'auto'}); // 위 아이템을 포커싱 하면서 windows 포커싱이 틀어질 수 있다. windows 스크롤을 리셋한다.
-    }
-    
 
     // GotoFrame 모달창에서 프레임이 변경되면 해당 프레임으로 이동한다.
     gotoFrameInput.addEventListener("change", function() {
@@ -6365,15 +6202,6 @@ function setReviewItemStatus(itemstatus) {
         itemStatus.setAttribute("class","ml-1 badge badge-"+data.itemstatus)
         // 현재 띄워진 화면의 좌측 Status 상태를 변경한다.
         document.getElementById("current-review-itemstatus").value = data.itemstatus
-        let status = document.getElementById("reviewstatus-"+data.id)
-        status.innerHTML = data.status
-        if (data.status == "approve") {
-            status.setAttribute("class","ml-1 badge badge-success")
-        } else if (data.status == "comment") {
-            status.setAttribute("class","ml-1 badge badge-warning")
-        } else {
-            status.setAttribute("class","ml-1 badge badge-secondary")
-        }
     })
     .catch((err) => {
         alert(err)
