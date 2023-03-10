@@ -20,7 +20,7 @@ func (s *Status) CheckError() error {
 		return errors.New("ID가 빈 문자열 입니다")
 	}
 	if !regexpStatus.MatchString(s.ID) {
-		return errors.New("status Must be: A-Z, a-z, 0-9, _")
+		return errors.New("Status names can contaion only the following strings: A-Z, a-z, 0-9, _")
 	}
 	if !regexWebColor.MatchString(s.TextColor) {
 		return errors.New("text 컬러가 웹컬러(#FFFFFF 형태) 문자열이 아닙니다")
