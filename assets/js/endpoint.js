@@ -3,7 +3,6 @@ var endpoint = "/api/endpoint" // restAPI Endpoint
 var uxprefix = "endpoint-" // UX prefix string
 
 function UxToObject(obj) {
-    obj.dns = document.getElementById(uxprefix+'dns').value
     obj.endpoint = document.getElementById(uxprefix+'endpoint').value
     obj.description = document.getElementById(uxprefix+'description').value
     obj.method = string2array(document.getElementById(uxprefix+'method').value)
@@ -11,8 +10,8 @@ function UxToObject(obj) {
     obj.cors = document.getElementById(uxprefix+'cors').value
 	obj.type = document.getElementById(uxprefix+'type').value
     obj.storagetype = document.getElementById(uxprefix+'storagetype').value
-	obj.db = document.getElementById(uxprefix+'db').value
-	obj.isserverless = document.getElementById(uxprefix+'isserverless').checked
+	obj.model = document.getElementById(uxprefix+'model').value
+	obj.iswebhook = document.getElementById(uxprefix+'iswebhook').checked
     obj.isuser = document.getElementById(uxprefix+'isuser').checked
     obj.isdeveloper = document.getElementById(uxprefix+'isdeveloper').checked
     obj.isadmin = document.getElementById(uxprefix+'isadmin').checked
@@ -22,17 +21,14 @@ function UxToObject(obj) {
     obj.isupload = document.getElementById(uxprefix+'isupload').checked
 	obj.token = document.getElementById(uxprefix+'token').value
 	obj.tags = string2array(document.getElementById(uxprefix+'tags').value)
-    obj.supportformat = string2array(document.getElementById(uxprefix+'supportformat').value)
+    obj.apikey = document.getElementById(uxprefix+'apikey').value
 	obj.curl = document.getElementById(uxprefix+'curl').value
     obj.category = document.getElementById(uxprefix+'category').value
-    obj.partner = document.getElementById(uxprefix+'partner').value
-    obj.progress = document.getElementById(uxprefix+'progress').value
     return obj
 }
 
 function ObjectToUx(obj) {
     document.getElementById(uxprefix+'id').value = obj.id
-    document.getElementById(uxprefix+'dns').value = obj.dns
     document.getElementById(uxprefix+'endpoint').value = obj.endpoint
     document.getElementById(uxprefix+'description').value = obj.description
     document.getElementById(uxprefix+'method').value = obj.method.join(",")
@@ -40,8 +36,8 @@ function ObjectToUx(obj) {
     document.getElementById(uxprefix+'cors').value = obj.cors
 	document.getElementById(uxprefix+'type').value = obj.type
     document.getElementById(uxprefix+'storagetype').value = obj.storagetype
-	document.getElementById(uxprefix+'db').value = obj.db
-	document.getElementById(uxprefix+'isserverless').checked = obj.isserverless
+	document.getElementById(uxprefix+'model').value = obj.model
+	document.getElementById(uxprefix+'iswebhook').checked = obj.iswebhook
     document.getElementById(uxprefix+'isuser').checked = obj.isuser
     document.getElementById(uxprefix+'isdeveloper').checked = obj.isdeveloper
     document.getElementById(uxprefix+'isadmin').checked = obj.isadmin
@@ -51,11 +47,9 @@ function ObjectToUx(obj) {
     document.getElementById(uxprefix+'isupload').checked = obj.isupload
 	document.getElementById(uxprefix+'token').value = obj.token
     document.getElementById(uxprefix+'tags').value = obj.tags.join(",")
-    document.getElementById(uxprefix+'supportformat').value = obj.supportformat.join(",")
+    document.getElementById(uxprefix+'apikey').value = obj.apikey
 	document.getElementById(uxprefix+'curl').value = obj.curl
     document.getElementById(uxprefix+'category').value = obj.category
-    document.getElementById(uxprefix+'partner').value = obj.partner
-    document.getElementById(uxprefix+'progress').value = obj.progress
 }
 
 function AddMode() {

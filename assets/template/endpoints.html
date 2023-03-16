@@ -9,7 +9,7 @@
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                 <div class="card m-2 bg-darkmode">
                     <h6 class="card-header">
-                        {{.DNS}}{{.Endpoint}}
+                        {{.Endpoint}}
                         <div class="float-end">
                             <span class="add" onclick="SetModal('{{.ID.Hex}}')" data-bs-toggle="modal" data-bs-target="#modal-endpoint">≡</span>
                             {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}}
@@ -39,16 +39,12 @@
                                         {{end}}
                                     {{end}}
                                 </div>
-                                <div class="col">
-                                    {{.Partner}}
-                                    <div class="progress">
-                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{.Progress}}%" aria-valuenow="{{.Progress}}" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
                             </div>
                             
                             <div class="text-darkmode">
-                                {{if .IsServerless}}<span class="badge rounded-pill bg-dark">Serverless</span>{{end}}
+                                Description: {{.Description}}<br>
+                                Model: {{.Model}}<br>
+                                {{if .IsWebhook}}<span class="badge rounded-pill bg-dark">Webhook</span>{{end}}
                                 {{if .IsUser}}<span class="badge rounded-pill bg-dark">User</span>{{end}}
                                 {{if .IsDeveloper}}<span class="badge rounded-pill bg-dark">Developer</span>{{end}}
                                 {{if .IsAdmin}}<span class="badge rounded-pill bg-dark">Admin</span>{{end}}
@@ -56,11 +52,8 @@
                                 {{if .IsAsset}}<span class="badge rounded-pill bg-dark">Asset</span>{{end}}
                                 {{if .IsPatent}}<span class="badge rounded-pill bg-dark">Patent</span>{{end}}
                                 {{if .IsUpload}}<span class="badge rounded-pill bg-dark">Upload</span>{{end}}
-                                카테고리: {{.Category}}, Type: {{.Type}}, StorageType {{.StorageType}}, CORS: {{.CORS}}, DB: {{.DB}}<br>
-                                
-                                설명: {{.Description}}<br>
-                                태그: {{range .Tags}}<span class="badge rounded-pill bg-secondary me-1">#{{.}}</span>{{end}}<br>
-                                포멧: {{range .SupportFormat}}<span class="badge rounded-pill bg-secondary me-1">{{.}}</span>{{end}}<br>
+                                카테고리: {{.Category}}, Type: {{.Type}}, StorageType {{.StorageType}}, CORS: {{.CORS}}<br>
+                                Tags: {{range .Tags}}<span class="badge rounded-pill bg-secondary me-1">#{{.}}</span>{{end}}<br>
                                 Parameter: {{range .Parameter}}<span class="badge rounded-pill bg-secondary me-1">{{.}}</span>{{end}}<br>
                                 Token: {{.Token}}<br>                                
                                 Curl: {{.Curl}}

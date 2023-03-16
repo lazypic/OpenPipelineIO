@@ -15,14 +15,32 @@
                             <div class="row">
                                 <div class="col">
                                     <div class="form-group">
-                                        <label class="pt-1">DNS<span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="endpoint-dns" placeholder="DNS">
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group">
                                         <label class="pt-1">Endpoint<span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="endpoint-endpoint" placeholder="Endpoint">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">Description</label>
+                                        <input type="text" class="form-control" id="endpoint-description">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">API KEY</label>
+                                        <input type="text" class="form-control" id="endpoint-apikey" placeholder="API KEY">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">Token</label>
+                                        <input type="text" class="form-control" id="endpoint-token" placeholder="Token">
                                     </div>
                                 </div>
                             </div>
@@ -64,15 +82,8 @@
                                 </div>
                                 <div class="col">
                                     <div class="form-group">
-                                        <label class="pt-1">DB</label>
-                                        <select class="form-control" id="endpoint-db">
-                                            <option value="">UnKnown</option>
-                                            <option value="mongoDB">mongoDB</option>
-                                            <option value="mysql">MySQL</option>
-                                            <option value="redis">Redis</option>
-                                            <option value="aws dynamodb">AWS DynamoDB</option>
-                                            <option value="hbase">hBase</option>
-                                        </select>
+                                        <label class="pt-1">Model</label>
+                                        <input type="text" class="form-control" id="endpoint-model" placeholder="Model name">
                                     </div>
                                 </div>
                             </div>
@@ -92,22 +103,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label class="pt-1">SupportFormat</label>
-                                        <input type="text" class="form-control" id="endpoint-supportformat" placeholder="json, graphQL, form, xml, binary">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label class="pt-1">Token</label>
-                                        <input type="text" class="form-control" id="endpoint-token" placeholder="Token">
-                                    </div>
-                                </div>
-                            </div>
+                            
                             <div class="row">
                                 <div class="col">
                                     <div class="form-group">
@@ -167,21 +163,9 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label class="pt-1">Partner</label>
-                                        <input type="text" class="form-control" id="endpoint-partner" placeholder="Partner">
-                                    </div>
-                                </div>
+                                
                             </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label class="pt-1">Progress</label>
-                                        <input type="text" class="form-control" id="endpoint-progress" placeholder="Progress">
-                                    </div>
-                                </div>
-                            </div>
+                            
                             <div class="row">
                                 <div class="col">
                                     <div class="form-group">
@@ -190,20 +174,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label class="pt-1">설명</label>
-                                        <input type="text" class="form-control" id="endpoint-description">
-                                    </div>
-                                </div>
-                            </div>
+                            
                             <div class="row pt-4">
                                 <div class="col">
                                     <div class="from-group">
                                         <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="endpoint-isserverless" name="endpoint-isserverless">
-                                            <label class="form-check-label finger unselectable" for="endpoint-isserverless">Severless</label>
+                                            <input class="form-check-input" type="checkbox" id="endpoint-iswebhook" name="endpoint-iswebhook">
+                                            <label class="form-check-label finger unselectable" for="endpoint-iswebhook">WebHook</label>
                                         </div>
                                     </div>
                                 </div>
