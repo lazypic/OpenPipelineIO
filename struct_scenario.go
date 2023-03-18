@@ -9,7 +9,7 @@ type Scenario struct {
 	Seq         int                `json:"seq"`         // Sequence
 	Scene       int                `json:"scene"`       // Scene
 	Cut         int                `json:"cut"`         // Cut
-	Name        string             `json:"name"`        // 장면 설명
+	Name        string             `json:"name"`        // 간단한 장면 설명
 	IsPreviz    bool               `json:"ispreviz"`    // 프리비즈 존재여부
 	IsTechviz   bool               `json:"istechviz"`   // 테크비즈 존재여부
 	Thumbnails  []string           `json:"Thumbnails"`  // Thumbnails, AI로 이미지를 생성하기 때문에 여러개의 이미지중에 골라야 할 수 있다.
