@@ -3,27 +3,27 @@ package main
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type Scenario struct {
-	ID primitive.ObjectID `bson:"_id" json:"id,omitempty"`
-	// 뒤에는 다 바꿀 것
-	Endpoint    string   `json:"endpoint"`    // 엔드포인트 주소 예) https://api.dns.com/api/v1/users
-	Method      []string `json:"method"`      // GET,PUT,DELETE,POST,OPTIONS
-	Parameter   []string `json:"parameter"`   // Endpoint 에서 지원하는 옵션
-	CORS        string   `json:"cors"`        // Cross-Origin Resource Sharing: origin || *
-	Type        string   `json:"type"`        // Resource 페이지, RestAPI, Webpage 인지 설정하는 옵션
-	StorageType string   `json:"storagetype"` // AWS S3, 자체서버를 구축해서 파일을 저장할지 결정
-	Model       string   `json:"model"`       // Model 예) AI모델
-	Description string   `json:"description"` // 설명
-	IsWebhook   bool     `json:"iswebhook"`   // WebHook 서비스 인가?
-	IsUser      bool     `json:"isuser"`      // 사용자 공개
-	IsDeveloper bool     `json:"isdeveloper"` // 개발자 공개
-	IsAdmin     bool     `json:"isadmin"`     // 관리자 공개
-	IsSecurity  bool     `json:"issecurity"`  // 보안이 필요한가
-	IsAsset     bool     `json:"isasset"`     // 회사의 자산이 될 수 있는 Endpoint 인가?
-	IsPatent    bool     `json:"ispatent"`    // 특허와 관련된 기술이 처리되는 Endpoint 인가?
-	IsUpload    bool     `json:"isupload"`    // 업로드가 되는 Endpoint인가?
-	Token       string   `json:"token"`       // 보안토큰
-	Tags        []string `json:"tags"`        // 태그
-	Apikey      string   `json:"apikey"`      // API KEY
-	Curl        string   `json:"curl"`        // curl 예시
-	Category    string   `json:"category"`    // 카테고리: 유저,결제,관리,CS(고객대응),메일,알림,메시징,내저징데이터,정산,검색,통계,마이페이지,공통사항,인증,웹소캣,공지사항,시스템 관리,메인페이지,모바일지원,광고,혜택,이벤트,친구관리,찜,장바구니,공유,채팅,기기관리,통화,음성,카메라,구매,보안,선물,뉴스,모니터링,구독,데이터분석,머신러닝,번역
+	ID          primitive.ObjectID `bson:"_id" json:"id,omitempty"`
+	Project     string             `json:"project"`     // 프로젝트명
+	Order       float64            `json:"order"`       // 정렬순서
+	Seq         int                `json:"seq"`         // Sequence
+	Scene       int                `json:"scene"`       // Scene
+	Cut         int                `json:"cut"`         // Cut
+	Name        string             `json:"name"`        // 장면 설명
+	IsPreviz    bool               `json:"ispreviz"`    // 프리비즈 존재여부
+	IsTechviz   bool               `json:"istechviz"`   // 테크비즈 존재여부
+	Thumbnails  []string           `json:"Thumbnails"`  // Thumbnails
+	SeedImage   string             `json:"seedimage"`   // Seed Image
+	Prompt      string             `json:"prompt"`      // 그림을 그릴때 사용되는 Prompt
+	Script      string             `json:"script"`      // 스크립트
+	VFXScript   string             `json:"vfxscript"`   // VFX 스크립트
+	Time        string             `json:"time"`        // D,L,SS(Sunset)
+	Location    string             `json:"location"`    // I,E
+	Length      string             `json:"length"`      // L,S
+	VFXSolution string             `json:"vfxsolution"` // VFX 솔루션
+	Type        string             `json:"type"`        // 2D,3D
+	Difficult   string             `json:"difficult"`   // 난이도
+	EA          int                `json:"ea"`          // 갯수, 견적에 필요
+	Manday      map[string]Task    `json:"manday"`      // Task 리스트
+	Cost        int                `json:"cost"`        // 견적
 }
