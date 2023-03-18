@@ -12,8 +12,8 @@ type Scenario struct {
 	Name        string             `json:"name"`        // 장면 설명
 	IsPreviz    bool               `json:"ispreviz"`    // 프리비즈 존재여부
 	IsTechviz   bool               `json:"istechviz"`   // 테크비즈 존재여부
-	Thumbnails  []string           `json:"Thumbnails"`  // Thumbnails
-	SeedImage   string             `json:"seedimage"`   // Seed Image
+	Thumbnails  []string           `json:"Thumbnails"`  // Thumbnails, AI로 이미지를 생성하기 때문에 여러개의 이미지중에 골라야 할 수 있다.
+	SeedImage   string             `json:"seedimage"`   // Seed Image, AI를 이용해서 Image2Image로 이미지를 만들 때 사용하는 Seed 이미지
 	Prompt      string             `json:"prompt"`      // 그림을 그릴때 사용되는 Prompt
 	Script      string             `json:"script"`      // 스크립트
 	VFXScript   string             `json:"vfxscript"`   // VFX 스크립트
