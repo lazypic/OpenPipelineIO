@@ -13,7 +13,7 @@ type Scenario struct {
 	IsPreviz       bool               `json:"ispreviz"`       // 프리비즈 존재여부
 	IsTechviz      bool               `json:"istechviz"`      // 테크비즈 존재여부
 	IsVisualLab    bool               `json:"isvisuallab"`    // 비쥬얼랩 개입여부
-	Thumbnails     []string           `json:"Thumbnails"`     // Thumbnails, AI로 이미지를 생성하기 때문에 여러개의 이미지중에 골라야 할 수 있다.
+	Thumbnails     []string           `json:"Thumbnails"`     // Thumbnails, AI로 이미지를 생성하기 때문에 여러개의 이미지중에 골라야 할 수 있다. /thumbpath/project/{id}/{seed}.png
 	SeedImage      string             `json:"seedimage"`      // Seed Image, AI를 이용해서 Image2Image로 이미지를 만들 때 사용하는 Seed 이미지
 	Prompt         string             `json:"prompt"`         // AI로 그림을 그릴때 사용되는 Prompt
 	NegativePrompt string             `json:"negativeprompt"` // AI로 그림을 그릴 때 적용되면 안되는 Prompt 정보
