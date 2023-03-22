@@ -58,12 +58,10 @@
                                 </div>
                                 <div class="col">
                                     <div class="form-group">
-                                        <label class="pt-1">Type</label>
-                                        <select class="form-control" id="endpoint-type">
-                                            <option value="">UnKnown</option>
-                                            <option value="resource">Resource</option>
-                                            <option value="webpage">Webpage</option>
-                                            <option value="restapi">RestAPI</option>
+                                        <label class="pt-1">Authorization</label>
+                                        <select class="form-control" id="endpoint-authorization">
+                                            <option value="Bearer">Bearer</option>
+                                            <option value="Basic">Basic</option>
                                         </select>
                                     </div>
                                 </div>
@@ -72,11 +70,12 @@
                             <div class="row">
                                 <div class="col">
                                     <div class="form-group">
-                                        <label class="pt-1">Storage Type</label>
-                                        <select class="form-control" id="endpoint-storagetype">
-                                            <option value="">UnKnown</option>
-                                            <option value="AWS S3">AWS S3</option>
-                                            <option value="자체서버">자체서버</option>
+                                        <label class="pt-1">Content Type</label>
+                                        <select class="form-control" id="endpoint-contenttype">
+                                            <option value="application/json">application/json</option>
+                                            <option value="application/text">application/text</option>
+                                            <option value="application/xml">application/xml</option>
+                                            <option value="application/x-yaml">application/x-yaml</option>
                                         </select>
                                     </div>
                                 </div>

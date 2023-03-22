@@ -44,6 +44,8 @@
                             <div class="text-darkmode">
                                 Description: {{.Description}}<br>
                                 Model: {{.Model}}<br>
+                                Content-Type: {{.ContentType}}<br>
+                                Authorization: {{.Authorization}}<br>
                                 {{if .IsWebhook}}<span class="badge rounded-pill bg-dark">Webhook</span>{{end}}
                                 {{if .IsUser}}<span class="badge rounded-pill bg-dark">User</span>{{end}}
                                 {{if .IsDeveloper}}<span class="badge rounded-pill bg-dark">Developer</span>{{end}}
@@ -52,7 +54,7 @@
                                 {{if .IsAsset}}<span class="badge rounded-pill bg-dark">Asset</span>{{end}}
                                 {{if .IsPatent}}<span class="badge rounded-pill bg-dark">Patent</span>{{end}}
                                 {{if .IsUpload}}<span class="badge rounded-pill bg-dark">Upload</span>{{end}}
-                                카테고리: {{.Category}}, Type: {{.Type}}, StorageType {{.StorageType}}, CORS: {{.CORS}}<br>
+                                카테고리: {{.Category}}, CORS: {{.CORS}}<br>
                                 Tags: {{range .Tags}}<span class="badge rounded-pill bg-secondary me-1">#{{.}}</span>{{end}}<br>
                                 Parameter: {{range .Parameter}}<span class="badge rounded-pill bg-secondary me-1">{{.}}</span>{{end}}<br>
                                 Token: {{.Token}}<br>                                

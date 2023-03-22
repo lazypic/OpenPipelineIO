@@ -8,8 +8,8 @@ function UxToObject(obj) {
     obj.method = string2array(document.getElementById(uxprefix+'method').value)
     obj.parameter = string2array(document.getElementById(uxprefix+'parameter').value)
     obj.cors = document.getElementById(uxprefix+'cors').value
-	obj.type = document.getElementById(uxprefix+'type').value
-    obj.storagetype = document.getElementById(uxprefix+'storagetype').value
+	obj.authorization = document.getElementById(uxprefix+'authorization').value
+    obj.contenttype = document.getElementById(uxprefix+'contenttype').value
 	obj.model = document.getElementById(uxprefix+'model').value
 	obj.iswebhook = document.getElementById(uxprefix+'iswebhook').checked
     obj.isuser = document.getElementById(uxprefix+'isuser').checked
@@ -34,8 +34,8 @@ function ObjectToUx(obj) {
     document.getElementById(uxprefix+'method').value = obj.method.join(",")
     document.getElementById(uxprefix+'parameter').value = obj.parameter.join(",")
     document.getElementById(uxprefix+'cors').value = obj.cors
-	document.getElementById(uxprefix+'type').value = obj.type
-    document.getElementById(uxprefix+'storagetype').value = obj.storagetype
+	document.getElementById(uxprefix+'authorization').value = obj.authorization
+    document.getElementById(uxprefix+'contenttype').value = obj.contenttype
 	document.getElementById(uxprefix+'model').value = obj.model
 	document.getElementById(uxprefix+'iswebhook').checked = obj.iswebhook
     document.getElementById(uxprefix+'isuser').checked = obj.isuser
