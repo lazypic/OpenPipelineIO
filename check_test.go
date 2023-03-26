@@ -135,8 +135,8 @@ func TestStatusName(t *testing.T) {
 		in:   "pub1", //소문자, 숫자
 		want: true,
 	}, {
-		in:   "wip_test", //소문자, 언더바
-		want: false,
+		in:   "wip_test", //소문자, 언더바 허용
+		want: true,
 	}, {
 		in:   "", //빈문자열
 		want: false,
