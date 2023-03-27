@@ -36,7 +36,7 @@ type Scenario struct {
 
 type PDFFormatScenario struct {
 	Project string `json:"project"` // 프로젝트명
-	Version int    `json:"version"` // 문서 버전
+	Version string `json:"version"` // 문서 버전
 	PageNum int    `json:"pagenum"` // 페이지수, 페이지 정보는 나중에 정보를 추적하기 좋다.
 	LineNum int    `json:"linenum"` // 줄수, 줄수 정보는 나중에 정보를 역추적하기 좋다.
 	Text    string `json:"text"`    // 글자

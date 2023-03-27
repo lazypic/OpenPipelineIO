@@ -59,10 +59,7 @@ func handlerAPIPdfToJson(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// unidoc model에서는 io.Reader 타입이 아니라. io.ReadSeeker 타입이 필요하다 ReadSeeker를 만든다.
-	readSeekerData := make([]byte, len(pdfData))
-	copy(readSeekerData, pdfData)
-	dataSeeker := bytes.NewReader(readSeekerData)
-
+	dataSeeker := bytes.NewReader(pdfData)
 	pdfReader, err := model.NewPdfReader(dataSeeker)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -74,6 +71,7 @@ func handlerAPIPdfToJson(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	var results []PDFFormatScenario
 
 	for i := 0; i < numPages; i++ {
@@ -97,13 +95,16 @@ func handlerAPIPdfToJson(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		scenes := strings.Split(text, "\n\n")
+		scenes := strings.Split(text, "\n\n") // 시나리오 형식은 씬 구분을 언제나 두번의 엔터로 설정하는 약속이 있다.
 		for n, scene := range scenes {
-			info := PDFFormatScenario{}
-			info.LineNum = n
-			info.PageNum = pageNum
-			info.Text = scene
-			results = append(results, info)
+			if scene == "" {
+				continue
+			}
+			pfs := PDFFormatScenario{}
+			pfs.LineNum = n + 1
+			pfs.PageNum = pageNum
+			pfs.Text = scene
+			results = append(results, pfs)
 		}
 	}
 
