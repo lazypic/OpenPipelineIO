@@ -1,0 +1,238 @@
+{{define "modal-scenario"}}
+    <div class="modal" id="modal-scenario" tabindex="-1" role="dialog" aria-labelledby="modal-scenario" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content bg-darkmode">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Scenario
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <input type="text" id="scenario-id" hidden>
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">Project<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="scenario-project" placeholder="Project">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">Order</label>
+                                        <input type="text" class="form-control" id="scenario-order">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">Seq</label>
+                                        <input type="text" class="form-control" id="scenario-seq">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">Scene</label>
+                                        <input type="text" class="form-control" id="scenario-scene">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">Cut</label>
+                                        <input type="text" class="form-control" id="scenario-cut">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">Name</label>
+                                        <input type="text" class="form-control" id="scenario-name" placeholder="Name">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">SeedImage</label>
+                                        <input type="text" class="form-control" id="scenario-seedimage" placeholder="SeedImage">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">Prompt</label>
+                                        <input type="text" class="form-control" id="scenario-prompt" placeholder="Prompt">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">NegativePrompt</label>
+                                        <input type="text" class="form-control" id="scenario-negativeprompt" placeholder="NegativePrompt">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">Script</label>
+                                        <input type="text" class="form-control" id="scenario-script" placeholder="Script">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">Time</label>
+                                        <select class="form-control" id="scenario-time">
+                                            <option value="D">D</option>
+                                            <option value="L">L</option>
+                                            <option value="SS">SS</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">Location</label>
+                                        <select class="form-control" id="scenario-location">
+                                            <option value="I">I</option>
+                                            <option value="E">E</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">Length</label>
+                                        <select class="form-control" id="scenario-length">
+                                            <option value="S">S</option>
+                                            <option value="L">L</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">Type</label>
+                                        <select class="form-control" id="scenario-type">
+                                            <option value="2D">2D</option>
+                                            <option value="3D">3D</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">Difficult</label>
+                                        <select class="form-control" id="scenario-difficult">
+                                            <option value="SS">SS</option>
+                                            <option value="S">S</option>
+                                            <option value="A">A</option>
+                                            <option value="B">B</option>
+                                            <option value="C">C</option>
+                                            <option value="D">D</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">VFX Script</label>
+                                        <input type="text" class="form-control" id="scenario-vfxscript" placeholder="VFX Script">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">VFX Solution</label>
+                                        <input type="text" class="form-control" id="scenario-vfxsolution" placeholder="VFX Solution">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">EA</label>
+                                        <input type="text" class="form-control" id="scenario-ea" placeholder="EA">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">Cost</label>
+                                        <input type="text" class="form-control" id="scenario-cost" placeholder="Cost">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">PageNum</label>
+                                        <input type="text" class="form-control" id="scenario-pagenum" placeholder="PageNum">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pt-1">LineNum</label>
+                                        <input type="text" class="form-control" id="scenario-linenum" placeholder="LineNum">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <div class="row pt-4">
+                                <div class="col">
+                                    <div class="from-group">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="scenario-ispreviz" name="scenario-ispreviz">
+                                            <label class="form-check-label finger unselectable" for="scenario-ispreviz">Previz</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="from-group">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="scenario-istechviz" name="scenario-istechviz">
+                                            <label class="form-check-label finger unselectable" for="scenario-istechviz">Techviz</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-4">
+                                <div class="col">
+                                    <div class="from-group">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="scenario-isvisuallab" name="scenario-isvisuallab">
+                                            <label class="form-check-label finger unselectable" for="scenario-isvisuallab">VisualLab</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-outline-darkmode" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-sm btn-outline-warning" id="scenario-postbutton" onclick="Post()" data-bs-dismiss="modal" hidden>ADD</button>
+                    <button type="button" class="btn btn-sm btn-outline-warning" id="scenario-putbutton" onclick="Put()" data-bs-dismiss="modal" hidden>EDIT</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" id="scenario-deletebutton" onclick="Delete()" data-bs-dismiss="modal" hidden>DELETE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{{end}}
+	

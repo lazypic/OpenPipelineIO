@@ -11,19 +11,19 @@ import (
 )
 
 func addScenario(client *mongo.Client, s Scenario) error {
-	if s.Name == "" {
-		return errors.New("nead scenario name")
+	if s.Script == "" {
+		return errors.New("nead scenario script")
 	}
 	collection := client.Database("OpenPipelineIO").Collection("scenario")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	num, err := collection.CountDocuments(ctx, bson.M{"name": s.Name})
+	num, err := collection.CountDocuments(ctx, bson.M{"script": s.Script})
 	if err != nil {
 		return err
 	}
 	if num != 0 {
-		return errors.New("The same name of data exist. Change the name of data")
+		return errors.New("The same script of data exist. Change the script of data")
 	}
 	_, err = collection.InsertOne(ctx, s)
 	if err != nil {
