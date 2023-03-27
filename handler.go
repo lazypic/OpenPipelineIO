@@ -26,7 +26,7 @@ func LoadTemplates() (*template.Template, error) {
 	return t, err
 }
 
-//템플릿 함수를 로딩합니다.
+// 템플릿 함수를 로딩합니다.
 var funcMap = template.FuncMap{
 	"AddProductionStartFrame":      AddProductionStartFrame,
 	"title":                        strings.Title,
@@ -305,6 +305,9 @@ func webserver(port string) {
 
 	// Endpoint
 	r.HandleFunc("/endpoints", handleEndpoints)
+
+	// Endpoint
+	r.HandleFunc("/scenarios", handleScenarios)
 
 	// Admin Setting
 	r.HandleFunc("/adminsetting", handleAdminSetting)
