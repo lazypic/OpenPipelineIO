@@ -106,7 +106,8 @@ func handlerAPIPdfToJson(w http.ResponseWriter, r *http.Request) {
 			results = append(results, info)
 		}
 	}
-	data, err := json.Marshal(results)
+
+	data, err := json.MarshalIndent(results, "", "\t")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
