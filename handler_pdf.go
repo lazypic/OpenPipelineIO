@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/unidoc/unipdf/v3/extractor"
 	"github.com/unidoc/unipdf/v3/model"
@@ -43,9 +44,6 @@ func handlerAPIPdfToJson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("--------------------\n")
-	fmt.Printf("PDF to text extraction:\n")
-	fmt.Printf("--------------------\n")
 	for i := 0; i < numPages; i++ {
 		pageNum := i + 1
 
@@ -69,7 +67,10 @@ func handlerAPIPdfToJson(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Println("------------------------------")
 		fmt.Printf("Page %d:\n", pageNum)
-		fmt.Printf("\"%s\"\n", text)
+		scenes := strings.Split(text, "\n\n")
+		for n, scene := range scenes {
+			fmt.Printf("%d: %s\n", n, scene)
+		}
 		fmt.Println("------------------------------")
 	}
 }
