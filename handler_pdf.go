@@ -69,8 +69,8 @@ func handlerAPIPdfToJson(w http.ResponseWriter, r *http.Request) {
 		scenes := strings.Split(text, "\n\n")
 		for n, scene := range scenes {
 			info := PDFFormatScenario{}
-			info.Line = n
-			info.Page = pageNum
+			info.LineNum = n
+			info.PageNum = pageNum
 			info.Text = scene
 			results = append(results, info)
 		}

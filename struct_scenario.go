@@ -30,10 +30,12 @@ type Scenario struct {
 	EA          int             `json:"ea"`          // 갯수, 견적에 필요
 	Manday      map[string]Task `json:"manday"`      // Task 리스트
 	Cost        int             `json:"cost"`        // 견적
+	PageNum     int             `json:"pagenum"`     // 페이지수, 시나리오의 페이지수, 나중에 정보를 추적하기 좋다. PDFFormatScenario 자료구조에서 참고한다.
+	LineNum     int             `json:"linenum"`     // 줄수, 줄수 정보는 나중에 정보를 역추적하기 좋다. PDFFormatScenario 자료구조에서 참고한다.
 }
 
 type PDFFormatScenario struct {
-	Page int    `json:"page"` // 페이지수
-	Line int    `json:"line"` // 줄수
-	Text string `json:"text"` // 글자
+	PageNum int    `json:"pagenum"` // 페이지수, 페이지 정보는 나중에 정보를 추적하기 좋다.
+	LineNum int    `json:"linenum"` // 줄수, 줄수 정보는 나중에 정보를 역추적하기 좋다.
+	Text    string `json:"text"`    // 글자
 }
