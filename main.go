@@ -14,8 +14,17 @@ import (
 	"time"
 
 	"github.com/digital-idea/dilog"
+	"github.com/unidoc/unipdf/v3/common/license"
 	"gopkg.in/mgo.v2"
 )
+
+func init() {
+	// unidoc 라이센스키 발급: https://cloud.unidoc.io
+	err := license.SetMeteredKey(os.Getenv(`UNIDOC_LICENSE_API_KEY`))
+	if err != nil {
+		fmt.Println("not load unidoc module")
+	}
+}
 
 var (
 	// DBIP 값은 컴파일 단계에서 회사에 따라 값이 바뀐다.
