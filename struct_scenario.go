@@ -31,3 +31,9 @@ type Scenario struct {
 	Manday      map[string]Task `json:"manday"`      // Task 리스트
 	Cost        int             `json:"cost"`        // 견적
 }
+
+type PDFFormatScenario struct {
+	Page int    `json:"page"` // 페이지수
+	Line int    `json:"line"` // 줄수
+	Text string `json:"text"` // 글자
+}
