@@ -605,6 +605,9 @@ func webserver(port string) {
 	r.HandleFunc("/api/setreviewagainforwaitstatustoday", handleAPISetReviewAgainForWaitStatusToday)
 	r.HandleFunc("/api/reviewoutputdatapath", handleAPIReviewOutputDataPath)
 
+	// REST API PDF
+	r.HandleFunc("/api/pdf-to-json", handlerAPIPdfToJson).Methods("POST")
+
 	// REST API Partner
 	r.HandleFunc("/api/partner", helpMethodOptionsHandler).Methods(http.MethodGet, http.MethodPut, http.MethodDelete, http.MethodOptions)
 	r.HandleFunc("/api/partner", postPartnerHandler).Methods("POST")
