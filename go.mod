@@ -18,6 +18,7 @@ require (
 	github.com/pdfcpu/pdfcpu v0.4.0
 	github.com/shurcooL/httpfs v0.0.0-20190527155220-6a4d4a70508b
 	github.com/shurcooL/vfsgen v0.0.0-20181202132449-6a9ea43bcacd
+	github.com/unidoc/unipdf/v3 v3.44.0
 	go.mongodb.org/mongo-driver v1.11.3
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
@@ -44,7 +45,6 @@ require (
 	github.com/stretchr/testify v1.7.4 // indirect
 	github.com/unidoc/pkcs7 v0.1.0 // indirect
 	github.com/unidoc/timestamp v0.0.0-20200412005513-91597fd3793a // indirect
-	github.com/unidoc/unipdf/v3 v3.44.0 // indirect
 	github.com/unidoc/unitype v0.2.1 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.1 // indirect
