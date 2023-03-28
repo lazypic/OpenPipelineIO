@@ -37,8 +37,8 @@ type Scenario struct {
 type GANImage struct {
 	URL               string            `json:"url"`               // 생성이미지 URL
 	SeedImage         string            `json:"seedimage"`         // Seed Image, AI를 이용해서 Image2Image로 이미지를 만들 때 사용하는 Seed 이미지
-	SubPrompt         string            `json:"subprompt"`         // AI로 그림을 그릴때 사용되는 Prompt
-	SubNegativePrompt string            `json:"subnegativeprompt"` // AI로 그림을 그릴 때 적용되면 안되는 Prompt 정보
+	SubPrompt         string            `json:"subprompt"`         // AI로 그림을 그릴때 사용되는 SubPrompt
+	SubNegativePrompt string            `json:"subnegativeprompt"` // AI로 그림을 그릴 때 적용되면 안되는 SubNegativePrompt 정보
 	Hyperparameter    map[string]string `json:"hyperparameter"`    // Hyperparamter 옵션
 }
 
