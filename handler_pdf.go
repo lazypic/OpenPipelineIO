@@ -108,9 +108,15 @@ func handlerAPIPdfToJson(w http.ResponseWriter, r *http.Request) {
 
 		scenes := strings.Split(text, "\n\n") // 시나리오 형식에서 씬 구분을 언제나 두번의 엔터로 설정하는 약속이 있다.
 		for n, scene := range scenes {
+			// 빈 문자열은 넘긴다.
 			if scene == "" {
 				continue
 			}
+			// - 1 - 형태의 페이지 번호는 넘긴다.
+			if regexpPageCase1.MatchString(scene) || regexpPageCase2.MatchString(scene) {
+				continue
+			}
+
 			pfs := PDFFormatScenario{}
 			pfs.Project = project
 			pfs.Version = version

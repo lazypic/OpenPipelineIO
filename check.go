@@ -61,6 +61,10 @@ var regexpTag = regexp.MustCompile(`^[가-힣a-zA-Z0-9_]+$`)
 
 var regexpRocketChatToken = regexp.MustCompile(`^[A-Za-z0-9+/]+$`)
 
+// 페이지 정규식
+var regexpPageCase1 = regexp.MustCompile(`^- \d+ -$`)
+var regexpPageCase2 = regexp.MustCompile(`^-\d+-$`)
+
 // Alexa 카메라의 형태 : N_AAAACCCC_YYMMDD_RRRR
 // - N : order
 // - AAAACCCC : reel name
