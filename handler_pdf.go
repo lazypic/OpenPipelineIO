@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -42,6 +43,17 @@ func handlerAPIPdfToJson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Value 읽기
+	project := r.FormValue("project")
+	version := r.FormValue("version")
+	part := r.FormValue("part")
+	partnum := 1
+	if part != "" {
+		partnum, err = strconv.Atoi(part)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	}
 	// 파일 읽기
 	file, _, err := r.FormFile("pdf")
 	if err != nil {
@@ -100,6 +112,9 @@ func handlerAPIPdfToJson(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 			pfs := PDFFormatScenario{}
+			pfs.Project = project
+			pfs.Version = version
+			pfs.Part = partnum
 			pfs.LineNum = n + 1
 			pfs.PageNum = pageNum
 			pfs.Text = scene
