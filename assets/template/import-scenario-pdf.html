@@ -9,13 +9,10 @@
             <div class="pt-3 pb-3">
                 <h2 class="section-heading">Import Scenario PDF</h2>
             </div>
+            <div id="drop-zone" class="text-muted">
+                upload pdf
+            </div>
             <div class="">
-                <form action="/api/pdf-to-json" class="dropzone" id="pdf-upload">
-                    <div class="fallback">
-                        <input name="file" type="file" />
-                    </div>
-                </form>
-                <small class="form-text text-mute">업로드할 .pdf 파일을 Drag & Drop 해주세요.</small>
                 <div class="form-group pt-5">
                     <label>Project</label>
                     <select id="project" class="form-control" onchange="changeReportJSONURI()">
@@ -45,9 +42,10 @@
 {{template "footerBootstrap"}}
 </body>
 <script src="/assets/bootstrap-5.0.2/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/dropzone.js"></script>
+
 <script src="/assets/js/upload-scenario-pdf.js"></script>
 <!--
+<script src="/assets/js/dropzone.js"></script>
 <script src="/assets/js/input.js"></script>
 <script src="/assets/js/csi_v02.js"></script>
 <script src="/assets/js/export.js"></script>
