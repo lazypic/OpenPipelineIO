@@ -306,8 +306,9 @@ func webserver(port string) {
 	// Endpoint
 	r.HandleFunc("/endpoints", handleEndpoints)
 
-	// Endpoint
+	// Scenario
 	r.HandleFunc("/scenarios", handleScenarios)
+	r.HandleFunc("/import-scenario-pdf", handleImportScenarioPdf)
 
 	// Admin Setting
 	r.HandleFunc("/adminsetting", handleAdminSetting)
@@ -343,7 +344,7 @@ func webserver(port string) {
 	r.HandleFunc("/rmorganization", handleRmOrganization)
 	r.HandleFunc("/rmorganization-submit", handleRmOrganizationSubmit)
 
-	// Export: Excel, Json, Csv, Dump
+	// Import, Export: Excel, Json, Csv, Dump
 	r.HandleFunc("/importexcel", handleImportExcel)
 	r.HandleFunc("/importjson", handleImportJSON)
 	r.HandleFunc("/exportexcel", handleExportExcel)

@@ -1,0 +1,57 @@
+{{define "import-scenario-pdf"}}
+
+{{template "headBootstrap5"}}
+{{template "navbar-bootstrap5" .}}
+
+<body>
+    <div class="container p-5">
+        <div class="col-lg-6 col-md-8 col-sm-12 mx-auto">
+            <div class="pt-3 pb-3">
+                <h2 class="section-heading">Import Scenario PDF</h2>
+            </div>
+            <div class="">
+                <form action="/api/pdf-to-json" class="dropzone" id="pdf-upload">
+                    <div class="fallback">
+                        <input name="file" type="file" />
+                    </div>
+                </form>
+                <small class="form-text text-mute">업로드할 .pdf 파일을 Drag & Drop 해주세요.</small>
+                <div class="form-group pt-5">
+                    <label>Project</label>
+                    <select id="project" class="form-control" onchange="changeReportJSONURI()">
+                        {{range .Projectlist}}
+                            <option value="{{.}}">{{.}}</option>
+                        {{end}}
+                    </select>
+                    <small class="form-text text-muted">import할 대상의 프로젝트를 선택해주세요.</small>
+                </div>
+                <div class="form-group">
+                    <label class="pt-1">Part / 부</label>
+                    <input type="number" min="1" max="1000" step="1" class="form-control" id="part" placeholder="1", value="1">
+                    <small class="form-text text-muted">문서의 Part. 예) 1부,2부,3부...</small>
+                </div>
+                <div class="form-group">
+                    <label class="pt-1">Version</label>
+                    <input type="text" class="form-control" id="version">
+                    <small class="form-text text-muted">문서의 버전, Draft 또는 초고, 퇴고일, 날짜등 버전정보로 활용될 수 있는 값</small>
+                </div>
+            </div>
+        </div>
+        <div class="text-center pt-5">
+            <span id="add-scenario-pdf" class="btn btn-outline-warning">ADD</span>
+        </div>
+    </div>
+
+{{template "footerBootstrap"}}
+</body>
+<script src="/assets/bootstrap-5.0.2/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/dropzone.js"></script>
+<script src="/assets/js/upload-scenario-pdf.js"></script>
+<!--
+<script src="/assets/js/input.js"></script>
+<script src="/assets/js/csi_v02.js"></script>
+<script src="/assets/js/export.js"></script>
+-->
+</html>
+
+{{end}}

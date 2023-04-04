@@ -55,7 +55,7 @@ func handlerAPIPdfToJson(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	// 파일 읽기
-	file, _, err := r.FormFile("pdf")
+	file, _, err := r.FormFile("file")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
