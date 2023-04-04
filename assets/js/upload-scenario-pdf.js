@@ -1,6 +1,3 @@
-
-
-
 // 수동으로 업로드 하는 방법을 찾아야 겠다.
 const dropZone = document.getElementById('drop-zone');
 
@@ -17,6 +14,7 @@ async function handleFileDrop(event) {
     formData.append('project', document.getElementById("project").options[document.getElementById("project").selectedIndex].value);
     formData.append('version', document.getElementById("version").value);
     formData.append('part', parseInt(document.getElementById("part").value));
+    formData.append('ignore', document.getElementById("ignore").value);
 
     try {
         const response = await fetch('/api/pdf-to-json', {

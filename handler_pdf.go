@@ -47,6 +47,8 @@ func handlerAPIPdfToJson(w http.ResponseWriter, r *http.Request) {
 	project := r.FormValue("project")
 	version := r.FormValue("version")
 	part := r.FormValue("part")
+	ignore := r.FormValue("ignore")
+
 	partnum := 1
 	if part != "" {
 		partnum, err = strconv.Atoi(part)
@@ -106,10 +108,14 @@ func handlerAPIPdfToJson(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		scenes := strings.Split(text, "\n\n") // 시나리오 형식에서 씬 구분을 언제나 두번의 엔터로 설정하는 약속이 있다.
+		scenes := strings.Split(text, "\n\n")
 		for n, scene := range scenes {
 			// 빈 문자열은 넘긴다.
 			if scene == "" {
+				continue
+			}
+
+			if ignore != "" && strings.Contains(scene, ignore) {
 				continue
 			}
 			// - 1 - 형태의 페이지 번호는 넘긴다.
