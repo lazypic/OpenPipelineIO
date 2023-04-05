@@ -56,7 +56,7 @@ type Project struct {
 	Pm                       string        `json:"pm"`                       // PM
 	PmEmail                  string        `json:"pmemail"`                  // PM 이메일. Item 제목을 클릭해서 메일을 보낼 때 참조 메일로 활용된다.
 	Pa                       string        `json:"pa"`                       // PA
-	Message                  string        `json:"message"`                  // CSI 상단에 표시되는 공지사항
+	Message                  string        `json:"message"`                  // 상단에 표시되는 공지사항
 	Wiki                     string        `json:"wiki"`                     // 위키 URL
 	EditDir                  string        `json:"editdir"`                  // 편집본 경로
 	Daily                    string        `json:"daily"`                    // 데일리 경로
