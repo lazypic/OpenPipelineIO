@@ -41,6 +41,7 @@ type GANImage struct {
 	SubPrompt         string            `json:"subprompt"`         // AI로 그림을 그릴때 사용되는 SubPrompt
 	SubNegativePrompt string            `json:"subnegativeprompt"` // AI로 그림을 그릴 때 적용되면 안되는 SubNegativePrompt 정보
 	Hyperparameter    map[string]string `json:"hyperparameter"`    // Hyperparamter 옵션
+	Keep              bool              `json:"keep"`              // 이미지를 유지할 것인지 여부
 }
 
 type PDFFormatScenario struct {
