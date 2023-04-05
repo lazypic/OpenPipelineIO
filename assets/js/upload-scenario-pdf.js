@@ -26,8 +26,16 @@ async function handleFileDrop(event) {
         });
 
         if (response.ok) {
-            const jsonResponse = await response.json();
-            console.log('전송 성공:', jsonResponse);
+            const data = await response.json();
+            const container = document.getElementById('container');
+            data.forEach(item => {
+                // 각 JSON 항목에 대해 div를 생성하고 데이터를 추가합니다.
+                const div = document.createElement('div');
+                div.textContent = `Page: ${item.pagenum}, Line: ${item.linenum}, Text: ${item.text}`;
+            
+                // 생성한 div를 컨테이너에 추가합니다.
+                container.appendChild(div);
+            });
         } else {
             console.error('전송 실패:', response.statusText);
         }
