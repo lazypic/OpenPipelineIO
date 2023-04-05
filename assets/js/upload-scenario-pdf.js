@@ -1,5 +1,6 @@
 // 수동으로 업로드 하는 방법을 찾아야 겠다.
 const dropZone = document.getElementById('drop-zone');
+let dataset = []
 
 function clearDivContent(divId) {
     const div = document.getElementById(divId);
@@ -37,7 +38,7 @@ async function handleFileDrop(event) {
 
         if (response.ok) {
             const data = await response.json();
-            
+            dataset = data // 데이터셋에 반환받은 데이터를 넣는다.
             data.forEach(item => {
                 // 각 JSON 항목에 대해 div를 생성하고 데이터를 추가합니다.
                 const div = document.createElement('div');
