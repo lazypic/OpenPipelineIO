@@ -154,12 +154,11 @@ func handleImportScenarioPdf(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	w.Header().Set("Content-Type", "text/html")
+
 	type recipe struct {
 		User
-		SessionID   string
-		Projectlist []string
-		Setting     Setting
+		SessionID string
+		Setting   Setting
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
@@ -183,43 +182,12 @@ func handleImportScenarioPdf(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 	rcp.User, err = getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	rcp.Projectlist, err = ProjectlistV2(client)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// 만약 사용자에게 AccessProjects가 설정되어있다면 해당리스트를 사용한다.
-	if len(rcp.User.AccessProjects) != 0 {
-		var accessProjects []string
-		for _, i := range rcp.Projectlist {
-			for _, j := range rcp.User.AccessProjects {
-				if i != j {
-					continue
-				}
-				accessProjects = append(accessProjects, j)
-			}
-		}
-		rcp.Projectlist = accessProjects
-	}
-	// 기존 Temp 경로 내부 .xlsx 데이터를 삭제한다.
-	tmp, err := userTemppath(ssid.ID)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = RemoveExt(tmp, ".pdf")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
+	w.Header().Set("Content-Type", "text/html")
 	err = TEMPLATES.ExecuteTemplate(w, "import-scenario-pdf", rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

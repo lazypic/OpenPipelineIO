@@ -17,26 +17,24 @@
                 <div class="form-group pt-5">
                     <label>Project</label>
                     <select id="project" class="form-control">
-                        {{range .Projectlist}}
-                            <option value="{{.}}">{{.}}</option>
-                        {{end}}
+                        <option value="" disabled selected>Select Project</option>
                     </select>
-                    <small class="form-text text-muted">import할 대상의 프로젝트를 선택해주세요.</small>
+                    <small class="form-text text-muted">select target project name</small>
                 </div>
                 <div class="form-group">
                     <label class="pt-1">Part / 부</label>
                     <input type="number" min="1" max="1000" step="1" class="form-control" id="part" placeholder="1", value="1">
-                    <small class="form-text text-muted">문서의 Part. 예) 1부,2부,3부...</small>
+                    <small class="form-text text-muted">Part of documents. ex) 1부,2부,3부...</small>
                 </div>
                 <div class="form-group">
                     <label class="pt-1">Version</label>
                     <input type="text" class="form-control" id="version">
-                    <small class="form-text text-muted">문서의 버전, Draft 또는 초고, 퇴고일, 날짜등 버전정보로 활용될 수 있는 값</small>
+                    <small class="form-text text-muted">Version. Draft 또는 초고, 퇴고일, 날짜등 버전정보로 활용될 수 있는 값</small>
                 </div>
                 <div class="form-group">
                     <label class="pt-1">Ignore</label>
                     <input type="text" class="form-control" id="ignore">
-                    <small class="form-text text-muted">이 단어가 들어가면 처리하지 않는다.</small>
+                    <small class="form-text text-muted">Ignore word, 이 단어가 들어가면 처리하지 않는다.</small>
                 </div>
             </div>
         </div>
