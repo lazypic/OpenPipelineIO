@@ -1,5 +1,6 @@
 // 수동으로 업로드 하는 방법을 찾아야 겠다.
 const dropZone = document.getElementById('drop-zone');
+const addButton = document.getElementById('addButton');
 let dataset = []
 
 function clearDivContent(divId) {
@@ -9,8 +10,6 @@ function clearDivContent(divId) {
 
 // 파일 드롭 처리 함수
 async function handleFileDrop(event) {
-    
-
     const container = document.getElementById('container');
     // 기존에 렌더링한 Text를 제거한다.
     clearDivContent('container');
@@ -64,6 +63,11 @@ function handleDragOver(event) {
 // 이벤트 리스너 등록
 dropZone.addEventListener('drop', handleFileDrop);
 dropZone.addEventListener('dragover', handleDragOver);
+addButton.addEventListener('click', handleAddScenario);
+
+function handleAddScenario() {
+    console.log(dataset);
+}
 
 
 async function fetchProjects() {
