@@ -1,0 +1,61 @@
+{{define "import-scenario-pdf"}}
+
+{{template "headBootstrap5"}}
+{{template "navbar-bootstrap5" .}}
+
+<body>
+    <div class="container p-5">
+        <div class="col-lg-6 col-md-8 col-sm-12 mx-auto">
+            <div class="pt-3 pb-3">
+                <h2 class="section-heading">Import Scenario PDF</h2>
+            </div>
+            <div id="drop-zone" class="text-muted">
+                Upload PDF<br>
+                Drag & Drop
+            </div>
+            <div class="">
+                <div class="form-group pt-5">
+                    <label>Project</label>
+                    <select id="project" class="form-control">
+                        <option value="" disabled selected>Select Project</option>
+                    </select>
+                    <small class="form-text text-muted">select target project name</small>
+                </div>
+                <div class="form-group">
+                    <label class="pt-1">Part / 부</label>
+                    <input type="number" min="1" max="1000" step="1" class="form-control" id="part" placeholder="1", value="1">
+                    <small class="form-text text-muted">Part of documents. ex) 1부,2부,3부...</small>
+                </div>
+                <div class="form-group">
+                    <label class="pt-1">Version</label>
+                    <input type="text" class="form-control" id="version">
+                    <small class="form-text text-muted">Version. Draft 또는 초고, 퇴고일, 날짜등 버전정보로 활용될 수 있는 값</small>
+                </div>
+                <div class="form-group">
+                    <label class="pt-1">Ignore</label>
+                    <input type="text" class="form-control" id="ignore">
+                    <small class="form-text text-muted">Ignore word, 이 단어가 들어가면 처리하지 않는다.</small>
+                </div>
+            </div>
+        </div>
+        <div id="container" class="text-muted">
+        </div>
+        <div class="text-center pt-5">
+            <span id="addButton" class="btn btn-outline-warning">ADD</span>
+        </div>
+    </div>
+
+{{template "footerBootstrap"}}
+</body>
+<script src="/assets/bootstrap-5.0.2/js/bootstrap.bundle.min.js"></script>
+
+<script src="/assets/js/upload-scenario-pdf.js"></script>
+<!--
+<script src="/assets/js/dropzone.js"></script>
+<script src="/assets/js/input.js"></script>
+<script src="/assets/js/csi_v02.js"></script>
+<script src="/assets/js/export.js"></script>
+-->
+</html>
+
+{{end}}

@@ -47,6 +47,8 @@ func handlerAPIPdfToJson(w http.ResponseWriter, r *http.Request) {
 	project := r.FormValue("project")
 	version := r.FormValue("version")
 	part := r.FormValue("part")
+	ignore := r.FormValue("ignore")
+
 	partnum := 1
 	if part != "" {
 		partnum, err = strconv.Atoi(part)
@@ -55,7 +57,7 @@ func handlerAPIPdfToJson(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	// 파일 읽기
-	file, _, err := r.FormFile("pdf")
+	file, _, err := r.FormFile("file")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -106,10 +108,14 @@ func handlerAPIPdfToJson(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		scenes := strings.Split(text, "\n\n") // 시나리오 형식에서 씬 구분을 언제나 두번의 엔터로 설정하는 약속이 있다.
+		scenes := strings.Split(text, "\n\n")
 		for n, scene := range scenes {
 			// 빈 문자열은 넘긴다.
 			if scene == "" {
+				continue
+			}
+
+			if ignore != "" && strings.Contains(scene, ignore) {
 				continue
 			}
 			// - 1 - 형태의 페이지 번호는 넘긴다.
@@ -135,4 +141,56 @@ func handlerAPIPdfToJson(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
+}
+
+// handleImportScenarioPdf 함수는 pdf를 Import 하는 페이지 이다.
+func handleImportScenarioPdf(w http.ResponseWriter, r *http.Request) {
+	ssid, err := GetSessionID(r)
+	if err != nil {
+		http.Redirect(w, r, "/signin", http.StatusSeeOther)
+		return
+	}
+	if ssid.AccessLevel == 0 {
+		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
+		return
+	}
+
+	type recipe struct {
+		User
+		SessionID string
+		Setting   Setting
+	}
+	rcp := recipe{}
+	rcp.Setting = CachedAdminSetting
+	rcp.SessionID = ssid.ID
+
+	client, err := mongo.NewClient(options.Client().ApplyURI(*flagMongoDBURI))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = client.Connect(ctx)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer client.Disconnect(ctx)
+	err = client.Ping(ctx, readpref.Primary())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	rcp.User, err = getUserV2(client, ssid.ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html")
+	err = TEMPLATES.ExecuteTemplate(w, "import-scenario-pdf", rcp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }

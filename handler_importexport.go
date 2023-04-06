@@ -76,7 +76,7 @@ func handleImportExcel(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = RemoveXLSX(tmp)
+	err = RemoveExt(tmp, ".xlsx")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -145,7 +145,7 @@ func handleImportJSON(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = RemoveJSON(tmp)
+	err = RemoveExt(tmp, ".json")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

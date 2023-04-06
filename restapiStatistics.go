@@ -187,10 +187,10 @@ func handleAPIStatisticsShottype(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := Recipe{}
 	rcp.Projects = make(map[string]TypeNum)
-	shotFilter := bson.A{bson.D{{"type", "org"}}, bson.D{{"type", "left"}}} // 타입이 샷이면서(일반샷,입체샷)
-	type2DFilter := bson.D{{"shottype", "2d"}, {"$or", shotFilter}}         // shottype이 2d 샷 검색
-	type3DFilter := bson.D{{"shottype", "3d"}, {"$or", shotFilter}}         // shottype이 3d 샷 검색
-	typeNoneFilter := bson.D{{"shottype", ""}, {"$or", shotFilter}}         // shottype이 "" 샷 검색
+	shotFilter := bson.A{bson.D{{Key: "type", Value: "org"}}, bson.D{{Key: "type", Value: "left"}}} // 타입이 샷이면서(일반샷,입체샷)
+	type2DFilter := bson.D{{Key: "shottype", Value: "2d"}, {Key: "$or", Value: shotFilter}}         // shottype이 2d 샷 검색
+	type3DFilter := bson.D{{Key: "shottype", Value: "3d"}, {Key: "$or", Value: shotFilter}}         // shottype이 3d 샷 검색
+	typeNoneFilter := bson.D{{Key: "shottype", Value: ""}, {Key: "$or", Value: shotFilter}}         // shottype이 "" 샷 검색
 	for _, project := range projects {
 		collection := client.Database("project").Collection(project)
 		type2dNum, err := collection.CountDocuments(ctx, type2DFilter)
@@ -269,9 +269,9 @@ func handleAPIStatisticsItemtype(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := Recipe{}
 	rcp.Projects = make(map[string]TypeNum)
-	shottypeFilter := bson.A{bson.D{{"type", "org"}}, bson.D{{"type", "left"}}} // 타입이 샷인 조건
-	assetFilter := bson.D{{"type", "asset"}}                                    // 타입이 에셋인 것
-	shotFilter := bson.D{{"$or", shottypeFilter}}                               // 타입이 샷인 것
+	shottypeFilter := bson.A{bson.D{{Key: "type", Value: "org"}}, bson.D{{Key: "type", Value: "left"}}} // 타입이 샷인 조건
+	assetFilter := bson.D{{Key: "type", Value: "asset"}}                                                // 타입이 에셋인 것
+	shotFilter := bson.D{{Key: "$or", Value: shottypeFilter}}                                           // 타입이 샷인 것
 	for _, project := range projects {
 		collection := client.Database("project").Collection(project)
 		shotNum, err := collection.CountDocuments(ctx, shotFilter)
@@ -690,9 +690,9 @@ func handleAPI2StatisticsShot(w http.ResponseWriter, r *http.Request) {
 	rcp.Status = make(map[string]int64)
 	rcp.Filters = make(map[string]bson.D)
 	// filter를 생성합니다.
-	shotFilter := bson.A{bson.D{{"type", "org"}}, bson.D{{"type", "left"}}}
+	shotFilter := bson.A{bson.D{{Key: "type", Value: "org"}}, bson.D{{Key: "type", Value: "left"}}}
 	for _, s := range status {
-		rcp.Filters[s.ID] = bson.D{{"statusv2", s.ID}, {"$or", shotFilter}}
+		rcp.Filters[s.ID] = bson.D{{Key: "statusv2", Value: s.ID}, {Key: "$or", Value: shotFilter}}
 	}
 
 	for _, project := range projects {
@@ -773,7 +773,7 @@ func handleAPI2StatisticsAsset(w http.ResponseWriter, r *http.Request) {
 	rcp.Filters = make(map[string]bson.D)
 	// filter를 생성합니다.
 	for _, s := range status {
-		rcp.Filters[s.ID] = bson.D{{"statusv2", s.ID}, {"type", "asset"}}
+		rcp.Filters[s.ID] = bson.D{{Key: "statusv2", Value: s.ID}, {Key: "type", Value: "asset"}}
 	}
 
 	for _, project := range projects {
@@ -860,15 +860,15 @@ func handleAPI2StatisticsTask(w http.ResponseWriter, r *http.Request) {
 		Filters map[string]bson.D `json:"-"` // 통계를 위한 필터저장에만 사용한다. 반환하지 않는다.
 	}
 	rcp := Recipe{}
-	typeFilter := bson.A{bson.D{{"type", "org"}}, bson.D{{"type", "left"}}}
+	typeFilter := bson.A{bson.D{{Key: "type", Value: "org"}}, bson.D{{Key: "type", Value: "left"}}}
 	if typ == "asset" {
-		typeFilter = bson.A{bson.D{{"type", "asset"}}}
+		typeFilter = bson.A{bson.D{{Key: "type", Value: "asset"}}}
 	}
 	rcp.Status = make(map[string]int64)
 	rcp.Filters = make(map[string]bson.D)
 	// filter를 생성합니다.
 	for _, s := range status {
-		rcp.Filters[s.ID] = bson.D{{"tasks." + task + ".statusv2", s.ID}, {"$or", typeFilter}}
+		rcp.Filters[s.ID] = bson.D{{Key: "tasks." + task + ".statusv2", Value: s.ID}, {Key: "$or", Value: typeFilter}}
 	}
 
 	for _, project := range projects {
@@ -957,15 +957,15 @@ func handleAPI2StatisticsPipelinestep(w http.ResponseWriter, r *http.Request) {
 		Filters map[string]bson.D `json:"-"` // 통계를 위한 필터저장에만 사용한다. 반환하지 않는다.
 	}
 	rcp := Recipe{}
-	typeFilter := bson.A{bson.D{{"type", "org"}}, bson.D{{"type", "left"}}}
+	typeFilter := bson.A{bson.D{{Key: "type", Value: "org"}}, bson.D{{Key: "type", Value: "left"}}}
 	if typ == "asset" {
-		typeFilter = bson.A{bson.D{{"type", "asset"}}}
+		typeFilter = bson.A{bson.D{{Key: "type", Value: "asset"}}}
 	}
 	rcp.Status = make(map[string]int64)
 	rcp.Filters = make(map[string]bson.D)
 	// filter를 생성합니다.
 	for _, s := range status {
-		rcp.Filters[s.ID] = bson.D{{"tasks." + task + ".statusv2", s.ID}, {"tasks." + task + ".pipelinestep", pipelinestep}, {"$or", typeFilter}}
+		rcp.Filters[s.ID] = bson.D{{Key: "tasks." + task + ".statusv2", Value: s.ID}, {Key: "tasks." + task + ".pipelinestep", Value: pipelinestep}, {Key: "$or", Value: typeFilter}}
 	}
 
 	for _, project := range projects {
@@ -1052,15 +1052,15 @@ func handleAPI2StatisticsTag(w http.ResponseWriter, r *http.Request) {
 		Filters map[string]bson.D `json:"-"` // 통계를 위한 필터저장에만 사용한다. 반환하지 않는다.
 	}
 	rcp := Recipe{}
-	typeFilter := bson.A{bson.D{{"type", "org"}}, bson.D{{"type", "left"}}}
+	typeFilter := bson.A{bson.D{{Key: "type", Value: "org"}}, bson.D{{Key: "type", Value: "left"}}}
 	if typ == "asset" {
-		typeFilter = bson.A{bson.D{{"type", "asset"}}}
+		typeFilter = bson.A{bson.D{{Key: "type", Value: "asset"}}}
 	}
 	rcp.Status = make(map[string]int64)
 	rcp.Filters = make(map[string]bson.D)
 	// filter를 생성합니다.
 	for _, s := range status {
-		rcp.Filters[s.ID] = bson.D{{"statusv2", s.ID}, {"tag", tagName}, {"$or", typeFilter}}
+		rcp.Filters[s.ID] = bson.D{{Key: "statusv2", Value: s.ID}, {Key: "tag", Value: tagName}, {Key: "$or", Value: typeFilter}}
 	}
 
 	for _, project := range projects {
@@ -1152,15 +1152,15 @@ func handleAPI2StatisticsUser(w http.ResponseWriter, r *http.Request) {
 		Filters map[string]bson.D `json:"-"` // 통계를 위한 필터저장에만 사용한다. 반환하지 않는다.
 	}
 	rcp := Recipe{}
-	typeFilter := bson.A{bson.D{{"type", "org"}}, bson.D{{"type", "left"}}}
+	typeFilter := bson.A{bson.D{{Key: "type", Value: "org"}}, bson.D{{Key: "type", Value: "left"}}}
 	if typ == "asset" {
-		typeFilter = bson.A{bson.D{{"type", "asset"}}}
+		typeFilter = bson.A{bson.D{{Key: "type", Value: "asset"}}}
 	}
 	rcp.Status = make(map[string]int64)
 	rcp.Filters = make(map[string]bson.D)
 	// filter를 생성합니다.
 	for _, s := range status {
-		rcp.Filters[s.ID] = bson.D{{"statusv2", s.ID}, {"tasks." + task + ".user", primitive.Regex{Pattern: name, Options: "i"}}, {"$or", typeFilter}}
+		rcp.Filters[s.ID] = bson.D{{Key: "statusv2", Value: s.ID}, {Key: "tasks." + task + ".user", Value: primitive.Regex{Pattern: name, Options: "i"}}, {Key: "$or", Value: typeFilter}}
 	}
 
 	for _, project := range projects {

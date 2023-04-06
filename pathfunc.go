@@ -35,8 +35,8 @@ func userTemppath(id string) (string, error) {
 	return path, nil
 }
 
-// RemoveXLSX 함수는 폴더 내부 .xlsx 파일을 지운다.
-func RemoveXLSX(dir string) error {
+// RemoveExt 함수는 폴더 내부 확장자 파일을 지운다.
+func RemoveExt(dir string, ext string) error {
 	d, err := os.Open(dir)
 	if err != nil {
 		return err
@@ -47,30 +47,7 @@ func RemoveXLSX(dir string) error {
 		return err
 	}
 	for _, name := range names {
-		if filepath.Ext(name) != ".xlsx" {
-			continue
-		}
-		err = os.RemoveAll(filepath.Join(dir, name))
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// RemoveJSON 함수는 폴더 내부 .xlsx 파일을 지운다.
-func RemoveJSON(dir string) error {
-	d, err := os.Open(dir)
-	if err != nil {
-		return err
-	}
-	defer d.Close()
-	names, err := d.Readdirnames(-1)
-	if err != nil {
-		return err
-	}
-	for _, name := range names {
-		if filepath.Ext(name) != ".json" {
+		if filepath.Ext(name) != ext {
 			continue
 		}
 		err = os.RemoveAll(filepath.Join(dir, name))
@@ -471,7 +448,7 @@ func imagesizeDpx(path string) (uint32, uint32, error) {
 	// dpx파일의 x,y값을 구하기 위해서는..
 	// 772바이트(x), 776바이트(y) 에서 사이즈를 읽으면 된다.
 	if strings.ToLower(filepath.Ext(path)) != ".dpx" {
-		return 0, 0, errors.New("확장자가 dpx가 아닙니다.")
+		return 0, 0, errors.New("확장자가 dpx가 아닙니다")
 	}
 	f, err := os.Open(path)
 	if err != nil {
@@ -486,7 +463,7 @@ func imagesizeDpx(path string) (uint32, uint32, error) {
 		return 0, 0, err
 	}
 	if !(string(c) == "SDPX" || string(c) == "XPDS") {
-		return 0, 0, errors.New("파일구조가 DPX 형태가 아닙니다.")
+		return 0, 0, errors.New("파일구조가 DPX 형태가 아닙니다")
 	}
 	magicNum := string(c)
 	var w uint32
