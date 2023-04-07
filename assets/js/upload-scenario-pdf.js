@@ -65,8 +65,40 @@ dropZone.addEventListener('drop', handleFileDrop);
 dropZone.addEventListener('dragover', handleDragOver);
 addButton.addEventListener('click', handleAddScenario);
 
-function handleAddScenario() {
-    console.log(dataset);
+async function handleAddScenario() {
+    // dataset을 scenario 자료구조로 바꾼다.
+    let scenarios = []
+    for (let i = 0; i < dataset.length; i++) {
+        let scenario = {
+            pagenum: dataset[i].pagenum,
+            linenum: dataset[i].linenum,
+            order: dataset[i].pagenum + "." + dataset[i].linenum,
+            script: dataset[i].text,
+            project: dataset[i].project,
+            ea: 1,
+        }
+        scenarios.push(scenario)
+    }
+    const formData = new FormData();
+    formData.append('scenarios', scenarios);
+    try {
+        const response = await fetch('/api/scenarios', {
+            method: 'POST',
+            headers: {
+                'Authorization': "Basic " + document.getElementById("token").value,
+            },
+            body: formData,
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.error('전송 성공:', data);
+        } else {
+            console.error('전송 실패:', response.statusText);
+        }
+    } catch (error) {
+        console.error('전송 중 오류 발생:', error);
+    }
 }
 
 
