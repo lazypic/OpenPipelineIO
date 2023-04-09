@@ -72,22 +72,20 @@ async function handleAddScenario() {
         let scenario = {
             pagenum: dataset[i].pagenum,
             linenum: dataset[i].linenum,
-            order: dataset[i].pagenum + "." + dataset[i].linenum,
+            order: parseFloat(dataset[i].pagenum + "." + dataset[i].linenum),
             script: dataset[i].text,
             project: dataset[i].project,
             ea: 1,
         }
         scenarios.push(scenario)
     }
-    const formData = new FormData();
-    formData.append('scenarios', scenarios);
     try {
         const response = await fetch('/api/scenarios', {
             method: 'POST',
             headers: {
                 'Authorization': "Basic " + document.getElementById("token").value,
             },
-            body: formData,
+            body: JSON.stringify(scenarios),
         });
 
         if (response.ok) {

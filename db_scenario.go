@@ -17,15 +17,7 @@ func addScenario(client *mongo.Client, s Scenario) error {
 	collection := client.Database("OpenPipelineIO").Collection("scenario")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	num, err := collection.CountDocuments(ctx, bson.M{"script": s.Script})
-	if err != nil {
-		return err
-	}
-	if num != 0 {
-		return errors.New("The same script of data exist. Change the script of data")
-	}
-	_, err = collection.InsertOne(ctx, s)
+	_, err := collection.InsertOne(ctx, s)
 	if err != nil {
 		return err
 	}

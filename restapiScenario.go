@@ -141,9 +141,8 @@ func postScenariosHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	p := []Scenario{}
+	var p []Scenario
 	var unmarshalErr *json.UnmarshalTypeError
-
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
 	err = decoder.Decode(&p)
@@ -156,6 +155,8 @@ func postScenariosHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	defer r.Body.Close()
+
 	for _, s := range p {
 		s.ID = primitive.NewObjectID()
 		err = addScenario(client, s)
