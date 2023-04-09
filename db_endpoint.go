@@ -93,3 +93,51 @@ func allEndpoints(client *mongo.Client) ([]Endpoint, error) {
 	}
 	return results, nil
 }
+
+func findEndpoints(ctx context.Context, collection *mongo.Collection, searchTerm string) ([]Endpoint, error) {
+	filter := bson.M{"$or": []bson.M{
+		{"endpoint": searchTerm},
+		{"model": searchTerm},
+		{"description": searchTerm},
+		{"tags": searchTerm},
+		{"category": searchTerm},
+	}}
+	cur, err := collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(ctx)
+
+	var results []Endpoint
+	for cur.Next(ctx) {
+		var endpoint Endpoint
+		err := cur.Decode(&endpoint)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, endpoint)
+	}
+
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}
+
+func searchEndpoints(client *mongo.Client, searchWord string) ([]Endpoint, error) {
+	var results []Endpoint
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err := client.Connect(ctx)
+	if err != nil {
+		return results, err
+	}
+	defer client.Disconnect(ctx)
+	collection := client.Database("OpenPipelineIO").Collection("endpoint")
+	results, err = findEndpoints(ctx, collection, searchWord)
+	if err != nil {
+		return results, err
+	}
+	return results, nil
+}
