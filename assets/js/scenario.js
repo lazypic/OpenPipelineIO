@@ -224,3 +224,18 @@ function string2array(str) {
     }
     return newArr;
 }
+
+// 이미지 생성 버튼을 클릭하면 이미지를 생성하고 이미지 소스를 업데이트합니다.
+document.querySelectorAll('.btn-genimage').forEach(button => {
+    button.addEventListener('click', async () => {
+      try {
+        //const imageUrl = await generateImage();
+        //const generatedImage = document.getElementById('generatedImage');
+        //generatedImage.src = imageUrl;
+        //generatedImage.style.display = 'block';
+        console.log("id")
+      } catch (error) {
+        console.error(error);
+      }
+    });
+});
