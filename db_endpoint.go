@@ -129,13 +129,8 @@ func searchEndpoints(client *mongo.Client, searchWord string) ([]Endpoint, error
 	var results []Endpoint
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	err := client.Connect(ctx)
-	if err != nil {
-		return results, err
-	}
-	defer client.Disconnect(ctx)
 	collection := client.Database("OpenPipelineIO").Collection("endpoint")
-	results, err = findEndpoints(ctx, collection, searchWord)
+	results, err := findEndpoints(ctx, collection, searchWord)
 	if err != nil {
 		return results, err
 	}

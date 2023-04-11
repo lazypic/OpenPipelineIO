@@ -81,6 +81,7 @@ Python, Go, Java, Javascript, node.JS, C++, C, C# 등 수많은 언어를 활용
 - [FullCalendar Event](documents/rest_fcevent.md)
 - [FullCalendar Resource](documents/rest_fcresource.md)
 - [PDF](documents/rest_pdf.md)
+- [Endpoint](documents/rest_endpoint.md)
 
 ### 썸네일 경로
 
