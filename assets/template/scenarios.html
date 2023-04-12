@@ -22,13 +22,16 @@
                             <div class="row">
                                 <div class="col-3">
                                     {{if .GANImages}}
-                                        <img src="/ganimage/{{$.Project}}/{{$.ID.Hex}}.jpg" class="thumbnail">
+                                        {{range .GANImages}}
+                                            <img src="{{.URL}}" class="thumbnail">
+                                        {{end}}
                                     {{else}}
                                         <img src="/assets/img/none.jpg" class="thumbnail">
                                     {{end}}
                                 </div>
                                 <div class="col-9">
                                     <div class="text-darkmode">
+                                        ID: {{.ID.Hex}}<br>
                                         Script: {{.Script}}<br>
                                         Prompt: {{.Prompt}} <span class="add btn-genimage">gen</span><br>
                                     </div>
