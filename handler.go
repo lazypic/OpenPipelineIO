@@ -629,6 +629,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/endpoint", helpMethodOptionsHandler).Methods(http.MethodGet, http.MethodPut, http.MethodDelete, http.MethodOptions)
 	r.HandleFunc("/api/endpoint", postEndpointHandler).Methods("POST")
 	r.HandleFunc("/api/endpoint/{id}", getEndpointHandler).Methods("GET")
+	r.HandleFunc("/api/endpoints", getEndpointsHandler).Methods("GET")
 	r.HandleFunc("/api/endpoint/{id}", putEndpointHandler).Methods("PUT")
 	r.HandleFunc("/api/endpoint/{id}", deleteEndpointHandler).Methods("DELETE")
 
