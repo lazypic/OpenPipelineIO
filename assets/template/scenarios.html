@@ -4,6 +4,8 @@
 {{template "navbar-bootstrap5" .}}
 {{template "modal-bootstrap5" .}}
 <div class="p-3">
+    <span id="progressIndicator" style="display: none;">Updating...</span>
+
     <div class="row" id="scenarios">
         {{range .Scenarios}}
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
@@ -33,7 +35,7 @@
                                     <div class="text-darkmode">
                                         ID: {{.ID.Hex}}<br>
                                         Script: {{.Script}}<br>
-                                        Prompt: {{.Prompt}} <span class="add btn-genimage">gen</span><br>
+                                        Prompt: {{.Prompt}} <span class="add btn-genimage" >gen</span><br>
                                     </div>
                                 </div>
                             </div>
