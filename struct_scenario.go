@@ -36,6 +36,7 @@ type Scenario struct {
 // GANImage 자료구조는 Generative Adversarial Network (GAN) image의 약자이다.
 type GANImage struct {
 	URL               string            `json:"url"`               // 생성이미지 URL
+	Path              string            `json:"path"`              // 이미지 경로, Excel을 만들 때 사용한다.
 	SeedNum           int               `json:"seednum"`           // Seed number
 	SeedURL           string            `json:"seedurl"`           // Seed Image, AI를 이용해서 Image2Image로 이미지를 만들 때 사용하는 Seed URL
 	SubPrompt         string            `json:"subprompt"`         // AI로 그림을 그릴때 사용되는 SubPrompt
