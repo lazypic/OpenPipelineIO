@@ -228,14 +228,76 @@ function string2array(str) {
 // 이미지 생성 버튼을 클릭하면 이미지를 생성하고 이미지 소스를 업데이트합니다.
 document.querySelectorAll('.btn-genimage').forEach(button => {
     button.addEventListener('click', async () => {
-      try {
-        //const imageUrl = await generateImage();
-        //const generatedImage = document.getElementById('generatedImage');
-        //generatedImage.src = imageUrl;
-        //generatedImage.style.display = 'block';
-        console.log("id")
-      } catch (error) {
-        console.error(error);
-      }
+        try {
+            const progressIndicator = document.getElementById("progressIndicator");
+            progressIndicator.style.display = "inline"; // Show progress indicator
+
+            const endpoints = await getData("/api/endpoints?search=replicate");
+            console.log(endpoints)
+            
+            const endpoint = endpoints[0].endpoint;
+            const token = endpoints[0].token;
+            const auth = endpoints[0].authorization;
+            
+            console.log(endpoint, auth + " " + token)
+            
+            const img = {
+                "version": "5c7d5dc6dd8bf75c1acaa8565735e7986bc5b66206b55cca93cb72c9bf15ccaa",
+                "input": {"text": "Alice"},
+            };
+            const imageDatas = await postData(endpoint, auth + " " + token, img);
+            console.log(imageDatas)
+            /*
+            const imageUrl = imageDatas[0]; // Assume the API returns the image URL in the "url" field
+            // https://replicate.com/docs/reference/http
+            await postData("/api/ganimage/" + id, "Basic "+ document.getElementById("token").value, { prompt: "test", url: imageUrl });
+
+            document.getElementById("thumbnail").src = imageUrl;
+            */
+
+        } catch (error) {
+            console.error("Error updating image:", error);
+
+        } finally {
+            progressIndicator.style.display = "none"; // Hide progress indicator
+        }
     });
 });
+
+
+async function postData(url = "", auth="", data = {}) {
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": auth, 
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+    }
+
+    const jsonData = await response.json();
+    return jsonData;
+}
+
+
+
+async function getData(url = "") {
+    const response = await fetch(url, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Basic "+ document.getElementById("token").value,
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+    }
+
+    const jsonData = await response.json();
+    return jsonData;
+}
