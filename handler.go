@@ -641,6 +641,11 @@ func webserver(port string) {
 	r.HandleFunc("/api/scenario/{id}", deleteScenarioHandler).Methods("DELETE")
 	r.HandleFunc("/api/scenarios", postScenariosHandler).Methods("POST")
 
+	r.HandleFunc("/api/ganimage/{id}", postGANImageHandler).Methods("POST")
+	r.HandleFunc("/api/ganimages/{id}", getGANImagesHandler).Methods("GET")
+	r.HandleFunc("/api/ganimage/{id}", putGANImageHandler).Methods("PUT")
+	r.HandleFunc("/api/ganimage/{id}", deleteGANImageHandler).Methods("DELETE")
+
 	// REST API Money
 	r.HandleFunc("/api/money", helpMethodOptionsHandler).Methods(http.MethodGet, http.MethodPut, http.MethodDelete, http.MethodOptions)
 	r.HandleFunc("/api/money", postMoneyHandler).Methods("POST")
