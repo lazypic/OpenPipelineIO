@@ -26,7 +26,7 @@ func addItem(session *mgo.Session, project string, i Item) error {
 		return errors.New("프로젝트가 존재하지 않습니다")
 	}
 	//문서의 중복이 있는지 체크합니다.
-	c = session.DB("project").C(project)
+	c = session.DB(*flagDBName).C("items")
 	num, err = c.Find(bson.M{"name": i.Name, "type": i.Type}).Count()
 	if err != nil {
 		return err
@@ -50,7 +50,7 @@ func setItem(session *mgo.Session, project string, i Item) error {
 	}
 	i.updateStatusV2(status)
 	i.setRnumTag() // 롤넘버에 따른 테그 셋팅
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": i.ID}, i)
 	if err != nil {
 		return err
@@ -63,7 +63,7 @@ func getItem(session *mgo.Session, project, id string) (Item, error) {
 		return Item{}, nil
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	var result Item
 	err := c.Find(bson.M{"id": id}).One(&result)
 	if err != nil {
@@ -75,7 +75,7 @@ func getItem(session *mgo.Session, project, id string) (Item, error) {
 // Shot 함수는 프로젝트명, 샷이름을 이용해서 샷정보를 반환한다.
 func Shot(session *mgo.Session, project string, name string) (Item, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	var result Item
 	// org, left 갯수를 구한다.
 	orgnum, err := c.Find(bson.M{"id": name + "_org"}).Count()
@@ -100,7 +100,7 @@ func Shot(session *mgo.Session, project string, name string) (Item, error) {
 // Asset 함수는 프로젝트명, 에셋 이름을 입력받아 에셋정보를 반환한다.
 func Asset(session *mgo.Session, project string, name string) (Item, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	var result Item
 	err := c.Find(bson.M{"id": name + "_asset"}).One(&result)
 	if err != nil {
@@ -113,7 +113,7 @@ func Asset(session *mgo.Session, project string, name string) (Item, error) {
 func AllAssets(session *mgo.Session, project string) ([]string, error) {
 	var result []string
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err := c.Find(bson.M{"type": "asset"}).Distinct("name", &result)
 	if err != nil {
 		return nil, err
@@ -125,7 +125,7 @@ func AllAssets(session *mgo.Session, project string) ([]string, error) {
 // SearchName 함수는 입력된 문자열이 'name'키 값에 포함되어 있다면 해당 아이템을 반환한다.
 func SearchName(session *mgo.Session, project string, name string) ([]Item, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	results := []Item{}
 	err := c.Find(bson.M{"name": &bson.RegEx{Pattern: name, Options: "i"}}).Sort("name").All(&results)
 	if err != nil {
@@ -137,7 +137,7 @@ func SearchName(session *mgo.Session, project string, name string) ([]Item, erro
 // UseTypes 함수는 project, name을 받아서 사용되는 모든 타입을 반환한다.
 func UseTypes(session *mgo.Session, project string, name string) ([]string, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	items := []Item{}
 	err := c.Find(bson.M{"name": name}).Sort("type").All(&items)
 	if err != nil {
@@ -153,7 +153,7 @@ func UseTypes(session *mgo.Session, project string, name string) ([]string, erro
 // Seqs 함수는 프로젝트 이름을 받아서 seq 리스트를 반환한다.
 func Seqs(session *mgo.Session, project string) ([]string, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	var results []Item
 	err := c.Find(bson.M{"$or": []bson.M{{"type": "org"}, {"type": "left"}}}).Select(bson.M{"seq": 1}).All(&results)
 	if err != nil {
@@ -175,7 +175,7 @@ func Seqs(session *mgo.Session, project string) ([]string, error) {
 // Shots 함수는 프로젝트 이름과 입력된 시퀀스가 'name'키 값에 포함되어 있다면 shots 리스트를 반환한다.
 func Shots(session *mgo.Session, project string, seq string) ([]string, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	var results []Item
 	query := bson.M{"name": &bson.RegEx{Pattern: seq, Options: "i"}, "type": bson.M{"$in": []string{"org", "left"}}}
 	err := c.Find(query).Select(bson.M{"name": 1}).All(&results)
@@ -210,7 +210,7 @@ func rmItem(session *mgo.Session, project, name, usertyp string) error {
 	} else {
 		typ = usertyp
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	num, err := c.Find(bson.M{"name": name, "type": typ}).Count()
 	if err != nil {
 		return err
@@ -227,7 +227,7 @@ func rmItem(session *mgo.Session, project, name, usertyp string) error {
 
 func rmItemID(session *mgo.Session, project, id string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err := c.Remove(bson.M{"id": id})
 	if err != nil {
 		return err
@@ -242,7 +242,7 @@ func Distinct(session *mgo.Session, project string, key string) ([]string, error
 		return result, nil
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err := c.Find(bson.M{}).Distinct(key, &result)
 	if err != nil {
 		return nil, err
@@ -258,7 +258,7 @@ func DistinctDdline(session *mgo.Session, project string, key string) ([]string,
 		return result, nil
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err := c.Find(bson.M{}).Distinct(key, &result)
 	if err != nil {
 		return nil, err
@@ -296,7 +296,7 @@ func DistinctDdline(session *mgo.Session, project string, key string) ([]string,
 func SearchAllShot(session *mgo.Session, project, sortkey string) ([]Item, error) {
 	results := []Item{}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	queries := []bson.M{}
 	queries = append(queries, bson.M{"type": "org"})
 	queries = append(queries, bson.M{"type": "left"})
@@ -312,7 +312,7 @@ func SearchAllShot(session *mgo.Session, project, sortkey string) ([]Item, error
 func SearchAllAsset(session *mgo.Session, project, sortkey string) ([]Item, error) {
 	results := []Item{}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err := c.Find(bson.M{"type": "asset"}).Sort(sortkey).All(&results)
 	if err != nil {
 		return nil, err
@@ -324,7 +324,7 @@ func SearchAllAsset(session *mgo.Session, project, sortkey string) ([]Item, erro
 func SearchAll(session *mgo.Session, project, sortkey string) ([]Item, error) {
 	results := []Item{}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	queries := []bson.M{}
 	queries = append(queries, bson.M{"type": "org"})
 	queries = append(queries, bson.M{"type": "left"})
@@ -355,7 +355,7 @@ func SearchAssetTree(session *mgo.Session, op SearchOption) ([]Item, error) {
 		return []Item{}, nil
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(op.Project)
+	c := session.DB(*flagDBName).C("items")
 	var allAssets []Item
 	err := c.Find(bson.M{"type": "asset"}).Sort(op.Sortkey).All(&allAssets)
 	if err != nil {
@@ -404,7 +404,7 @@ func SearchAssetTree(session *mgo.Session, op SearchOption) ([]Item, error) {
 // SearchKey 함수는 Item.{key} 필드의 값과 검색어가 정확하게 일치하는 항목들만 검색한다.
 func SearchKey(session *mgo.Session, op SearchOption, key string) ([]Item, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(op.Project)
+	c := session.DB(*flagDBName).C("items")
 	query := []bson.M{}
 	// 아래 단어는 OpenPipelineIO에 버튼으로 되어있는 태그단어를 클릭시 작동되는 예약어이다.
 	switch op.Searchword {
@@ -436,7 +436,7 @@ func SearchKey(session *mgo.Session, op SearchOption, key string) ([]Item, error
 // SearchDdline 함수는 검색옵션, 파트정보(2d,3d)를 받아서 쿼리한다.
 func SearchDdline(session *mgo.Session, op SearchOption, part string) ([]Item, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(op.Project)
+	c := session.DB(*flagDBName).C("items")
 	query := []bson.M{}
 	switch part {
 	case "2d":
@@ -498,7 +498,7 @@ func Totalnum(session *mgo.Session, project string) (Infobarnum, error) {
 		return Infobarnum{}, nil
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 
 	var results Infobarnum
 	totalnum, err := c.Find(bson.M{"$or": []bson.M{{"type": "org"}, {"type": "left"}}}).Count()
@@ -515,7 +515,7 @@ func TotalTaskStatusnum(session *mgo.Session, project, task string) (Infobarnum,
 		return Infobarnum{}, nil
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 
 	var results Infobarnum
 	results.StatusNum = make(map[string]int)
@@ -585,7 +585,7 @@ func TotalTaskAndUserStatusnum(session *mgo.Session, project, task, user string)
 		return Infobarnum{}, nil
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 
 	var results Infobarnum
 	results.StatusNum = make(map[string]int)
@@ -669,7 +669,7 @@ func TotalUserStatusnum(session *mgo.Session, project, user string) (Infobarnum,
 		return Infobarnum{}, nil
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 
 	var results Infobarnum
 	results.StatusNum = make(map[string]int)
@@ -788,7 +788,7 @@ func TotalStatusnum(session *mgo.Session, project string) (Infobarnum, error) {
 		return Infobarnum{}, nil
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 
 	var results Infobarnum
 	results.StatusNum = make(map[string]int)
@@ -859,7 +859,7 @@ func setTaskMov(session *mgo.Session, project, name, task, mov string) (string, 
 	if err != nil {
 		return "", err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	typ, err := Type(session, project, name)
 	if err != nil {
 		return "", err
@@ -883,7 +883,7 @@ func setTaskExpectDay(session *mgo.Session, project, id, task string, expectDay 
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = HasTask(session, project, id, task)
 	if err != nil {
 		return err
@@ -902,7 +902,7 @@ func setTaskResultDay(session *mgo.Session, project, id, task string, resultDay 
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = HasTask(session, project, id, task)
 	if err != nil {
 		return err
@@ -921,7 +921,7 @@ func setTaskUserComment(session *mgo.Session, project, id, task, comment string)
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = HasTask(session, project, id, task)
 	if err != nil {
 		return err
@@ -940,7 +940,7 @@ func setTaskLevel(session *mgo.Session, project, name, task, level string) error
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 
 	typ, err := Type(session, project, name)
 	if err != nil {
@@ -967,7 +967,7 @@ func setTaskLevel(session *mgo.Session, project, name, task, level string) error
 // 입체샷인경우 left를 반환한다.
 // 에셋은 asset을 반환한다.
 func Type(session *mgo.Session, project, name string) (string, error) {
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	var items []Item
 	err := c.Find(bson.M{"$or": []bson.M{{"name": name, "type": "org"}, {"name": name, "type": "left"}, {"name": name, "type": "asset"}}}).All(&items)
 	if err != nil {
@@ -993,7 +993,7 @@ func SetImageSizeVer2(session *mgo.Session, project, id, key, size string) error
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	if key == "dsize" || key == "undistortionsize" {
 		err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"dsize": size, "undistortionsize": size, "updatetime": time.Now().Format(time.RFC3339)}})
 		if err != nil {
@@ -1027,7 +1027,7 @@ func SetTimecode(session *mgo.Session, project, name, key, timecode string) erro
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": name + "_" + typ}, bson.M{"$set": bson.M{key: timecode, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1049,7 +1049,7 @@ func SetUseType(session *mgo.Session, project, id, usetype string) error {
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"usetype": usetype, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1083,7 +1083,7 @@ func SetFrame(session *mgo.Session, project, name, key string, frame int) error 
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": name + "_" + typ}, bson.M{"$set": bson.M{key: frame, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1098,7 +1098,7 @@ func SetCameraPubPath(session *mgo.Session, project, id, path string) error {
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"productioncam.pubpath": path, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1116,7 +1116,7 @@ func SetCameraPubTask(session *mgo.Session, project, id, task string) error {
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"productioncam.pubtask": task, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1131,7 +1131,7 @@ func SetCameraLensmm(session *mgo.Session, project, id, lensmm string) error {
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"productioncam.lensmm": lensmm, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1146,7 +1146,7 @@ func SetCameraProjection(session *mgo.Session, project, id string, isProjection 
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"productioncam.projection": isProjection, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1168,7 +1168,7 @@ func SetObjectID(session *mgo.Session, project, name string, in, out int) error 
 	if typ != "asset" {
 		return errors.New("asset 타입이 아닙니다")
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": name + "_" + typ}, bson.M{"$set": bson.M{"objectidin": in, "objectidout": out, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1183,7 +1183,7 @@ func SetSeq(session *mgo.Session, project, id, seq string) error {
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"seq": seq, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1198,7 +1198,7 @@ func SetNetflixID(session *mgo.Session, project, id, netflixid string) error {
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"netflixid": netflixid, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1213,7 +1213,7 @@ func SetSeason(session *mgo.Session, project, id, season string) error {
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"season": season, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1228,7 +1228,7 @@ func SetEpisode(session *mgo.Session, project, id, episode string) error {
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"episode": episode, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1243,7 +1243,7 @@ func SetOverscanRatio(session *mgo.Session, project, id string, ratio float64) e
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"overscanratio": ratio, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1258,7 +1258,7 @@ func SetPlatePath(session *mgo.Session, project, id, path string) error {
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"platepath": path, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1277,7 +1277,7 @@ func SetThummov(session *mgo.Session, project, name, path string) error {
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": name + "_" + typ}, bson.M{"$set": bson.M{"thummov": path, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1296,7 +1296,7 @@ func SetBeforemov(session *mgo.Session, project, name, path string) error {
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": name + "_" + typ}, bson.M{"$set": bson.M{"beforemov": path, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1315,7 +1315,7 @@ func SetAftermov(session *mgo.Session, project, name, path string) error {
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": name + "_" + typ}, bson.M{"$set": bson.M{"aftermov": path, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1330,7 +1330,7 @@ func SetEditmov(session *mgo.Session, project, id, path string) error {
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"editmov": path, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1361,7 +1361,7 @@ func SetTaskStatus(session *mgo.Session, project, id, task, status string) error
 	t.StatusV2 = status
 	item.Tasks[task] = t
 
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	item.Updatetime = time.Now().Format(time.RFC3339)
 	globalStatus, err := AllStatus(session)
 	if err != nil {
@@ -1389,7 +1389,7 @@ func SetTaskPipelinestep(session *mgo.Session, project, id, task, pipelinestep s
 	t := item.Tasks[task]
 	t.Pipelinestep = pipelinestep
 	item.Tasks[task] = t
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	item.Updatetime = time.Now().Format(time.RFC3339)
 	err = c.Update(bson.M{"id": item.ID}, item)
 	if err != nil {
@@ -1417,7 +1417,7 @@ func SetTaskStatusV2(session *mgo.Session, project, id, task, status string) (st
 	item.Tasks[task] = t
 
 	// 앞으로 바뀔 상태
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	// 아이템 업데이트 시간을 변경한다.
 	item.Updatetime = time.Now().Format(time.RFC3339)
 	// 입력받은 상태가 글로벌 status에 존재하는지 체크한다.
@@ -1483,7 +1483,7 @@ func AddTask(session *mgo.Session, project, id, task, status, pipelinestep strin
 	} else {
 		return fmt.Errorf("이미 %s 에 %s Task가 존재합니다", id, taskname)
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	item.Updatetime = time.Now().Format(time.RFC3339)
 	globalStatus, err := AllStatus(session)
 	if err != nil {
@@ -1505,7 +1505,7 @@ func RmTask(session *mgo.Session, project, id, taskname string) error {
 		return err
 	}
 	delete(item.Tasks, taskname)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	item.Updatetime = time.Now().Format(time.RFC3339)
 	status, err := AllStatus(session)
 	if err != nil {
@@ -1534,7 +1534,7 @@ func SetTaskUserV2(session *mgo.Session, project, id, task, user string) error {
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": item.ID}, bson.M{"$set": bson.M{"tasks." + task + ".user": user, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1557,7 +1557,7 @@ func SetTaskUserID(session *mgo.Session, project, id, task, userid string) error
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": item.ID}, bson.M{"$set": bson.M{"tasks." + task + ".userid": userid, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1572,7 +1572,7 @@ func SetTaskDate(session *mgo.Session, project, id, task, date string) error {
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	fullTime, err := ditime.ToFullTime(19, date)
 	if err != nil {
 		return err
@@ -1591,7 +1591,7 @@ func SetTaskDuration(session *mgo.Session, project, id, task, start, end string)
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	startTime, err := ditime.ToFullTime(10, start)
 	if err != nil {
 		return err
@@ -1614,7 +1614,7 @@ func SetTaskDuration1st(session *mgo.Session, project, id, task, start, end stri
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	startTime, err := ditime.ToFullTime(10, start)
 	if err != nil {
 		return err
@@ -1637,7 +1637,7 @@ func SetTaskDuration2nd(session *mgo.Session, project, id, task, start, end stri
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	startTime, err := ditime.ToFullTime(10, start)
 	if err != nil {
 		return err
@@ -1672,7 +1672,7 @@ func SetDeadline2D(session *mgo.Session, project, name, date string) (string, er
 			return id, err
 		}
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"ddline2d": fullTime, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return id, err
@@ -1699,7 +1699,7 @@ func SetDeadline3D(session *mgo.Session, project, name, date string) (string, er
 			return id, err
 		}
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"ddline3d": fullTime, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return id, err
@@ -1714,7 +1714,7 @@ func SetTaskStartdate(session *mgo.Session, project, id, task, date string) erro
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = HasTask(session, project, id, task)
 	if err != nil {
 		return err
@@ -1737,7 +1737,7 @@ func SetTaskStartdate2nd(session *mgo.Session, project, id, task, date string) e
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = HasTask(session, project, id, task)
 	if err != nil {
 		return err
@@ -1769,7 +1769,7 @@ func SetTaskUserNote(session *mgo.Session, project, name, task, usernote string)
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"tasks." + task + ".usernote": usernote, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1784,7 +1784,7 @@ func SetTaskPredate(session *mgo.Session, project, id, task, date string) (strin
 	if err != nil {
 		return "", err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = HasTask(session, project, id, task)
 	if err != nil {
 		return id, err
@@ -1819,7 +1819,7 @@ func SetShotType(session *mgo.Session, project, name, shottype string) (string, 
 	if err != nil {
 		return id, err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"shottype": strings.ToLower(shottype), "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return id, err
@@ -1845,7 +1845,7 @@ func SetOutputName(session *mgo.Session, project, name, outputname string) error
 		return errors.New("outputname 이 빈 문자열 입니다")
 	}
 	id := name + "_" + typ
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"outputname": outputname, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1868,7 +1868,7 @@ func SetRetimePlate(session *mgo.Session, project, name, retimeplate string) err
 		return fmt.Errorf("%s 는 %s type 입니다. retime plate를 설정할 수 없습니다", name, typ)
 	}
 	id := name + "_" + typ
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"retimeplate": retimeplate, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1891,7 +1891,7 @@ func SetOCIOcc(session *mgo.Session, project, name, path string) error {
 		return fmt.Errorf("%s 는 %s type 입니다. 설정할 수 없습니다", name, typ)
 	}
 	id := name + "_" + typ
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"ociocc": path, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1911,7 +1911,7 @@ func SetRollmedia(session *mgo.Session, project, name, rollmedia string) error {
 		return err
 	}
 	id := name + "_" + typ
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"rollmedia": rollmedia, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -1922,7 +1922,7 @@ func SetRollmedia(session *mgo.Session, project, name, rollmedia string) error {
 // SetScanname 함수는 item에 Scanname을 셋팅한다.
 func SetScanname(session *mgo.Session, project, id, scanname string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err := c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"scanname": scanname, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -2000,7 +2000,7 @@ func SetScanTimecodeIn(session *mgo.Session, project, name, timecode string) err
 	if !(regexpTimecode.MatchString(timecode) || timecode == "") {
 		return fmt.Errorf("%s 문자열은 00:00:00:00 형식의 문자열이 아닙니다", timecode)
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"scantimecodein": timecode, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -2026,7 +2026,7 @@ func SetScanTimecodeOut(session *mgo.Session, project, name, timecode string) er
 	if !(regexpTimecode.MatchString(timecode) || timecode == "") {
 		return fmt.Errorf("%s 문자열은 00:00:00:00 형식의 문자열이 아닙니다", timecode)
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"scantimecodeout": timecode, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -2052,7 +2052,7 @@ func SetJustTimecodeIn(session *mgo.Session, project, name, timecode string) err
 	if !(regexpTimecode.MatchString(timecode) || timecode == "") {
 		return fmt.Errorf("%s 문자열은 00:00:00:00 형식의 문자열이 아닙니다", timecode)
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"justtimecodein": timecode, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -2078,7 +2078,7 @@ func SetJustTimecodeOut(session *mgo.Session, project, name, timecode string) er
 	if !(regexpTimecode.MatchString(timecode) || timecode == "") {
 		return fmt.Errorf("%s 문자열은 00:00:00:00 형식의 문자열이 아닙니다", timecode)
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"justtimecodeout": timecode, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -2098,7 +2098,7 @@ func SetFinver(session *mgo.Session, project, name, version string) error {
 		return err
 	}
 	id := name + "_" + typ
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"finver": version, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -2122,7 +2122,7 @@ func SetFindate(session *mgo.Session, project, name, date string) error {
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"findate": fullTime, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -2142,7 +2142,7 @@ func SetCrowdAsset(session *mgo.Session, project, name string) (string, bool, er
 		return "", false, err
 	}
 	id := name + "_" + typ
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	item, err := getItem(session, project, id)
 	if err != nil {
 		return id, item.CrowdAsset, err
@@ -2173,7 +2173,7 @@ func AddTag(session *mgo.Session, project, id, inputTag string) (string, error) 
 		}
 	}
 	newTags := append(i.Tag, rmspaceTag)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"tag": newTags, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return i.Name, err
@@ -2199,7 +2199,7 @@ func AddAssetTag(session *mgo.Session, project, id, assettag string) error {
 		}
 	}
 	newTags := append(i.Assettags, rmspaceTag)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"assettags": newTags, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
@@ -2210,7 +2210,7 @@ func AddAssetTag(session *mgo.Session, project, id, assettag string) error {
 // RenameTag 함수는 item의 Tag를 리네임한다.
 func RenameTag(session *mgo.Session, project, before, after string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	var items []Item
 	err := c.Find(bson.M{}).All(&items)
 	if err != nil {
@@ -2332,7 +2332,7 @@ func SetNote(session *mgo.Session, project, id, userID, text string, overwrite b
 	if err != nil {
 		return "", "", err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	i, err := getItem(session, project, id)
 	if err != nil {
 		return "", "", err
@@ -2409,7 +2409,7 @@ func EditComment(session *mgo.Session, project, id, date, authorName, text, medi
 		}
 		comments = append(comments, c)
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"comments": comments, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return i.Name, err
@@ -2615,7 +2615,7 @@ func addTaskPublish(session *mgo.Session, project, name, task, key string, p Pub
 	if err != nil {
 		return err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	typ, err := Type(session, project, name)
 	if err != nil {
 		return err
@@ -2647,7 +2647,7 @@ func rmTaskPublishKey(session *mgo.Session, project, id, taskname, key string) e
 	} else {
 		return fmt.Errorf("no publish key: %s", key)
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	item.Updatetime = time.Now().Format(time.RFC3339)
 	err = c.Update(bson.M{"id": item.ID}, item)
 	if err != nil {
@@ -2672,7 +2672,7 @@ func rmTaskPublish(session *mgo.Session, project, id, taskname, key, createtime,
 		keepList = append(keepList, p)
 	}
 	item.Tasks[taskname].Publishes[key] = keepList // 퍼블리쉬 리스트를 교체한다.
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	item.Updatetime = time.Now().Format(time.RFC3339)
 	err = c.Update(bson.M{"id": item.ID}, item)
 	if err != nil {
@@ -2684,7 +2684,7 @@ func rmTaskPublish(session *mgo.Session, project, id, taskname, key, createtime,
 // HasItem 함수는 입력받은 project에 해당 id를 가진 item이 존재하는지 체크한다. mongoDB의 objectID가 아닌 OpenPipelineIO 내에서 정의된 id를 사용한다.
 func HasItem(session *mgo.Session, project, id string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	num, err := c.Find(bson.M{"id": id}).Count()
 	if err != nil {
 		return err
