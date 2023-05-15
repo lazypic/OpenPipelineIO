@@ -218,7 +218,7 @@ func handleAPIRmItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Remove Item: Project: %s, ID: %s_%s", project, name, typ), project, name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Remove Item: Project: %s, ID: %s_%s", project, name, typ), project, name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -291,7 +291,7 @@ func handleAPIRmItemID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Remove Item: Project: %s, ID: %s", project, rcp.ID), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Remove Item: Project: %s, ID: %s", project, rcp.ID), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -817,7 +817,7 @@ func handleAPI2SetTaskMov(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Setmov: %s %s", rcp.Task, rcp.Mov), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Setmov: %s %s", rcp.Task, rcp.Mov), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -906,7 +906,7 @@ func handleAPISetTaskExpectDay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set ExpectDay: %s %d", rcp.Task, rcp.ExpectDay), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set ExpectDay: %s %d", rcp.Task, rcp.ExpectDay), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -984,7 +984,7 @@ func handleAPISetTaskUserComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set UserComment: %s %s", rcp.Task, rcp.UserComment), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set UserComment: %s %s", rcp.Task, rcp.UserComment), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1073,7 +1073,7 @@ func handleAPISetTaskResultDay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set ResultDay: %s %d", rcp.Task, rcp.ResultDay), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set ResultDay: %s %d", rcp.Task, rcp.ResultDay), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1172,7 +1172,7 @@ func handleAPISetUnDistortionSize(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Undistortionsize: %s", rcp.Size), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Undistortionsize: %s", rcp.Size), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1270,7 +1270,7 @@ func handleAPISetJustIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Just In: %d", rcp.Frame), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Just In: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1364,7 +1364,7 @@ func handleAPISetPlateIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Plate In: %d", rcp.Frame), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Plate In: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1458,7 +1458,7 @@ func handleAPISetPlateOut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Plate Out: %d", rcp.Frame), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Plate Out: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1552,7 +1552,7 @@ func handleAPISetScanIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Scan In: %d", rcp.Frame), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Scan In: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1646,7 +1646,7 @@ func handleAPISetScanOut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Scan Out: %d", rcp.Frame), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Scan Out: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1740,7 +1740,7 @@ func handleAPISetScanFrame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Scan Frame: %d", rcp.Frame), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Scan Frame: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1834,7 +1834,7 @@ func handleAPISetHandleIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Handle In: %d", rcp.Frame), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Handle In: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1928,7 +1928,7 @@ func handleAPISetJustOut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Just Out: %d", rcp.Frame), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Just Out: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2022,7 +2022,7 @@ func handleAPISetHandleOut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Handle Out: %d", rcp.Frame), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Handle Out: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2117,7 +2117,7 @@ func handleAPISetPlateSize(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Platesize: %s", rcp.Size), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Platesize: %s", rcp.Size), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2214,7 +2214,7 @@ func handleAPISetCameraPubPath(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Camera Pub Path: %s", rcp.Path), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Camera Pub Path: %s", rcp.Path), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2291,7 +2291,7 @@ func handleAPISetCameraPubTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Camera Pub Task: %s", rcp.Task), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Camera Pub Task: %s", rcp.Task), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2367,7 +2367,7 @@ func handleAPISetCameraLensmm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Camera Lens mm: %s", rcp.Lensmm), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Camera Lens mm: %s", rcp.Lensmm), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2443,7 +2443,7 @@ func handleAPISetCameraProjection(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Camera Projection: %t", rcp.Projection), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Camera Projection: %t", rcp.Projection), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2550,7 +2550,7 @@ func handleAPISetObjectID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("ObjectID: %d - %d", rcp.In, rcp.Out), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("ObjectID: %d - %d", rcp.In, rcp.Out), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2619,7 +2619,7 @@ func handleAPISetSeq(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Seq: %s", rcp.Seq), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Seq: %s", rcp.Seq), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2691,7 +2691,7 @@ func handleAPISetNetflixID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set NetflixID: %s", rcp.NetflixID), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set NetflixID: %s", rcp.NetflixID), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2764,7 +2764,7 @@ func handleAPISetPlatePath(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set PlatePath: %s", rcp.Path), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set PlatePath: %s", rcp.Path), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2841,7 +2841,7 @@ func handleAPI2SetThummov(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Thumbnail: %s", rcp.Path), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Thumbnail: %s", rcp.Path), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2933,7 +2933,7 @@ func handleAPISetBeforemov(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Beforemov: %s", rcp.Path), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Beforemov: %s", rcp.Path), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3021,7 +3021,7 @@ func handleAPISetAftermov(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Aftermov: %s", rcp.Path), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Aftermov: %s", rcp.Path), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3095,7 +3095,7 @@ func handleAPISetEditmov(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Editmov: %s", rcp.Path), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Editmov: %s", rcp.Path), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3200,7 +3200,7 @@ func handleAPISetTaskStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Task Status: %s %s", rcp.Task, rcp.Status), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Task Status: %s %s", rcp.Task, rcp.Status), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3300,7 +3300,7 @@ func handleAPISetTaskPipelinestep(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Task Pipelinestep: %s %s", rcp.Task, rcp.Pipelinestep), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Task Pipelinestep: %s %s", rcp.Task, rcp.Pipelinestep), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3402,7 +3402,7 @@ func handleAPI2SetTaskStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Task Status: %s %s", rcp.Task, rcp.Status), rcp.Project, name, "csi3", ssid, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Task Status: %s %s", rcp.Task, rcp.Status), rcp.Project, name, *flagAppName, ssid, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3485,7 +3485,7 @@ func handleAPIRmTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rm Task: %s", rcp.Task), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rm Task: %s", rcp.Task), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3574,7 +3574,7 @@ func handleAPIAddTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Task: %s(%s)", rcp.Task, rcp.Status), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Task: %s(%s)", rcp.Task, rcp.Status), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3664,7 +3664,7 @@ func handleAPI2SetTaskUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Task User: %s %s", rcp.Task, rcp.Username), rcp.Project, rcp.ID, "csi3", userID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Task User: %s %s", rcp.Task, rcp.Username), rcp.Project, rcp.ID, *flagAppName, userID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3758,7 +3758,7 @@ func handleAPISetTaskStartdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set %s Task StartDate: %s", rcp.Task, rcp.Date), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set %s Task StartDate: %s", rcp.Task, rcp.Date), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3851,7 +3851,7 @@ func handleAPISetTaskStartdate2nd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set %s Task StartDate2nd: %s", rcp.Task, rcp.Date), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set %s Task StartDate2nd: %s", rcp.Task, rcp.Date), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3951,7 +3951,7 @@ func handleAPISetTaskUserNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set %s Task UserNote: %s", rcp.Task, rcp.UserNote), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set %s Task UserNote: %s", rcp.Task, rcp.UserNote), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -4024,7 +4024,7 @@ func handleAPISetDeadline2D(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Deadline2D: %s", rcp.Date), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Deadline2D: %s", rcp.Date), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -4102,7 +4102,7 @@ func handleAPISetDeadline3D(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Deadline3D: %s", rcp.Date), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Deadline3D: %s", rcp.Date), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -4210,7 +4210,7 @@ func handleAPISetTaskPredate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set %s Task Pre Deadline: %s", rcp.Task, rcp.Date), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set %s Task Pre Deadline: %s", rcp.Task, rcp.Date), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -4294,7 +4294,7 @@ func handleAPISetTaskDate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set %s Task Deadline: %s", rcp.Task, rcp.Date), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set %s Task Deadline: %s", rcp.Task, rcp.Date), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -4490,7 +4490,7 @@ func handleAPISetShotType(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Shottype: %s", rcp.Type), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Shottype: %s", rcp.Type), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -4564,7 +4564,7 @@ func handleAPISetUseType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Usetype: %s", rcp.Type), rcp.Project, rcp.ID, "csi3", ssid, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Usetype: %s", rcp.Type), rcp.Project, rcp.ID, *flagAppName, ssid, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -4714,7 +4714,7 @@ func handleAPISetRetimePlate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Retime Plate: %s", rcp.Path), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Retime Plate: %s", rcp.Path), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -4802,7 +4802,7 @@ func handleAPISetOCIOcc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set OCIO .cc: %s", rcp.Path), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set OCIO .cc: %s", rcp.Path), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -4890,7 +4890,7 @@ func handleAPISetRollmedia(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Rollmedia: %s", rcp.Rollmedia), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Rollmedia: %s", rcp.Rollmedia), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -4957,7 +4957,7 @@ func handleAPISetScanname(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Scanname: %s", rcp.Scanname), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Scanname: %s", rcp.Scanname), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5053,7 +5053,7 @@ func handleAPISetAssetType(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Assettype: %s", rcp.Type), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Assettype: %s", rcp.Type), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5131,7 +5131,7 @@ func handleAPI2SetRnum(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, "Set Rnum: "+rcp.Rnum, rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, "Set Rnum: "+rcp.Rnum, rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5223,7 +5223,7 @@ func handleAPISetScanTimecodeIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("ScanTimecodeIn: %s", rcp.Timecode), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("ScanTimecodeIn: %s", rcp.Timecode), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5311,7 +5311,7 @@ func handleAPISetScanTimecodeOut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("ScanTimecodeOut: %s", rcp.Timecode), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("ScanTimecodeOut: %s", rcp.Timecode), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5399,7 +5399,7 @@ func handleAPISetJustTimecodeIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("JustTimecodeIn: %s", rcp.Timecode), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("JustTimecodeIn: %s", rcp.Timecode), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5487,7 +5487,7 @@ func handleAPISetJustTimecodeOut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("JustTimecodeOut: %s", rcp.Timecode), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("JustTimecodeOut: %s", rcp.Timecode), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5577,7 +5577,7 @@ func handleAPISetFinver(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Finversion: %s", rcp.Version), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Finversion: %s", rcp.Version), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5661,7 +5661,7 @@ func handleAPISetFindate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set FinDate: %s", rcp.Date), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set FinDate: %s", rcp.Date), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5740,7 +5740,7 @@ func handleAPISetCrowdAsset(w http.ResponseWriter, r *http.Request) {
 	rcp.Crowdasset = crowdType
 	rcp.ID = id
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set CrowdType: %t", rcp.Crowdasset), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set CrowdType: %t", rcp.Crowdasset), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5822,7 +5822,7 @@ func handleAPIAddTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Tag: %s", rcp.Tag), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Tag: %s", rcp.Tag), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5903,7 +5903,7 @@ func handleAPIAddAssetTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Asset Tag: %s", rcp.Assettag), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Asset Tag: %s", rcp.Assettag), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5979,7 +5979,7 @@ func handleAPIRenameTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rename Tag: %s > %s", rcp.Before, rcp.After), rcp.Project, "", "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rename Tag: %s > %s", rcp.Before, rcp.After), rcp.Project, "", *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -6062,7 +6062,7 @@ func handleAPIRmTag(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rm Tag: %s", rcp.Tag), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rm Tag: %s", rcp.Tag), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -6143,7 +6143,7 @@ func handleAPIRmAssetTag(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rm Asset Tag: %s", rcp.Assettag), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rm Asset Tag: %s", rcp.Assettag), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -6246,7 +6246,7 @@ func handleAPISetNote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	err = dilog.Add(*flagDBIP, host, "Set Note: "+note, rcp.Project, itemName, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, "Set Note: "+note, rcp.Project, itemName, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -6337,7 +6337,7 @@ func handleAPIAddComment(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Comment: %s, Media: %s", rcp.Text, rcp.Media), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Comment: %s, Media: %s", rcp.Text, rcp.Media), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -6435,7 +6435,7 @@ func handleAPIEditComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Edit Comment: %s, Media: %s", rcp.Text, rcp.Media), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Edit Comment: %s, Media: %s", rcp.Text, rcp.Media), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -6513,7 +6513,7 @@ func handleAPIRmComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, "Rm Comment: "+rcp.Text, rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, "Rm Comment: "+rcp.Text, rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -6618,7 +6618,7 @@ func handleAPIAddSource(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Source: %s, %s", rcp.Title, rcp.Path), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Source: %s, %s", rcp.Title, rcp.Path), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -6709,7 +6709,7 @@ func handleAPIRmSource(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rm Source: %s", rcp.Title), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rm Source: %s", rcp.Title), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -6810,7 +6810,7 @@ func handleAPIAddReference(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Reference: %s, %s", rcp.Title, rcp.Path), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Reference: %s, %s", rcp.Title, rcp.Path), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -6901,7 +6901,7 @@ func handleAPIRmReference(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rm Reference: %s", rcp.Title), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rm Reference: %s", rcp.Title), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -7177,7 +7177,7 @@ func handleAPISetTaskLevel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Task Level: %s %s", rcp.Task, rcp.Level), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Task Level: %s %s", rcp.Task, rcp.Level), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -7809,7 +7809,7 @@ func handleAPIAddTaskPublish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Publish: %s:%s mainver:%s subver:%s subject:%s", rcp.Key, rcp.Path, rcp.MainVersion, rcp.SubVersion, rcp.Subject), rcp.Project, rcp.Name, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Publish: %s:%s mainver:%s subver:%s subject:%s", rcp.Key, rcp.Path, rcp.MainVersion, rcp.SubVersion, rcp.Subject), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -7893,7 +7893,7 @@ func handleAPIRmTaskPublishKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("RmPublish: %s > %s", rcp.Task, rcp.Key), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("RmPublish: %s > %s", rcp.Task, rcp.Key), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -8054,7 +8054,7 @@ func handleAPIRmTaskPublish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("RmPublish: %s > %s", rcp.Task, rcp.Key), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("RmPublish: %s > %s", rcp.Task, rcp.Key), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -8169,7 +8169,7 @@ func handleAPISetTaskPublishStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Publish Status: key: %s, updatetime: %s, status: %s", rcp.Key, rcp.Createtime, rcp.Status), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Publish Status: key: %s, updatetime: %s, status: %s", rcp.Key, rcp.Createtime, rcp.Status), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -8241,7 +8241,7 @@ func handleAPISetSeason(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Season: %s", rcp.Season), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Season: %s", rcp.Season), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -8314,7 +8314,7 @@ func handleAPISetEpisode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Episode: %s", rcp.Episode), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Episode: %s", rcp.Episode), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -8392,7 +8392,7 @@ func handleAPISetOverscanRatio(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set OverscanRatio: %f", rcp.OverscanRatio), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set OverscanRatio: %f", rcp.OverscanRatio), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -8472,7 +8472,7 @@ func handleAPI2SetRenderSize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Rendersize: %s", rcp.Size), rcp.Project, rcp.ID, "csi3", rcp.UserID, 180)
+	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Rendersize: %s", rcp.Size), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

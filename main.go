@@ -33,6 +33,8 @@ var (
 	DBPORT = ":27017"
 	// DBNAME 값은 데이터베이스 이름이다.
 	DBNAME = "OpenPipelineIO"
+	// APPNAME 값은 어플리케이션 이름이다.
+	APPNAME = "OpenPipelineIO"
 	// DNS 값은 서비스 DNS 값입니다.
 	DNS = "openpipeline.io"
 	// MAILDNS 값은 컴파일 단계에서 회사에 따라 값이 바뀐다.
@@ -52,6 +54,7 @@ var (
 	flagDBIP       = flag.String("dbip", DBIP+DBPORT, "mongodb ip and port")                                                            // mgo용 mongoDB 주소
 	flagMongoDBURI = flag.String("mongodburi", fmt.Sprintf("mongodb://%s%s", DBIP, DBPORT), "mongoDB URI ex)mongodb://localhost:27017") //mongo-driver용 인수
 	flagDBName     = flag.String("dbname", DBNAME, "mongodb db name")                                                                   // mongoDB DB이름
+	flagAppName    = flag.String("appname", APPNAME, "app name")
 	flagMailDNS    = flag.String("maildns", MAILDNS, "mail DNS name")
 
 	flagDebug          = flag.Bool("debug", false, "디버그모드 활성화")
@@ -254,16 +257,16 @@ func main() {
 		switch *flagType {
 		case "org", "left": // 일반영상은 org가 샷 타입이다. 입체프로젝트는 left가 샷타입이다.
 			addShotItemCmd(*flagProject, *flagName, *flagType, *flagPlatesize, *flagScanname, *flagScantimecodein, *flagScantimecodeout, *flagJusttimecodein, *flagJusttimecodeout, *flagScanframe, *flagScanin, *flagScanout, *flagPlatein, *flagPlateout, *flagJustin, *flagJustout)
-			dilog.Add(*flagDBIP, ip, "샷 생성되었습니다.", *flagProject, *flagName+"_"+*flagType, "csi3", user.Username, 180)
-			dilog.Add(*flagDBIP, ip, "스캔이름 : "+*flagScanname, *flagProject, *flagName+"_"+*flagType, "csi3", user.Username, 180)
-			dilog.Add(*flagDBIP, ip, fmt.Sprintf("스캔타임코드 : %s(%d) / %s(%d) (총%df)", *flagScantimecodein, *flagScanin, *flagScantimecodeout, *flagScanout, *flagScanframe), *flagProject, *flagName+"_"+*flagType, "csi3", user.Username, 180)
-			dilog.Add(*flagDBIP, ip, fmt.Sprintf("플레이트 구간 : %d - %d", *flagPlatein, *flagPlateout), *flagProject, *flagName+"_"+*flagType, "csi3", user.Username, 180)
-			dilog.Add(*flagDBIP, ip, "플레이트 사이즈 : "+*flagPlatesize, *flagProject, *flagName+"_"+*flagType, "csi3", user.Username, 180)
+			dilog.Add(*flagDBIP, ip, "샷 생성되었습니다.", *flagProject, *flagName+"_"+*flagType, *flagAppName, user.Username, 180)
+			dilog.Add(*flagDBIP, ip, "스캔이름 : "+*flagScanname, *flagProject, *flagName+"_"+*flagType, *flagAppName, user.Username, 180)
+			dilog.Add(*flagDBIP, ip, fmt.Sprintf("스캔타임코드 : %s(%d) / %s(%d) (총%df)", *flagScantimecodein, *flagScanin, *flagScantimecodeout, *flagScanout, *flagScanframe), *flagProject, *flagName+"_"+*flagType, *flagAppName, user.Username, 180)
+			dilog.Add(*flagDBIP, ip, fmt.Sprintf("플레이트 구간 : %d - %d", *flagPlatein, *flagPlateout), *flagProject, *flagName+"_"+*flagType, *flagAppName, user.Username, 180)
+			dilog.Add(*flagDBIP, ip, "플레이트 사이즈 : "+*flagPlatesize, *flagProject, *flagName+"_"+*flagType, *flagAppName, user.Username, 180)
 			return
 		case "asset": //에셋 추가
 			addAssetItemCmd(*flagProject, *flagName, *flagType, *flagAssettype, *flagAssettags)
-			dilog.Add(*flagDBIP, ip, "에셋이 생성되었습니다.", *flagProject, *flagName+"_"+*flagType, "csi3", user.Username, 180)
-			dilog.Add(*flagDBIP, ip, fmt.Sprintf("에셋타입 : %s, 에셋태그 : %s", *flagAssettype, *flagAssettags), *flagProject, *flagName+"_"+*flagType, "csi3", user.Username, 180)
+			dilog.Add(*flagDBIP, ip, "에셋이 생성되었습니다.", *flagProject, *flagName+"_"+*flagType, *flagAppName, user.Username, 180)
+			dilog.Add(*flagDBIP, ip, fmt.Sprintf("에셋타입 : %s, 에셋태그 : %s", *flagAssettype, *flagAssettags), *flagProject, *flagName+"_"+*flagType, *flagAppName, user.Username, 180)
 			return
 		default: //소스, 재스캔 추가
 			addOtherItemCmd(*flagProject, *flagName, *flagType, *flagPlatesize, *flagScanname, *flagScantimecodein, *flagScantimecodeout, *flagJusttimecodein, *flagJusttimecodeout, *flagScanframe, *flagScanin, *flagScanout, *flagPlatein, *flagPlateout, *flagJustin, *flagJustout)
@@ -275,7 +278,7 @@ func main() {
 				*flagPlatein, *flagPlateout,
 				*flagPlatesize,
 			)
-			dilog.Add(*flagDBIP, ip, logString, *flagProject, *flagName, "csi3", user.Username, 180)
+			dilog.Add(*flagDBIP, ip, logString, *flagProject, *flagName, *flagAppName, user.Username, 180)
 			if *flagUpdateParent {
 				// updateParent 옵션이 활성화되어있고, org, left가 재스캔이라면.. 원본플레이트의 정보를 업데이트한다.
 				if (*flagType != "org" && strings.Contains(*flagType, "org")) || (*flagType != "left" && strings.Contains(*flagType, "left")) {
@@ -338,7 +341,7 @@ func main() {
 						*flagPlateout,
 						*flagPlatesize,
 					)
-					dilog.Add(*flagDBIP, ip, logString, *flagProject, *flagName, "csi3", user.Username, 180)
+					dilog.Add(*flagDBIP, ip, logString, *flagProject, *flagName, *flagAppName, user.Username, 180)
 				}
 			}
 			return

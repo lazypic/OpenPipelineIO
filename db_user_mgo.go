@@ -25,7 +25,7 @@ func addUser(session *mgo.Session, u User) error {
 		return err
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("user").C("users")
+	c := session.DB(*flagDBName).C("users")
 
 	num, err := c.Find(bson.M{"id": u.ID}).Count()
 	if err != nil {
@@ -48,7 +48,7 @@ func addUser(session *mgo.Session, u User) error {
 
 // addToken 함수는 사용자정보로 token을 추가하는 함수이다.
 func addToken(session *mgo.Session, u User) error {
-	c := session.DB("user").C("token")
+	c := session.DB(*flagDBName).C("token")
 	num, err := c.Find(bson.M{"token": u.Token}).Count()
 	if err != nil {
 		log.Println(err)
@@ -75,7 +75,7 @@ func addToken(session *mgo.Session, u User) error {
 // setToken 함수는 사용자 정보를 업데이트하는 함수이다.
 func setToken(session *mgo.Session, t Token) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("user").C("token")
+	c := session.DB(*flagDBName).C("token")
 	err := c.Update(bson.M{"id": t.ID}, t)
 	if err != nil {
 		return err
@@ -87,7 +87,7 @@ func setToken(session *mgo.Session, t Token) error {
 // validToken 함수는 Token이 유효한지 체크한다.
 func validToken(session *mgo.Session, token string) (Token, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("user").C("token")
+	c := session.DB(*flagDBName).C("token")
 	t := Token{}
 	err := c.Find(bson.M{"token": token}).One(&t)
 	if err != nil {
@@ -114,7 +114,7 @@ func validTokenV2(client *mongo.Client, token string) (Token, error) {
 // getUser 함수는 사용자를 가지고오는 함수이다.
 func getUser(session *mgo.Session, id string) (User, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("user").C("users")
+	c := session.DB(*flagDBName).C("users")
 	u := User{}
 	err := c.Find(bson.M{"id": id}).One(&u)
 	if err != nil {
@@ -126,7 +126,7 @@ func getUser(session *mgo.Session, id string) (User, error) {
 // getToken 함수는 사용자의 토큰을 가지고오는 함수이다.
 func getToken(session *mgo.Session, id string) (Token, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("user").C("token")
+	c := session.DB(*flagDBName).C("token")
 	t := Token{}
 	err := c.Find(bson.M{"id": id}).One(&t)
 	if err != nil {
@@ -138,7 +138,7 @@ func getToken(session *mgo.Session, id string) (Token, error) {
 // rmUser 함수는 사용자를 삭제하는 함수이다.
 func rmUser(session *mgo.Session, id string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("user").C("users")
+	c := session.DB(*flagDBName).C("users")
 	err := c.Remove(bson.M{"id": id})
 	if err != nil {
 		return err
@@ -149,7 +149,7 @@ func rmUser(session *mgo.Session, id string) error {
 // rmToken 함수는 token 키를 삭제하는 함수이다.
 func rmToken(session *mgo.Session, id string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("user").C("token")
+	c := session.DB(*flagDBName).C("token")
 	err := c.Remove(bson.M{"id": id})
 	if err != nil {
 		return err
@@ -160,7 +160,7 @@ func rmToken(session *mgo.Session, id string) error {
 // setUser 함수는 사용자 정보를 업데이트하는 함수이다.
 func setUser(session *mgo.Session, u User) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("user").C("users")
+	c := session.DB(*flagDBName).C("users")
 	num, err := c.Find(bson.M{"id": u.ID}).Count()
 	if err != nil {
 		return err
@@ -179,7 +179,7 @@ func setUser(session *mgo.Session, u User) error {
 // initPassUser 함수는 사용자 정보를 수정하는 함수이다.
 func initPassUser(session *mgo.Session, id, initpassword string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("user").C("users")
+	c := session.DB(*flagDBName).C("users")
 	num, err := c.Find(bson.M{"id": id}).Count()
 	if err != nil {
 		log.Println(err)
@@ -213,7 +213,7 @@ func initPassUser(session *mgo.Session, id, initpassword string) error {
 // updatePasswordUser 함수는 사용자 패스워드를 수정하는 함수이다.
 func updatePasswordUser(session *mgo.Session, id, pw, newPw string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("user").C("users")
+	c := session.DB(*flagDBName).C("users")
 	num, err := c.Find(bson.M{"id": id}).Count()
 	if err != nil {
 		return err
@@ -249,7 +249,7 @@ func updatePasswordUser(session *mgo.Session, id, pw, newPw string) error {
 // allUsers 함수는 DB에서 전체 사용자 정보를 가지고오는 함수입니다.
 func allUsers(session *mgo.Session) ([]User, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("user").C("users")
+	c := session.DB(*flagDBName).C("users")
 	var result []User
 	err := c.Find(bson.M{}).All(&result)
 	if err != nil {
@@ -261,7 +261,7 @@ func allUsers(session *mgo.Session) ([]User, error) {
 // searchUsers 함수는 검색을 입력받고 해당 검색어가 있는 사용자 정보를 가지고 옵니다.
 func searchUsers(session *mgo.Session, words []string) ([]User, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("user").C("users")
+	c := session.DB(*flagDBName).C("users")
 	var searchwords []string
 	// 사람 이름을 가지고 검색을 자주한다.
 	for _, word := range words {
@@ -332,7 +332,7 @@ func searchUsers(session *mgo.Session, words []string) ([]User, error) {
 // vaildUser 함수는 사용자의 id, pw를 받아서 유효한 사용자인지 체크한다.
 func vaildUser(session *mgo.Session, id, pw string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("user").C("users")
+	c := session.DB(*flagDBName).C("users")
 	q := bson.M{"id": id}
 	num, err := c.Find(q).Count()
 	if err != nil {
@@ -356,7 +356,7 @@ func vaildUser(session *mgo.Session, id, pw string) error {
 // addPasswordAttempt 함수는 사용자의 id를 받아서 패스워드 시도횟수를 추가한다.
 func addPasswordAttempt(session *mgo.Session, id string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("user").C("users")
+	c := session.DB(*flagDBName).C("users")
 	num, err := c.Find(bson.M{"id": id}).Count()
 	if err != nil {
 		return err
@@ -374,7 +374,7 @@ func addPasswordAttempt(session *mgo.Session, id string) error {
 // setLeaveUser 함수는 사용자의 id와 bool 값을 받아서 사용자 퇴사여부를 체크한다.
 func setLeaveUser(session *mgo.Session, id string, leave bool) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("user").C("users")
+	c := session.DB(*flagDBName).C("users")
 	num, err := c.Find(bson.M{"id": id}).Count()
 	if err != nil {
 		return err
@@ -401,7 +401,7 @@ func setLeaveUser(session *mgo.Session, id string, leave bool) error {
 func UserTags(session *mgo.Session) ([]string, error) {
 	var tags []string
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("user").C("users")
+	c := session.DB(*flagDBName).C("users")
 	err := c.Find(bson.M{}).Distinct("tags", &tags)
 	if err != nil {
 		return nil, err
@@ -413,7 +413,7 @@ func UserTags(session *mgo.Session) ([]string, error) {
 // ReplaceTags 함수는 전체 사용자에 등록된 태그의 이름을 변경한다.
 func ReplaceTags(session *mgo.Session, old, new string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("user").C("users")
+	c := session.DB(*flagDBName).C("users")
 	var users []User
 	q := bson.M{"tags": &bson.RegEx{Pattern: old}}
 	err := c.Find(q).All(&users)
