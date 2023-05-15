@@ -10,7 +10,7 @@ import (
 
 // getUser 함수는 사용자를 가지고오는 함수이다.
 func getUserV2(client *mongo.Client, id string) (User, error) {
-	collection := client.Database("user").Collection("users")
+	collection := client.Database(*flagDBName).Collection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

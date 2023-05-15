@@ -388,7 +388,7 @@ func rmItemCmd(project, name, typ string) {
 		log.Fatal(err)
 	}
 	// log
-	err = dilog.Add(*flagDBIP, "command", fmt.Sprintf("Remove Item: Project: %s, ID: %s_%s", project, name, typ), project, name+"_"+typ, "csi3", user.Username, 180)
+	err = dilog.Add(*flagDBIP, "command", fmt.Sprintf("Remove Item: Project: %s, ID: %s_%s", project, name, typ), project, name+"_"+typ, *flagAppName, user.Username, 180)
 	if err != nil {
 		log.Fatal(err)
 
