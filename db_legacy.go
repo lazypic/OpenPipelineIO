@@ -24,7 +24,7 @@ func SetImageSize(session *mgo.Session, project, name, key, size string) (string
 		return "", err
 	}
 	id := name + "_" + typ
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	if key == "dsize" || key == "undistortionsize" {
 		err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"dsize": size, "undistortionsize": size, "updatetime": time.Now().Format(time.RFC3339)}})
 		if err != nil {
@@ -59,7 +59,7 @@ func SetTaskUser(session *mgo.Session, project, name, task, user string) (string
 	if err != nil {
 		return id, err
 	}
-	c := session.DB("project").C(project)
+	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": item.ID}, bson.M{"$set": bson.M{"tasks." + task + ".user": user, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return id, err

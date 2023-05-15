@@ -32,7 +32,7 @@ var (
 	// DBPORT mongoDB 기본포트.
 	DBPORT = ":27017"
 	// DBNAME 값은 데이터베이스 이름이다.
-	DBNAME = "csi" // legacy
+	DBNAME = "OpenPipelineIO"
 	// DNS 값은 서비스 DNS 값입니다.
 	DNS = "openpipeline.io"
 	// MAILDNS 값은 컴파일 단계에서 회사에 따라 값이 바뀐다.

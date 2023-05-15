@@ -308,7 +308,7 @@ func Search(session *mgo.Session, op SearchOption) ([]Item, error) {
 		}
 		op.Project = plist[0]
 	}
-	c := session.DB("project").C(op.Project)
+	c := session.DB(*flagDBName).C("items")
 	o, q := GenQuery(session, op)
 	err := c.Find(q).Sort(o.Sortkey).All(&results)
 	if err != nil {
@@ -344,7 +344,7 @@ func SearchPage(session *mgo.Session, op SearchOption) ([]Item, int, error) {
 		}
 		op.Project = plist[0]
 	}
-	c := session.DB("project").C(op.Project)
+	c := session.DB(*flagDBName).C("items")
 	o, q := GenQuery(session, op)
 	err := c.Find(q).Sort(o.Sortkey).Skip(CachedAdminSetting.ItemNumberOfPage * (op.Page - 1)).Limit(CachedAdminSetting.ItemNumberOfPage).All(&results)
 	if err != nil {
