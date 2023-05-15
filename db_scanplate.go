@@ -14,7 +14,7 @@ import (
 func addScanPlate(client *mongo.Client, s ScanPlate) error {
 	s.ProcessStatus = "wait"
 	s.CreateTime = time.Now().Format(time.RFC3339)
-	collection := client.Database("OpenPipelineIO").Collection("scanplate")
+	collection := client.Database(*flagDBName).Collection("scanplate")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	_, err := collection.InsertOne(ctx, s)
@@ -25,7 +25,7 @@ func addScanPlate(client *mongo.Client, s ScanPlate) error {
 }
 
 func getScanPlate(client *mongo.Client, id string) (ScanPlate, error) {
-	collection := client.Database("OpenPipelineIO").Collection("scanplate")
+	collection := client.Database(*flagDBName).Collection("scanplate")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	s := ScanPlate{}
@@ -41,7 +41,7 @@ func getScanPlate(client *mongo.Client, id string) (ScanPlate, error) {
 }
 
 func rmScanPlate(client *mongo.Client, id string) error {
-	collection := client.Database("OpenPipelineIO").Collection("scanplate")
+	collection := client.Database(*flagDBName).Collection("scanplate")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -56,7 +56,7 @@ func rmScanPlate(client *mongo.Client, id string) error {
 }
 
 func setScanPlate(client *mongo.Client, s ScanPlate) error {
-	collection := client.Database("OpenPipelineIO").Collection("scanplate")
+	collection := client.Database(*flagDBName).Collection("scanplate")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	_, err := collection.UpdateOne(
@@ -71,7 +71,7 @@ func setScanPlate(client *mongo.Client, s ScanPlate) error {
 }
 
 func SetScanPlateProcessStatus(client *mongo.Client, id string, status string) error {
-	collection := client.Database("OpenPipelineIO").Collection("scanplate")
+	collection := client.Database(*flagDBName).Collection("scanplate")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -90,7 +90,7 @@ func SetScanPlateProcessStatus(client *mongo.Client, id string, status string) e
 }
 
 func allScanPlate(client *mongo.Client) ([]ScanPlate, error) {
-	collection := client.Database("OpenPipelineIO").Collection("scanplate")
+	collection := client.Database(*flagDBName).Collection("scanplate")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	var results []ScanPlate
@@ -109,7 +109,7 @@ func allScanPlate(client *mongo.Client) ([]ScanPlate, error) {
 
 // SetScanPlateErrStatus 함수는 인수로 받은 Status를 error status로 바꾼다
 func SetScanPlateErrStatus(client *mongo.Client, id, errmsg string) error {
-	collection := client.Database("OpenPipelineIO").Collection("scanplate")
+	collection := client.Database(*flagDBName).Collection("scanplate")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -151,7 +151,7 @@ func GetWaitProcessStatusScanPlate() (ScanPlate, error) {
 	if err != nil {
 		return result, err
 	}
-	collection := client.Database("OpenPipelineIO").Collection("scanplate")
+	collection := client.Database(*flagDBName).Collection("scanplate")
 	filter := bson.M{"processstatus": "wait"}
 	err = collection.FindOne(ctx, filter).Decode(&result)
 	if err != nil {
@@ -162,7 +162,7 @@ func GetWaitProcessStatusScanPlate() (ScanPlate, error) {
 
 func GetUnDoneScanPlate(client *mongo.Client) ([]ScanPlate, error) {
 	var results []ScanPlate
-	collection := client.Database("OpenPipelineIO").Collection("scanplate")
+	collection := client.Database(*flagDBName).Collection("scanplate")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	filter := bson.M{"processstatus": bson.M{"$ne": "done"}} // done이 아닌 리스트를 가지고 온다.

@@ -10,7 +10,7 @@ import (
 )
 
 func addFCEvent(client *mongo.Client, e FullCalendarEvent) error {
-	collection := client.Database("OpenPipelineIO").Collection("fcevent")
+	collection := client.Database(*flagDBName).Collection("fcevent")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	_, err := collection.InsertOne(ctx, e)
@@ -21,7 +21,7 @@ func addFCEvent(client *mongo.Client, e FullCalendarEvent) error {
 }
 
 func getFCEvent(client *mongo.Client, id string) (FullCalendarEvent, error) {
-	collection := client.Database("OpenPipelineIO").Collection("fcevent")
+	collection := client.Database(*flagDBName).Collection("fcevent")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	fc := FullCalendarEvent{}
@@ -37,7 +37,7 @@ func getFCEvent(client *mongo.Client, id string) (FullCalendarEvent, error) {
 }
 
 func rmFCEvent(client *mongo.Client, id string) error {
-	collection := client.Database("OpenPipelineIO").Collection("fcevent")
+	collection := client.Database(*flagDBName).Collection("fcevent")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -52,7 +52,7 @@ func rmFCEvent(client *mongo.Client, id string) error {
 }
 
 func setFCEvent(client *mongo.Client, e FullCalendarEvent) error {
-	collection := client.Database("OpenPipelineIO").Collection("fcevent")
+	collection := client.Database(*flagDBName).Collection("fcevent")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	_, err := collection.UpdateOne(

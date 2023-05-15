@@ -10,7 +10,7 @@ import (
 )
 
 func addFCResource(client *mongo.Client, e FullCalendarResource) error {
-	collection := client.Database("OpenPipelineIO").Collection("fcresource")
+	collection := client.Database(*flagDBName).Collection("fcresource")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	_, err := collection.InsertOne(ctx, e)
@@ -21,7 +21,7 @@ func addFCResource(client *mongo.Client, e FullCalendarResource) error {
 }
 
 func getFCResource(client *mongo.Client, id string) (FullCalendarResource, error) {
-	collection := client.Database("OpenPipelineIO").Collection("fcresource")
+	collection := client.Database(*flagDBName).Collection("fcresource")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	fcResource := FullCalendarResource{}
@@ -37,7 +37,7 @@ func getFCResource(client *mongo.Client, id string) (FullCalendarResource, error
 }
 
 func rmFCResource(client *mongo.Client, id string) error {
-	collection := client.Database("OpenPipelineIO").Collection("fcresource")
+	collection := client.Database(*flagDBName).Collection("fcresource")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -52,7 +52,7 @@ func rmFCResource(client *mongo.Client, id string) error {
 }
 
 func setFCResource(client *mongo.Client, r FullCalendarResource) error {
-	collection := client.Database("OpenPipelineIO").Collection("fcresource")
+	collection := client.Database(*flagDBName).Collection("fcresource")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	_, err := collection.UpdateOne(
