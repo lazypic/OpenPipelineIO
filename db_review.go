@@ -10,7 +10,7 @@ import (
 
 func addReview(session *mgo.Session, r Review) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.Insert(r)
 	if err != nil {
 		return err
@@ -27,7 +27,7 @@ func GetWaitProcessStatusReview() (Review, error) {
 	}
 	defer session.Close()
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err = c.Find(bson.M{"processstatus": "wait"}).One(&review)
 	if err != nil {
 		return review, err
@@ -43,7 +43,7 @@ func GetWaitProcessStatusReview() (Review, error) {
 
 func getReview(session *mgo.Session, id string) (Review, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	r := Review{}
 	err := c.FindId(bson.ObjectIdHex(id)).One(&r)
 	if err != nil {
@@ -54,7 +54,7 @@ func getReview(session *mgo.Session, id string) (Review, error) {
 
 func setReviewProcessStatus(session *mgo.Session, id, status string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"processstatus": status}})
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func setReviewProcessStatus(session *mgo.Session, id, status string) error {
 
 func setReviewPath(session *mgo.Session, id, path string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"path": path}})
 	if err != nil {
 		return err
@@ -74,7 +74,7 @@ func setReviewPath(session *mgo.Session, id, path string) error {
 
 func setReviewItemStatus(session *mgo.Session, id, itemstatus string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"itemstatus": itemstatus}})
 	if err != nil {
 		return err
@@ -85,7 +85,7 @@ func setReviewItemStatus(session *mgo.Session, id, itemstatus string) error {
 // setErrReview 함수는 id와 log를 입력받아서 에러상태 변경 및 로그를 기록한다.
 func setErrReview(session *mgo.Session, id, log string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"processstatus": "error", "log": log}})
 	if err != nil {
 		return err
@@ -100,7 +100,7 @@ func searchReview(session *mgo.Session, searchword string) ([]Review, error) {
 		return results, nil
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	allQueries := []bson.M{}
 	for _, word := range strings.Split(searchword, " ") {
 		if len(word) < 2 { // 한글자의 단어는 무시한다.
@@ -148,7 +148,7 @@ func addReviewComment(session *mgo.Session, id string, cmt Comment) error {
 		return errors.New("comment가 빈 문자열입니다")
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$push": bson.M{"comments": cmt}})
 	if err != nil {
 		return err
@@ -205,7 +205,7 @@ func RmReviewComment(session *mgo.Session, id, date string) error {
 // setReviewItem은 Review 자료구조를 새로운 Review로 설정한다.
 func setReviewItem(session *mgo.Session, r Review) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(r.ID, r)
 	if err != nil {
 		return err
@@ -216,7 +216,7 @@ func setReviewItem(session *mgo.Session, r Review) error {
 // RmReview 함수는 Review를 DB에서 삭제한다.
 func RmReview(session *mgo.Session, id string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.RemoveId(bson.ObjectIdHex(id))
 	if err != nil {
 		return err
@@ -227,7 +227,7 @@ func RmReview(session *mgo.Session, id string) error {
 // RmProjectReview 함수는 해당 프로젝트의 Review 데이터를 DB에서 삭제한다.
 func RmProjectReview(session *mgo.Session, project string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	_, err := c.RemoveAll(bson.M{"project": &bson.RegEx{Pattern: project}})
 	if err != nil {
 		return err
@@ -238,7 +238,7 @@ func RmProjectReview(session *mgo.Session, project string) error {
 // SetReviewProject 함수는 Review에 Project를 설정한다.
 func SetReviewProject(session *mgo.Session, id string, project string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"project": project}})
 	if err != nil {
 		return err
@@ -249,7 +249,7 @@ func SetReviewProject(session *mgo.Session, id string, project string) error {
 // SetReviewTask 함수는 Review에 Task를 설정한다.
 func SetReviewTask(session *mgo.Session, id string, task string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"task": task}})
 	if err != nil {
 		return err
@@ -260,7 +260,7 @@ func SetReviewTask(session *mgo.Session, id string, task string) error {
 // SetReviewName 함수는 Review에 Name을 설정한다.
 func SetReviewName(session *mgo.Session, id string, name string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"name": name}})
 	if err != nil {
 		return err
@@ -271,7 +271,7 @@ func SetReviewName(session *mgo.Session, id string, name string) error {
 // SetReviewPath 함수는 Review에 Path를 설정한다.
 func SetReviewPath(session *mgo.Session, id string, path string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"path": path}})
 	if err != nil {
 		return err
@@ -282,7 +282,7 @@ func SetReviewPath(session *mgo.Session, id string, path string) error {
 // SetReviewCreatetime 함수는 Review에 Createtime을 설정한다.
 func SetReviewCreatetime(session *mgo.Session, id string, createtime string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"createtime": createtime}})
 	if err != nil {
 		return err
@@ -293,7 +293,7 @@ func SetReviewCreatetime(session *mgo.Session, id string, createtime string) err
 // SetReviewUpdatetime 함수는 Review에 Updatetime을 설정한다.
 func SetReviewUpdatetime(session *mgo.Session, id string, updatetime string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"updatetime": updatetime}})
 	if err != nil {
 		return err
@@ -304,7 +304,7 @@ func SetReviewUpdatetime(session *mgo.Session, id string, updatetime string) err
 // SetReviewMainVersion 함수는 Review에 MainVersion을 설정한다.
 func SetReviewMainVersion(session *mgo.Session, id string, mainversion int) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"mainversion": mainversion}})
 	if err != nil {
 		return err
@@ -315,7 +315,7 @@ func SetReviewMainVersion(session *mgo.Session, id string, mainversion int) erro
 // SetReviewSubVersion 함수는 Review에 SubVersion을 설정한다.
 func SetReviewSubVersion(session *mgo.Session, id string, subversion int) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"subversion": subversion}})
 	if err != nil {
 		return err
@@ -326,7 +326,7 @@ func SetReviewSubVersion(session *mgo.Session, id string, subversion int) error 
 // SetReviewFps 함수는 Review에 Fps를 설정한다.
 func SetReviewFps(session *mgo.Session, id string, fps float64) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"fps": fps}})
 	if err != nil {
 		return err
@@ -337,7 +337,7 @@ func SetReviewFps(session *mgo.Session, id string, fps float64) error {
 // SetReviewDescription 함수는 Review에 Description을 설정한다.
 func SetReviewDescription(session *mgo.Session, id string, description string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"description": description}})
 	if err != nil {
 		return err
@@ -348,7 +348,7 @@ func SetReviewDescription(session *mgo.Session, id string, description string) e
 // SetReviewCameraInfo 함수는 Review에 CameraInfo를 설정한다.
 func SetReviewCameraInfo(session *mgo.Session, id string, camerainfo string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"camerainfo": camerainfo}})
 	if err != nil {
 		return err
@@ -359,7 +359,7 @@ func SetReviewCameraInfo(session *mgo.Session, id string, camerainfo string) err
 // SetReviewOutputDataPath 함수는 Review에 OutputDataPath를 설정한다.
 func SetReviewOutputDataPath(session *mgo.Session, id string, outputdatapath string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("csi").C("review")
+	c := session.DB(*flagDBName).C("review")
 	err := c.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"outputdatapath": outputdatapath}})
 	if err != nil {
 		return err

@@ -14,7 +14,7 @@ func SetelliteItems(session *mgo.Session, project, rollmedia string) ([]Setellit
 		return nil, errors.New("프로젝트를 설정해주세요")
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setellite").C(project)
+	c := session.DB(*flagDBName).C("setellite")
 	var results []Setellite
 	err := c.Find(bson.M{"rollmedia": &bson.RegEx{Pattern: rollmedia, Options: "i"}}).All(&results)
 	if err != nil {
@@ -32,7 +32,7 @@ func hasSetelliteItems(session *mgo.Session, project, rollmedia string) bool {
 		return false
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setellite").C(project)
+	c := session.DB(*flagDBName).C("setellite")
 	num, err := c.Find(bson.M{"rollmedia": &bson.RegEx{Pattern: rollmedia, Options: "i"}}).Count()
 	if err != nil {
 		return false
@@ -49,7 +49,7 @@ func SetelliteSearch(session *mgo.Session, project, word string) ([]Setellite, e
 		return nil, errors.New("프로젝트를 설정해주세요")
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setellite").C(project)
+	c := session.DB(*flagDBName).C("setellite")
 	var results []Setellite
 	querys := []bson.M{}
 	querys = append(querys, bson.M{"timestamp": &bson.RegEx{Pattern: word}})
@@ -98,7 +98,7 @@ func SetelliteSearch(session *mgo.Session, project, word string) ([]Setellite, e
 
 // addSetellite함수는 Setellite 자료구조를 DB에 넣는다.
 func addSetellite(session *mgo.Session, project string, item Setellite, overwrite bool) error {
-	c := session.DB("setellite").C(project)
+	c := session.DB(*flagDBName).C("setellite")
 	num, err := c.Find(bson.M{"id": item.ID}).Count()
 	if err != nil {
 		return err

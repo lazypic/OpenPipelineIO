@@ -16,7 +16,7 @@ func addDivision(session *mgo.Session, d Division) error {
 		return err
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("divisions")
+	c := session.DB(*flagDBName).C("divisions")
 
 	num, err := c.Find(bson.M{"id": d.ID}).Count()
 	if err != nil {
@@ -44,7 +44,7 @@ func addDepartment(session *mgo.Session, d Department) error {
 		return err
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("departments")
+	c := session.DB(*flagDBName).C("departments")
 
 	num, err := c.Find(bson.M{"id": d.ID}).Count()
 	if err != nil {
@@ -72,7 +72,7 @@ func addTeam(session *mgo.Session, t Team) error {
 		return err
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("teams")
+	c := session.DB(*flagDBName).C("teams")
 
 	num, err := c.Find(bson.M{"id": t.ID}).Count()
 	if err != nil {
@@ -100,7 +100,7 @@ func addRole(session *mgo.Session, r Role) error {
 		return err
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("roles")
+	c := session.DB(*flagDBName).C("roles")
 
 	num, err := c.Find(bson.M{"id": r.ID}).Count()
 	if err != nil {
@@ -128,7 +128,7 @@ func addPosition(session *mgo.Session, p Position) error {
 		return err
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("positions")
+	c := session.DB(*flagDBName).C("positions")
 
 	num, err := c.Find(bson.M{"id": p.ID}).Count()
 	if err != nil {
@@ -151,7 +151,7 @@ func addPosition(session *mgo.Session, p Position) error {
 // allDivisions 함수는 DB에서 전체 사용자 정보를 가지고오는 함수입니다.
 func allDivisions(session *mgo.Session) ([]Division, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("divisions")
+	c := session.DB(*flagDBName).C("divisions")
 	var result []Division
 	err := c.Find(bson.M{}).Sort("id").All(&result)
 	if err != nil {
@@ -163,7 +163,7 @@ func allDivisions(session *mgo.Session) ([]Division, error) {
 // allDepartments 함수는 모든 Department를 반환한다.
 func allDepartments(session *mgo.Session) ([]Department, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("departments")
+	c := session.DB(*flagDBName).C("departments")
 	var result []Department
 	err := c.Find(bson.M{}).Sort("id").All(&result)
 	if err != nil {
@@ -175,7 +175,7 @@ func allDepartments(session *mgo.Session) ([]Department, error) {
 // allTeams 함수는 모든 Team을 반환한다.
 func allTeams(session *mgo.Session) ([]Team, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("teams")
+	c := session.DB(*flagDBName).C("teams")
 	var result []Team
 	err := c.Find(bson.M{}).Sort("id").All(&result)
 	if err != nil {
@@ -187,7 +187,7 @@ func allTeams(session *mgo.Session) ([]Team, error) {
 // allRoles 함수는 모든 Role을 반환한다.
 func allRoles(session *mgo.Session) ([]Role, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("roles")
+	c := session.DB(*flagDBName).C("roles")
 	var result []Role
 	err := c.Find(bson.M{}).Sort("id").All(&result)
 	if err != nil {
@@ -199,7 +199,7 @@ func allRoles(session *mgo.Session) ([]Role, error) {
 // allPositions 함수는 모든 Position 을 반환한다.
 func allPositions(session *mgo.Session) ([]Position, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("positions")
+	c := session.DB(*flagDBName).C("positions")
 	var result []Position
 	err := c.Find(bson.M{}).Sort("id").All(&result)
 	if err != nil {
@@ -211,7 +211,7 @@ func allPositions(session *mgo.Session) ([]Position, error) {
 // getDivision 함수는 본부를 가지고오는 함수이다.
 func getDivision(session *mgo.Session, id string) (Division, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("divisions")
+	c := session.DB(*flagDBName).C("divisions")
 	d := Division{}
 	err := c.Find(bson.M{"id": id}).One(&d)
 	if err != nil {
@@ -223,7 +223,7 @@ func getDivision(session *mgo.Session, id string) (Division, error) {
 // getDepartment 함수는 Department 아이디를 받아서 Department 자료구조를 반환하는 함수이다.
 func getDepartment(session *mgo.Session, id string) (Department, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("departments")
+	c := session.DB(*flagDBName).C("departments")
 	d := Department{}
 	err := c.Find(bson.M{"id": id}).One(&d)
 	if err != nil {
@@ -235,7 +235,7 @@ func getDepartment(session *mgo.Session, id string) (Department, error) {
 // getTeam 함수는 Team 아이디를 받아서 Team 자료구조를 반환하는 함수이다.
 func getTeam(session *mgo.Session, id string) (Team, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("teams")
+	c := session.DB(*flagDBName).C("teams")
 	t := Team{}
 	err := c.Find(bson.M{"id": id}).One(&t)
 	if err != nil {
@@ -247,7 +247,7 @@ func getTeam(session *mgo.Session, id string) (Team, error) {
 // getRole 함수는 Role 아이디를 받아서 Role 자료구조를 반환하는 함수이다.
 func getRole(session *mgo.Session, id string) (Role, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("roles")
+	c := session.DB(*flagDBName).C("roles")
 	r := Role{}
 	err := c.Find(bson.M{"id": id}).One(&r)
 	if err != nil {
@@ -259,7 +259,7 @@ func getRole(session *mgo.Session, id string) (Role, error) {
 // getPosition 함수는 Position 아이디를 받아서 Position 자료구조를 반환하는 함수이다.
 func getPosition(session *mgo.Session, id string) (Position, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("positions")
+	c := session.DB(*flagDBName).C("positions")
 	p := Position{}
 	err := c.Find(bson.M{"id": id}).One(&p)
 	if err != nil {
@@ -271,7 +271,7 @@ func getPosition(session *mgo.Session, id string) (Position, error) {
 // setDivision 함수는 Division 정보를 수정하는 함수입니다.
 func setDivision(session *mgo.Session, d Division) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("divisions")
+	c := session.DB(*flagDBName).C("divisions")
 	num, err := c.Find(bson.M{"id": d.ID}).Count()
 	if err != nil {
 		return err
@@ -289,7 +289,7 @@ func setDivision(session *mgo.Session, d Division) error {
 // setDepartment 함수는 Department 정보를 수정하는 함수입니다.
 func setDepartment(session *mgo.Session, d Department) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("departments")
+	c := session.DB(*flagDBName).C("departments")
 	num, err := c.Find(bson.M{"id": d.ID}).Count()
 	if err != nil {
 		return err
@@ -306,7 +306,7 @@ func setDepartment(session *mgo.Session, d Department) error {
 
 func setTeam(session *mgo.Session, t Team) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("teams")
+	c := session.DB(*flagDBName).C("teams")
 	num, err := c.Find(bson.M{"id": t.ID}).Count()
 	if err != nil {
 		return err
@@ -323,7 +323,7 @@ func setTeam(session *mgo.Session, t Team) error {
 
 func setRole(session *mgo.Session, r Role) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("roles")
+	c := session.DB(*flagDBName).C("roles")
 	num, err := c.Find(bson.M{"id": r.ID}).Count()
 	if err != nil {
 		return err
@@ -340,7 +340,7 @@ func setRole(session *mgo.Session, r Role) error {
 
 func setPosition(session *mgo.Session, p Position) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("positions")
+	c := session.DB(*flagDBName).C("positions")
 	num, err := c.Find(bson.M{"id": p.ID}).Count()
 	if err != nil {
 		return err
@@ -358,7 +358,7 @@ func setPosition(session *mgo.Session, p Position) error {
 // rmDivision 함수는 Division을 삭제하는 함수이다.
 func rmDivision(session *mgo.Session, id string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("divisions")
+	c := session.DB(*flagDBName).C("divisions")
 	err := c.Remove(bson.M{"id": id})
 	if err != nil {
 		return err
@@ -369,7 +369,7 @@ func rmDivision(session *mgo.Session, id string) error {
 // rmDepartment 함수는 Department를 삭제하는 함수이다.
 func rmDepartment(session *mgo.Session, id string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("departments")
+	c := session.DB(*flagDBName).C("departments")
 	err := c.Remove(bson.M{"id": id})
 	if err != nil {
 		return err
@@ -380,7 +380,7 @@ func rmDepartment(session *mgo.Session, id string) error {
 // rmTeam 함수는 Team을 삭제하는 함수이다.
 func rmTeam(session *mgo.Session, id string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("teams")
+	c := session.DB(*flagDBName).C("teams")
 	err := c.Remove(bson.M{"id": id})
 	if err != nil {
 		return err
@@ -391,7 +391,7 @@ func rmTeam(session *mgo.Session, id string) error {
 // rmRole 함수는 Role을 삭제하는 함수이다.
 func rmRole(session *mgo.Session, id string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("roles")
+	c := session.DB(*flagDBName).C("roles")
 	err := c.Remove(bson.M{"id": id})
 	if err != nil {
 		return err
@@ -402,7 +402,7 @@ func rmRole(session *mgo.Session, id string) error {
 // rmPosition 함수는 Position을 삭제하는 함수이다.
 func rmPosition(session *mgo.Session, id string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("organization").C("positions")
+	c := session.DB(*flagDBName).C("positions")
 	err := c.Remove(bson.M{"id": id})
 	if err != nil {
 		return err

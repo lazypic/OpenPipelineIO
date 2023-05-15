@@ -10,7 +10,7 @@ import (
 // SetPublishKey 함수는 PublishKey를 DB에 저장한다.
 func SetPublishKey(session *mgo.Session, key PublishKey) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("publishkey")
+	c := session.DB(*flagDBName).C("publishkey")
 	err := c.Update(bson.M{"id": key.ID}, key)
 	if err != nil {
 		if err == mgo.ErrNotFound {
@@ -28,7 +28,7 @@ func SetPublishKey(session *mgo.Session, key PublishKey) error {
 // GetPublishKey 함수는 PublishKey를 DB에서 가지고 온다.
 func GetPublishKey(session *mgo.Session, id string) (PublishKey, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("publishkey")
+	c := session.DB(*flagDBName).C("publishkey")
 	key := PublishKey{}
 	err := c.Find(bson.M{"id": id}).One(&key)
 	if err != nil {
@@ -40,7 +40,7 @@ func GetPublishKey(session *mgo.Session, id string) (PublishKey, error) {
 // HasPublishKey 함수는 PublishKey가 존재하는지 체크하는 함수이다.
 func HasPublishKey(session *mgo.Session, id string) bool {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("publishkey")
+	c := session.DB(*flagDBName).C("publishkey")
 	n, err := c.Find(bson.M{"id": id}).Count()
 	if err != nil {
 		return false
@@ -54,7 +54,7 @@ func HasPublishKey(session *mgo.Session, id string) bool {
 // AddPublishKey 함수는 PublishKey를 DB에 추가한다.
 func AddPublishKey(session *mgo.Session, key PublishKey) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("publishkey")
+	c := session.DB(*flagDBName).C("publishkey")
 	n, err := c.Find(bson.M{"id": key.ID}).Count()
 	if err != nil {
 		return err
@@ -72,7 +72,7 @@ func AddPublishKey(session *mgo.Session, key PublishKey) error {
 // RmPublishKey 함수는 PublishKey를 DB에서 삭제한다.
 func RmPublishKey(session *mgo.Session, id string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("publishkey")
+	c := session.DB(*flagDBName).C("publishkey")
 	err := c.Remove(bson.M{"id": id})
 	if err != nil {
 		return err
@@ -83,7 +83,7 @@ func RmPublishKey(session *mgo.Session, id string) error {
 // AllPublishKeys 함수는 모든 PublishKey 값을 DB에서 가지고 온다.
 func AllPublishKeys(session *mgo.Session) ([]PublishKey, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("publishkey")
+	c := session.DB(*flagDBName).C("publishkey")
 	keys := []PublishKey{}
 	err := c.Find(bson.M{}).Sort("id").All(&keys)
 	if err != nil {

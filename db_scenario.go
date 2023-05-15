@@ -14,7 +14,7 @@ func addScenario(client *mongo.Client, s Scenario) error {
 	if s.Script == "" {
 		return errors.New("nead scenario script")
 	}
-	collection := client.Database("OpenPipelineIO").Collection("scenario")
+	collection := client.Database(*flagDBName).Collection("scenario")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	_, err := collection.InsertOne(ctx, s)
@@ -25,7 +25,7 @@ func addScenario(client *mongo.Client, s Scenario) error {
 }
 
 func getScenario(client *mongo.Client, id string) (Scenario, error) {
-	collection := client.Database("OpenPipelineIO").Collection("scenario")
+	collection := client.Database(*flagDBName).Collection("scenario")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	s := Scenario{}
@@ -41,7 +41,7 @@ func getScenario(client *mongo.Client, id string) (Scenario, error) {
 }
 
 func rmScenario(client *mongo.Client, id string) error {
-	collection := client.Database("OpenPipelineIO").Collection("scenario")
+	collection := client.Database(*flagDBName).Collection("scenario")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -56,7 +56,7 @@ func rmScenario(client *mongo.Client, id string) error {
 }
 
 func setScenario(client *mongo.Client, s Scenario) error {
-	collection := client.Database("OpenPipelineIO").Collection("scenario")
+	collection := client.Database(*flagDBName).Collection("scenario")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	_, err := collection.UpdateOne(
@@ -71,7 +71,7 @@ func setScenario(client *mongo.Client, s Scenario) error {
 }
 
 func allScenarios(client *mongo.Client) ([]Scenario, error) {
-	collection := client.Database("OpenPipelineIO").Collection("scenario")
+	collection := client.Database(*flagDBName).Collection("scenario")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	var results []Scenario
