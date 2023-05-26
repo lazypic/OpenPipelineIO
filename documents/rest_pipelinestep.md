@@ -7,6 +7,7 @@ Pipelinestep Restapi 입니다.
 | URI | Description | Attributes | Curl Example |
 | --- | --- | --- | --- |
 |/api/pipelinestep/{id}| Pipelinestep 정보를 가져옵니다|id|curl -X GET -H "Authorization: Basic {TOKEN}" "https://openpipeline.io/api/pipelinestep/{id}"
+|/api/pipelinesteps | Pipelinesteps 정보를 가져옵니다|id|curl -X GET -H "Authorization: Basic {TOKEN}" "https://openpipeline.io/api/pipelinesteps"
 
 ## POST
 

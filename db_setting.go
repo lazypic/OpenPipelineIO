@@ -12,7 +12,7 @@ import (
 
 func AllTaskSettingsV2(client *mongo.Client) ([]Tasksetting, error) {
 	results := []Tasksetting{}
-	collection := client.Database("setting").Collection("tasksetting")
+	collection := client.Database(*flagDBName).Collection("tasksetting")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	opts := options.Find()
@@ -30,7 +30,7 @@ func AllTaskSettingsV2(client *mongo.Client) ([]Tasksetting, error) {
 
 func TaskSettingNamesV2(client *mongo.Client) ([]string, error) {
 	var results []string
-	collection := client.Database("setting").Collection("tasksetting")
+	collection := client.Database(*flagDBName).Collection("tasksetting")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	values, err := collection.Distinct(ctx, "name", bson.D{})

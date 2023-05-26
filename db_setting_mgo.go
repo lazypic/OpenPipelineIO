@@ -11,7 +11,7 @@ import (
 // SetAdminSetting 함수는 adminsetting을 DB에 저장한다.
 func SetAdminSetting(session *mgo.Session, s Setting) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("admin")
+	c := session.DB(*flagDBName).C("admin")
 	err := c.Update(bson.M{"id": "admin"}, s)
 	if err != nil {
 		if err == mgo.ErrNotFound {
@@ -29,7 +29,7 @@ func SetAdminSetting(session *mgo.Session, s Setting) error {
 // GetAdminSetting 함수는 adminsetting을 DB에서 가지고 온다.
 func GetAdminSetting(session *mgo.Session) (Setting, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("admin")
+	c := session.DB(*flagDBName).C("admin")
 	s := Setting{}
 	err := c.Find(bson.M{"id": "admin"}).One(&s)
 	if err != nil {
@@ -49,7 +49,7 @@ func GetAdminSetting(session *mgo.Session) (Setting, error) {
 // AddTaskSetting 함수는 tasksetting을 DB에 추가한다.
 func AddTaskSetting(session *mgo.Session, t Tasksetting) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("tasksetting")
+	c := session.DB(*flagDBName).C("tasksetting")
 	num, err := c.Find(bson.M{"id": t.ID}).Count()
 	if err != nil {
 		return err
@@ -67,7 +67,7 @@ func AddTaskSetting(session *mgo.Session, t Tasksetting) error {
 // RmTaskSetting 함수는 tasksetting을 DB에 추가한다.
 func RmTaskSetting(session *mgo.Session, name, typ string) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("tasksetting")
+	c := session.DB(*flagDBName).C("tasksetting")
 	err := c.Remove(bson.M{"name": name, "type": typ})
 	if err != nil {
 		return err
@@ -78,7 +78,7 @@ func RmTaskSetting(session *mgo.Session, name, typ string) error {
 // SetTaskSetting 함수는 Tasksetting 값을 바꾼다.
 func SetTaskSetting(session *mgo.Session, t Tasksetting) error {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("tasksetting")
+	c := session.DB(*flagDBName).C("tasksetting")
 	err := c.Update(bson.M{"id": t.ID}, t)
 	if err != nil {
 		return err
@@ -89,7 +89,7 @@ func SetTaskSetting(session *mgo.Session, t Tasksetting) error {
 // AllTaskSettings 함수는 모든 tasksetting값을 가지고 온다.
 func AllTaskSettings(session *mgo.Session) ([]Tasksetting, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("tasksetting")
+	c := session.DB(*flagDBName).C("tasksetting")
 	results := []Tasksetting{}
 	err := c.Find(bson.M{}).Sort("order").All(&results)
 	if err != nil {
@@ -101,7 +101,7 @@ func AllTaskSettings(session *mgo.Session) ([]Tasksetting, error) {
 // getTaskSetting 함수는 id를 입력받아서 tasksetting값을 가지고 온다.
 func getTaskSetting(session *mgo.Session, id string) (Tasksetting, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("tasksetting")
+	c := session.DB(*flagDBName).C("tasksetting")
 	result := Tasksetting{}
 	err := c.Find(bson.M{"id": id}).One(&result)
 	if err != nil {
@@ -113,7 +113,7 @@ func getTaskSetting(session *mgo.Session, id string) (Tasksetting, error) {
 // getShotTaskSetting 함수는 type이 shot인 tasksetting값을 가지고 온다.
 func getShotTaskSetting(session *mgo.Session) ([]Tasksetting, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("tasksetting")
+	c := session.DB(*flagDBName).C("tasksetting")
 	results := []Tasksetting{}
 	err := c.Find(bson.M{"type": "shot"}).Sort("name").All(&results)
 	if err != nil {
@@ -125,7 +125,7 @@ func getShotTaskSetting(session *mgo.Session) ([]Tasksetting, error) {
 // getAssetTaskSetting 함수는 type이 asset인 tasksetting값을 가지고 온다.
 func getAssetTaskSetting(session *mgo.Session) ([]Tasksetting, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("tasksetting")
+	c := session.DB(*flagDBName).C("tasksetting")
 	results := []Tasksetting{}
 	err := c.Find(bson.M{"type": "asset"}).Sort("name").All(&results)
 	if err != nil {
@@ -137,7 +137,7 @@ func getAssetTaskSetting(session *mgo.Session) ([]Tasksetting, error) {
 // getCategoryTaskSettings 함수는 type이 asset인 tasksetting값을 가지고 온다.
 func getCategoryTaskSettings(session *mgo.Session, category string) ([]Tasksetting, error) {
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("tasksetting")
+	c := session.DB(*flagDBName).C("tasksetting")
 	results := []Tasksetting{}
 	err := c.Find(bson.M{"category": category}).Sort("name").All(&results)
 	if err != nil {
@@ -150,7 +150,7 @@ func getCategoryTaskSettings(session *mgo.Session, category string) ([]Tasksetti
 func TasksettingNames(session *mgo.Session) ([]string, error) {
 	var results []string
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("tasksetting")
+	c := session.DB(*flagDBName).C("tasksetting")
 	err := c.Find(bson.M{}).Distinct("name", &results)
 	if err != nil {
 		return nil, err
@@ -177,7 +177,7 @@ func TasksettingNamesByExcelOrder(session *mgo.Session) ([]string, error) {
 	var tasksettings []Tasksetting
 	var results []string
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("setting").C("tasksetting")
+	c := session.DB(*flagDBName).C("tasksetting")
 	err := c.Find(bson.M{}).Sort("excelorder").All(&tasksettings)
 	if err != nil {
 		return nil, err

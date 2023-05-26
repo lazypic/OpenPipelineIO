@@ -62,6 +62,7 @@ func getPipelinestepHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getPipelinestepsHandler(w http.ResponseWriter, r *http.Request) {
+
 	client, err := mongo.NewClient(options.Client().ApplyURI(*flagMongoDBURI))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
