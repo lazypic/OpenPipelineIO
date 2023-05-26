@@ -11,7 +11,7 @@ import (
 )
 
 func AllStatusV2(client *mongo.Client) ([]Status, error) {
-	collection := client.Database("setting").Collection("status")
+	collection := client.Database(*flagDBName).Collection("status")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	findOptions := options.Find()
@@ -29,7 +29,7 @@ func AllStatusV2(client *mongo.Client) ([]Status, error) {
 }
 
 func GetInitStatusIDV2(client *mongo.Client) (string, error) {
-	collection := client.Database("setting").Collection("status")
+	collection := client.Database(*flagDBName).Collection("status")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	s := Status{}
