@@ -1,9 +1,4 @@
 
-# AWS Linux
-
-```bash
-dnf install golang
-```
 
 # 하모니카 리눅스
 
