@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"sort"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -10,13 +10,16 @@ import (
 )
 
 func ProjectlistV2(client *mongo.Client) ([]string, error) {
-	var projects []string
+	var results []string
+	collection := client.Database(*flagDBName).Collection("project")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	projects, err := client.Database("projectinfo").ListCollectionNames(ctx, bson.D{{}})
+	values, err := collection.Distinct(ctx, "id", bson.D{})
 	if err != nil {
-		return projects, err
+		return results, err
 	}
-	sort.Strings(projects)
-	return projects, nil
+	for _, value := range values {
+		results = append(results, fmt.Sprintf("%v", value))
+	}
+	return results, nil
 }
