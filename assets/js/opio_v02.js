@@ -7,10 +7,10 @@ if (navigator.appVersion.indexOf("Linux") != -1) OSName="Linux";
 // changeProject 함수는 검색바의 프로젝트가 바뀔 때 발생하는 이벤트를 처리한다.
 function changeProject() {
 	// 제목설정
-	let pretitle = "OPIP: "
+	let appname = document.getElementById("appname").innerText +": "
 	let e = document.getElementById("searchbox-project");
 	let project = e.options[e.selectedIndex].value;
-	document.title = pretitle + project;
+	document.title = appname + project;
 	// 검색에 사용되는 Template 수정하기. 모든 프로젝트가 ver2를 사용하게되면 이 코드는 레거시가 된다.
 	fetch('/api/project?id='+project, {
         method: 'GET',
