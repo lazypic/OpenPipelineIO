@@ -17,7 +17,7 @@ Scenario Restapi 입니다.
 | /api/scenarios | 새로운 시나리오 리스트 정보를 추가합니다 | Option 참고 | curl -X POST -H 'Authorization: Basic {TOKEN}' -d '[{"project":"test","script":"씬 내용"}]' "https://openpipeline.io/api/scenarios"
 | /api/ganimage/{id} | GANImage를 추가합니다 | Option 참고 | curl -X POST -H 'Authorization: Basic {TOKEN}' -d '{"url":"https://server/test.jpg","prompt":"프롬프트"}' "https://openpipeline.io/api/ganimage/{id}"
 
-- Option: https://github.com/digital-idea/OpenPipelineIO/blob/master/struct_scenario.go
+- Option: https://github.com/lazypic/OpenPipelineIO/blob/master/struct_scenario.go
 
 ## PUT
 

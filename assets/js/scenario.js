@@ -12,10 +12,10 @@ function UxToObject(obj) {
     obj.ispreviz = document.getElementById(uxprefix+'ispreviz').checked
 	obj.istechviz = document.getElementById(uxprefix+'istechviz').checked
 	obj.isvisuallab = document.getElementById(uxprefix+'isvisuallab').checked
-    obj.seedimage = document.getElementById(uxprefix+'seedimage').value
     obj.prompt = document.getElementById(uxprefix+'prompt').value
     obj.negativeprompt = document.getElementById(uxprefix+'negativeprompt').value
     obj.script = document.getElementById(uxprefix+'script').value
+    obj.translate = document.getElementById(uxprefix+'translate').value
     obj.time = document.getElementById(uxprefix+'time').value
 	obj.location = document.getElementById(uxprefix+'location').value
     obj.length = document.getElementById(uxprefix+'length').value
@@ -41,10 +41,10 @@ function ObjectToUx(obj) {
     document.getElementById(uxprefix+'ispreviz').checked = obj.ispreviz
 	document.getElementById(uxprefix+'istechviz').checked = obj.istechviz
 	document.getElementById(uxprefix+'isvisuallab').checked = obj.isvisuallab
-    document.getElementById(uxprefix+'seedimage').value = obj.seedimage
     document.getElementById(uxprefix+'prompt').value = obj.prompt
     document.getElementById(uxprefix+'negativeprompt').value = obj.negativeprompt
     document.getElementById(uxprefix+'script').value = obj.script
+    document.getElementById(uxprefix+'translate').value = obj.translate
     document.getElementById(uxprefix+'time').value = obj.time
 	document.getElementById(uxprefix+'location').value = obj.location
     document.getElementById(uxprefix+'length').value = obj.length

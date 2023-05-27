@@ -14,7 +14,7 @@ FullCalendar Event Restapi 입니다.
 | --- | --- | --- | --- |
 |/api/fcevent|FullCalendar event 정보를 추가합니다| Option 참고 |curl -X POST -H 'Authorization: Basic {TOKEN}' -d '{"title":"일정이름","start":"2022-10-07", "end":"2022-10-08"}' "https://openpipeline.io/api/fcevent"
 
-- Option: https://github.com/digital-idea/OpenPipelineIO/blob/master/struct_fcevent.go
+- Option: https://github.com/lazypic/OpenPipelineIO/blob/master/struct_fcevent.go
 
 ## PUT
 
