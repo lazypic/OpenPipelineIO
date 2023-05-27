@@ -389,6 +389,7 @@ func handleEditProjectSubmit(w http.ResponseWriter, r *http.Request) {
 	renewal.SlackWebhookURL = r.FormValue("SlackWebhookURL")
 	renewal.RocketChatChannel = r.FormValue("RocketChatChannel")
 	renewal.ProjectType = r.FormValue("ProjectType")
+	renewal.Prompt = r.FormValue("Prompt")
 	// 새로 변경된 정보를 DB에 저장한다.
 	err = setProject(session, renewal)
 	if err != nil {

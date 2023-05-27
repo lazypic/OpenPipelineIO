@@ -33,7 +33,7 @@
 							{{if .Style}}<span class="btn btn-darkmode btn-sm">{{.Style}}</span>{{end}}
 							{{if .Stereo}}<span class="btn btn-darkmode btn-sm">Stereo</span>{{end}}
 							{{if .Screenx}}<span class="btn btn-sm border">ScreenX</span>{{end}}
-							{{if .Lut}}<span class="btn btn-sm btn-warning">LUT 사용</span>{{else}}<span class="btn btn-darkmode btn-sm">LUT 비사용</span>{{end}}
+							{{if .Lut}}<span class="btn btn-sm btn-warning">LUT 사용</span>{{end}}
 							<a href="mailto:{{.ID}}@{{$.MailDNS}}?subject=[{{if .MailHead}}{{.MailHead}}{{else}}{{.ID}}{{end}}]" class="btn btn-darkmode btn-sm">E-mail</a>
 							{{if eq $.User.AccessLevel 4 5 6 7 8 9 10 11}}
 								<a href="/editproject?id={{.ID}}" class="btn btn-danger btn-sm">Edit</a>
@@ -41,28 +41,52 @@
 						</h6>
 					
 						<p class="card-text">
-							Issue: {{.Issue}}
-						<p>
-						<p class="card-text m-0 p-0">
-							Sup: {{.Super}}
-							Cgsup: {{.CgSuper}}
+							{{if .Issue}}
+								Issue: {{.Issue}}<br>
+							{{end}}
+						
+							{{if .Prompt}}
+								Global Prompt: {{.Prompt}}<br>
+							{{end}}
 						</p>
 						<p class="card-text m-0 p-0">
-							PD: {{.Pd}}
-							PM: {{.Pm}}
-							PA: {{.Pa}}
+							{{if .Super}}
+								Sup: {{.Super}}<br>
+							{{end}}
+							{{if .CgSuper}}
+								Cgsup: {{.CgSuper}}<br>
+							{{end}}
 						</p>
 						<p class="card-text m-0 p-0">
-							카메라: {{.Camera}}
+							{{if .Pd}}
+								PD: {{.Pd}}
+							{{end}}
+							{{if .Pm}}
+								PM: {{.Pm}}
+							{{end}}
+							{{if .Pa}}
+								PA: {{.Pa}}
+							{{end}}
 						</p>
 						<p class="card-text m-0 p-0">
-							플레이트: {{.PlateWidth}}x{{.PlateHeight}} / {{.PlateExt}} / {{.PlateInColorspace}} > {{.PlateOutColorspace}}
+							{{if .Camera}}
+								Camera: {{.Camera}}
+							{{end}}
 						</p>
 						<p class="card-text m-0 p-0">
-							컨펌MOV: {{.OutputMov.Width}}x{{.OutputMov.Height}} / {{.OutputMov.Codec}} / {{.OutputMov.Fps}}fps
+							{{if .PlateWidth}}
+								Plate: {{.PlateWidth}}x{{.PlateHeight}} / {{.PlateExt}} / {{.PlateInColorspace}} > {{.PlateOutColorspace}}
+							{{end}}
 						</p>
 						<p class="card-text m-0 p-0">
-							편집MOV: {{.EditMov.Width}}x{{.EditMov.Height}} / {{.EditMov.Codec}} / {{.EditMov.Fps}}fps
+							{{if .OutputMov.Width}}
+								ReviewMOV: {{.OutputMov.Width}}x{{.OutputMov.Height}} / {{.OutputMov.Codec}} / {{.OutputMov.Fps}}fps
+							{{end}}
+						</p>
+						<p class="card-text m-0 p-0">
+							{{if .EditMov.Width}}
+								EditMOV: {{.EditMov.Width}}x{{.EditMov.Height}} / {{.EditMov.Codec}} / {{.EditMov.Fps}}fps
+							{{end}}
 						</p>
 
 						<p class="card-text">
