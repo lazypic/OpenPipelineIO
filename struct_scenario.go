@@ -18,6 +18,7 @@ type Scenario struct {
 	Prompt         string             `json:"prompt"`         // AI로 그림을 그릴때 사용되는 메인 Prompt
 	NegativePrompt string             `json:"negativeprompt"` // AI로 그림을 그릴 때 적용되면 안되는 메인 NegativePrompt 정보
 	Script         string             `json:"script"`         // 스크립트
+	Translate      string             `json:"translate"`      // 번역
 	Time           string             `json:"time"`           // D,L,SS(Sunset)
 	Location       string             `json:"location"`       // I,E
 	Length         string             `json:"length"`         // L,S

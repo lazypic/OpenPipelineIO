@@ -17,7 +17,7 @@ import (
 func addItem(session *mgo.Session, project string, i Item) error {
 	session.SetMode(mgo.Monotonic, true)
 	// 프로젝트가 존재하는지 체크합니다.
-	c := session.DB("projectinfo").C(project)
+	c := session.DB(*flagDBName).C("project")
 	num, err := c.Find(bson.M{"id": project}).Count()
 	if err != nil {
 		return err

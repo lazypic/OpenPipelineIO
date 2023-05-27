@@ -14,7 +14,7 @@ FullCalendar Resource Restapi 입니다.
 | --- | --- | --- | --- |
 |/api/fcresource|FullCalendar Resource 정보를 추가합니다| Option 참고 |curl -X POST -H 'Authorization: Basic {TOKEN}' -d '{"title":"레이어이름","eventcolor":"#FF1100", "textcolor":"#FFFFFF"}' "https://openpipeline.io/api/fcresource"
 
-- Option: https://github.com/digital-idea/OpenPipelineIO/blob/master/struct_fcevent.go
+- Option: https://github.com/lazypic/OpenPipelineIO/blob/master/struct_fcevent.go
 
 ## PUT
 

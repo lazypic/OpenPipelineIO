@@ -1,7 +1,7 @@
 @charset "utf-8";
 
 body {
-	background-color: #2e2d2d;
+	background-color: #141414;
 }
 
 .badge-warning {
@@ -129,7 +129,7 @@ body {
 
 
 .bg-darklight {
-	background-color: #353333;
+	background-color: #181818;
 }
 
 .text-danger {
@@ -158,14 +158,14 @@ body {
 }
 
 .btn-darkmode {
-	background-color:  #3A3A3A!important;
+	background-color:  #202020!important;
 	border:1px solid #A7A59C;
 	color: #A7A59C;
 }
 
 .btn-darkmode:not(:disabled):not(.disabled):active, .btn-darkmode:not(:disabled):not(.disabled).active,
 .show > .btn-darkmode.dropdown-toggle {
-	background-color:  #3A3A3A!important;
+	background-color:  #202020!important;
 	border:1px solid #A7A59C;
 	color: rgb(220, 177, 70);
 }
@@ -238,7 +238,7 @@ body {
 }
 
 .badge-outline-darkmode, .badge-outline-darkmode:link, .badge-outline-darkmode:active, .badge-outline-darkmode:hover {
-	background-color:  #212121!important;
+	background-color:  #1B1A19!important;
 	border:1px solid #A7A59C;
 	color: #A7A59C;
 	text-decoration: none;
@@ -246,31 +246,31 @@ body {
 
 
 .btn-outline-darkmode {
-	background-color:  #212121!important;
+	background-color:  #1B1A19!important;
 	border:1px solid #A7A59C;
 	color: #A7A59C;
 }
 
 .btn-outline-darkmode:hover {
-	background-color:  #212121!important;
+	background-color:  #1B1A19!important;
 	border:1px solid #A7A59C;
 	color: rgb(188, 185, 172);
 }
 
 .btn-viewmode {
-	background-color:  #212121!important;
+	background-color:  #1B1A19!important;
 	border:1px solid #30302f;
 	color: #A7A59C;
 }
 
 .btn-viewmode:hover {
-	background-color:  #212121!important;
+	background-color:  #1B1A19!important;
 	border:1px solid #30302f;
 	color: rgb(188, 185, 172);
 }
 
 .btn-darkmode:hover {
-	background-color:  #3A3A3A!important;
+	background-color:  #202020!important;
 	color: rgb(189, 186, 174);
 }
 
@@ -283,11 +283,11 @@ body {
 }
 
 .navbar-darkmode {
-	background-color: #252525;
+	background-color: #1B1A19;
 }
 
 .navbar-nav {
-	background-color: #252525!important;
+	background-color: #1B1A19!important;
 }
 
 .nav-link {
@@ -303,7 +303,7 @@ body {
 }
 
 .dropdown-menu {
-	background-color: #3f3f3f!important;
+	background-color: #252525!important;
 }
 
 .dropdown-item {
@@ -348,8 +348,8 @@ small {
 }
 
 .card-header {
-	outline:1px solid rgb(77, 75, 72)!important;
-	background-color: #3a3939;
+	outline:1px solid #474747!important;
+	background-color: #202020;
 	color: #A7A59C!important;
 }
 
@@ -372,7 +372,7 @@ label {
 }
 
 .bg-darkmode {
-	background-color: #2e2d2d;
+	background-color: #141414;
 }
 
 
@@ -898,7 +898,7 @@ span.player-trash {
 
 #floatingmenu {
 	position: fixed;
-	background-color: #2e2d2d;
+	background-color: #141414;
 	z-index: 1000;
 	width: 100%;
 }
