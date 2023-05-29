@@ -196,7 +196,8 @@ func handleEditProjectSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer session.Close()
-	current, err := getProject(session, r.FormValue("Id"))
+
+	current, err := getProject(client, r.FormValue("Id"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
