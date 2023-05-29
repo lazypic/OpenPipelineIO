@@ -159,7 +159,7 @@ func handleAPISetTaskMov(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Setmov: %s %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Mov, rcp.Project, rcp.Name, rcp.UserID))
+	err = slacklog(client, rcp.Project, fmt.Sprintf("Setmov: %s %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Mov, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -175,12 +175,12 @@ func handleAPISetTaskMov(w http.ResponseWriter, r *http.Request) {
 func handleAPIUser(w http.ResponseWriter, r *http.Request) {
 	// GET 메소드는 사용자의 id를 받아서 사용자 정보를 반환한다.
 	if r.Method == http.MethodGet {
-		session, err := mgo.Dial(*flagDBIP)
+		client, err := connectToMongoDB(*flagDBIP)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		defer session.Close()
+		defer disconnectFromMongoDB(client)
 		_, _, err = TokenHandler(r, session)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -216,12 +216,12 @@ func handleAPIUser(w http.ResponseWriter, r *http.Request) {
 		return
 		// DELETE 메소드는 사용자의 ID를 받아 해당 사용자를 DB에서 삭제한다.
 	} else if r.Method == http.MethodDelete {
-		session, err := mgo.Dial(*flagDBIP)
+		client, err := connectToMongoDB(*flagDBIP)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		defer session.Close()
+		defer disconnectFromMongoDB(client)
 		// accesslevel 체크. user 삭제는 admin만 가능하다.
 		_, accesslevel, err := TokenHandler(r, session)
 		if err != nil {

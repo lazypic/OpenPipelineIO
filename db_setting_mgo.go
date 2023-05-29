@@ -100,14 +100,23 @@ func SetTaskSetting(session *mgo.Session, t Tasksetting) error {
 }
 
 // AllTaskSettings 함수는 모든 tasksetting값을 가지고 온다.
-func AllTaskSettings(session *mgo.Session) ([]Tasksetting, error) {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("tasksetting")
-	results := []Tasksetting{}
-	err := c.Find(bson.M{}).Sort("order").All(&results)
+func AllTaskSettings(client *mongo.Client) ([]Tasksetting, error) {
+	collection := client.Database(*flagDBName).Collection("tasksetting")
+
+	options := options.Find()
+	options.SetSort(bson.D{{"order", 1}})
+
+	cursor, err := collection.Find(context.Background(), bson.D{}, options)
 	if err != nil {
 		return nil, err
 	}
+	defer cursor.Close(context.Background())
+
+	var results []Tasksetting
+	if err := cursor.All(context.Background(), &results); err != nil {
+		return nil, err
+	}
+
 	return results, nil
 }
 

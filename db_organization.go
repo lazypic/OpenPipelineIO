@@ -1,38 +1,39 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"log"
 
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
 // addDivision 함수는 Division을 추가하는 함수이다.
-func addDivision(session *mgo.Session, d Division) error {
+func addDivision(client *mongo.Client, d Division) error {
 	if d.ID == "" {
-		err := errors.New("ID가 빈 문자열입니다. Division 을 생성할 수 없습니다")
-		log.Println(err)
+		err := errors.New("ID가 빈 문자열입니다. Division을 생성할 수 없습니다.")
 		return err
 	}
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("divisions")
 
-	num, err := c.Find(bson.M{"id": d.ID}).Count()
+	collection := client.Database(*flagDBName).Collection("divisions")
+
+	count, err := collection.CountDocuments(context.Background(), bson.M{"id": d.ID})
 	if err != nil {
-		log.Println(err)
 		return err
 	}
-	if num != 0 {
+	if count != 0 {
 		err = errors.New(d.ID + " ID를 가진 Division이 이미 DB에 존재합니다.")
-		log.Println(err)
 		return err
 	}
-	err = c.Insert(d)
+
+	_, err = collection.InsertOne(context.Background(), d)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
+
 	return nil
 }
 
@@ -149,27 +150,37 @@ func addPosition(session *mgo.Session, p Position) error {
 }
 
 // allDivisions 함수는 DB에서 전체 사용자 정보를 가지고오는 함수입니다.
-func allDivisions(session *mgo.Session) ([]Division, error) {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("divisions")
-	var result []Division
-	err := c.Find(bson.M{}).Sort("id").All(&result)
+func allDivisions(client *mongo.Client) ([]Division, error) {
+	collection := client.Database(*flagDBName).Collection("divisions")
+	options := options.Find()
+	options.SetSort(bson.D{{"id", 1}})
+	cursor, err := collection.Find(context.Background(), bson.D{}, options)
 	if err != nil {
-		return result, err
+		return nil, err
 	}
-	return result, nil
+	defer cursor.Close(context.Background())
+	var results []Division
+	if err := cursor.All(context.Background(), &results); err != nil {
+		return nil, err
+	}
+	return results, nil
 }
 
 // allDepartments 함수는 모든 Department를 반환한다.
-func allDepartments(session *mgo.Session) ([]Department, error) {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("departments")
-	var result []Department
-	err := c.Find(bson.M{}).Sort("id").All(&result)
+func allDepartments(client *mongo.Client) ([]Department, error) {
+	collection := client.Database(*flagDBName).Collection("departments")
+	options := options.Find()
+	options.SetSort(bson.D{{"id", 1}})
+	cursor, err := collection.Find(context.Background(), bson.D{}, options)
 	if err != nil {
-		return result, err
+		return nil, err
 	}
-	return result, nil
+	defer cursor.Close(context.Background())
+	var results []Department
+	if err := cursor.All(context.Background(), &results); err != nil {
+		return nil, err
+	}
+	return results, nil
 }
 
 // allTeams 함수는 모든 Team을 반환한다.

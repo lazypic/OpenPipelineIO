@@ -1477,12 +1477,12 @@ func handleAPIReviewOutputDataPath(w http.ResponseWriter, r *http.Request) {
 			UserID         string `json:"userid"`
 		}
 		rcp := Recipe{}
-		session, err := mgo.Dial(*flagDBIP)
+		client, err := connectToMongoDB(*flagDBIP)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		defer session.Close()
+		defer disconnectFromMongoDB(client)
 		rcp.UserID, _, err = TokenHandler(r, session)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)

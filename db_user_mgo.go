@@ -126,14 +126,15 @@ func getUser(client *mongo.Client, id string) (User, error) {
 }
 
 // getToken 함수는 사용자의 토큰을 가지고오는 함수이다.
-func getToken(session *mgo.Session, id string) (Token, error) {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("token")
-	t := Token{}
-	err := c.Find(bson.M{"id": id}).One(&t)
+func getToken(client *mongo.Client, id string) (Token, error) {
+	collection := client.Database(*flagDBName).Collection("token")
+
+	var t Token
+	err := collection.FindOne(context.Background(), bson.M{"id": id}).Decode(&t)
 	if err != nil {
 		return t, err
 	}
+
 	return t, nil
 }
 

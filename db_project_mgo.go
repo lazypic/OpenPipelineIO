@@ -6,9 +6,9 @@ import (
 	"log"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // Projectlist 함수는 프로젝트 리스트를 출력하는 함수입니다.
@@ -41,57 +41,73 @@ func Projectlist(client *mongo.Client) ([]string, error) {
 }
 
 // OnProjectlist 함수는 준비중, 진행중, 백업중인 상태의 프로젝트 리스트만 출력하는 함수입니다.
-func OnProjectlist(session *mgo.Session) ([]string, error) {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("project")
-	projects := []Project{}
-	err := c.Find(bson.M{}).Sort("id").All(&projects)
+func OnProjectlist(client *mongo.Client) ([]string, error) {
+	collection := client.Database(*flagDBName).Collection("project")
+
+	filter := bson.M{}
+	sort := bson.D{{"id", 1}}
+
+	cur, err := collection.Find(context.Background(), filter, options.Find().SetSort(sort))
 	if err != nil {
 		return nil, err
 	}
+	defer cur.Close(context.Background())
+
+	var projects []Project
+	if err := cur.All(context.Background(), &projects); err != nil {
+		return nil, err
+	}
+
 	var results []string
 	for _, p := range projects {
 		if p.Status == TestProjectStatus || p.Status == PreProjectStatus || p.Status == PostProjectStatus || p.Status == BackupProjectStatus {
 			results = append(results, p.ID)
 		}
 	}
+
 	return results, nil
 }
 
 // 프로젝트를 추가하는 함수입니다.
-func addProject(session *mgo.Session, p Project) error {
+func addProject(client *mongo.Client, p Project) error {
 	if p.ID == "" {
 		return errors.New("빈 문자열입니다. 프로젝트를 생성할 수 없습니다")
 	}
 	if p.ID == "user" {
 		return errors.New("user 이름으로 프로젝트를 생성할 수 없습니다")
 	}
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("project")
-	num, err := c.Find(bson.M{"id": p.ID}).Count()
+
+	collection := client.Database(*flagDBName).Collection("project")
+
+	filter := bson.M{"id": p.ID}
+	num, err := collection.CountDocuments(context.Background(), filter)
 	if err != nil {
 		return err
 	}
 	if num != 0 {
 		return errors.New("같은 프로젝트가 존재해서 프로젝트를 생성할 수 없습니다")
 	}
-	err = c.Insert(p)
+
+	_, err = collection.InsertOne(context.Background(), p)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
-func getProject(session *mgo.Session, id string) (Project, error) {
+func getProject(client *mongo.Client, id string) (Project, error) {
 	if id == "" {
-		return Project{}, errors.New("프로젝트 이름이 빈 문자열 입니다")
+		return Project{}, errors.New("프로젝트 이름이 빈 문자열입니다")
 	}
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("project")
+	collection := client.Database(*flagDBName).Collection("project")
+
+	filter := bson.M{"id": id}
+
 	var p Project
-	err := c.Find(bson.M{"id": id}).One(&p)
+	err := collection.FindOne(context.Background(), filter).Decode(&p)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if err == mongo.ErrNoDocuments {
 			return p, errors.New(id + " 프로젝트가 존재하지 않습니다.")
 		}
 		p := Project{}
@@ -102,61 +118,89 @@ func getProject(session *mgo.Session, id string) (Project, error) {
 }
 
 // 전체 프로젝트 정보를 가지고오는 함수입니다.
-func getProjects(session *mgo.Session) ([]Project, error) {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("project")
-	results := []Project{}
-	err := c.Find(bson.M{}).Sort("id").All(&results)
+func getProjects(client *mongo.Client) ([]Project, error) {
+	collection := client.Database(*flagDBName).Collection("project")
+
+	sort := bson.D{{"id", 1}}
+
+	cur, err := collection.Find(context.Background(), bson.M{}, options.Find().SetSort(sort))
 	if err != nil {
-		return results, err
+		return nil, err
 	}
+	defer cur.Close(context.Background())
+
+	var results []Project
+	if err := cur.All(context.Background(), &results); err != nil {
+		return nil, err
+	}
+
 	return results, nil
 }
 
 // getStatusProjects 함수는 상태를 받아서 프로젝트 정보를 가지고오는 함수입니다.
-func getStatusProjects(session *mgo.Session, status ProjectStatus) ([]Project, error) {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("project")
-	results := []Project{}
-	err := c.Find(bson.M{"status": status}).Sort("id").All(&results)
+func getStatusProjects(client *mongo.Client, status ProjectStatus) ([]Project, error) {
+	collection := client.Database(*flagDBName).Collection("project")
+
+	filter := bson.M{"status": status}
+	sort := bson.D{{"id", 1}}
+
+	cur, err := collection.Find(context.Background(), filter, options.Find().SetSort(sort))
 	if err != nil {
-		return results, err
+		return nil, err
 	}
+	defer cur.Close(context.Background())
+
+	var results []Project
+	if err := cur.All(context.Background(), &results); err != nil {
+		return nil, err
+	}
+
 	return results, nil
 }
 
-func rmProject(session *mgo.Session, project string) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("project")
-	err := c.Remove(bson.M{"id": project})
+func rmProject(client *mongo.Client, project string) error {
+	collection := client.Database(*flagDBName).Collection("project")
+
+	filter := bson.M{"id": project}
+
+	_, err := collection.DeleteOne(context.Background(), filter)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
 // setProject 함수는 프로젝트 정보를 수정하는 함수입니다.
-func setProject(session *mgo.Session, p Project) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("project")
+func setProject(client *mongo.Client, p Project) error {
+	collection := client.Database(*flagDBName).Collection("project")
+
 	p.Updatetime = time.Now().Format(time.RFC3339)
-	err := c.Update(bson.M{"id": p.ID}, p)
+
+	filter := bson.M{"id": p.ID}
+	update := bson.M{"$set": p}
+
+	_, err := collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
 // HasProject 함수는 프로젝트가 존재하는지 체크한다.
-func HasProject(session *mgo.Session, project string) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("project")
-	num, err := c.Find(bson.M{"id": project}).Count()
+func HasProject(client *mongo.Client, project string) error {
+	collection := client.Database(*flagDBName).Collection("project")
+
+	filter := bson.M{"id": project}
+	count, err := collection.CountDocuments(context.Background(), filter, options.Count().SetLimit(1))
 	if err != nil {
 		return err
 	}
-	if num != 1 {
+
+	if count != 1 {
 		return errors.New(project + " 프로젝트가 존재하지 않습니다.")
 	}
+
 	return nil
 }

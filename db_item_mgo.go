@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"reflect"
@@ -10,6 +11,7 @@ import (
 	"time"
 
 	"github.com/digital-idea/ditime"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -41,34 +43,44 @@ func addItem(session *mgo.Session, project string, i Item) error {
 	return nil
 }
 
-func setItem(session *mgo.Session, project string, i Item) error {
-	session.SetMode(mgo.Monotonic, true)
+func setItem(client *mongo.Client, project string, i Item) error {
 	i.Updatetime = time.Now().Format(time.RFC3339)
-	status, err := AllStatus(session)
+	status, err := AllStatus(client)
 	if err != nil {
 		return err
 	}
 	i.updateStatusV2(status)
 	i.setRnumTag() // 롤넘버에 따른 테그 셋팅
-	c := session.DB(*flagDBName).C("items")
-	err = c.Update(bson.M{"id": i.ID}, i)
+
+	collection := client.Database(*flagDBName).Collection("items")
+
+	filter := bson.M{"id": i.ID}
+	update := bson.M{"$set": i}
+	_, err = collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
-func getItem(session *mgo.Session, project, id string) (Item, error) {
+func getItem(client *mongo.Client, project, id string) (Item, error) {
 	if project == "" || id == "" {
 		return Item{}, nil
 	}
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("items")
+
+	collection := client.Database(*flagDBName).Collection("items")
 	var result Item
-	err := c.Find(bson.M{"id": id}).One(&result)
+
+	filter := bson.M{"id": id}
+	err := collection.FindOne(context.Background(), filter).Decode(&result)
 	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return Item{}, nil
+		}
 		return Item{}, err
 	}
+
 	return result, nil
 }
 
@@ -510,72 +522,96 @@ func Totalnum(session *mgo.Session, project string) (Infobarnum, error) {
 }
 
 // TotalTaskStatusnum 함수는 프로젝트의 전체샷에 대한 상태 갯수를 검색한다. // legacy
-func TotalTaskStatusnum(session *mgo.Session, project, task string) (Infobarnum, error) {
+func TotalTaskStatusnum(client *mongo.Client, project, task string) (Infobarnum, error) {
 	if project == "" {
 		return Infobarnum{}, nil
 	}
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("items")
+
+	collection := client.Database(*flagDBName).Collection("items")
 
 	var results Infobarnum
 	results.StatusNum = make(map[string]int)
 
 	// statusv2
-	statuslist, err := AllStatus(session)
+	statuslist, err := AllStatus(client)
 	if err != nil {
 		return Infobarnum{}, err
 	}
+
 	for _, s := range statuslist {
-		query := bson.M{"$and": []bson.M{
-			{"tasks." + task + ".statusv2": s.ID},
-			{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
-		}}
-		num, err := c.Find(query).Count()
+		query := bson.M{
+			"$and": []bson.M{
+				{"tasks." + task + ".statusv2": s.ID},
+				{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}},
+			},
+		}
+
+		num, err := collection.CountDocuments(context.Background(), query)
 		if err != nil {
 			continue
 		}
-		results.StatusNum[s.ID] = num
+
+		results.StatusNum[s.ID] = int(num)
 	}
+
 	// 전체 아이템 갯수를 구한다.
-	totalnum, err := c.Find(bson.M{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}}).Count()
+	totalQuery := bson.M{"$or": []bson.M{{"type": "org"}, {"type": "left"}, {"type": "asset"}}}
+	totalnum, err := collection.CountDocuments(context.Background(), totalQuery)
 	if err != nil {
 		return Infobarnum{}, err
 	}
-	results.Total = totalnum
+
+	results.Total = int(totalnum)
+
 	// 샷 갯수를 구한다.
-	shotnum, err := c.Find(bson.M{"$or": []bson.M{{"type": "org"}, {"type": "left"}}}).Count()
+	shotQuery := bson.M{"$or": []bson.M{{"type": "org"}, {"type": "left"}}}
+	shotnum, err := collection.CountDocuments(context.Background(), shotQuery)
 	if err != nil {
 		return Infobarnum{}, err
 	}
-	results.Shot = shotnum
+
+	results.Shot = int(shotnum)
+
 	// 샷2D 갯수를 구한다.
-	queryShot2D := bson.M{"$and": []bson.M{
-		{"shottype": "2d"},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}}},
-	}}
-	shot2dNum, err := c.Find(queryShot2D).Count()
+	shot2DQuery := bson.M{
+		"$and": []bson.M{
+			{"shottype": "2d"},
+			{"$or": []bson.M{{"type": "org"}, {"type": "left"}}},
+		},
+	}
+	shot2dNum, err := collection.CountDocuments(context.Background(), shot2DQuery)
 	if err != nil {
 		return Infobarnum{}, err
 	}
-	results.Shot2d = shot2dNum
+
+	results.Shot2d = int(shot2dNum)
+
 	// 샷3D 갯수를 구한다.
-	queryShot3D := bson.M{"$and": []bson.M{
-		{"shottype": "3d"},
-		{"$or": []bson.M{{"type": "org"}, {"type": "left"}}},
-	}}
-	shot3dNum, err := c.Find(queryShot3D).Count()
+	shot3DQuery := bson.M{
+		"$and": []bson.M{
+			{"shottype": "3d"},
+			{"$or": []bson.M{{"type": "org"}, {"type": "left"}}},
+		},
+	}
+	shot3dNum, err := collection.CountDocuments(context.Background(), shot3DQuery)
 	if err != nil {
 		return Infobarnum{}, err
 	}
-	results.Shot3d = shot3dNum
+
+	results.Shot3d = int(shot3dNum)
+
 	// 에셋 갯수를 구한다.
-	assetnum, err := c.Find(bson.M{"$or": []bson.M{{"type": "asset"}}}).Count()
+	assetQuery := bson.M{"$or": []bson.M{{"type": "asset"}}}
+	assetnum, err := collection.CountDocuments(context.Background(), assetQuery)
 	if err != nil {
 		return Infobarnum{}, err
 	}
-	results.Assets = assetnum
+
+	results.Assets = int(assetnum)
+
 	// 진행률을 구한다
 	results.calculatePercent()
+
 	return results, nil
 }
 
@@ -966,15 +1002,34 @@ func setTaskLevel(session *mgo.Session, project, name, task, level string) error
 // 일반샷은 org를 반환한다.
 // 입체샷인경우 left를 반환한다.
 // 에셋은 asset을 반환한다.
-func Type(session *mgo.Session, project, name string) (string, error) {
-	c := session.DB(*flagDBName).C("items")
-	var items []Item
-	err := c.Find(bson.M{"$or": []bson.M{{"name": name, "type": "org"}, {"name": name, "type": "left"}, {"name": name, "type": "asset"}}}).All(&items)
+func Type(client *mongo.Client, project, name string) (string, error) {
+	collection := client.Database(*flagDBName).Collection("items")
+
+	filter := bson.M{
+		"$or": []bson.M{
+			{"name": name, "type": "org"},
+			{"name": name, "type": "left"},
+			{"name": name, "type": "asset"},
+		},
+	}
+
+	cursor, err := collection.Find(context.Background(), filter)
 	if err != nil {
 		return "", err
 	}
+	defer cursor.Close(context.Background())
+
+	var items []Item
+	for cursor.Next(context.Background()) {
+		var item Item
+		if err := cursor.Decode(&item); err != nil {
+			return "", err
+		}
+		items = append(items, item)
+	}
+
 	if len(items) == 0 {
-		return "", errors.New(name + "에 해당하는 org,left,asset 타입을 DB에서 찾을 수 없습니다.")
+		return "", errors.New(name + "에 해당하는 org, left, asset 타입을 DB에서 찾을 수 없습니다.")
 	}
 	if len(items) != 1 {
 		return "", errors.New(name + "값이 DB에서 고유하지 않습니다.")
@@ -1445,13 +1500,12 @@ func SetTaskStatusV2(session *mgo.Session, project, id, task, status string) (st
 }
 
 // HasTask 함수는 item에 task가 존재하는 체크한다.
-func HasTask(session *mgo.Session, project, id, task string) error {
-	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
+func HasTask(client *mongo.Client, project, id, task string) error {
+	err := HasProject(client, project)
 	if err != nil {
 		return err
 	}
-	item, err := getItem(session, project, id)
+	item, err := getItem(client, project, id)
 	if err != nil {
 		return err
 	}
@@ -1462,38 +1516,50 @@ func HasTask(session *mgo.Session, project, id, task string) error {
 }
 
 // AddTask 함수는 item에 task를 추가한다.
-func AddTask(session *mgo.Session, project, id, task, status, pipelinestep string) error {
-	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
+func AddTask(client *mongo.Client, project, id, task, status, pipelinestep string) error {
+	collection := client.Database(*flagDBName).Collection("items")
+
+	err := HasProject(client, project)
 	if err != nil {
 		return err
 	}
-	item, err := getItem(session, project, id)
+
+	item, err := getItem(client, project, id)
 	if err != nil {
 		return err
 	}
+
 	taskname := strings.ToLower(task)
-	// 기존에 Task가 없다면 추가한다.
-	if _, found := item.Tasks[task]; !found {
-		t := Task{}
-		t.Title = taskname
-		t.StatusV2 = status
-		t.Pipelinestep = pipelinestep
-		item.Tasks[task] = t
+
+	// If the task doesn't exist, add it.
+	if _, found := item.Tasks[taskname]; !found {
+		t := Task{
+			Title:        taskname,
+			StatusV2:     status,
+			Pipelinestep: pipelinestep,
+		}
+		item.Tasks[taskname] = t
 	} else {
-		return fmt.Errorf("이미 %s 에 %s Task가 존재합니다", id, taskname)
+		return fmt.Errorf("Task '%s' already exists in '%s'", taskname, id)
 	}
-	c := session.DB(*flagDBName).C("items")
+
 	item.Updatetime = time.Now().Format(time.RFC3339)
-	globalStatus, err := AllStatus(session)
+
+	globalStatus, err := AllStatus(client)
 	if err != nil {
 		return err
 	}
+
 	item.updateStatusV2(globalStatus)
-	err = c.Update(bson.M{"id": item.ID}, item)
+
+	filter := bson.M{"id": item.ID}
+	update := bson.M{"$set": item}
+
+	_, err = collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 

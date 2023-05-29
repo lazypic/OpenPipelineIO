@@ -959,12 +959,12 @@ func handleEditItemSubmitv2(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		session, err := mgo.Dial(*flagDBIP)
+		client, err := connectToMongoDB(*flagDBIP)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		defer session.Close()
+		defer disconnectFromMongoDB(client)
 		admin, err := GetAdminSetting(session)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

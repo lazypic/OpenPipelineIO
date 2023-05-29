@@ -8,7 +8,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"gopkg.in/mgo.v2"
 )
 
 // SetStatus 함수는 Status를 DB에 저장한다.
@@ -34,62 +33,69 @@ func SetStatus(client *mongo.Client, s Status) error {
 }
 
 // GetStatus 함수는 Status를 DB에서 가지고 온다.
-func GetStatus(session *mgo.Session, id string) (Status, error) {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("status")
-	s := Status{}
-	err := c.Find(bson.M{"id": id}).One(&s)
+func GetStatus(client *mongo.Client, id string) (Status, error) {
+	collection := client.Database(*flagDBName).Collection("status")
+
+	var s Status
+	err := collection.FindOne(context.Background(), bson.M{"id": id}).Decode(&s)
 	if err != nil {
 		return s, err
 	}
+
 	return s, nil
 }
 
 // GetInitStatusID 함수는 초기 Status를 DB에서 가지고 온다.
-func GetInitStatusID(session *mgo.Session) (string, error) {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("status")
-	s := Status{}
-	n, err := c.Find(bson.M{"initstatus": true}).Count()
+func GetInitStatusID(client *mongo.Client) (string, error) {
+	collection := client.Database(*flagDBName).Collection("status")
+
+	count, err := collection.CountDocuments(context.Background(), bson.M{"initstatus": true})
 	if err != nil {
 		return "", err
 	}
-	if n == 0 {
-		return "", errors.New("아이템 생성시 초기 Status로 사용할 Status 설정이 필요합니다")
+
+	if count == 0 {
+		return "", errors.New("A status needs to be configured as the initial status for item creation")
 	}
-	if n != 1 {
-		return "", errors.New("초기 상태 설정값이 1개가 아닙니다")
+
+	if count != 1 {
+		return "", errors.New("The number of initial status values is not equal to 1")
 	}
-	err = c.Find(bson.M{"initstatus": true}).One(&s)
+
+	var s Status
+	err = collection.FindOne(context.Background(), bson.M{"initstatus": true}).Decode(&s)
 	if err != nil {
 		return "", err
 	}
+
 	return s.ID, nil
 }
 
 // AddStatus 함수는 tasksetting을 DB에 추가한다.
-func AddStatus(session *mgo.Session, s Status) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("status")
-	n, err := c.Find(bson.M{"id": s.ID}).Count()
+func AddStatus(client *mongo.Client, s Status) error {
+	collection := client.Database(*flagDBName).Collection("status")
+
+	count, err := collection.CountDocuments(context.Background(), bson.M{"id": s.ID})
 	if err != nil {
 		return err
 	}
-	if n > 0 {
-		return errors.New(s.ID + " Status가 이미 존재합니다")
+
+	if count > 0 {
+		return errors.New(s.ID + " Status already exists")
 	}
-	err = c.Insert(s)
+
+	_, err = collection.InsertOne(context.Background(), s)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
 // RmStatus 함수는 Status를 DB에서 삭제한다.
-func RmStatus(session *mgo.Session, id string) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("status")
-	err := c.Remove(bson.M{"id": id})
+func RmStatus(client *mongo.Client, id string) error {
+	collection := client.Database(*flagDBName).Collection("status")
+	_, err := collection.DeleteOne(context.Background(), bson.M{"id": id})
 	if err != nil {
 		return err
 	}

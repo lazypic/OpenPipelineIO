@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/digital-idea/dilog"
-	"gopkg.in/mgo.v2"
 )
 
 func addShotItemCmd(project, name, typ, platesize, scanname, scantimecodein, scantimecodeout, justtimecodein, justtimecodeout string, scanframe, scanin, scanout, platein, plateout, justin, justout int) {
@@ -18,16 +17,16 @@ func addShotItemCmd(project, name, typ, platesize, scanname, scantimecodein, sca
 		log.Fatal("샷 이름 규칙이 아닙니다.")
 	}
 	now := time.Now().Format(time.RFC3339)
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer session.Close()
-	initStatusID, err := GetInitStatusID(session)
+	defer disconnectFromMongoDB(client)
+	initStatusID, err := GetInitStatusID(client)
 	if err != nil {
 		log.Fatal(err)
 	}
-	admin, err := GetAdminSetting(session)
+	admin, err := GetAdminSetting(client)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -98,7 +97,7 @@ func addShotItemCmd(project, name, typ, platesize, scanname, scantimecodein, sca
 		}
 		i.Platepath = platePath.String()
 	}
-	tasks, err := AllTaskSettings(session)
+	tasks, err := AllTaskSettings(client)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -177,12 +176,12 @@ func addAssetItemCmd(project, name, typ, assettype, assettags string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer session.Close()
-	initStatusID, err := GetInitStatusID(session)
+	defer disconnectFromMongoDB(client)
+	initStatusID, err := GetInitStatusID(client)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -240,12 +239,12 @@ func addOtherItemCmd(project, name, typ, platesize, scanname, scantimecodein, sc
 		log.Fatal("소스, 재스캔 이름 규칙이 아닙니다.")
 	}
 	now := time.Now().Format(time.RFC3339)
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer session.Close()
-	admin, err := GetAdminSetting(session)
+	defer disconnectFromMongoDB(client)
+	admin, err := GetAdminSetting(client)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -378,12 +377,12 @@ func rmItemCmd(project, name, typ string) {
 	if user.Username != "root" {
 		log.Fatal("root 계정이 아닙니다.")
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer session.Close()
-	err = rmItem(session, project, name, typ)
+	defer disconnectFromMongoDB(client)
+	err = rmItem(client, project, name, typ)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -394,7 +393,7 @@ func rmItemCmd(project, name, typ string) {
 
 	}
 	// slack log
-	err = slacklog(session, project, fmt.Sprintf("Remove Item: \nProject: %s, ID: %s_%s, Author: %s", project, name, typ, user.Username))
+	err = slacklog(client, project, fmt.Sprintf("Remove Item: \nProject: %s, ID: %s_%s, Author: %s", project, name, typ, user.Username))
 	if err != nil {
 		log.Fatal(err)
 	}

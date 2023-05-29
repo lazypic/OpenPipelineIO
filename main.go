@@ -213,16 +213,16 @@ func main() {
 			if *flagUpdateParent {
 				// updateParent 옵션이 활성화되어있고, org, left가 재스캔이라면.. 원본플레이트의 정보를 업데이트한다.
 				if (*flagType != "org" && strings.Contains(*flagType, "org")) || (*flagType != "left" && strings.Contains(*flagType, "left")) {
-					session, err := mgo.Dial(*flagDBIP)
+					client, err := connectToMongoDB(*flagDBIP)
 					if err != nil {
 						log.Fatal(err)
 					}
-					defer session.Close()
+					defer disconnectFromMongoDB(client)
 					typ := "org"
 					if strings.Contains(*flagType, "left") {
 						typ = "left"
 					}
-					item, err := getItem(session, *flagProject, *flagName+"_"+typ)
+					item, err := getItem(client, *flagProject, *flagName+"_"+typ)
 					if err != nil {
 						log.Fatal(err)
 					}
@@ -241,7 +241,7 @@ func main() {
 					item.JustOut = *flagJustout
 					item.UseType = *flagType
 					// adminsetting 값을 가지고와서 Thumbnailmov 값을 설정한다.
-					admin, err := GetAdminSetting(session)
+					admin, err := GetAdminSetting(client)
 					if err != nil {
 						log.Fatal(err)
 					}

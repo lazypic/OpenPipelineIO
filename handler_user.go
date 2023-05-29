@@ -45,30 +45,29 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
 	rcp.SessionID = ssid.ID
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	err = rcp.SearchOption.LoadCookie(session, r)
+	defer disconnectFromMongoDB(client)
+	err = rcp.SearchOption.LoadCookie(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.User, err = getUser(session, ssid.ID)
+	rcp.User, err = getUser(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.QueryUser, err = getUser(session, id)
+	rcp.QueryUser, err = getUser(client, id)
 	if err != nil {
 		http.Redirect(w, r, "/nouser?id="+id, http.StatusSeeOther)
 		return
 	}
 	err = TEMPLATES.ExecuteTemplate(w, "user", rcp)
 	if err != nil {
-		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -103,43 +102,43 @@ func handleEditUser(w http.ResponseWriter, r *http.Request) {
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
 	rcp.MailDNS = *flagMailDNS
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.Divisions, err = allDivisions(session)
+	defer disconnectFromMongoDB(client)
+	rcp.Divisions, err = allDivisions(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Departments, err = allDepartments(session)
+	rcp.Departments, err = allDepartments(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Teams, err = allTeams(session)
+	rcp.Teams, err = allTeams(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Roles, err = allRoles(session)
+	rcp.Roles, err = allRoles(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Positions, err = allPositions(session)
+	rcp.Positions, err = allPositions(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.User, err = getUser(session, id)
+	rcp.User, err = getUser(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.SessionUser, err = getUser(session, ssid.ID)
+	rcp.SessionUser, err = getUser(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -168,12 +167,12 @@ func handleEditUserSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// 유저 정보를 가지고 온다.
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	id := r.FormValue("ID")
 	if id != ssid.ID {
 		if ssid.AccessLevel != AdminAccessLevel {
@@ -181,7 +180,7 @@ func handleEditUserSubmit(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	u, err := getUser(session, id)
+	u, err := getUser(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -211,13 +210,13 @@ func handleEditUserSubmit(w http.ResponseWriter, r *http.Request) {
 		// 사용자 레벨을 업데이트한다.
 		u.AccessLevel = AccessLevel(level)
 		// 사용자 토큰을 업데이트한다.
-		t, err := getToken(session, id)
+		t, err := getToken(client, id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		t.AccessLevel = AccessLevel(level)
-		err = setToken(session, t)
+		err = setToken(client, t)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -228,13 +227,13 @@ func handleEditUserSubmit(w http.ResponseWriter, r *http.Request) {
 		u.AccessLevel = AccessLevel(0)
 		u.IsLeave = true
 		// 사용자 토큰을 업데이트한다.
-		t, err := getToken(session, id)
+		t, err := getToken(client, id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		t.AccessLevel = AccessLevel(0)
-		err = setToken(session, t)
+		err = setToken(client, t)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

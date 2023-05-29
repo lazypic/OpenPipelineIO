@@ -4,11 +4,11 @@ import (
 	"log"
 
 	"github.com/ashwanthkumar/slack-go-webhook"
-	"gopkg.in/mgo.v2"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func slacklog(session *mgo.Session, project, logString string) error {
-	p, err := getProject(session, project)
+func slacklog(client *mongo.Client, project, logString string) error {
+	p, err := getProject(client, project)
 	if err != nil {
 		return err
 	}
