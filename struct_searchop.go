@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"gopkg.in/mgo.v2"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // SearchOption 은 웹 검색창의 옵션 자료구조이다.
@@ -27,12 +27,13 @@ type SearchOption struct {
 // SearchOption과 관련된 메소드
 
 func (op *SearchOption) setStatusAll() error {
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		return err
 	}
-	defer session.Close()
-	status, err := AllStatus(session)
+	defer disconnectFromMongoDB(client)
+
+	status, err := AllStatus(client)
 	if err != nil {
 		return err
 	}
@@ -43,12 +44,12 @@ func (op *SearchOption) setStatusAll() error {
 }
 
 func (op *SearchOption) setStatusDefaultV1() error {
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		return err
 	}
-	defer session.Close()
-	status, err := AllStatus(session)
+	defer disconnectFromMongoDB(client)
+	status, err := AllStatus(client)
 	if err != nil {
 		return err
 	}
@@ -62,12 +63,12 @@ func (op *SearchOption) setStatusDefaultV1() error {
 }
 
 func (op *SearchOption) setStatusDefaultV2() error {
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		return err
 	}
-	defer session.Close()
-	status, err := AllStatus(session)
+	defer disconnectFromMongoDB(client)
+	status, err := AllStatus(client)
 	if err != nil {
 		return err
 	}
@@ -108,7 +109,7 @@ func handleRequestToSearchOption(r *http.Request) SearchOption {
 }
 
 // LoadCookie 메소드는 request에 이미 설정된 쿠키값을을 SearchOption 자료구조에 추가한다.
-func (op *SearchOption) LoadCookie(session *mgo.Session, r *http.Request) error {
+func (op *SearchOption) LoadCookie(client *mongo.Client, r *http.Request) error {
 	for _, cookie := range r.Cookies() {
 		if cookie.Name == "Project" {
 			op.Project = cookie.Value
@@ -125,7 +126,7 @@ func (op *SearchOption) LoadCookie(session *mgo.Session, r *http.Request) error 
 		}
 	}
 	if op.Project == "" {
-		plist, err := Projectlist(session)
+		plist, err := Projectlist(client)
 		if err != nil {
 			return err
 		}

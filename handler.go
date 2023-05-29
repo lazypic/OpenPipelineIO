@@ -90,13 +90,13 @@ func handleHelp(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/signin", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	u, err := getUser(session, ssid.ID)
+	defer disconnectFromMongoDB(client)
+	u, err := getUser(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -122,19 +122,19 @@ func handleHelp(w http.ResponseWriter, r *http.Request) {
 	rcp.Sha1ver = SHA1VER
 	rcp.BuildTime = BUILDTIME
 	rcp.DBIP = *flagDBIP
-	info, err := session.BuildInfo()
+	rcp.DBVer, err = getServerVersion(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.DBVer = info.Version
-	err = rcp.SearchOption.LoadCookie(session, r)
+
+	err = rcp.SearchOption.LoadCookie(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.User = u
-	rcp.Status, err = AllStatus(session)
+	rcp.Status, err = AllStatus(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

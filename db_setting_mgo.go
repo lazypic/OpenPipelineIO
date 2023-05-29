@@ -1,21 +1,29 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"sort"
 
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 )
 
 // SetAdminSetting 함수는 adminsetting을 DB에 저장한다.
-func SetAdminSetting(session *mgo.Session, s Setting) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("admin")
-	err := c.Update(bson.M{"id": "admin"}, s)
+func SetAdminSetting(client *mongo.Client, s Setting) error {
+	collection := client.Database(*flagDBName).Collection("admin")
+
+	filter := bson.D{{Key: "id", Value: "admin"}}
+	opts := options.Update().SetUpsert(true)
+
+	update := bson.D{{Key: "$set", Value: s}}
+
+	_, err := collection.UpdateOne(context.TODO(), filter, update, opts)
 	if err != nil {
-		if err == mgo.ErrNotFound {
-			err = c.Insert(s)
+		if err == mongo.ErrNoDocuments {
+			_, err = collection.InsertOne(context.TODO(), s)
 			if err != nil {
 				return err
 			}
@@ -23,19 +31,23 @@ func SetAdminSetting(session *mgo.Session, s Setting) error {
 		}
 		return err
 	}
+
 	return nil
 }
 
 // GetAdminSetting 함수는 adminsetting을 DB에서 가지고 온다.
-func GetAdminSetting(session *mgo.Session) (Setting, error) {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("admin")
-	s := Setting{}
-	err := c.Find(bson.M{"id": "admin"}).One(&s)
+func GetAdminSetting(client *mongo.Client) (Setting, error) {
+	collection := client.Database(*flagDBName).Collection("admin")
+
+	filter := bson.D{{Key: "id", Value: "admin"}}
+	opts := options.FindOne()
+
+	var s Setting
+	err := collection.FindOne(context.TODO(), filter, opts).Decode(&s)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if err == mongo.ErrNoDocuments {
 			s.ID = "admin"
-			err = c.Insert(s)
+			_, err = collection.InsertOne(context.TODO(), s)
 			if err != nil {
 				return s, err
 			}
@@ -43,6 +55,7 @@ func GetAdminSetting(session *mgo.Session) (Setting, error) {
 		}
 		return s, err
 	}
+
 	return s, nil
 }
 

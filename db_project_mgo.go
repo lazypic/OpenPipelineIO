@@ -1,26 +1,42 @@
 package main
 
 import (
+	"context"
 	"errors"
+	"log"
 	"time"
 
+	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
 // Projectlist 함수는 프로젝트 리스트를 출력하는 함수입니다.
-func Projectlist(session *mgo.Session) ([]string, error) {
+func Projectlist(client *mongo.Client) ([]string, error) {
 	var results []string
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("project")
-	projects := []Project{}
-	err := c.Find(bson.M{}).Sort("id").All(&projects)
+	collection := client.Database(*flagDBName).Collection("project")
+
+	cur, err := collection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		return nil, err
 	}
-	for _, p := range projects {
-		results = append(results, p.ID)
+	defer cur.Close(context.TODO())
+
+	for cur.Next(context.TODO()) {
+		var project Project
+		err := cur.Decode(&project)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		results = append(results, project.ID)
 	}
+
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+
 	return results, nil
 }
 

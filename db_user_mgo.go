@@ -47,28 +47,30 @@ func addUser(session *mgo.Session, u User) error {
 }
 
 // addToken 함수는 사용자정보로 token을 추가하는 함수이다.
-func addToken(session *mgo.Session, u User) error {
-	c := session.DB(*flagDBName).C("token")
-	num, err := c.Find(bson.M{"token": u.Token}).Count()
+func addToken(client *mongo.Client, u User) error {
+	collection := client.Database(*flagDBName).Collection("token")
+
+	filter := bson.M{"token": u.Token}
+	num, err := collection.CountDocuments(context.TODO(), filter)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 	if num != 0 {
 		err = errors.New(u.Token + " 키가 이미 DB에 존재합니다.")
-		log.Println(err)
 		return err
 	}
-	t := Token{
+
+	token := Token{
 		Token:       u.Token,
 		AccessLevel: u.AccessLevel,
 		ID:          u.ID,
 	}
-	err = c.Insert(t)
+
+	_, err = collection.InsertOne(context.TODO(), token)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
+
 	return nil
 }
 
@@ -112,15 +114,15 @@ func validTokenV2(client *mongo.Client, token string) (Token, error) {
 }
 
 // getUser 함수는 사용자를 가지고오는 함수이다.
-func getUser(session *mgo.Session, id string) (User, error) {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("users")
-	u := User{}
-	err := c.Find(bson.M{"id": id}).One(&u)
+func getUser(client *mongo.Client, id string) (User, error) {
+	c := client.Database(*flagDBName).Collection("users")
+	filter := bson.D{{"id", id}}
+	user := User{}
+	err := c.FindOne(context.Background(), filter).Decode(&user)
 	if err != nil {
-		return u, err
+		return user, err
 	}
-	return u, nil
+	return user, nil
 }
 
 // getToken 함수는 사용자의 토큰을 가지고오는 함수이다.
@@ -136,10 +138,9 @@ func getToken(session *mgo.Session, id string) (Token, error) {
 }
 
 // rmUser 함수는 사용자를 삭제하는 함수이다.
-func rmUser(session *mgo.Session, id string) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("users")
-	err := c.Remove(bson.M{"id": id})
+func rmUser(client *mongo.Client, id string) error {
+	collection := client.Database(*flagDBName).Collection("users")
+	_, err := collection.DeleteOne(context.TODO(), bson.M{"id": id})
 	if err != nil {
 		return err
 	}
@@ -147,10 +148,9 @@ func rmUser(session *mgo.Session, id string) error {
 }
 
 // rmToken 함수는 token 키를 삭제하는 함수이다.
-func rmToken(session *mgo.Session, id string) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("token")
-	err := c.Remove(bson.M{"id": id})
+func rmToken(client *mongo.Client, id string) error {
+	collection := client.Database(*flagDBName).Collection("token")
+	_, err := collection.DeleteOne(context.TODO(), bson.M{"id": id})
 	if err != nil {
 		return err
 	}
@@ -158,21 +158,26 @@ func rmToken(session *mgo.Session, id string) error {
 }
 
 // setUser 함수는 사용자 정보를 업데이트하는 함수이다.
-func setUser(session *mgo.Session, u User) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("users")
-	num, err := c.Find(bson.M{"id": u.ID}).Count()
+func setUser(client *mongo.Client, u User) error {
+	collection := client.Database(*flagDBName).Collection("users")
+
+	filter := bson.M{"id": u.ID}
+	num, err := collection.CountDocuments(context.TODO(), filter)
 	if err != nil {
 		return err
 	}
 	if num != 1 {
 		return errors.New("해당 유저가 존재하지 않습니다")
 	}
+
 	u.Updatetime = time.Now().Format(time.RFC3339)
-	err = c.Update(bson.M{"id": u.ID}, u)
+
+	update := bson.M{"$set": u}
+	_, err = collection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 

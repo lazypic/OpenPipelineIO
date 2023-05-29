@@ -11,7 +11,6 @@ import (
 	"os/exec"
 	"os/user"
 	"strings"
-	"time"
 
 	"github.com/digital-idea/dilog"
 	"github.com/unidoc/unipdf/v3/common/license"
@@ -138,95 +137,26 @@ func main() {
 		if user.Username != "root" {
 			log.Fatal(errors.New("사용자의 레벨을 수정하기 위해서는 root 권한이 필요합니다"))
 		}
-		session, err := mgo.Dial(*flagDBIP)
+		client, err := connectToMongoDB(*flagDBIP)
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer session.Close()
-		u, err := getUser(session, *flagID)
+		defer disconnectFromMongoDB(client)
+
+		u, err := getUser(client, *flagID)
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = rmToken(session, u.ID)
+		err = rmToken(client, u.ID)
 		if err != nil {
 			log.Fatal(err)
 		}
 		u.AccessLevel = AccessLevel(*flagAccessLevel)
-		err = setUser(session, u)
+		err = setUser(client, u)
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = addToken(session, u)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return
-	} else if *flagRm == "division" && *flagID != "" { // division 삭제
-		if user.Username != "root" {
-			log.Fatal(errors.New("사용자를 삭제하기 위해서는 root 권한이 필요합니다"))
-		}
-		session, err := mgo.Dial(*flagDBIP)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer session.Close()
-		err = rmDivision(session, *flagID)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return
-	} else if *flagRm == "department" && *flagID != "" { // department 삭제
-		if user.Username != "root" {
-			log.Fatal(errors.New("사용자를 삭제하기 위해서는 root 권한이 필요합니다"))
-		}
-		session, err := mgo.Dial(*flagDBIP)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer session.Close()
-		err = rmDepartment(session, *flagID)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return
-	} else if *flagRm == "team" && *flagID != "" { // team 삭제
-		if user.Username != "root" {
-			log.Fatal(errors.New("사용자를 삭제하기 위해서는 root 권한이 필요합니다"))
-		}
-		session, err := mgo.Dial(*flagDBIP)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer session.Close()
-		err = rmTeam(session, *flagID)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return
-	} else if *flagRm == "role" && *flagID != "" { // role 삭제
-		if user.Username != "root" {
-			log.Fatal(errors.New("사용자를 삭제하기 위해서는 root 권한이 필요합니다"))
-		}
-		session, err := mgo.Dial(*flagDBIP)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer session.Close()
-		err = rmRole(session, *flagID)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return
-	} else if *flagRm == "position" && *flagID != "" { // position 삭제
-		if user.Username != "root" {
-			log.Fatal(errors.New("사용자를 삭제하기 위해서는 root 권한이 필요합니다"))
-		}
-		session, err := mgo.Dial(*flagDBIP)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer session.Close()
-		err = rmPosition(session, *flagID)
+		err = addToken(client, u)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -235,20 +165,21 @@ func main() {
 		if user.Username != "root" {
 			log.Fatal(errors.New("사용자를 삭제하기 위해서는 root 권한이 필요합니다"))
 		}
-		session, err := mgo.Dial(*flagDBIP)
+		client, err := connectToMongoDB(*flagDBIP)
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer session.Close()
-		u, err := getUser(session, *flagID)
+		defer disconnectFromMongoDB(client)
+
+		u, err := getUser(client, *flagID)
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = rmToken(session, u.ID)
+		err = rmToken(client, u.ID)
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = rmUser(session, u.ID)
+		err = rmUser(client, u.ID)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -351,11 +282,12 @@ func main() {
 		return
 	} else if *flagHTTPPort != "" {
 		// 만약 프로젝트가 하나도 없다면 "TEMP" 프로젝트를 생성한다. 프로젝트가 있어야 템플릿이 작동하기 때문이다.
-		session, err := mgo.DialWithTimeout(*flagDBIP, 2*time.Second)
+		client, err := connectToMongoDB(*flagDBIP)
 		if err != nil {
 			log.Fatal("DB가 실행되고 있지 않습니다.")
 		}
-		admin, err := GetAdminSetting(session)
+
+		admin, err := GetAdminSetting(client)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -366,7 +298,7 @@ func main() {
 			log.Println("admin 설정창의 thumbnail 경로지정이 필요합니다.")
 		}
 
-		plist, err := Projectlist(session)
+		plist, err := Projectlist(client)
 		if err != nil {
 			log.Fatal(err)
 		}

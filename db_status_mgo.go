@@ -1,20 +1,28 @@
 package main
 
 import (
+	"context"
 	"errors"
+	"log"
 
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 )
 
 // SetStatus 함수는 Status를 DB에 저장한다.
-func SetStatus(session *mgo.Session, s Status) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("status")
-	err := c.Update(bson.M{"id": s.ID}, s)
+func SetStatus(client *mongo.Client, s Status) error {
+	collection := client.Database(*flagDBName).Collection("status")
+
+	opts := options.Update().SetUpsert(true)
+	filter := bson.D{{Key: "id", Value: s.ID}}
+	update := bson.D{{Key: "$set", Value: s}}
+
+	_, err := collection.UpdateOne(context.TODO(), filter, update, opts)
 	if err != nil {
-		if err == mgo.ErrNotFound {
-			err = c.Insert(s)
+		if err == mongo.ErrNoDocuments {
+			_, err = collection.InsertOne(context.TODO(), s)
 			if err != nil {
 				return err
 			}
@@ -89,13 +97,33 @@ func RmStatus(session *mgo.Session, id string) error {
 }
 
 // AllStatus 함수는 모든 Status값을 DB에서 가지고 온다.
-func AllStatus(session *mgo.Session) ([]Status, error) {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("status")
-	results := []Status{}
-	err := c.Find(bson.M{}).Sort("-order").All(&results)
+func AllStatus(client *mongo.Client) ([]Status, error) {
+	collection := client.Database(*flagDBName).Collection("status")
+
+	opts := options.Find()
+	opts.SetSort(bson.D{{Key: "order", Value: -1}})
+
+	cur, err := collection.Find(context.TODO(), bson.D{}, opts)
 	if err != nil {
 		return nil, err
 	}
+	defer cur.Close(context.TODO())
+
+	var results []Status
+	for cur.Next(context.Background()) {
+		var status Status
+		err := cur.Decode(&status)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		results = append(results, status)
+	}
+
+	if err := cur.Err(); err != nil {
+		log.Fatal(err)
+	}
+
 	return results, nil
 }
