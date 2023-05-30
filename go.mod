@@ -9,7 +9,6 @@ require (
 	github.com/amarburg/go-quicktime v0.0.0-20180102160802-53825554ea37
 	github.com/ashwanthkumar/slack-go-webhook v0.0.0-20200209025033-430dd4e66960
 	github.com/dchest/captcha v0.0.0-20170622155422-6a29415a8364
-	github.com/digital-idea/dilog v1.0.4
 	github.com/digital-idea/dipath v0.0.0-20190606073246-5cc149f252b0
 	github.com/digital-idea/ditime v0.0.4
 	github.com/disintegration/imaging v1.6.2

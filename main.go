@@ -12,7 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/digital-idea/dilog"
 	"github.com/unidoc/unipdf/v3/common/license"
 	"gopkg.in/mgo.v2"
 )
@@ -180,28 +179,12 @@ func main() {
 		switch *flagType {
 		case "org", "left": // 일반영상은 org가 샷 타입이다. 입체프로젝트는 left가 샷타입이다.
 			addShotItemCmd(*flagProject, *flagName, *flagType, *flagPlatesize, *flagScanname, *flagScantimecodein, *flagScantimecodeout, *flagJusttimecodein, *flagJusttimecodeout, *flagScanframe, *flagScanin, *flagScanout, *flagPlatein, *flagPlateout, *flagJustin, *flagJustout)
-			dilog.Add(*flagDBIP, ip, "샷 생성되었습니다.", *flagProject, *flagName+"_"+*flagType, *flagAppName, user.Username, 180)
-			dilog.Add(*flagDBIP, ip, "스캔이름 : "+*flagScanname, *flagProject, *flagName+"_"+*flagType, *flagAppName, user.Username, 180)
-			dilog.Add(*flagDBIP, ip, fmt.Sprintf("스캔타임코드 : %s(%d) / %s(%d) (총%df)", *flagScantimecodein, *flagScanin, *flagScantimecodeout, *flagScanout, *flagScanframe), *flagProject, *flagName+"_"+*flagType, *flagAppName, user.Username, 180)
-			dilog.Add(*flagDBIP, ip, fmt.Sprintf("플레이트 구간 : %d - %d", *flagPlatein, *flagPlateout), *flagProject, *flagName+"_"+*flagType, *flagAppName, user.Username, 180)
-			dilog.Add(*flagDBIP, ip, "플레이트 사이즈 : "+*flagPlatesize, *flagProject, *flagName+"_"+*flagType, *flagAppName, user.Username, 180)
 			return
 		case "asset": //에셋 추가
 			addAssetItemCmd(*flagProject, *flagName, *flagType, *flagAssettype, *flagAssettags)
-			dilog.Add(*flagDBIP, ip, "에셋이 생성되었습니다.", *flagProject, *flagName+"_"+*flagType, *flagAppName, user.Username, 180)
-			dilog.Add(*flagDBIP, ip, fmt.Sprintf("에셋타입 : %s, 에셋태그 : %s", *flagAssettype, *flagAssettags), *flagProject, *flagName+"_"+*flagType, *flagAppName, user.Username, 180)
 			return
 		default: //소스, 재스캔 추가
 			addOtherItemCmd(*flagProject, *flagName, *flagType, *flagPlatesize, *flagScanname, *flagScantimecodein, *flagScantimecodeout, *flagJusttimecodein, *flagJusttimecodeout, *flagScanframe, *flagScanin, *flagScanout, *flagPlatein, *flagPlateout, *flagJustin, *flagJustout)
-			logString := fmt.Sprintf("Create Item: %s_%s, Scanname: %s, ScanTimecode: %s(%d) / %s(%d) (Total:%df), Plate Range: %d - %d, Platesize: %s",
-				*flagName,
-				*flagType,
-				*flagScanname,
-				*flagScantimecodein, *flagScanin, *flagScantimecodeout, *flagScanout, *flagScanframe,
-				*flagPlatein, *flagPlateout,
-				*flagPlatesize,
-			)
-			dilog.Add(*flagDBIP, ip, logString, *flagProject, *flagName, *flagAppName, user.Username, 180)
 			if *flagUpdateParent {
 				// updateParent 옵션이 활성화되어있고, org, left가 재스캔이라면.. 원본플레이트의 정보를 업데이트한다.
 				if (*flagType != "org" && strings.Contains(*flagType, "org")) || (*flagType != "left" && strings.Contains(*flagType, "left")) {
@@ -252,19 +235,6 @@ func main() {
 					if err != nil {
 						log.Fatal(err)
 					}
-					// log
-					logString := fmt.Sprintf("Scanname: %s, ScanTimecode: %s(%d) / %s(%d) Total: %df\nPlate Range: %d - %d\nPlatesize: %s",
-						*flagScanname,
-						*flagScantimecodein,
-						*flagScanin,
-						*flagScantimecodeout,
-						*flagScanout,
-						*flagScanframe,
-						*flagPlatein,
-						*flagPlateout,
-						*flagPlatesize,
-					)
-					dilog.Add(*flagDBIP, ip, logString, *flagProject, *flagName, *flagAppName, user.Username, 180)
 				}
 			}
 			return

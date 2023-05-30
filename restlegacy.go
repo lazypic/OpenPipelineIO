@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/digital-idea/dilog"
 	"github.com/digital-idea/dipath"
 	"gopkg.in/mgo.v2"
 )
@@ -26,7 +25,7 @@ func handleAPISetTags(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer session.Close()
-	tokenID, _, err := TokenHandler(r, session)
+	_, _, err = TokenHandler(r, session)
 	if err != nil {
 		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
 		return
@@ -66,12 +65,11 @@ func handleAPISetTags(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// 로그처리
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	dilog.Add(*flagDBIP, host, fmt.Sprintf("Edit tag: %s", tags), project, name, *flagAppName, tokenID, 180)
 	fmt.Fprintf(w, "{\"error\":\"\"}\n")
 }
 
@@ -101,7 +99,7 @@ func handleAPISetTaskMov(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -148,12 +146,6 @@ func handleAPISetTaskMov(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Mov = dipath.Win2lin(rcp.Mov) // 내부적으로 모든 경로는 unix 경로를 사용한다.
 	_, err = setTaskMov(session, rcp.Project, rcp.Name, rcp.Task, rcp.Mov)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Setmov: %s %s", rcp.Task, rcp.Mov), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -336,7 +328,7 @@ func handleAPISetThummov(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -381,12 +373,6 @@ func handleAPISetThummov(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Thumbnail: %s", rcp.Path), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Thumbnail: %s\nProject: %s, Name: %s, Author: %s", rcp.Path, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -426,7 +412,7 @@ func handleAPISetRenderSize(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -476,12 +462,6 @@ func handleAPISetRenderSize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.ID = id
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Rendersize: %s", rcp.Size), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Rendersize: %s\nProject: %s, Name: %s, Author: %s", rcp.Size, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -567,7 +547,7 @@ func handleAPISetRnum(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -621,12 +601,6 @@ func handleAPISetRnum(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.ID = rcp.Name + "_" + typ
-	// log
-	err = dilog.Add(*flagDBIP, host, "Set Rnum: "+rcp.Rnum, rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Rnum: %s\nProject: %s, Name: %s, Author: %s", rcp.Rnum, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -667,7 +641,7 @@ func handleAPISetTaskUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -717,12 +691,7 @@ func handleAPISetTaskUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.ID = id
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Task User: %s %s", rcp.Task, rcp.Username), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Task User: %s %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Username, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
