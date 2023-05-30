@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/digital-idea/dilog"
 	"github.com/digital-idea/dipath"
 	"gopkg.in/mgo.v2"
 )
@@ -168,7 +167,7 @@ func handleAPIRmItem(w http.ResponseWriter, r *http.Request) {
 	}
 	defer session.Close()
 
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -217,12 +216,6 @@ func handleAPIRmItem(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Remove Item: Project: %s, ID: %s_%s", project, name, typ), project, name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, project, fmt.Sprintf("Remove Item: \nProject: %s, ID: %s_%s, Author: %s", project, name, typ, rcp.UserID))
 	if err != nil {
@@ -257,7 +250,7 @@ func handleAPIRmItemID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "need permission", http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -286,12 +279,6 @@ func handleAPIRmItemID(w http.ResponseWriter, r *http.Request) {
 	rcp.ID = id
 
 	err = rmItemID(session, project, id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Remove Item: Project: %s, ID: %s", project, rcp.ID), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -764,7 +751,7 @@ func handleAPI2SetTaskMov(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -816,12 +803,6 @@ func handleAPI2SetTaskMov(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.ID = id
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Setmov: %s %s", rcp.Task, rcp.Mov), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Setmov: %s %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Mov, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -865,7 +846,7 @@ func handleAPISetTaskExpectDay(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -901,12 +882,6 @@ func handleAPISetTaskExpectDay(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ExpectDay = num
 	err = setTaskExpectDay(session, rcp.Project, rcp.ID, rcp.Task, rcp.ExpectDay)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set ExpectDay: %s %d", rcp.Task, rcp.ExpectDay), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -953,7 +928,7 @@ func handleAPISetTaskUserComment(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -979,12 +954,6 @@ func handleAPISetTaskUserComment(w http.ResponseWriter, r *http.Request) {
 	rcp.Task = task
 	rcp.UserComment = r.FormValue("usercomment")
 	err = setTaskUserComment(session, rcp.Project, rcp.ID, rcp.Task, rcp.UserComment)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set UserComment: %s %s", rcp.Task, rcp.UserComment), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1032,7 +1001,7 @@ func handleAPISetTaskResultDay(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1068,12 +1037,6 @@ func handleAPISetTaskResultDay(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ResultDay = num
 	err = setTaskResultDay(session, rcp.Project, rcp.ID, rcp.Task, rcp.ResultDay)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set ResultDay: %s %d", rcp.Task, rcp.ResultDay), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1121,7 +1084,7 @@ func handleAPISetUnDistortionSize(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1171,12 +1134,6 @@ func handleAPISetUnDistortionSize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.ID = id
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Undistortionsize: %s", rcp.Size), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Undistortionsize: %s\nProject: %s, Name: %s, Author: %s", rcp.Size, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -1219,7 +1176,7 @@ func handleAPISetJustIn(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1269,12 +1226,6 @@ func handleAPISetJustIn(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Just In: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Just In: %d\nProject: %s, Name: %s, Author: %s", rcp.Frame, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -1313,7 +1264,7 @@ func handleAPISetPlateIn(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1363,12 +1314,6 @@ func handleAPISetPlateIn(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Plate In: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Plate In: %d\nProject: %s, Name: %s, Author: %s", rcp.Frame, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -1407,7 +1352,7 @@ func handleAPISetPlateOut(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1457,12 +1402,6 @@ func handleAPISetPlateOut(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Plate Out: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Plate Out: %d\nProject: %s, Name: %s, Author: %s", rcp.Frame, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -1501,7 +1440,7 @@ func handleAPISetScanIn(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1551,12 +1490,6 @@ func handleAPISetScanIn(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Scan In: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Scan In: %d\nProject: %s, Name: %s, Author: %s", rcp.Frame, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -1595,7 +1528,7 @@ func handleAPISetScanOut(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1645,12 +1578,6 @@ func handleAPISetScanOut(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Scan Out: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Scan Out: %d\nProject: %s, Name: %s, Author: %s", rcp.Frame, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -1689,7 +1616,7 @@ func handleAPISetScanFrame(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1739,12 +1666,6 @@ func handleAPISetScanFrame(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Scan Frame: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Scan Frame: %d\nProject: %s, Name: %s, Author: %s", rcp.Frame, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -1783,7 +1704,7 @@ func handleAPISetHandleIn(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1833,12 +1754,6 @@ func handleAPISetHandleIn(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Handle In: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Handle In: %d\nProject: %s, Name: %s, Author: %s", rcp.Frame, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -1877,7 +1792,7 @@ func handleAPISetJustOut(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1927,12 +1842,6 @@ func handleAPISetJustOut(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Just Out: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Just Out: %d\nProject: %s, Name: %s, Author: %s", rcp.Frame, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -1971,7 +1880,7 @@ func handleAPISetHandleOut(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2021,12 +1930,6 @@ func handleAPISetHandleOut(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Handle Out: %d", rcp.Frame), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Handle Out: %d\nProject: %s, Name: %s, Author: %s", rcp.Frame, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -2066,7 +1969,7 @@ func handleAPISetPlateSize(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2116,12 +2019,6 @@ func handleAPISetPlateSize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.ID = id
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Platesize: %s", rcp.Size), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Platesize: %s\nProject: %s, Name: %s, Author: %s", rcp.Size, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -2184,7 +2081,7 @@ func handleAPISetCameraPubPath(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2209,12 +2106,6 @@ func handleAPISetCameraPubPath(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Path = path
 	err = SetCameraPubPath(session, rcp.Project, rcp.ID, rcp.Path)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Camera Pub Path: %s", rcp.Path), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2261,7 +2152,7 @@ func handleAPISetCameraPubTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2286,12 +2177,6 @@ func handleAPISetCameraPubTask(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Task = task
 	err = SetCameraPubTask(session, rcp.Project, rcp.ID, rcp.Task)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Camera Pub Task: %s", rcp.Task), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2337,7 +2222,7 @@ func handleAPISetCameraLensmm(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2362,12 +2247,6 @@ func handleAPISetCameraLensmm(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Lensmm = lensmm
 	err = SetCameraLensmm(session, rcp.Project, rcp.ID, rcp.Lensmm)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Camera Lens mm: %s", rcp.Lensmm), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2413,7 +2292,7 @@ func handleAPISetCameraProjection(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2438,12 +2317,6 @@ func handleAPISetCameraProjection(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Projection = str2bool(projection)
 	err = SetCameraProjection(session, rcp.Project, rcp.ID, rcp.Projection)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Camera Projection: %t", rcp.Projection), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2491,7 +2364,7 @@ func handleAPISetObjectID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2549,12 +2422,6 @@ func handleAPISetObjectID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("ObjectID: %d - %d", rcp.In, rcp.Out), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("ObjectID: %d - %d\nProject: %s, Name: %s, Author: %s", rcp.In, rcp.Out, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -2592,7 +2459,7 @@ func handleAPISetSeq(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2614,12 +2481,6 @@ func handleAPISetSeq(w http.ResponseWriter, r *http.Request) {
 	rcp.Seq = r.FormValue("seq")
 
 	err = SetSeq(session, rcp.Project, rcp.ID, rcp.Seq)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Seq: %s", rcp.Seq), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2665,7 +2526,7 @@ func handleAPISetNetflixID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2686,12 +2547,6 @@ func handleAPISetNetflixID(w http.ResponseWriter, r *http.Request) {
 	rcp.ID = id
 	rcp.NetflixID = r.FormValue("netflixid")
 	err = SetNetflixID(session, rcp.Project, rcp.ID, rcp.NetflixID)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set NetflixID: %s", rcp.NetflixID), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2737,7 +2592,7 @@ func handleAPISetPlatePath(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2759,12 +2614,6 @@ func handleAPISetPlatePath(w http.ResponseWriter, r *http.Request) {
 	rcp.Path = r.FormValue("path")
 
 	err = SetPlatePath(session, rcp.Project, rcp.ID, rcp.Path)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set PlatePath: %s", rcp.Path), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2810,7 +2659,7 @@ func handleAPI2SetThummov(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2836,12 +2685,6 @@ func handleAPI2SetThummov(w http.ResponseWriter, r *http.Request) {
 	rcp.Path = path
 
 	err = SetThummov(session, rcp.Project, rcp.Name, rcp.Path)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Thumbnail: %s", rcp.Path), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2888,7 +2731,7 @@ func handleAPISetBeforemov(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2932,12 +2775,6 @@ func handleAPISetBeforemov(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Beforemov: %s", rcp.Path), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Beforemov: %s\nProject: %s, Name: %s, Author: %s", rcp.Path, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -2976,7 +2813,7 @@ func handleAPISetAftermov(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3020,12 +2857,6 @@ func handleAPISetAftermov(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Aftermov: %s", rcp.Path), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Aftermov: %s\nProject: %s, Name: %s, Author: %s", rcp.Path, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -3064,7 +2895,7 @@ func handleAPISetEditmov(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3090,12 +2921,6 @@ func handleAPISetEditmov(w http.ResponseWriter, r *http.Request) {
 	rcp.Path = path
 
 	err = SetEditmov(session, rcp.Project, rcp.ID, rcp.Path)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Editmov: %s", rcp.Path), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3144,7 +2969,7 @@ func handleAPISetTaskStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3199,12 +3024,6 @@ func handleAPISetTaskStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Task Status: %s %s", rcp.Task, rcp.Status), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Task Status: %s %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Status, rcp.Project, rcp.ID, rcp.UserID))
 	if err != nil {
@@ -3249,7 +3068,7 @@ func handleAPISetTaskPipelinestep(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3299,12 +3118,6 @@ func handleAPISetTaskPipelinestep(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Task Pipelinestep: %s %s", rcp.Task, rcp.Pipelinestep), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Task Pipelinestep: %s %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Pipelinestep, rcp.Project, rcp.ID, rcp.UserID))
 	if err != nil {
@@ -3347,7 +3160,7 @@ func handleAPI2SetTaskStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3401,12 +3214,6 @@ func handleAPI2SetTaskStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Task Status: %s %s", rcp.Task, rcp.Status), rcp.Project, name, *flagAppName, ssid, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Task Status: %s %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Status, rcp.Project, name, ssid))
 	if err != nil {
@@ -3448,7 +3255,7 @@ func handleAPIRmTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3480,12 +3287,6 @@ func handleAPIRmTask(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	err = RmTask(session, rcp.Project, rcp.ID, rcp.Task)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rm Task: %s", rcp.Task), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3533,7 +3334,7 @@ func handleAPIAddTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3571,12 +3372,6 @@ func handleAPIAddTask(w http.ResponseWriter, r *http.Request) {
 	err = AddTask(session, rcp.Project, rcp.ID, rcp.Task, rcp.Status, rcp.Pipelinestep)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Task: %s(%s)", rcp.Task, rcp.Status), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// slack log
@@ -3623,7 +3418,7 @@ func handleAPI2SetTaskUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3658,13 +3453,6 @@ func handleAPI2SetTaskUser(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	err = SetTaskUserV2(session, rcp.Project, rcp.ID, rcp.Task, rcp.Username)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Task User: %s %s", rcp.Task, rcp.Username), rcp.Project, rcp.ID, *flagAppName, userID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3709,7 +3497,7 @@ func handleAPISetTaskStartdate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3757,12 +3545,6 @@ func handleAPISetTaskStartdate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set %s Task StartDate: %s", rcp.Task, rcp.Date), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set %s Task StartDate: %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Date, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -3803,7 +3585,7 @@ func handleAPISetTaskStartdate2nd(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3846,12 +3628,6 @@ func handleAPISetTaskStartdate2nd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = SetTaskStartdate2nd(session, rcp.Project, rcp.ID, rcp.Task, rcp.Date)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set %s Task StartDate2nd: %s", rcp.Task, rcp.Date), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3899,7 +3675,7 @@ func handleAPISetTaskUserNote(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3950,12 +3726,6 @@ func handleAPISetTaskUserNote(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set %s Task UserNote: %s", rcp.Task, rcp.UserNote), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set %s Task UserNote: %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.UserNote, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -3992,7 +3762,7 @@ func handleAPISetDeadline2D(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -4023,12 +3793,6 @@ func handleAPISetDeadline2D(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.ID = id
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Deadline2D: %s", rcp.Date), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Deadline2D: %s\nProject: %s, Name: %s, Author: %s", rcp.Date, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -4070,7 +3834,7 @@ func handleAPISetDeadline3D(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -4101,12 +3865,6 @@ func handleAPISetDeadline3D(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.ID = id
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Deadline3D: %s", rcp.Date), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Deadline3D: %s\nProject: %s, Name: %s, Author: %s", rcp.Date, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -4152,7 +3910,7 @@ func handleAPISetTaskPredate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -4209,12 +3967,6 @@ func handleAPISetTaskPredate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set %s Task Pre Deadline: %s", rcp.Task, rcp.Date), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set %s Task Pre Deadline: %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Date, rcp.Project, rcp.ID, rcp.UserID))
 	if err != nil {
@@ -4252,7 +4004,7 @@ func handleAPISetTaskDate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -4289,12 +4041,6 @@ func handleAPISetTaskDate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = SetTaskDate(session, rcp.Project, rcp.ID, rcp.Task, rcp.Date)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set %s Task Deadline: %s", rcp.Task, rcp.Date), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -4444,7 +4190,7 @@ func handleAPISetShotType(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -4489,12 +4235,6 @@ func handleAPISetShotType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.ID = id
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Shottype: %s", rcp.Type), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Shottype: %s\nProject: %s, Name: %s, Author: %s", rcp.Type, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -4534,7 +4274,7 @@ func handleAPISetUseType(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -4559,12 +4299,6 @@ func handleAPISetUseType(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Type = typ
 	err = SetUseType(session, rcp.Project, rcp.ID, rcp.Type)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Usetype: %s", rcp.Type), rcp.Project, rcp.ID, *flagAppName, ssid, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -4669,7 +4403,7 @@ func handleAPISetRetimePlate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -4713,12 +4447,6 @@ func handleAPISetRetimePlate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Retime Plate: %s", rcp.Path), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Retime Plate: %s\nProject: %s, Name: %s, Author: %s", rcp.Path, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -4757,7 +4485,7 @@ func handleAPISetOCIOcc(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -4801,12 +4529,6 @@ func handleAPISetOCIOcc(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set OCIO .cc: %s", rcp.Path), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set OCIO .cc: %s\nProject: %s, Name: %s, Author: %s", rcp.Path, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -4845,7 +4567,7 @@ func handleAPISetRollmedia(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -4889,12 +4611,6 @@ func handleAPISetRollmedia(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Rollmedia: %s", rcp.Rollmedia), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Rollmedia: %s\nProject: %s, Name: %s, Author: %s", rcp.Rollmedia, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -4932,7 +4648,7 @@ func handleAPISetScanname(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -4952,12 +4668,6 @@ func handleAPISetScanname(w http.ResponseWriter, r *http.Request) {
 	rcp.ID = id
 	rcp.Scanname = r.FormValue("scanname")
 	err = SetScanname(session, rcp.Project, rcp.ID, rcp.Scanname)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Scanname: %s", rcp.Scanname), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5006,7 +4716,7 @@ func handleAPISetAssetType(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5052,12 +4762,6 @@ func handleAPISetAssetType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.ID = id
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Assettype: %s", rcp.Type), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Assettype: %s\nProject: %s, Name: %s, Author: %s", rcp.Type, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -5097,7 +4801,7 @@ func handleAPI2SetRnum(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5126,12 +4830,6 @@ func handleAPI2SetRnum(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = SetRnum(session, rcp.Project, rcp.ID, rcp.Rnum)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, "Set Rnum: "+rcp.Rnum, rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5178,7 +4876,7 @@ func handleAPISetScanTimecodeIn(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5222,12 +4920,6 @@ func handleAPISetScanTimecodeIn(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("ScanTimecodeIn: %s", rcp.Timecode), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("ScanTimecodeIn: %s\nProject: %s, Name: %s, Author: %s", rcp.Timecode, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -5266,7 +4958,7 @@ func handleAPISetScanTimecodeOut(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5310,12 +5002,6 @@ func handleAPISetScanTimecodeOut(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("ScanTimecodeOut: %s", rcp.Timecode), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("ScanTimecodeOut: %s\nProject: %s, Name: %s, Author: %s", rcp.Timecode, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -5354,7 +5040,7 @@ func handleAPISetJustTimecodeIn(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5398,12 +5084,6 @@ func handleAPISetJustTimecodeIn(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("JustTimecodeIn: %s", rcp.Timecode), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("JustTimecodeIn: %s\nProject: %s, Name: %s, Author: %s", rcp.Timecode, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -5442,7 +5122,7 @@ func handleAPISetJustTimecodeOut(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5486,12 +5166,6 @@ func handleAPISetJustTimecodeOut(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("JustTimecodeOut: %s", rcp.Timecode), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("JustTimecodeOut: %s\nProject: %s, Name: %s, Author: %s", rcp.Timecode, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -5530,7 +5204,7 @@ func handleAPISetFinver(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5572,12 +5246,6 @@ func handleAPISetFinver(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	err = SetFinver(session, rcp.Project, rcp.Name, rcp.Version)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Finversion: %s", rcp.Version), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5624,7 +5292,7 @@ func handleAPISetFindate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5656,12 +5324,6 @@ func handleAPISetFindate(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	err = SetFindate(session, rcp.Project, rcp.Name, rcp.Date)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set FinDate: %s", rcp.Date), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5708,7 +5370,7 @@ func handleAPISetCrowdAsset(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5739,12 +5401,6 @@ func handleAPISetCrowdAsset(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Crowdasset = crowdType
 	rcp.ID = id
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set CrowdType: %t", rcp.Crowdasset), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set CrowdType: %t\nProject: %s, Name: %s, Author: %s", rcp.Crowdasset, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -5788,7 +5444,7 @@ func handleAPIAddTag(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5817,12 +5473,6 @@ func handleAPIAddTag(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Tag = tag
 	rcp.Name, err = AddTag(session, rcp.Project, rcp.ID, rcp.Tag)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Tag: %s", rcp.Tag), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5869,7 +5519,7 @@ func handleAPIAddAssetTag(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5898,12 +5548,6 @@ func handleAPIAddAssetTag(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Assettag = assettag
 	err = AddAssetTag(session, rcp.Project, rcp.ID, rcp.Assettag)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Asset Tag: %s", rcp.Assettag), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5949,7 +5593,7 @@ func handleAPIRenameTag(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5974,12 +5618,6 @@ func handleAPIRenameTag(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.After = strings.Replace(after, " ", "", -1) // 빈 공백을 제거한다.
 	err = RenameTag(session, rcp.Project, rcp.Before, rcp.After)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rename Tag: %s > %s", rcp.Before, rcp.After), rcp.Project, "", *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -6028,7 +5666,7 @@ func handleAPIRmTag(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -6058,11 +5696,6 @@ func handleAPIRmTag(w http.ResponseWriter, r *http.Request) {
 	rcp.Tag = tag
 	rcp.IsContain = str2bool(r.FormValue("iscontain"))
 	rcp.Name, err = RmTag(session, rcp.Project, rcp.ID, rcp.Tag, rcp.IsContain)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rm Tag: %s", rcp.Tag), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -6109,7 +5742,7 @@ func handleAPIRmAssetTag(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -6139,11 +5772,6 @@ func handleAPIRmAssetTag(w http.ResponseWriter, r *http.Request) {
 	rcp.Assettag = assettag
 	rcp.IsContain = str2bool(r.FormValue("iscontain"))
 	err = RmAssetTag(session, rcp.Project, rcp.ID, rcp.Assettag, rcp.IsContain)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rm Asset Tag: %s", rcp.Assettag), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -6188,7 +5816,7 @@ func handleAPISetNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer session.Close()
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -6245,13 +5873,6 @@ func handleAPISetNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// log
-	err = dilog.Add(*flagDBIP, host, "Set Note: "+note, rcp.Project, itemName, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Note: %s\nProject: %s, Name: %s, Author: %s", note, rcp.Project, itemName, rcp.UserID))
 	if err != nil {
@@ -6303,7 +5924,7 @@ func handleAPIAddComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.AuthorName = u.LastNameKor + u.FirstNameKor
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -6336,12 +5957,6 @@ func handleAPIAddComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.ID = id
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Comment: %s, Media: %s", rcp.Text, rcp.Media), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Add Comment: %s\nMeida: %s\nProject: %s, Name: %s, Author: %s", rcp.Text, rcp.Media, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -6397,7 +6012,7 @@ func handleAPIEditComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.AuthorName = u.LastNameKor + u.FirstNameKor
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -6430,12 +6045,6 @@ func handleAPIEditComment(w http.ResponseWriter, r *http.Request) {
 	rcp.Media = r.FormValue("media")
 	rcp.MediaTitle = r.FormValue("mediatitle")
 	rcp.Name, err = EditComment(session, rcp.Project, rcp.ID, rcp.Time, rcp.AuthorName, rcp.Text, rcp.MediaTitle, rcp.Media)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Edit Comment: %s, Media: %s", rcp.Text, rcp.Media), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -6483,7 +6092,7 @@ func handleAPIRmComment(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -6508,12 +6117,6 @@ func handleAPIRmComment(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Date = date
 	rcp.ID, rcp.Text, err = RmComment(session, rcp.Project, rcp.Name, rcp.UserID, rcp.Date)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, "Rm Comment: "+rcp.Text, rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -6564,7 +6167,7 @@ func handleAPIAddSource(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -6617,12 +6220,6 @@ func handleAPIAddSource(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.ID = id
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Source: %s, %s", rcp.Title, rcp.Path), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Add Source: %s, %s\nProject: %s, Name: %s, Author: %s", rcp.Title, rcp.Path, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -6662,7 +6259,7 @@ func handleAPIRmSource(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -6708,12 +6305,6 @@ func handleAPIRmSource(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.ID = id
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rm Source: %s", rcp.Title), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Rm Source: %s\nProject: %s, Name: %s, Author: %s", rcp.Title, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -6756,7 +6347,7 @@ func handleAPIAddReference(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -6809,12 +6400,6 @@ func handleAPIAddReference(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.ID = id
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Reference: %s, %s", rcp.Title, rcp.Path), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Add Reference: %s, %s\nProject: %s, Name: %s, Author: %s", rcp.Title, rcp.Path, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -6854,7 +6439,7 @@ func handleAPIRmReference(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -6900,12 +6485,6 @@ func handleAPIRmReference(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.ID = id
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rm Reference: %s", rcp.Title), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Rm Reference: %s\nProject: %s, Name: %s, Author: %s", rcp.Title, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -7119,7 +6698,7 @@ func handleAPISetTaskLevel(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -7172,12 +6751,6 @@ func handleAPISetTaskLevel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = setTaskLevel(session, rcp.Project, rcp.Name, rcp.Task, rcp.Level)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Task Level: %s %s", rcp.Task, rcp.Level), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -7725,7 +7298,7 @@ func handleAPIAddTaskPublish(w http.ResponseWriter, r *http.Request) {
 		}
 		rcp.AuthorNameKor = user.LastNameKor + user.FirstNameKor
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -7807,14 +7380,6 @@ func handleAPIAddTaskPublish(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Publish: %s:%s mainver:%s subver:%s subject:%s", rcp.Key, rcp.Path, rcp.MainVersion, rcp.SubVersion, rcp.Subject), rcp.Project, rcp.Name, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Publish: %s:%s\nmainver:%s subver:%s subject:%s\nProject: %s, Name: %s, Author: %s", rcp.Key, rcp.Path, rcp.MainVersion, rcp.SubVersion, rcp.Subject, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -7857,7 +7422,7 @@ func handleAPIRmTaskPublishKey(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -7888,12 +7453,6 @@ func handleAPIRmTaskPublishKey(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Key = key
 	err = rmTaskPublishKey(session, project, id, task, key)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("RmPublish: %s > %s", rcp.Task, rcp.Key), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -7941,7 +7500,7 @@ func handleAPIRmTaskPublish(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -8053,12 +7612,6 @@ func handleAPIRmTaskPublish(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("RmPublish: %s > %s", rcp.Task, rcp.Key), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("RmPublish: %s > %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Key, rcp.Project, rcp.ID, rcp.UserID))
 	if err != nil {
@@ -8104,7 +7657,7 @@ func handleAPISetTaskPublishStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -8167,13 +7720,6 @@ func handleAPISetTaskPublishStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Publish Status: key: %s, updatetime: %s, status: %s", rcp.Key, rcp.Createtime, rcp.Status), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Publish Status: key: %s, updatetime: %s, status: %s\nProject: %s, ID: %s, Author: %s", rcp.Key, rcp.Createtime, rcp.Status, rcp.Project, rcp.ID, rcp.UserID))
 	if err != nil {
@@ -8214,7 +7760,7 @@ func handleAPISetSeason(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -8236,12 +7782,6 @@ func handleAPISetSeason(w http.ResponseWriter, r *http.Request) {
 	rcp.Season = r.FormValue("season")
 
 	err = SetSeason(session, rcp.Project, rcp.ID, rcp.Season)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Season: %s", rcp.Season), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -8287,7 +7827,7 @@ func handleAPISetEpisode(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -8309,12 +7849,6 @@ func handleAPISetEpisode(w http.ResponseWriter, r *http.Request) {
 	rcp.Episode = r.FormValue("episode")
 
 	err = SetEpisode(session, rcp.Project, rcp.ID, rcp.Episode)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Episode: %s", rcp.Episode), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -8360,7 +7894,7 @@ func handleAPISetOverscanRatio(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -8387,12 +7921,6 @@ func handleAPISetOverscanRatio(w http.ResponseWriter, r *http.Request) {
 	rcp.OverscanRatio = ratio
 
 	err = SetOverscanRatio(session, rcp.Project, rcp.ID, rcp.OverscanRatio)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set OverscanRatio: %f", rcp.OverscanRatio), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -8438,7 +7966,7 @@ func handleAPI2SetRenderSize(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -8467,12 +7995,6 @@ func handleAPI2SetRenderSize(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Size = size
 	err = SetImageSizeVer2(session, rcp.Project, rcp.ID, "rendersize", rcp.Size)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Rendersize: %s", rcp.Size), rcp.Project, rcp.ID, *flagAppName, rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

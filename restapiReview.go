@@ -14,7 +14,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/digital-idea/dilog"
 	"github.com/disintegration/imaging"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -43,7 +42,7 @@ func handleAPIAddReviewStatusMode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -156,13 +155,6 @@ func handleAPIAddReviewStatusMode(w http.ResponseWriter, r *http.Request) {
 	rcp.Review.OutputDataPath = r.FormValue("outputdatapath")
 
 	err = addReview(session, rcp.Review)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("AddReview: %s, %s, %s", rcp.Review.Name, rcp.Review.Task, rcp.Review.Path), rcp.Review.Project, rcp.Review.Name, "OpenPipelineIO", rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -286,7 +278,7 @@ func handleAPISetReviewItemStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -327,13 +319,6 @@ func handleAPISetReviewItemStatus(w http.ResponseWriter, r *http.Request) {
 	}
 	// 실제 아이템의 Shot, Asset Status를 설정한다.
 	_, err = SetTaskStatusV2(session, review.Project, review.Name+"_"+typ, review.Task, itemStatus)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Set Review Item Status: %s, %s", rcp.ID, rcp.ItemStatus), review.Project, review.Name, "OpenPipelineIO", rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -388,7 +373,7 @@ func handleAPIAddReviewComment(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -444,14 +429,6 @@ func handleAPIAddReviewComment(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Review Comment: %s, %s", rcp.ID, rcp.Text), review.Project, review.Name, "OpenPipelineIO", rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
 	// slack log
 	err = slacklog(session, review.Project, fmt.Sprintf("Add Review Comment: %s, \nProject: %s, Name: %s, Author: %s", rcp.Text, review.Project, review.Name, rcp.UserID))
 	if err != nil {
@@ -552,7 +529,7 @@ func handleAPIAddReviewStatusModeComment(w http.ResponseWriter, r *http.Request)
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -620,13 +597,6 @@ func handleAPIAddReviewStatusModeComment(w http.ResponseWriter, r *http.Request)
 	cmt.Frame = rcp.Frame
 
 	err = addReviewComment(session, rcp.ID, cmt)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Add Review Comment: %s, %s", rcp.ID, rcp.Text), review.Project, review.Name, "OpenPipelineIO", rcp.UserID, 180)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -792,7 +762,7 @@ func handleAPIRmReviewComment(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -832,12 +802,7 @@ func handleAPIRmReviewComment(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rm Review Comment: %s, %s", rcp.ID, rcp.Text), rcp.Project, rcp.Name, "OpenPipelineIO", rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// slack log
 	err = slacklog(session, rcp.Project, fmt.Sprintf("Rm Review Comment: %s\nProject: %s, Name: %s, Author: %s", rcp.Text, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
@@ -877,7 +842,7 @@ func handleAPIRmReview(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -902,12 +867,6 @@ func handleAPIRmReview(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-	}
-	// log
-	err = dilog.Add(*flagDBIP, host, fmt.Sprintf("Rm Review: %s", rcp.ID), review.Project, review.Name, "OpenPipelineIO", rcp.UserID, 180)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
 	}
 
 	// slack log
