@@ -90,13 +90,13 @@ func handleAPISetTaskMov(w http.ResponseWriter, r *http.Request) {
 		Error   string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer disconnectFromMongoDB(client)
+	rcp.UserID, _, err = TokenHandler(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -325,12 +325,12 @@ func handleAPISetThummov(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := Recipe{}
 	rcp.Protocol = CachedAdminSetting.Protocol
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	rcp.UserID, _, err = TokenHandler(r, session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
@@ -415,12 +415,12 @@ func handleAPISetRenderSize(w http.ResponseWriter, r *http.Request) {
 		Error   string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	rcp.UserID, _, err = TokenHandler(r, session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
@@ -556,12 +556,12 @@ func handleAPISetRnum(w http.ResponseWriter, r *http.Request) {
 		Error   string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	rcp.UserID, _, err = TokenHandler(r, session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
@@ -656,12 +656,12 @@ func handleAPISetTaskUser(w http.ResponseWriter, r *http.Request) {
 		Error    string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	rcp.UserID, _, err = TokenHandler(r, session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)

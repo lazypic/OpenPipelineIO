@@ -6,17 +6,18 @@ import (
 	"log"
 	"strings"
 
+	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
 // GenQuery 함수는 검색옵션을 받아서 검색옵션과 쿼리를 반환한다.
-func GenQuery(session *mgo.Session, op SearchOption) (SearchOption, bson.M) {
+func GenQuery(client *mongo.Client, op SearchOption) (SearchOption, bson.M) {
 	// 검색어중 연산에 필요한 검색어는 제거한다.
 	var words []string
 	var selectTasks []string
 	// Task 처리
-	allTasks, err := TasksettingNames(session)
+	allTasks, err := TasksettingNames(client)
 	if err != nil {
 		log.Println(err)
 	}
@@ -289,7 +290,7 @@ func GenQuery(session *mgo.Session, op SearchOption) (SearchOption, bson.M) {
 }
 
 // Search 함수는 다음 검색함수이다.
-func Search(session *mgo.Session, op SearchOption) ([]Item, error) {
+func Search(client *mongo.Client, op SearchOption) ([]Item, error) {
 	results := []Item{}
 	// 검색어가 없다면 바로 빈 값을 리턴한다.
 	if op.Searchword == "" {
@@ -302,19 +303,46 @@ func Search(session *mgo.Session, op SearchOption) ([]Item, error) {
 	}
 	// 프로젝트 문자열이 빈 값이라면 전체 리스트중에서 첫번째 프로젝트를 선언한다.
 	if op.Project == "" {
-		plist, err := Projectlist(session)
+		plist, err := Projectlist(client)
 		if err != nil {
 			return results, err
 		}
 		op.Project = plist[0]
 	}
-	c := session.DB(*flagDBName).C("items")
-	o, q := GenQuery(session, op)
-	err := c.Find(q).Sort(o.Sortkey).All(&results)
+
+	c := client.Database(*flagDBName).Collection("items")
+	o, q := GenQuery(client, op)
+
+	cur, err := collection.Find(context, o)
 	if err != nil {
 		return nil, err
 	}
+	defer cur.Close(ctx)
+
+	var results []Endpoint
+	for cur.Next(ctx) {
+		var endpoint Endpoint
+		err := cur.Decode(&endpoint)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, endpoint)
+	}
+
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+
 	return results, nil
+
+	/*
+
+
+		err := c.Find(q).Sort(o.Sortkey).All(&results)
+		if err != nil {
+			return nil, err
+		}
+		return results, nil*/
 }
 
 // SearchPage 함수는 페이지로 검색하는 함수이다. "아이템, totalpagenum, 에러" 를 반환한다.
