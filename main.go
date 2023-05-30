@@ -8,7 +8,6 @@ import (
 	"html/template"
 	"log"
 	"os"
-	"os/exec"
 	"os/user"
 	"strings"
 	"time"
@@ -73,10 +72,6 @@ var (
 	flagReviewRender      = flag.Bool("reviewrender", false, "리뷰 렌더링을 허용하는 옵션")
 	flagScanPlateRender   = flag.Bool("scanplaterender", false, "ScanPlate 렌더링을 허용하는 옵션")
 
-	// RV
-	flagRVPath = flag.String("rvpath", "/opt/rv-Linux-x86-64-7.0.0/bin/rv", "rvplayer path")
-	flagPlay   = flag.Bool("play", false, "Play RV")
-
 	// Commandline Args
 	flagAdd                = flag.String("add", "", "add project, add item(shot, asset)")
 	flagRm                 = flag.String("rm", "", "remove project, shot, asset, user")
@@ -89,7 +84,6 @@ var (
 	flagAssettags          = flag.String("assettags", "", "asset tags, 입력예) prop,char,env,prop,comp,plant,vehicle,global,component,group,assembly 형태로 입력")
 	flagAssettype          = flag.String("assettype", "", "assettype: char,env,global,prop,comp,plant,vehicle,global,group") // 추후 삭제예정.
 	flagHelp               = flag.Bool("help", false, "자세한 도움말을 봅니다.")
-	flagDate               = flag.String("date", "", "Date. ex) 2016-12-06")
 	flagThumbnailImagePath = flag.String("thumbnailimagepath", "", "Thumbnail image 경로")
 	flagThumbnailMovPath   = flag.String("thumbnailmovpath", "", "Thumbnail mov 경로")
 	flagPlatePath          = flag.String("platepath", "", "Plate 경로")
@@ -99,7 +93,6 @@ var (
 	flagSignUpAccessLevel = flag.Int("signupaccesslevel", 3, "signup access level")
 	// scan정보 추가. plate scan tool에서 데이터를 등록할 때 활용되는 옵션
 	flagPlatesize       = flag.String("platesize", "", "스캔 플레이트 사이즈")
-	flagTask            = flag.String("task", "", "태스크 이름. 예) model,mm.layout,ani,fx,mg,fur,sim,crowd,light,comp,matte,env")
 	flagScantimecodein  = flag.String("scantimecodein", "00:00:00:00", "스캔 Timecode In")
 	flagScantimecodeout = flag.String("scantimecodeout", "00:00:00:00", "스캔 Timecode Out")
 	flagJusttimecodein  = flag.String("justtimecodein", "00:00:00:00", "Just구간 Timecode In")
@@ -157,76 +150,6 @@ func main() {
 			log.Fatal(err)
 		}
 		err = addToken(session, u)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return
-	} else if *flagRm == "division" && *flagID != "" { // division 삭제
-		if user.Username != "root" {
-			log.Fatal(errors.New("사용자를 삭제하기 위해서는 root 권한이 필요합니다"))
-		}
-		session, err := mgo.Dial(*flagDBIP)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer session.Close()
-		err = rmDivision(session, *flagID)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return
-	} else if *flagRm == "department" && *flagID != "" { // department 삭제
-		if user.Username != "root" {
-			log.Fatal(errors.New("사용자를 삭제하기 위해서는 root 권한이 필요합니다"))
-		}
-		session, err := mgo.Dial(*flagDBIP)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer session.Close()
-		err = rmDepartment(session, *flagID)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return
-	} else if *flagRm == "team" && *flagID != "" { // team 삭제
-		if user.Username != "root" {
-			log.Fatal(errors.New("사용자를 삭제하기 위해서는 root 권한이 필요합니다"))
-		}
-		session, err := mgo.Dial(*flagDBIP)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer session.Close()
-		err = rmTeam(session, *flagID)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return
-	} else if *flagRm == "role" && *flagID != "" { // role 삭제
-		if user.Username != "root" {
-			log.Fatal(errors.New("사용자를 삭제하기 위해서는 root 권한이 필요합니다"))
-		}
-		session, err := mgo.Dial(*flagDBIP)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer session.Close()
-		err = rmRole(session, *flagID)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return
-	} else if *flagRm == "position" && *flagID != "" { // position 삭제
-		if user.Username != "root" {
-			log.Fatal(errors.New("사용자를 삭제하기 위해서는 root 권한이 필요합니다"))
-		}
-		session, err := mgo.Dial(*flagDBIP)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer session.Close()
-		err = rmPosition(session, *flagID)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -398,96 +321,6 @@ func main() {
 			go ProcessScanPlateRender() // 연산(Review데이터 등등)이 필요한 것들이 있다면 연산을 시작한다.
 		}
 		webserver(*flagHTTPPort)
-	} else if MatchNormalTime.MatchString(*flagDate) {
-		// date 값이 데일리 형식이면 해당 날짜에 업로드된 mov를 RV를 통해 플레이한다.
-		// 예: $ openpipelineio -date 2020-03-19 -play
-		session, err := mgo.Dial(*flagDBIP)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer session.Close()
-		dbProjectlist, err := Projectlist(session)
-		if err != nil {
-			log.Fatal(err)
-		}
-		// 해당프로젝트만 데일리를 위한 옵션
-		// 만약 담당 프로젝트 감독님이 오면 해당 프로젝트 영상만 띄운다.
-		reviewProjectlist := dbProjectlist
-		if *flagProject != "" {
-			err := HasProject(session, *flagProject)
-			if err != nil {
-				log.Fatalln(err)
-			}
-		}
-		var playlist []string
-		for _, project := range reviewProjectlist {
-			op := SearchOption{
-				Project:    project,
-				Searchword: *flagDate,
-				Sortkey:    "name",
-			}
-			items, err := Search(session, op)
-			if err != nil {
-				log.Fatalln(err)
-			}
-			// 만약 태스크명을 입력받았다면, 태스크명이 유효한지 체크하는 부분.
-			if *flagTask != "" {
-				hastask := false
-				tasks, err := TasksettingNames(session)
-				if err != nil {
-					log.Fatal(err)
-				}
-				for _, t := range tasks {
-					if *flagTask == strings.ToLower(t) {
-						hastask = true
-					}
-				}
-				if !hastask {
-					log.Fatalf("%s Task 이름은 사용할 수 없습니다.\n", *flagTask)
-				}
-			}
-			// 검색 옵션을 이용해서 daily 리스트를 만든다.
-			for _, item := range items {
-				tasks, err := TasksettingNames(session)
-				if err != nil {
-					log.Println(err)
-					continue
-				}
-				for _, t := range tasks {
-					if _, found := item.Tasks[t]; !found {
-						continue
-					}
-					if *flagDate == ToNormalTime(item.Tasks[t].Mdate) && isMov(item.Tasks[t].Mov) {
-						playlist = append(playlist, item.Tasks[t].Mov)
-					}
-				}
-			}
-		}
-		// -play 인수가 붙어있다면, RV를 이용해서 플레이한다.
-		if *flagPlay {
-			// adminsetting에 RV 경로가 설정되어 있다면 해당 설정경로를 가지고 온다.
-			admin, err := GetAdminSetting(session)
-			if err != nil {
-				log.Fatal(err)
-			}
-			if admin.RVPath != "" {
-				*flagRVPath = admin.RVPath
-			}
-			if _, err := os.Stat(*flagRVPath); os.IsNotExist(err) {
-				fmt.Println("RV가 rvpath에 존재하지 않습니다.")
-				os.Exit(1)
-			}
-			out, err := exec.Command(*flagRVPath, playlist...).CombinedOutput()
-			if err != nil {
-				fmt.Printf("%v: %s\n", err, string(out))
-				os.Exit(1)
-			}
-		}
-		// -play 인수가 없다면, mov경로만 출력한다.
-		for _, mov := range playlist {
-			fmt.Println(mov)
-		}
-		return
 	}
 	if *flagHelp {
 		flag.Usage()
