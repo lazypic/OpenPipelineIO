@@ -14,7 +14,6 @@ import (
 
 	"github.com/digital-idea/dilog"
 	"github.com/unidoc/unipdf/v3/common/license"
-	"gopkg.in/mgo.v2"
 )
 
 func init() {
@@ -256,7 +255,7 @@ func main() {
 					}
 					item.Thummov = thumbnailMovPath.String()
 
-					err = setItem(session, *flagProject, item)
+					err = setItem(client, *flagProject, item)
 					if err != nil {
 						log.Fatal(err)
 					}
@@ -305,12 +304,12 @@ func main() {
 		// 프로젝트가 존재하지 않는다면 test 프로젝트를 추가한다.
 		if len(plist) == 0 {
 			p := *NewProject("test")
-			err = addProject(session, p)
+			err = addProject(client, p)
 			if err != nil {
 				log.Fatal(err)
 			}
 		}
-		session.Close()
+		disconnectFromMongoDB(client)
 		if *flagHTTPPort == ":80" {
 			fmt.Printf("Service start: http://%s\n", ip)
 		} else if *flagHTTPPort == ":443" {
@@ -333,12 +332,12 @@ func main() {
 	} else if MatchNormalTime.MatchString(*flagDate) {
 		// date 값이 데일리 형식이면 해당 날짜에 업로드된 mov를 RV를 통해 플레이한다.
 		// 예: $ openpipelineio -date 2020-03-19 -play
-		session, err := mgo.Dial(*flagDBIP)
+		client, err := connectToMongoDB(*flagDBIP)
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer session.Close()
-		dbProjectlist, err := Projectlist(session)
+		defer disconnectFromMongoDB(client)
+		dbProjectlist, err := Projectlist(client)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -346,7 +345,7 @@ func main() {
 		// 만약 담당 프로젝트 감독님이 오면 해당 프로젝트 영상만 띄운다.
 		reviewProjectlist := dbProjectlist
 		if *flagProject != "" {
-			err := HasProject(session, *flagProject)
+			err := HasProject(client, *flagProject)
 			if err != nil {
 				log.Fatalln(err)
 			}
@@ -358,14 +357,14 @@ func main() {
 				Searchword: *flagDate,
 				Sortkey:    "name",
 			}
-			items, err := Search(session, op)
+			items, err := Search(client, op)
 			if err != nil {
 				log.Fatalln(err)
 			}
 			// 만약 태스크명을 입력받았다면, 태스크명이 유효한지 체크하는 부분.
 			if *flagTask != "" {
 				hastask := false
-				tasks, err := TasksettingNames(session)
+				tasks, err := TasksettingNames(client)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -380,7 +379,7 @@ func main() {
 			}
 			// 검색 옵션을 이용해서 daily 리스트를 만든다.
 			for _, item := range items {
-				tasks, err := TasksettingNames(session)
+				tasks, err := TasksettingNames(client)
 				if err != nil {
 					log.Println(err)
 					continue
@@ -398,7 +397,7 @@ func main() {
 		// -play 인수가 붙어있다면, RV를 이용해서 플레이한다.
 		if *flagPlay {
 			// adminsetting에 RV 경로가 설정되어 있다면 해당 설정경로를 가지고 온다.
-			admin, err := GetAdminSetting(session)
+			admin, err := GetAdminSetting(client)
 			if err != nil {
 				log.Fatal(err)
 			}

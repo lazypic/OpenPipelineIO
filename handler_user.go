@@ -369,12 +369,12 @@ func handleSignup(w http.ResponseWriter, r *http.Request) {
 	rcp.Company = *flagCompany
 	rcp.MailDNS = *flagMailDNS
 	rcp.CaptchaID = captcha.New()
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	rcp.Divisions, err = allDivisions(session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -667,12 +667,12 @@ func handleSigninSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Password 값이 빈 문자열 입니다", http.StatusBadRequest)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	// 사용자가 과거에 패스워드를 5회이상 틀렸다면 로그인을 허용하지 않는다.
 	u, err := getUser(session, id)
 	if err != nil {
@@ -743,12 +743,12 @@ func handleSigninSuccess(w http.ResponseWriter, r *http.Request) {
 		User
 	}
 	rcp := recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	rcp.User, err = getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -800,12 +800,12 @@ func handleUpdatePassword(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	err = rcp.SearchOption.LoadCookie(session, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -849,12 +849,12 @@ func handleUpdatePasswordSubmit(w http.ResponseWriter, r *http.Request) {
 	}
 	pw := r.FormValue("OldPassword")
 	newPw := r.FormValue("NewPassword")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	err = updatePasswordUser(session, ssid.ID, pw, newPw)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -902,12 +902,12 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 	searchword := q.Get("search")
 	isLeave := str2bool(q.Get("isleave"))
 
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	type recipe struct {
 		User                // 로그인한 사용자 정보
 		IsLeave    bool     // 퇴사자 포함, 비포함.
@@ -972,12 +972,12 @@ func handleReplaceTag(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	rcp.User, err = getUser(session, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1008,12 +1008,12 @@ func handleReplaceTagSubmit(w http.ResponseWriter, r *http.Request) {
 	src := r.FormValue("src")
 	dst := r.FormValue("dst")
 
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	// Tags replace
 	err = ReplaceTags(session, src, dst)
 	if err != nil {

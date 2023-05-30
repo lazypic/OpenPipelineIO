@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"errors"
-	"sort"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -169,16 +169,26 @@ func getCategoryTaskSettings(session *mgo.Session, category string) ([]Tasksetti
 }
 
 // TasksettingNames 함수는 Tasksetting 이름을 수집하여 반환한다.
-func TasksettingNames(session *mgo.Session) ([]string, error) {
-	var results []string
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("tasksetting")
-	err := c.Find(bson.M{}).Distinct("name", &results)
+func TasksettingNames(client *mongo.Client) ([]string, error) {
+	collection := client.Database(*flagDBName).Collection("tasksetting")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var results []Tasksetting
+	opts := options.Find()
+	opts.SetSort(bson.M{"name": 1})
+	cursor, err := collection.Find(ctx, bson.D{}, opts)
 	if err != nil {
 		return nil, err
 	}
-	sort.Strings(results)
-	return results, nil
+	err = cursor.All(ctx, &results)
+	if err != nil {
+		return nil, err
+	}
+	var tasksetting []string
+	for _, t := range results {
+		tasksetting = append(tasksetting, t.Name)
+	}
+	return tasksetting, nil
 }
 
 // Unique 함수는 리스트에서 중복되는 문자열을 제거한다.

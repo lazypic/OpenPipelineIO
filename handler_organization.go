@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-
-	"gopkg.in/mgo.v2"
 )
 
 // handleAddOrganization 함수는 조직구조를 추가하는 페이지이다.
@@ -20,12 +18,12 @@ func handleAddOrganization(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	type recipe struct {
 		User User
 		SearchOption
@@ -63,12 +61,12 @@ func handleRmOrganization(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	type recipe struct {
 		User User
 		SearchOption
@@ -105,12 +103,12 @@ func handleRmOrganizationSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	typ := r.FormValue("organizationtype")
 	id := r.FormValue("id")
 	if !regexpTask.MatchString(id) {
@@ -167,12 +165,12 @@ func handleEditDepartment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	type recipe struct {
 		User User
 		Department
@@ -217,12 +215,12 @@ func handleEditTeam(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	type recipe struct {
 		User User
 		Team
@@ -267,12 +265,12 @@ func handleEditRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	type recipe struct {
 		User User
 		Role
@@ -317,12 +315,12 @@ func handleEditPosition(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	type recipe struct {
 		User User
 		Position
@@ -366,12 +364,12 @@ func handleAddDivisionSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	id := r.FormValue("ID")
 	if !regexpID.MatchString(id) {
 		http.Error(w, "id는 소문자와 숫자로만 이루어져야 합니다", http.StatusInternalServerError)
@@ -401,12 +399,12 @@ func handleAddDepartmentSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	id := r.FormValue("ID")
 	if !regexpID.MatchString(id) {
 		http.Error(w, "id는 소문자와 숫자로만 이루어져야 합니다", http.StatusInternalServerError)
@@ -436,12 +434,12 @@ func handleAddTeamSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	// add team
 	id := r.FormValue("ID")
 	if !regexpID.MatchString(id) {
@@ -472,12 +470,12 @@ func handleAddRoleSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	id := r.FormValue("ID")
 	if !regexpID.MatchString(id) {
 		http.Error(w, "id는 소문자와 숫자로만 이루어져야 합니다", http.StatusInternalServerError)
@@ -507,12 +505,12 @@ func handleAddPositionSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	id := r.FormValue("ID")
 	if !regexpID.MatchString(id) {
 		http.Error(w, "id는 소문자와 숫자로만 이루어져야 합니다", http.StatusInternalServerError)
@@ -543,12 +541,12 @@ func handleDivisions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	type recipe struct {
 		Divisions []Division
 		User
@@ -594,12 +592,12 @@ func handleDepartments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	type recipe struct {
 		Departments []Department
 		User
@@ -645,12 +643,12 @@ func handleTeams(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	type recipe struct {
 		Teams []Team
 		User
@@ -696,12 +694,12 @@ func handleRoles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	type recipe struct {
 		Roles []Role
 		User
@@ -747,12 +745,12 @@ func handlePositions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	type recipe struct {
 		Positions []Position
 		User
@@ -800,12 +798,12 @@ func handleEditDivision(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	q := r.URL.Query()
 	id := q.Get("id")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	type recipe struct {
 		User User
 		Division
@@ -847,12 +845,12 @@ func handleEditDivisionSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	current, err := getDivision(session, r.FormValue("ID"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -884,12 +882,12 @@ func handleEditDepartmentSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	current, err := getDepartment(session, r.FormValue("ID"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -921,12 +919,12 @@ func handleEditTeamSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	current, err := getTeam(session, r.FormValue("ID"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -958,12 +956,12 @@ func handleEditRoleSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	current, err := getRole(session, r.FormValue("ID"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -995,12 +993,12 @@ func handleEditPositionSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	current, err := getPosition(session, r.FormValue("ID"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

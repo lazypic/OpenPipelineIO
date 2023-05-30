@@ -3,8 +3,6 @@ package main
 import (
 	"net/http"
 	"strconv"
-
-	"gopkg.in/mgo.v2"
 )
 
 // handleAddStatus 함수는 Status를 추가하는 페이지이다.
@@ -19,12 +17,12 @@ func handleAddStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	type recipe struct {
 		User User
 		SearchOption
@@ -61,12 +59,12 @@ func handleAddStatusSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 
 	order, err := strconv.ParseFloat(r.FormValue("order"), 64)
 	if err != nil {
@@ -108,12 +106,12 @@ func handleStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	type recipe struct {
 		User   User
 		Status []Status
@@ -151,12 +149,12 @@ func handleRmStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	type recipe struct {
 		User User
 		SearchOption
@@ -193,12 +191,12 @@ func handleRmStatusSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	id := r.FormValue("id")
 	err = RmStatus(session, id)
 	if err != nil {
@@ -220,12 +218,12 @@ func handleEditStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	type recipe struct {
 		User User
 		SearchOption
@@ -270,12 +268,12 @@ func handleEditStatusSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 
 	order, err := strconv.ParseFloat(r.FormValue("order"), 64)
 	if err != nil {

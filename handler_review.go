@@ -12,8 +12,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"gopkg.in/mgo.v2"
 )
 
 func handleDailyReviewStatus(w http.ResponseWriter, r *http.Request) {
@@ -258,12 +256,12 @@ func handleReviewStatus(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer disconnectFromMongoDB(client)
 	q := r.URL.Query()
 	type recipe struct {
 		User        User

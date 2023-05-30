@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"go.mongodb.org/mongo-driver/mongo"
-	"gopkg.in/mgo.v2"
 )
 
 // GetTokenFromHeader 함수는 사용자가 전달한 Token 값을 가지고 온다.
@@ -20,12 +19,12 @@ func GetTokenFromHeader(r *http.Request) (string, error) {
 
 // legacy
 // TokenHandler 함수는 토큰으로 restAPI를 사용할 수 있는지 체크하고 아이디와 엑세스 레벨을 반환한다.
-func TokenHandler(r *http.Request, session *mgo.Session) (string, AccessLevel, error) {
+func TokenHandler(r *http.Request, client *mongo.Client) (string, AccessLevel, error) {
 	key, err := GetTokenFromHeader(r)
 	if err != nil {
 		return "unknown", UnknownAccessLevel, err
 	}
-	token, err := validToken(session, key)
+	token, err := validToken(client, key)
 	if err != nil {
 		return "unknown", UnknownAccessLevel, err
 	}

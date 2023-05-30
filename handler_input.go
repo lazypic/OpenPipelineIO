@@ -6,8 +6,6 @@ import (
 	"log"
 	"net/http"
 	"strings"
-
-	"gopkg.in/mgo.v2"
 )
 
 // handleInputMode 함수는 수정을 편하게 입력하는 페이지 이다.
@@ -54,13 +52,13 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 	rcp.MailDNS = *flagMailDNS
 
 	rcp.SessionID = ssid.ID
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := connectToMongoDB(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	tasks, err := AllTaskSettings(session)
+	defer disconnectFromMongoDB(client)
+	tasks, err := AllTaskSettings(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -69,12 +67,12 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 	for _, t := range tasks {
 		rcp.TasksettingOrderMap[t.Name] = t.Order
 	}
-	rcp.TasksettingNames, err = TasksettingNames(session)
+	rcp.TasksettingNames, err = TasksettingNames(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Status, err = AllStatus(session)
+	rcp.Status, err = AllStatus(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

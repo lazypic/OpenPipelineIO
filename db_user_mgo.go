@@ -85,22 +85,8 @@ func setToken(session *mgo.Session, t Token) error {
 	return nil
 }
 
-// legacy
 // validToken 함수는 Token이 유효한지 체크한다.
-func validToken(session *mgo.Session, token string) (Token, error) {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("token")
-	t := Token{}
-	err := c.Find(bson.M{"token": token}).One(&t)
-	if err != nil {
-		return t, errors.New("authorization failed")
-	}
-	return t, nil
-}
-
-// validTokenV2 함수는 Token이 유효한지 체크한다.
-// mgo에서 mongo-driver로 바꾼 version이다.
-func validTokenV2(client *mongo.Client, token string) (Token, error) {
+func validToken(client *mongo.Client, token string) (Token, error) {
 	collection := client.Database(*flagDBName).Collection("token")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
