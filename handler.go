@@ -509,7 +509,6 @@ func webserver(port string) {
 	r.HandleFunc("/api/renametag", handleAPIRenameTag)
 	r.HandleFunc("/api/rmtag", handleAPIRmTag)
 	r.HandleFunc("/api/rmassettag", handleAPIRmAssetTag)
-	r.HandleFunc("/api/settags", handleAPISetTags)
 	r.HandleFunc("/api/setnote", handleAPISetNote)
 	r.HandleFunc("/api/addcomment", handleAPIAddComment)
 	r.HandleFunc("/api/editcomment", handleAPIEditComment)
