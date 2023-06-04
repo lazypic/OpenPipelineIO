@@ -2632,7 +2632,7 @@ function setTaskUser() {
             }
             let id = cboxes[i].getAttribute("id");
             sleep(200);
-            fetch('/api2/settaskuser', {
+            fetch('/api/settaskuser', {
                 method: 'POST',
                 headers: {
                     "Authorization": "Basic "+ document.getElementById("token").value,
@@ -2662,7 +2662,7 @@ function setTaskUser() {
             });
         }
     } else {
-        fetch('/api2/settaskuser', {
+        fetch('/api/settaskuser', {
             method: 'POST',
             headers: {
                 "Authorization": "Basic "+ document.getElementById("token").value,
