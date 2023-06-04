@@ -479,8 +479,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/statusnum", handleAPIStatusNum)
 	r.HandleFunc("/api/addtask", handleAPIAddTask)
 	r.HandleFunc("/api/rmtask", handleAPIRmTask)
-	r.HandleFunc("/api/settaskuser", handleAPISetTaskUser) // legacy
-	r.HandleFunc("/api2/settaskuser", handleAPI2SetTaskUser)
+	r.HandleFunc("/api/settaskuser", handleAPISetTaskUser)
 	r.HandleFunc("/api/settaskusercomment", handleAPISetTaskUserComment)
 	r.HandleFunc("/api/setplatein", handleAPISetPlateIn)
 	r.HandleFunc("/api/setplateout", handleAPISetPlateOut)

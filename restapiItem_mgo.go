@@ -3392,7 +3392,7 @@ func handleAPIAddTask(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleAPI2SetTaskUser 함수는 아이템의 task에 대한 유저를 설정한다.
-func handleAPI2SetTaskUser(w http.ResponseWriter, r *http.Request) {
+func handleAPISetTaskUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
 		return
