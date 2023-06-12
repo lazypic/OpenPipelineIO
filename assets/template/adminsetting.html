@@ -14,7 +14,7 @@
                         <div class="form-group">
                             <label for="AppName">Appname</label>
                             <input type="text" class="form-control" id="AppName" name="AppName" placeholder="Appname" value={{.Setting.AppName}}>
-                            <small class="form-text text-warning">상단에 표기되는 App 이름</small>
+                            <small class="form-text text-warning">Application Name</small>
                         </div>
                     </div>
                     <div class="col">
@@ -22,6 +22,15 @@
                             <label for="EmailDNS">Email DNS</label>
                             <input type="text" class="form-control" id="EmailDNS" name="EmailDNS" placeholder="Email DNS" value={{.Setting.EmailDNS}}>
                             <small class="form-text text-muted">Email DNS 주소</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="Copyright">Copyright</label>
+                            <input type="text" class="form-control" id="Copyright" name="Copyright" placeholder="Copyright" value={{.Setting.Copyright}}>
+                            <small class="form-text text-warning">Copyright Information</small>
                         </div>
                     </div>
                 </div>
@@ -686,7 +695,7 @@
     </form>
 </div>
 
-{{template "footerBootstrap"}}
+{{template "footerBootstrap" .}}
 </body>
     <script src="/assets/bootstrap-5.0.2/js/bootstrap.min.js"></script>
 </html>

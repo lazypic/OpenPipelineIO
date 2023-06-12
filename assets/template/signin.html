@@ -5,7 +5,7 @@
 <div class="container p-5">
     <form method="post" action="/signin_submit">
     <div class="pt-3 pb-5">
-        <h2 class="section-heading text-center">{{.Company}} Sign In</h2>
+        <h2 class="section-heading text-center">Sign In</h2>
     </div>
     <div class="row">
         <div class="col-sm">
@@ -21,7 +21,7 @@
         </div>
     </div>     
     <div class="text-center">
-        <button type="submit" class="btn btn-darkmode mt-5">SIGN IN / 로그인</button>
+        <button type="submit" class="btn btn-darkmode mt-5">SIGN IN</button>
         <small class="form-text text-muted mt-3">계정이 아직 없으신가요? <a href="/signup" class="text-warning">Sign-Up</a> 해주세요.</small>
     </div>
     </form>
@@ -29,7 +29,7 @@
 
 
 
-{{template "footerBootstrap"}}
+{{template "footerBootstrap" .}}
 </body>
 </html>
 {{end}}

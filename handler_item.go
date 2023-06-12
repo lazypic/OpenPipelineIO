@@ -14,7 +14,6 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/digital-idea/dipath"
 	"github.com/disintegration/imaging"
 	"gopkg.in/mgo.v2"
 )
@@ -944,14 +943,6 @@ func handleEditItemSubmitv2(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			// 디지털아이디어의 경우 스캔시스템에서 수동으로 이미지를 폴더에 생성하는 경우가 있다.
-			if *flagCompany == "digitalidea" {
-				err = dipath.Ideapath(thumbnailDir)
-				if err != nil {
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
-			}
 		}
 		// 이미지변환
 		src, err := imaging.Open(tempPath)
@@ -977,14 +968,6 @@ func handleEditItemSubmitv2(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
-		}
-		// 디지털아이디어의 경우 스캔시스템에서 수동으로 이미지를 수정하는 경우도 있다.
-		if *flagCompany == "digitalidea" {
-			err = dipath.Ideapath(thumbnailPath)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
 		}
 	}
 	http.Redirect(w, r, "/editeditem", http.StatusSeeOther)
