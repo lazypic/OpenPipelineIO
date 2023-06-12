@@ -357,7 +357,6 @@ func handleEditUserSubmit(w http.ResponseWriter, r *http.Request) {
 func handleSignup(w http.ResponseWriter, r *http.Request) {
 	RmSessionID(w) // SignIn을 할 때 역시 기존의 세션을 지운다. 여러사용자 2중 로그인 방지
 	type recipe struct {
-		Company     string
 		CaptchaID   string
 		MailDNS     string
 		Divisions   []Division
@@ -367,7 +366,6 @@ func handleSignup(w http.ResponseWriter, r *http.Request) {
 		Positions   []Position
 	}
 	rcp := recipe{}
-	rcp.Company = *flagCompany
 	rcp.MailDNS = *flagMailDNS
 	rcp.CaptchaID = captcha.New()
 	session, err := mgo.Dial(*flagDBIP)
@@ -618,11 +616,12 @@ func handleSignupSubmit(w http.ResponseWriter, r *http.Request) {
 func handleSignin(w http.ResponseWriter, r *http.Request) {
 	RmSessionID(w) // SignIn을 할 때 역시 기존의 세션을 지운다. 여러사용자 2중 로그인 방지
 	type recipe struct {
-		Company string
 		Message string
 		ID      string
+		Setting
 	}
 	rcp := recipe{}
+	rcp.Setting = CachedAdminSetting
 	q := r.URL.Query()
 	errorCode := q.Get("status")
 	rcp.ID = q.Get("id")
@@ -635,7 +634,6 @@ func handleSignin(w http.ResponseWriter, r *http.Request) {
 			rcp.Message = "패스워드를 틀렸습니다. 다시 로그인 해주세요."
 		}
 	}
-	rcp.Company = *flagCompany
 	if rcp.ID == "" {
 		// ID가 없다면 저장된 쿠키 ID를 가지고 온다.
 		c, err := r.Cookie("CookieUserID")
@@ -742,8 +740,10 @@ func handleSigninSuccess(w http.ResponseWriter, r *http.Request) {
 	}
 	type recipe struct {
 		User
+		Setting
 	}
 	rcp := recipe{}
+	rcp.Setting = CachedAdminSetting
 	session, err := mgo.Dial(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -777,7 +777,13 @@ func handleSignout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	RmSessionID(w)
-	err = TEMPLATES.ExecuteTemplate(w, "signout", nil)
+	type recipe struct {
+		Setting
+	}
+
+	rcp := recipe{}
+	rcp.Setting = CachedAdminSetting
+	err = TEMPLATES.ExecuteTemplate(w, "signout", rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -52,12 +52,10 @@ var (
 	flagDBIP       = flag.String("dbip", DBIP+DBPORT, "mongodb ip and port")                                                            // mgo용 mongoDB 주소
 	flagMongoDBURI = flag.String("mongodburi", fmt.Sprintf("mongodb://%s%s", DBIP, DBPORT), "mongoDB URI ex)mongodb://localhost:27017") //mongo-driver용 인수
 	flagDBName     = flag.String("dbname", DBNAME, "mongodb db name")                                                                   // mongoDB DB이름
-	flagAppName    = flag.String("appname", APPNAME, "app name")
 	flagMailDNS    = flag.String("maildns", MAILDNS, "mail DNS name")
 
 	flagDebug          = flag.Bool("debug", false, "디버그모드 활성화")
 	flagHTTPPort       = flag.String("http", "", "Web Service Port number.")          // 웹서버 포트
-	flagCompany        = flag.String("company", COMPANY, "Web Service Port number.")  // 회사이름
 	flagVersion        = flag.Bool("version", false, "Print Version")                 // 버전
 	flagCookieAge      = flag.Int64("cookieage", 168, "cookie age (hour)")            // 기본 일주일(168시간)로 설정한다. 참고: MPAA 기준 4시간이다.
 	flagThumbnailAge   = flag.Int("thumbnailage", 1, "thumbnail image age (seconds)") // 썸네일 업데이트 시간. 3600초 == 1시간
