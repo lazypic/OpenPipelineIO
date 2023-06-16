@@ -1,6 +1,6 @@
 {{define "modal-reference"}}
     <!-- Modal: Add Reference-->
-    <div class="modal fade" id="modal-addreference" tabindex="-1" role="dialog" aria-labelledby="modal-addreference" aria-hidden="true">
+    <div class="modal" id="modal-addreference" tabindex="-1" role="dialog" aria-labelledby="modal-addreference" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content bg-darkmode">
                 <div class="modal-header">
@@ -10,7 +10,6 @@
                 </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" class="form-control" id="modal-addreference-project">
                     <input type="hidden" class="form-control" id="modal-addreference-id">
                     <div class="form-group">
                         <div class="form-group">
@@ -26,14 +25,14 @@
                 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-darkmode" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-outline-warning" onclick="addReference(document.getElementById('modal-addreference-project').value, document.getElementById('modal-addreference-id').value, document.getElementById('modal-addreference-subject').value, document.getElementById('modal-addreference-path').value)" data-dismiss="modal">ADD</button>
+                    <button type="button" class="btn btn-outline-warning" onclick="addReference(document.getElementById('modal-addreference-id').value, document.getElementById('modal-addreference-subject').value, document.getElementById('modal-addreference-path').value)" data-dismiss="modal">ADD</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Modal: Rm Reference-->
-    <div class="modal fade" id="modal-rmreference" tabindex="-1" role="dialog" aria-labelledby="modal-rmreference" aria-hidden="true">
+    <div class="modal" id="modal-rmreference" tabindex="-1" role="dialog" aria-labelledby="modal-rmreference" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content bg-darkmode">
                 <div class="modal-header">
@@ -43,7 +42,6 @@
                 </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" class="form-control" id="modal-rmreference-project">
                     <input type="hidden" class="form-control" id="modal-rmreference-id">
                     <div class="form-group">
                         <div class="form-group">
@@ -56,7 +54,7 @@
                 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-darkmode" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-outline-danger" onclick="rmReference(document.getElementById('modal-rmreference-project').value, document.getElementById('modal-rmreference-id').value, document.getElementById('modal-rmreference-subject').value)" data-dismiss="modal">REMOVE</button>
+                    <button type="button" class="btn btn-outline-danger" onclick="rmReference(document.getElementById('modal-rmreference-id').value, document.getElementById('modal-rmreference-subject').value)" data-dismiss="modal">REMOVE</button>
                 </div>
             </div>
         </div>

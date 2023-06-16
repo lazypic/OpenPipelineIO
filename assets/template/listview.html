@@ -436,18 +436,18 @@
 					<span class="text-badge">References:</span>
 				</div>
 				<div class="ml-2 row">
-					<div id="references-{{.Name}}" class="row">
+					<div id="references-{{.ID}}" class="row">
 						{{range .References -}}
-							<div id="reference-{{$name}}-{{.Title}}">
+							<div id="reference-{{$id}}-{{.Title}}">
 								<a href="{{Protocol .Path}}://{{RmProtocol .Path}}" class="badge badge-outline-darkmode ml-1" alt="{{.Author}},{{.Date}}" title="{{.Author}},{{.Date}}" target="{{ProtocolTarget .Path}}" onclick="copyClipboard('{{.Path}}')">{{.Title}}</a>
 							</div>
 						{{- end}}
 					</div>
-					<div class="ml-3" id="reference-button-{{.Name}}">
+					<div class="ml-3" id="reference-button-{{.ID}}">
 						{{if eq $.User.AccessLevel 4 5 6 7 8 9 10 11}}
-							<span class="add ml-1" data-toggle="modal" data-target="#modal-addreference" onclick="setAddReferenceModal('{{.Project}}','{{.ID}}')">＋</span>
+							<span class="add ml-1" data-toggle="modal" data-target="#modal-addreference" onclick="setAddReferenceModal('{{.ID}}')">＋</span>
 							{{if .References}}
-								<span class="remove ml-0" data-toggle="modal" data-target="#modal-rmreference" onclick="setRmReferenceModal('{{.Project}}','{{.ID}}')">－</span>
+								<span class="remove ml-0" data-toggle="modal" data-target="#modal-rmreference" onclick="setRmReferenceModal('{{.ID}}')">－</span>
 							{{end}}
 						{{end}}
 					</div>
