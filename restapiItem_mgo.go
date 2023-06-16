@@ -58,7 +58,7 @@ func handleAPI2GetItem(w http.ResponseWriter, r *http.Request) {
 	if id == "" {
 		id = name + "_" + typ
 	}
-	item, err := getItem(session, project, id)
+	item, err := getItem(session, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -91,27 +91,13 @@ func handleAPITimeinfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
-	var project string
-	var id string
-	for key, values := range r.PostForm {
-		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			project = v
-		case "id":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			id = v
-		}
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		return
 	}
-	item, err := getItem(session, project, id)
+
+	item, err := getItem(session, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5545,13 +5531,7 @@ func handleAPISetNote(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIAddComment 함수는 아이템에 수정사항을 추가합니다.
 func handleAPIAddComment(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project    string `json:"project"`
-		Name       string `json:"name"`
 		ID         string `json:"id"`
 		Date       string `json:"date"`
 		Text       string `json:"text"`
@@ -5588,18 +5568,12 @@ func handleAPIAddComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "id을 설정해주세요", http.StatusBadRequest)
 		return
 	}
-	rcp.Project = project
-	name := r.FormValue("name")
-	if name == "" {
-		http.Error(w, "name을 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Name = name
+	rcp.ID = id
 	text := r.FormValue("text")
 	if text == "" {
 		http.Error(w, "text를 설정해주세요", http.StatusBadRequest)
@@ -5609,14 +5583,7 @@ func handleAPIAddComment(w http.ResponseWriter, r *http.Request) {
 	rcp.Media = r.FormValue("media")
 	rcp.MediaTitle = r.FormValue("mediatitle")
 	rcp.Date = time.Now().Format(time.RFC3339)
-	id, err := AddComment(session, rcp.Project, rcp.Name, rcp.UserID, rcp.AuthorName, rcp.Date, rcp.Text, rcp.Media, rcp.MediaTitle)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	rcp.ID = id
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Add Comment: %s\nMeida: %s\nProject: %s, Name: %s, Author: %s", rcp.Text, rcp.Media, rcp.Project, rcp.Name, rcp.UserID))
+	err = AddComment(session, rcp.ID, rcp.UserID, rcp.AuthorName, rcp.Date, rcp.Text, rcp.Media, rcp.MediaTitle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5634,14 +5601,8 @@ func handleAPIAddComment(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIEditComment 함수는 아이템에 수정사항을 수정합니다.
 func handleAPIEditComment(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project    string `json:"project"`
 		ID         string `json:"id"`
-		Name       string `json:"name"`
 		Time       string `json:"time"`
 		Text       string `json:"text"`
 		MediaTitle string `json:"mediatitle"`
@@ -5676,12 +5637,6 @@ func handleAPIEditComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
@@ -5702,17 +5657,12 @@ func handleAPIEditComment(w http.ResponseWriter, r *http.Request) {
 	rcp.Text = text
 	rcp.Media = r.FormValue("media")
 	rcp.MediaTitle = r.FormValue("mediatitle")
-	rcp.Name, err = EditComment(session, rcp.Project, rcp.ID, rcp.Time, rcp.AuthorName, rcp.Text, rcp.MediaTitle, rcp.Media)
+	err = EditComment(session, rcp.ID, rcp.Time, rcp.AuthorName, rcp.Text, rcp.MediaTitle, rcp.Media)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Edit Comment: %s\nMeida: %s\nProject: %s, Name: %s, Author: %s", rcp.Text, rcp.Media, rcp.Project, rcp.Name, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {
@@ -5726,17 +5676,11 @@ func handleAPIEditComment(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIRmComment 함수는 아이템에서 수정사항을 삭제합니다.
 func handleAPIRmComment(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project string `json:"project"`
-		Name    string `json:"name"`
-		ID      string `json:"id"`
-		Date    string `json:"date"`
-		Text    string `json:"text"`
-		UserID  string `json:"userid"`
+		ID     string `json:"id"`
+		Date   string `json:"date"`
+		Text   string `json:"text"`
+		UserID string `json:"userid"`
 	}
 	rcp := Recipe{}
 	session, err := mgo.Dial(*flagDBIP)
@@ -5756,31 +5700,20 @@ func handleAPIRmComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
+
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
 		return
 	}
-	rcp.Project = project
-	name := r.FormValue("name")
-	if name == "" {
-		http.Error(w, "name을 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Name = name
+	rcp.ID = id
 	date := r.FormValue("date")
 	if date == "" {
 		http.Error(w, "date를 설정해주세요", http.StatusBadRequest)
 		return
 	}
 	rcp.Date = date
-	rcp.ID, rcp.Text, err = RmComment(session, rcp.Project, rcp.Name, rcp.UserID, rcp.Date)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Rm Comment: %s\nProject: %s, Name: %s, Author: %s", rcp.Text, rcp.Project, rcp.Name, rcp.UserID))
+	rcp.ID, rcp.Text, err = RmComment(session, rcp.ID, rcp.UserID, rcp.Date)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -6623,7 +6556,7 @@ func handleAPIMailInfo(w http.ResponseWriter, r *http.Request) {
 	} else {
 		rcp.Header = p.MailHead
 	}
-	i, err := getItem(session, rcp.Project, rcp.ID)
+	i, err := getItem(session, rcp.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -7213,7 +7146,7 @@ func handleAPIRmTaskPublish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Item 가져오기
-	item, err := getItem(session, project, id)
+	item, err := getItem(session, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -7361,7 +7294,7 @@ func handleAPISetTaskPublishStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.Status = status
-	i, err := getItem(session, project, id)
+	i, err := getItem(session, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -7371,7 +7304,7 @@ func handleAPISetTaskPublishStatus(w http.ResponseWriter, r *http.Request) {
 			i.Tasks[task].Publishes[key][n].Status = rcp.Status
 		}
 	}
-	err = setItem(session, project, i)
+	err = setItem(session, i)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

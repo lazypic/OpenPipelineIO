@@ -50,7 +50,7 @@ func SetTaskUser(session *mgo.Session, project, name, task, user string) (string
 	if err != nil {
 		return id, err
 	}
-	item, err := getItem(session, project, id)
+	item, err := getItem(session, id)
 	if err != nil {
 		return id, err
 	}

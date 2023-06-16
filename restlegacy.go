@@ -226,7 +226,7 @@ func handleAPIItem(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "{\"error\":\"%s\"}\n", "id 또는 slug가 빈 문자열입니다.")
 		return
 	}
-	item, err := getItem(session, project, id)
+	item, err := getItem(session, id)
 	if err != nil {
 		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
 		return

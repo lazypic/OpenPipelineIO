@@ -1180,19 +1180,15 @@ function editPublish() {
     });
 }
 
-function setAddCommentModal(project, id) {
-    document.getElementById("modal-addcomment-project").value = project;
+function setAddCommentModal(id) {
     document.getElementById("modal-addcomment-id").value = id;
     document.getElementById("modal-addcomment-title").innerHTML = "Add Comment" + multiInputTitle(id);
-    // init media, media title
-    document.getElementById("modal-addcomment-media").value = "";
     document.getElementById("modal-addcomment-mediatitle").value = "";
+    document.getElementById("modal-addcomment-media").value = "";
 }
 
 function addComment() {
     let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
-    let project = document.getElementById('modal-addcomment-project').value;
     let id = document.getElementById('modal-addcomment-id').value;
     let text = document.getElementById('modal-addcomment-text').value
     let media = document.getElementById('modal-addcomment-media').value
@@ -1208,13 +1204,11 @@ function addComment() {
             $.ajax({
                 url: "/api/addcomment",
                 type: "post",
-                data: {
-                    project: project,
-                    name: id2name(currentID),
+                data: {                    
+                    id: currentID,
                     text: text,
                     mediatitle: mediatitle,
                     media: media,
-                    userid: userid,
                 },
                 headers: {
                     "Authorization": "Basic "+ token
@@ -1225,8 +1219,8 @@ function addComment() {
                     let body = data.text.replace(/(?:\r\n|\r|\n)/g, '<br>');
                     let newComment = `<div id="comment-${data.id}-${data.date}">
                     <span class="text-badge">${data.date} / <a href="/user?id=${data.userid}" class="text-darkmode">${data.authorname}</a></span>
-                    <span class="edit" data-toggle="modal" data-target="#modal-editcomment" onclick="setEditCommentModal('${data.project}', '${data.id}', '${data.date}', '${data.text}', '${data.mediatitle}', '${data.media}')">≡</span>
-                    <span class="remove" data-toggle="modal" data-target="#modal-rmcomment" onclick="setRmCommentModal('${data.project}', '${data.id}', '${data.date}', '${data.text}')">×</span>
+                    <span class="edit" data-toggle="modal" data-target="#modal-editcomment" onclick="setEditCommentModal('${data.id}', '${data.date}', '${data.text}', '${data.mediatitle}', '${data.media}')">≡</span>
+                    <span class="remove" data-toggle="modal" data-target="#modal-rmcomment" onclick="setRmCommentModal('${data.id}', '${data.date}', '${data.text}')">×</span>
                     <br><small class="text-warning">${body}</small>`
                     if (data.media != "") {
                         if (data.media.includes("http")) {
@@ -1258,12 +1252,10 @@ function addComment() {
             url: "/api/addcomment",
             type: "post",
             data: {
-                project: project,
-                name: id2name(id),
+                id: id,
                 text: text,
                 mediatitle: mediatitle,
                 media: media,
-                userid: userid,
             },
             headers: {
                 "Authorization": "Basic "+ token
@@ -1274,8 +1266,8 @@ function addComment() {
                 let body = data.text.replace(/(?:\r\n|\r|\n)/g, '<br>');
                 let newComment = `<div id="comment-${data.id}-${data.date}">
                 <span class="text-badge">${data.date} / <a href="/user?id=${data.userid}" class="text-darkmode">${data.authorname}</a></span>
-                <span class="edit" data-toggle="modal" data-target="#modal-editcomment" onclick="setEditCommentModal('${data.project}', '${data.id}', '${data.date}', '${data.text}', '${data.mediatitle}', '${data.media}')">≡</span>
-                <span class="remove" data-toggle="modal" data-target="#modal-rmcomment" onclick="setRmCommentModal('${data.project}', '${data.id}', '${data.date}', '${data.text}')">×</span>
+                <span class="edit" data-toggle="modal" data-target="#modal-editcomment" onclick="setEditCommentModal('${data.id}', '${data.date}', '${data.text}', '${data.mediatitle}', '${data.media}')">≡</span>
+                <span class="remove" data-toggle="modal" data-target="#modal-rmcomment" onclick="setRmCommentModal('${data.id}', '${data.date}', '${data.text}')">×</span>
                 <br><div class="text-warning small">${body}</div>`
                 if (data.media != "") {
                     if (data.media.includes("http")) {
@@ -1306,7 +1298,6 @@ function addComment() {
 
 function editComment() {
     let token = document.getElementById("token").value;
-    let project = document.getElementById('modal-editcomment-project').value;
     let id = document.getElementById('modal-editcomment-id').value;
     let time = document.getElementById('modal-editcomment-time').value
     let text = document.getElementById('modal-editcomment-text').value
@@ -1316,7 +1307,6 @@ function editComment() {
         url: "/api/editcomment",
         type: "post",
         data: {
-            project: project,
             id: id,
             time: time,
             text: text,
@@ -1331,8 +1321,8 @@ function editComment() {
             // comments-${data.id}}-${data.time} 내부 내용을 업데이트 한다.
             let body = data.text.replace(/(?:\r\n|\r|\n)/g, '<br>');
             let newComment = `<span class="text-badge">${data.time} / <a href="/user?id=${data.userid}" class="text-darkmode">${data.authorname}</a></span>
-            <span class="edit" data-toggle="modal" data-target="#modal-editcomment" onclick="setEditCommentModal('${data.project}', '${data.id}', '${data.time}', '${data.text}', '${data.mediatitle}', '${data.media}')">≡</span>
-            <span class="remove" data-toggle="modal" data-target="#modal-rmcomment" onclick="setRmCommentModal('${data.project}', '${data.id}', '${data.time}', '${data.text}')">×</span>
+            <span class="edit" data-toggle="modal" data-target="#modal-editcomment" onclick="setEditCommentModal('${data.id}', '${data.time}', '${data.text}', '${data.mediatitle}', '${data.media}')">≡</span>
+            <span class="remove" data-toggle="modal" data-target="#modal-rmcomment" onclick="setRmCommentModal('${data.id}', '${data.time}', '${data.text}')">×</span>
             <br><div class="text-warning small">${body}</div>`
             if (data.media != "") {
                 if (data.media.includes("http")) {
@@ -1359,8 +1349,7 @@ function editComment() {
     });
 }
 
-function setRmCommentModal(project, id, time, text) {
-    document.getElementById("modal-rmcomment-project").value = project;
+function setRmCommentModal(id, time, text) {
     document.getElementById("modal-rmcomment-id").value = id;
     document.getElementById("modal-rmcomment-time").value = time;
     document.getElementById("modal-rmcomment-text").value = text;
@@ -1513,8 +1502,7 @@ function setPublishModal(project, id, task, key, path, createtime, status) {
     document.getElementById("modal-setpublish-status").innerHTML = status;
 }
 
-function setEditCommentModal(project, id, time, text, mediatitle, media) {
-    document.getElementById("modal-editcomment-project").value = project;
+function setEditCommentModal(id, time, text, mediatitle, media) {
     document.getElementById("modal-editcomment-id").value = id;
     document.getElementById("modal-editcomment-time").value = time;
     document.getElementById("modal-editcomment-text").value = text;
@@ -1589,14 +1577,13 @@ function setRmUserModal(id) {
     document.getElementById("modal-rmuser-id").value = id;
 }
 
-function rmComment(project, id, date) {
+function rmComment(id, date) {
     let token = document.getElementById("token").value;
     $.ajax({
         url: "/api/rmcomment",
         type: "post",
         data: {
-            project: project,
-            name: id2name(id),
+            id: id,
             date: date
         },
         headers: {
