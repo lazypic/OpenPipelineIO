@@ -680,6 +680,10 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			continue // 샷 타입을 가지고 올 수 없다면 넘긴다.
 		}
+		id, err := GetID(session, project, name)
+		if err != nil {
+			continue // 샷 타입을 가지고 올 수 없다면 넘긴다.
+		}
 		// 롤넘버
 		rnum, err := f.GetCellValue(rcp.Sheet, fmt.Sprintf("B%d", n+1))
 		if err != nil {
@@ -778,7 +782,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if justTimecodeIn != "" {
-			err = SetJustTimecodeIn(session, project, name, justTimecodeIn)
+			err = SetJustTimecodeIn(session, id, justTimecodeIn)
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
@@ -791,7 +795,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if justTimecodeOut != "" {
-			err = SetJustTimecodeOut(session, project, name, justTimecodeOut)
+			err = SetJustTimecodeOut(session, id, justTimecodeOut)
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
@@ -809,7 +813,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
 			}
-			_, err = SetDeadline2D(session, project, name, date)
+			err = SetDeadline2D(session, project, id, date)
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
@@ -827,7 +831,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
 			}
-			_, err = SetDeadline3D(session, project, name, date)
+			err = SetDeadline3D(session, project, id, date)
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
@@ -876,7 +880,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
 			}
-			err = SetFrame(session, project, name, "handlein", num)
+			err = SetFrame(session, id, "handlein", num)
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
@@ -894,7 +898,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
 			}
-			err = SetFrame(session, project, name, "handleout", num)
+			err = SetFrame(session, id, "handleout", num)
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
@@ -992,7 +996,7 @@ func handleJSONSubmit(w http.ResponseWriter, r *http.Request) {
 			err = setItem(session, project, i) // 기존데이터를 덮어쓰기 한다.
 			if err != nil && err == mgo.ErrNotFound {
 				// 새로운 데이터를 추가한다.
-				err = addItem(session, project, i)
+				err = addItem(session, i)
 				if err != nil {
 					log.Println(err)
 				}
@@ -1001,7 +1005,7 @@ func handleJSONSubmit(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 			// 새로운 데이터를 추가한다.
-			err = addItem(session, project, i)
+			err = addItem(session, i)
 			if err != nil {
 				log.Println(err)
 			}

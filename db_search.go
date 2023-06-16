@@ -198,6 +198,8 @@ func GenQuery(session *mgo.Session, op SearchOption) (SearchOption, bson.M) {
 			}
 		} else if strings.HasPrefix(word, "rnum:") { // 롤넘버 형태일 때
 			query = append(query, bson.M{"rnum": &bson.RegEx{Pattern: strings.TrimPrefix(word, "rnum:"), Options: "i"}})
+		} else if op.Project != "" { // 빈문자열일 때 전체 프로젝트를 검색한다.
+			query = append(query, bson.M{"project": op.Project})
 		} else {
 			switch word {
 			case "all", "All", "ALL", "올", "미ㅣ", "dhf", "전체":
@@ -300,14 +302,7 @@ func Search(session *mgo.Session, op SearchOption) ([]Item, error) {
 		// 선택된 상태가 없다면 바로 리턴한다.
 		return results, nil
 	}
-	// 프로젝트 문자열이 빈 값이라면 전체 리스트중에서 첫번째 프로젝트를 선언한다.
-	if op.Project == "" {
-		plist, err := Projectlist(session)
-		if err != nil {
-			return results, err
-		}
-		op.Project = plist[0]
-	}
+
 	c := session.DB(*flagDBName).C("items")
 	o, q := GenQuery(session, op)
 	err := c.Find(q).Sort(o.Sortkey).All(&results)
@@ -336,14 +331,6 @@ func SearchPage(session *mgo.Session, op SearchOption) ([]Item, int, error) {
 		return results, 0, nil
 	}
 
-	// 프로젝트 문자열이 빈 값이라면 전체 리스트중에서 첫번째 프로젝트를 선언한다.
-	if op.Project == "" {
-		plist, err := Projectlist(session)
-		if err != nil {
-			return results, 0, err
-		}
-		op.Project = plist[0]
-	}
 	c := session.DB(*flagDBName).C("items")
 	o, q := GenQuery(session, op)
 	err := c.Find(q).Sort(o.Sortkey).Skip(CachedAdminSetting.ItemNumberOfPage * (op.Page - 1)).Limit(CachedAdminSetting.ItemNumberOfPage).All(&results)

@@ -474,7 +474,7 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 		i.Type = typ
 		i.UseType = typ
 		i.Project = project
-		i.ID = i.Name + "_" + i.Type
+		i.ID = i.Project + "_" + i.Name + "_" + i.Type
 		i.Shottype = "2d"
 		i.Season = season
 		i.Episode = episode
@@ -531,7 +531,6 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 				width := int(float64(pinfo.PlateWidth) * admin.DefaultScaleRatioOfUndistortionPlate)
 				height := int(float64(pinfo.PlateHeight) * admin.DefaultScaleRatioOfUndistortionPlate)
 				i.Platesize = fmt.Sprintf("%dx%d", pinfo.PlateWidth, pinfo.PlateHeight)
-				i.Dsize = fmt.Sprintf("%dx%d", width, height) // legacy
 				i.Undistortionsize = fmt.Sprintf("%dx%d", width, height)
 				i.Rendersize = fmt.Sprintf("%dx%d", width, height)
 			}
@@ -564,7 +563,7 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 			fails = append(fails, s)
 			continue
 		}
-		err = addItem(session, project, i)
+		err = addItem(session, i)
 		if err != nil {
 			s.Error = err.Error()
 			fails = append(fails, s)
@@ -771,7 +770,7 @@ func handleAddAssetSubmit(w http.ResponseWriter, r *http.Request) {
 		i.Name = n
 		i.Type = "asset"
 		i.Project = project
-		i.ID = i.Name + "_" + i.Type
+		i.ID = i.Project + "_" + i.Name + "_" + i.Type
 		i.StatusV2 = initStatusID
 		i.Updatetime = time.Now().Format(time.RFC3339)
 		i.Assettype = assettype
@@ -796,7 +795,7 @@ func handleAddAssetSubmit(w http.ResponseWriter, r *http.Request) {
 				i.Tasks[task.Name] = t
 			}
 		}
-		err = addItem(session, project, i)
+		err = addItem(session, i)
 		if err != nil {
 			a.Error = err.Error()
 			fails = append(fails, a)

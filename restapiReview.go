@@ -80,7 +80,7 @@ func handleAPIAddReviewStatusMode(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Review.Ext = ext
 	// 리뷰 등록시 현재 Task status를 review itemStatus로 설정한다.
-	_, taskinfo, err := GetTask(session, rcp.Review.Project, rcp.Review.Name, rcp.Review.Task)
+	taskinfo, err := GetTask(session, rcp.Review.Project, rcp.Review.Name, rcp.Review.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

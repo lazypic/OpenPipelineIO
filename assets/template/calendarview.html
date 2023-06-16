@@ -42,7 +42,7 @@
 						return response.json()
 					})
 					.then((data) => {
-						document.getElementById("deadline2d-"+data.name).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline2d" onclick="setDeadline2dModal('${data.project}','${data.id}')">2D:${data.shortdate}</span>`;
+						document.getElementById("deadline2d-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline2d" onclick="setDeadline2dModal('${data.project}','${data.id}')">2D:${data.shortdate}</span>`;
 						
 					})
 					.catch((err) => {

@@ -6,6 +6,7 @@
 	<div class="row ml-1 mr-1 pt-1 pl-3 pr-3">
 		<div class="col-sm-12 col-md-6 col-lg-2">
 			<div>
+				<span class="text-white itemname">{{$.Item.Project}}: </span>
 				{{if $.Item.Season}}
 					<span class="text-white itemname">{{$.Item.Season}}_</span>
 				{{end}}
@@ -23,7 +24,7 @@
 				<div class="thumbnailbox ml-1">
 					<!--org,left,asset 만 선택할 수 있어야 한다.-->
 					<label class="p-0 m-0 thumbnail" for="{{$.Item.ID}}" onclick="selectCheckbox()">
-						<img src="/thumbnail/{{$.Item.Project}}/{{$.Item.Name}}_{{if $.Item.UseType}}{{$.Item.UseType}}{{else}}{{$.Item.Type}}{{end}}.jpg" onerror="this.src='/assets/img/none.jpg'" class="thumbnail border-{{$.Item.StatusV2}}">
+						<img src="/thumbnail/{{$.Item.Project}}/{{$.Item.ID}}.jpg" onerror="this.src='/assets/img/none.jpg'" class="thumbnail border-{{$.Item.StatusV2}}">
 					</label>
 					<div class="top-left">
 						{{if eq $.Item.Type "org" "left"}}
@@ -32,13 +33,13 @@
 							</div>
 						{{end}}
 						{{if eq $.Item.Type "org" "left" "asset"}}
-							<div class="row" id="deadline3d-{{$.Item.Name}}">
+							<div class="row" id="deadline3d-{{$.Item.ID}}">
 								<span class="black-opbg" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#deadline3d" onclick="setDeadline3dModal('{{$.Item.Project}}', '{{$.Item.ID}}', '{{ToNormalTime $.Item.Ddline3d}}')"{{end}}>{{if $.Item.Ddline3d}}3D:{{ToShortTime $.Item.Ddline3d}}{{else}}3D:{{end}}</span>
 							</div>
 						{{end}}
 						
 						{{if eq $.Item.Type "org" "left" "asset"}}
-							<div class="row" id="deadline2d-{{$.Item.Name}}">
+							<div class="row" id="deadline2d-{{$.Item.ID}}">
 								<span class="black-opbg" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#deadline2d" onclick="setDeadline2dModal('{{$.Item.Project}}', '{{$.Item.ID}}', '{{ToNormalTime $.Item.Ddline2d}}')"{{end}}>{{if $.Item.Ddline2d}}2D:{{ToShortTime $.Item.Ddline2d}}{{else}}2D:{{end}}</span>
 							</div>
 						{{end}}
@@ -48,10 +49,10 @@
 							<span class="black-opbg" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-platesize" onclick="setPlatesizeModal('{{$.Item.Project}}', '{{$.Item.ID}}')"{{end}}>{{if $.Item.Platesize}}S:{{$.Item.Platesize}}{{else}}S:{{end}}</span>
 						</div>
 						<div class="row" id="undistortionsize-{{$.Item.Name}}">
-							<span class="black-opbg" {{if eq $.User.AccessLevel 3 4 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-undistortionsize" onclick="setUndistortionsizeModal('{{$.Item.Project}}', '{{$.Item.ID}}')"{{end}}>{{if $.Item.Dsize}}U:{{$.Item.Dsize}}{{else}}U:{{end}}</span>
+							<span class="black-opbg" {{if eq $.User.AccessLevel 3 4 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-undistortionsize" onclick="setUndistortionsizeModal('{{$.Item.Project}}', '{{$.Item.ID}}')"{{end}}>{{if $.Item.Undistortionsize}}U:{{$.Item.Undistortionsize}}{{else}}U:{{end}}</span>
 						</div>
 						<div class="row" id="rendersize-{{$.Item.ID}}">
-							<span class="black-opbg" {{if eq $.User.AccessLevel 3 4 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-rendersize" onclick="setRendersizeModal('{{$.Item.Project}}', '{{$.Item.ID}}')"{{end}}>R:{{if $.Item.Rendersize}}{{$.Item.Rendersize}}{{else}}{{$.Item.Dsize}}{{end}}</span>
+							<span class="black-opbg" {{if eq $.User.AccessLevel 3 4 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-rendersize" onclick="setRendersizeModal('{{$.Item.Project}}', '{{$.Item.ID}}')"{{end}}>R:{{if $.Item.Rendersize}}{{$.Item.Rendersize}}{{else}}{{$.Item.Undistortionsize}}{{end}}</span>
 						</div>
 						<div class="row" id="overscanratio-{{$.Item.ID}}">
 							{{if $.Item.OverscanRatio}}
@@ -145,7 +146,7 @@
 								<span class="text-warning black-opbg" title="justin" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{$.Item.Project}}', '{{$.Item.ID}}');"{{end}}>{{$.Item.JustIn}}</span>
 							{{end}}
 						</div>
-						<div class="row" id="justtimecodein-{{$.Item.Name}}">
+						<div class="row" id="justtimecodein-{{$.Item.ID}}">
 							{{if $.Item.JustTimecodeIn}}
 								<span class="text-warning black-opbg" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{$.Item.Project}}', '{{$.Item.ID}}');"{{end}}>{{$.Item.JustTimecodeIn}}</span>
 							{{end}}
@@ -188,7 +189,7 @@
 					</div>
 					{{if eq $.User.AccessLevel 3 4 5 6 7 8 9 10 11}}
 						<div id="button-thumb-{{$.Item.Name}}">
-							<a href="/edititem?type=item&project={{$.SearchOption.Project}}&slug={{$.Item.ID}}" class="badge badge-darkmode ml-1">Thumb</a>
+							<a href="/edititem?type=item&project={{$.Item.Project}}&slug={{$.Item.ID}}" class="badge badge-darkmode ml-1">Thumb</a>
 						</div>
 						<div id="button-edit-{{$.Item.Name}}">
 							<span class="badge badge-danger finger ml-1" {{if eq $.User.AccessLevel 4 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-iteminfo" onclick="setIteminfoModal('{{$.Item.Project}}', '{{$.Item.ID}}')"{{end}}>E</span>

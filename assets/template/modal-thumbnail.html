@@ -295,13 +295,13 @@
                     <div class="col pl-1 pr-1 pb-0 mb-0">
                         <div class="form-group p-0 m-0">
                             <small class="form-text text-muted">ScanTimecodeIn</small>
-                            <input type="text" class="form-control form-control-sm border-mute" placeholder="ScanTimeIn" value="" id="scantimecodein" onchange="setScanTimecodeIn('{{$.SearchOption.Project}}', document.getElementById('modal-edittime-id').value, this.value)">
+                            <input type="text" class="form-control form-control-sm border-mute" placeholder="ScanTimeIn" value="" id="scantimecodein" onchange="setScanTimecodeIn(document.getElementById('modal-edittime-id').value, this.value)">
                         </div>
                     </div>
                     <div class="col pl-1 pr-1 pb-0 mb-0">
                         <div class="form-group p-0 m-0">
                             <small class="form-text text-muted">ScanTimecodeOut</small>
-                            <input type="text" class="form-control form-control-sm border-mute" placeholder="ScanTimeOut" value="" id="scantimecodeout" onchange="setScanTimecodeOut('{{$.SearchOption.Project}}', document.getElementById('modal-edittime-id').value, this.value)">
+                            <input type="text" class="form-control form-control-sm border-mute" placeholder="ScanTimeOut" value="" id="scantimecodeout" onchange="setScanTimecodeOut(document.getElementById('modal-edittime-id').value, this.value)">
                         </div>
                     </div>
                 </div>
@@ -349,13 +349,13 @@
                     <div class="col pl-1 pr-1 pb-0 mb-0">
                         <div class="form-group p-0 m-0">
                             <small class="form-text text-muted">JustTimecodeIn</small>
-                            <input type="text" class="form-control form-control-sm border-warning" placeholder="JustTimeIn" value="" id="justtimecodein" onchange="setJustTimecodeIn('{{$.SearchOption.Project}}', document.getElementById('modal-edittime-id').value, this.value)">
+                            <input type="text" class="form-control form-control-sm border-warning" placeholder="JustTimeIn" value="" id="justtimecodein" onchange="setJustTimecodeIn(document.getElementById('modal-edittime-id').value, this.value)">
                         </div>
                     </div>
                     <div class="col pl-1 pr-1 pb-0 mb-0">
                         <div class="form-group p-0 m-0">
                             <small class="form-text text-muted">JustTimecodeIn</small>
-                            <input type="text" class="form-control form-control-sm border-warning" placeholder="JustTimeOut" value="" id="justtimecodeout" onchange="setJustTimecodeOut('{{$.SearchOption.Project}}', document.getElementById('modal-edittime-id').value, this.value)">
+                            <input type="text" class="form-control form-control-sm border-warning" placeholder="JustTimeOut" value="" id="justtimecodeout" onchange="setJustTimecodeOut(document.getElementById('modal-edittime-id').value, this.value)">
                         </div>			
                     </div>
                 </div>
