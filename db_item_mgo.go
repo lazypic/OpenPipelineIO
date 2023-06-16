@@ -41,7 +41,7 @@ func addItem(session *mgo.Session, i Item) error {
 	return nil
 }
 
-func setItem(session *mgo.Session, project string, i Item) error {
+func setItem(session *mgo.Session, i Item) error {
 	session.SetMode(mgo.Monotonic, true)
 	i.Updatetime = time.Now().Format(time.RFC3339)
 	status, err := AllStatus(session)
@@ -58,10 +58,7 @@ func setItem(session *mgo.Session, project string, i Item) error {
 	return nil
 }
 
-func getItem(session *mgo.Session, project, id string) (Item, error) {
-	if project == "" || id == "" {
-		return Item{}, nil
-	}
+func getItem(session *mgo.Session, id string) (Item, error) {
 	session.SetMode(mgo.Monotonic, true)
 	c := session.DB(*flagDBName).C("items")
 	var result Item
@@ -1353,7 +1350,7 @@ func SetTaskStatus(session *mgo.Session, project, id, task, status string) error
 	if err != nil {
 		return err
 	}
-	item, err := getItem(session, project, id)
+	item, err := getItem(session, id)
 	if err != nil {
 		return err
 	}
@@ -1390,7 +1387,7 @@ func SetTaskPipelinestep(session *mgo.Session, project, id, task, pipelinestep s
 	if err != nil {
 		return err
 	}
-	item, err := getItem(session, project, id)
+	item, err := getItem(session, id)
 	if err != nil {
 		return err
 	}
@@ -1413,7 +1410,7 @@ func SetTaskStatusV2(session *mgo.Session, project, id, task, status string) (st
 	if err != nil {
 		return "", err
 	}
-	item, err := getItem(session, project, id)
+	item, err := getItem(session, id)
 	if err != nil {
 		return "", err
 	}
@@ -1459,7 +1456,7 @@ func HasTask(session *mgo.Session, project, id, task string) error {
 	if err != nil {
 		return err
 	}
-	item, err := getItem(session, project, id)
+	item, err := getItem(session, id)
 	if err != nil {
 		return err
 	}
@@ -1476,7 +1473,7 @@ func AddTask(session *mgo.Session, project, id, task, status, pipelinestep strin
 	if err != nil {
 		return err
 	}
-	item, err := getItem(session, project, id)
+	item, err := getItem(session, id)
 	if err != nil {
 		return err
 	}
@@ -1508,7 +1505,7 @@ func AddTask(session *mgo.Session, project, id, task, status, pipelinestep strin
 // RmTask 함수는 item에 task를 제거한다.
 func RmTask(session *mgo.Session, project, id, taskname string) error {
 	session.SetMode(mgo.Monotonic, true)
-	item, err := getItem(session, project, id)
+	item, err := getItem(session, id)
 	if err != nil {
 		return err
 	}
@@ -1538,7 +1535,7 @@ func SetTaskUserV2(session *mgo.Session, project, id, task, user string) error {
 	if err != nil {
 		return err
 	}
-	item, err := getItem(session, project, id)
+	item, err := getItem(session, id)
 	if err != nil {
 		return err
 	}
@@ -1561,7 +1558,7 @@ func SetTaskUserID(session *mgo.Session, project, id, task, userid string) error
 	if err != nil {
 		return err
 	}
-	item, err := getItem(session, project, id)
+	item, err := getItem(session, id)
 	if err != nil {
 		return err
 	}
@@ -1935,12 +1932,12 @@ func SetRnum(session *mgo.Session, project, id, rnum string) error {
 	if err != nil {
 		return err
 	}
-	item, err := getItem(session, project, id)
+	item, err := getItem(session, id)
 	if err != nil {
 		return err
 	}
 	item.Rnum = rnum
-	err = setItem(session, project, item)
+	err = setItem(session, item)
 	if err != nil {
 		return err
 	}
@@ -1966,14 +1963,14 @@ func SetAssetType(session *mgo.Session, project, name, assettype string) (string
 		return "", "", assettype, fmt.Errorf("%s 아이템은 %s 타입입니다. 처리할 수 없습니다", name, typ)
 	}
 	id := name + "_" + typ
-	i, err := getItem(session, project, id)
+	i, err := getItem(session, id)
 	if err != nil {
 		return id, "", assettype, err
 	}
 	beforeType := i.Assettype
 	i.Assettype = assettype
 	i.setAssettags()
-	err = setItem(session, project, i)
+	err = setItem(session, i)
 	if err != nil {
 		return id, beforeType, assettype, err
 	}
@@ -2093,7 +2090,7 @@ func SetCrowdAsset(session *mgo.Session, project, name string) (string, bool, er
 	}
 	id := name + "_" + typ
 	c := session.DB(*flagDBName).C("items")
-	item, err := getItem(session, project, id)
+	item, err := getItem(session, id)
 	if err != nil {
 		return id, item.CrowdAsset, err
 	}
@@ -2112,7 +2109,7 @@ func AddTag(session *mgo.Session, project, id, inputTag string) (string, error) 
 	if err != nil {
 		return "", err
 	}
-	i, err := getItem(session, project, id)
+	i, err := getItem(session, id)
 	if err != nil {
 		return id, err
 	}
@@ -2138,7 +2135,7 @@ func AddAssetTag(session *mgo.Session, project, id, assettag string) error {
 	if err != nil {
 		return err
 	}
-	i, err := getItem(session, project, id)
+	i, err := getItem(session, id)
 	if err != nil {
 		return err
 	}
@@ -2198,13 +2195,13 @@ func SetTags(session *mgo.Session, project, name string, tags []string) error {
 		return err
 	}
 	id := name + "_" + typ
-	i, err := getItem(session, project, id)
+	i, err := getItem(session, id)
 	if err != nil {
 		return err
 	}
 	i.Tag = tags
 	// 만약 태그에 권정보가 없더라도 권관련 태그는 날아가면 안된다. setItem을 이용한다.
-	err = setItem(session, project, i)
+	err = setItem(session, i)
 	if err != nil {
 		return err
 	}
@@ -2218,7 +2215,7 @@ func RmTag(session *mgo.Session, project, id, inputTag string, isContain bool) (
 	if err != nil {
 		return "", err
 	}
-	i, err := getItem(session, project, id)
+	i, err := getItem(session, id)
 	if err != nil {
 		return "", err
 	}
@@ -2236,7 +2233,7 @@ func RmTag(session *mgo.Session, project, id, inputTag string, isContain bool) (
 	}
 	i.Tag = newTags
 	// 만약 태그에 권정보가 없더라도 권관련 태그는 날아가면 안된다. setItem을 이용한다.
-	err = setItem(session, project, i)
+	err = setItem(session, i)
 	if err != nil {
 		return i.Name, err
 	}
@@ -2250,7 +2247,7 @@ func RmAssetTag(session *mgo.Session, project, id, inputTag string, isContain bo
 	if err != nil {
 		return err
 	}
-	i, err := getItem(session, project, id)
+	i, err := getItem(session, id)
 	if err != nil {
 		return err
 	}
@@ -2268,7 +2265,7 @@ func RmAssetTag(session *mgo.Session, project, id, inputTag string, isContain bo
 	}
 	i.Assettags = newTags
 	// 만약 태그에 권정보가 없더라도 권관련 태그는 날아가면 안된다. setItem을 이용한다.
-	err = setItem(session, project, i)
+	err = setItem(session, i)
 	if err != nil {
 		return err
 	}
@@ -2283,7 +2280,7 @@ func SetNote(session *mgo.Session, project, id, userID, text string, overwrite b
 		return "", "", err
 	}
 	c := session.DB(*flagDBName).C("items")
-	i, err := getItem(session, project, id)
+	i, err := getItem(session, id)
 	if err != nil {
 		return "", "", err
 	}
@@ -2305,20 +2302,11 @@ func SetNote(session *mgo.Session, project, id, userID, text string, overwrite b
 }
 
 // AddComment 함수는 item에 수정사항을 추가한다.
-func AddComment(session *mgo.Session, project, name, userID, authorName, date, text, media, mediatitle string) (string, error) {
+func AddComment(session *mgo.Session, id, userID, authorName, date, text, media, mediatitle string) error {
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
+	i, err := getItem(session, id)
 	if err != nil {
-		return "", err
-	}
-	typ, err := Type(session, project, name)
-	if err != nil {
-		return "", err
-	}
-	id := name + "_" + typ
-	i, err := getItem(session, project, id)
-	if err != nil {
-		return id, err
+		return err
 	}
 	c := Comment{
 		Date:       date,
@@ -2329,23 +2317,19 @@ func AddComment(session *mgo.Session, project, name, userID, authorName, date, t
 		MediaTitle: mediatitle,
 	}
 	i.Comments = append(i.Comments, c)
-	err = setItem(session, project, i)
+	err = setItem(session, i)
 	if err != nil {
-		return id, err
+		return err
 	}
-	return id, nil
+	return nil
 }
 
 // EditComment 함수는 item에 수정사항을 수정한다.
-func EditComment(session *mgo.Session, project, id, date, authorName, text, mediatitle, media string) (string, error) {
+func EditComment(session *mgo.Session, id, date, authorName, text, mediatitle, media string) error {
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
+	i, err := getItem(session, id)
 	if err != nil {
-		return "", err
-	}
-	i, err := getItem(session, project, id)
-	if err != nil {
-		return i.Name, err
+		return err
 	}
 	var comments []Comment
 	for _, c := range i.Comments {
@@ -2362,24 +2346,15 @@ func EditComment(session *mgo.Session, project, id, date, authorName, text, medi
 	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"comments": comments, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
-		return i.Name, err
+		return err
 	}
-	return i.Name, nil
+	return nil
 }
 
 // RmComment 함수는 item에 수정사항을 삭제합니다. 로그처리를 위해서 삭제 내용을 반환합니다.
-func RmComment(session *mgo.Session, project, name, userID, date string) (string, string, error) {
+func RmComment(session *mgo.Session, id, userID, date string) (string, string, error) {
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return "", "", err
-	}
-	typ, err := Type(session, project, name)
-	if err != nil {
-		return "", "", err
-	}
-	id := name + "_" + typ
-	i, err := getItem(session, project, id)
+	i, err := getItem(session, id)
 	if err != nil {
 		return id, "", err
 	}
@@ -2393,7 +2368,7 @@ func RmComment(session *mgo.Session, project, name, userID, date string) (string
 		newComments = append(newComments, comment)
 	}
 	i.Comments = newComments
-	err = setItem(session, project, i)
+	err = setItem(session, i)
 	if err != nil {
 		return id, "", err
 	}
@@ -2412,7 +2387,7 @@ func AddSource(session *mgo.Session, project, name, author, title, path string) 
 		return "", err
 	}
 	id := name + "_" + typ
-	i, err := getItem(session, project, id)
+	i, err := getItem(session, id)
 	if err != nil {
 		return id, err
 	}
@@ -2427,7 +2402,7 @@ func AddSource(session *mgo.Session, project, name, author, title, path string) 
 	s.Title = title
 	s.Path = path
 	i.Sources = append(i.Sources, s)
-	err = setItem(session, project, i)
+	err = setItem(session, i)
 	if err != nil {
 		return id, err
 	}
@@ -2446,7 +2421,7 @@ func AddReference(session *mgo.Session, project, name, author, title, path strin
 		return "", err
 	}
 	id := name + "_" + typ
-	i, err := getItem(session, project, id)
+	i, err := getItem(session, id)
 	if err != nil {
 		return id, err
 	}
@@ -2456,7 +2431,7 @@ func AddReference(session *mgo.Session, project, name, author, title, path strin
 	r.Title = title
 	r.Path = path
 	i.References = append(i.References, r)
-	err = setItem(session, project, i)
+	err = setItem(session, i)
 	if err != nil {
 		return id, err
 	}
@@ -2475,7 +2450,7 @@ func RmSource(session *mgo.Session, project, name, title string) (string, error)
 		return "", err
 	}
 	id := name + "_" + typ
-	i, err := getItem(session, project, id)
+	i, err := getItem(session, id)
 	if err != nil {
 		return id, err
 	}
@@ -2487,7 +2462,7 @@ func RmSource(session *mgo.Session, project, name, title string) (string, error)
 		newSources = append(newSources, source)
 	}
 	i.Sources = newSources
-	err = setItem(session, project, i)
+	err = setItem(session, i)
 	if err != nil {
 		return id, err
 	}
@@ -2506,7 +2481,7 @@ func RmReference(session *mgo.Session, project, name, title string) (string, err
 		return "", err
 	}
 	id := name + "_" + typ
-	i, err := getItem(session, project, id)
+	i, err := getItem(session, id)
 	if err != nil {
 		return id, err
 	}
@@ -2518,7 +2493,7 @@ func RmReference(session *mgo.Session, project, name, title string) (string, err
 		newReferences = append(newReferences, ref)
 	}
 	i.References = newReferences
-	err = setItem(session, project, i)
+	err = setItem(session, i)
 	if err != nil {
 		return id, err
 	}
@@ -2528,7 +2503,7 @@ func RmReference(session *mgo.Session, project, name, title string) (string, err
 // GetTask 함수는 item의 Task 정보를 반환한다.
 func GetTask(session *mgo.Session, project, id, task string) (Task, error) {
 	session.SetMode(mgo.Monotonic, true)
-	i, err := getItem(session, project, id)
+	i, err := getItem(session, id)
 	if err != nil {
 		return Task{}, err
 	}
@@ -2546,7 +2521,7 @@ func GetShottype(session *mgo.Session, project, name string) (string, error) {
 		return "", err
 	}
 	id := name + "_" + typ
-	i, err := getItem(session, project, id)
+	i, err := getItem(session, id)
 	if err != nil {
 		return "", err
 	}
@@ -2582,7 +2557,7 @@ func addTaskPublish(session *mgo.Session, project, name, task, key string, p Pub
 // rmTaskPublishKey 함수는 item > tasks > publishes 를 제거한다.
 func rmTaskPublishKey(session *mgo.Session, project, id, taskname, key string) error {
 	session.SetMode(mgo.Monotonic, true)
-	item, err := getItem(session, project, id)
+	item, err := getItem(session, id)
 	if err != nil {
 		return err
 	}
@@ -2604,7 +2579,7 @@ func rmTaskPublishKey(session *mgo.Session, project, id, taskname, key string) e
 // rmTaskPublish 함수는 item > tasks > publishes > 하나의 아이템을 제거한다.
 func rmTaskPublish(session *mgo.Session, project, id, taskname, key, createtime, path string) error {
 	session.SetMode(mgo.Monotonic, true)
-	item, err := getItem(session, project, id)
+	item, err := getItem(session, id)
 	if err != nil {
 		return err
 	}

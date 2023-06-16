@@ -524,7 +524,7 @@
 			
 			{{if eq $.User.AccessLevel 5 6 7 8 9 10 11}}
 				<div class="float-right">
-					<span class="add" data-toggle="modal" data-target="#modal-addcomment" onclick="setAddCommentModal('{{.Project}}', '{{.ID}}')">＋</span>
+					<span class="add" data-toggle="modal" data-target="#modal-addcomment" onclick="setAddCommentModal('{{.ID}}')">＋</span>
 				</div>
 			{{end}}
 			<div id="comments-{{.ID}}" onclick="selectCheckboxNone()">
@@ -533,8 +533,8 @@
 					<div id="comment-{{$id}}-{{.Date}}">
 						<span class="text-badge">{{.Date}} / <a href="/user?id={{.Author}}" class="text-darkmode">{{if .AuthorName}}{{.AuthorName}}{{else}}{{.Author}}{{end}}</a></span>
 						{{if eq $.User.AccessLevel 5 6 7 8 9 10 11}}
-							<span class="edit" data-toggle="modal" data-target="#modal-editcomment" onclick="setEditCommentModal('{{$project}}','{{$id}}','{{.Date}}','{{.Text}}','{{.MediaTitle}}','{{.Media}}')">≡</span>
-							<span class="remove" data-toggle="modal" data-target="#modal-rmcomment" onclick="setRmCommentModal('{{$project}}','{{$id}}','{{.Date}}','{{.Text}}')">×</span>
+							<span class="edit" data-toggle="modal" data-target="#modal-editcomment" onclick="setEditCommentModal('{{$id}}','{{.Date}}','{{.Text}}','{{.MediaTitle}}','{{.Media}}')">≡</span>
+							<span class="remove" data-toggle="modal" data-target="#modal-rmcomment" onclick="setRmCommentModal('{{$id}}','{{.Date}}','{{.Text}}')">×</span>
 						{{end}}
 						<br>
 						<div class="text-{{if $first}}warning{{else}}white{{end}} small">

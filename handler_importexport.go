@@ -730,7 +730,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if comment != "" {
-			_, err = AddComment(session, project, name, ssid.ID, authorName, time.Now().Format(time.RFC3339), comment, "", "")
+			err = AddComment(session, id, ssid.ID, authorName, time.Now().Format(time.RFC3339), comment, "", "")
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
@@ -978,7 +978,6 @@ func handleJSONSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	project := r.FormValue("project")
 	overwrite := str2bool(r.FormValue("overwrite"))
 	var rows []Item
 	err = json.Unmarshal(jsonFile, &rows)
@@ -993,7 +992,7 @@ func handleJSONSubmit(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, i := range rows {
 		if overwrite {
-			err = setItem(session, project, i) // 기존데이터를 덮어쓰기 한다.
+			err = setItem(session, i) // 기존데이터를 덮어쓰기 한다.
 			if err != nil && err == mgo.ErrNotFound {
 				// 새로운 데이터를 추가한다.
 				err = addItem(session, i)

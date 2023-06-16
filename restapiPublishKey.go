@@ -88,7 +88,7 @@ func handleAPIGetPublish(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "createtime 값이 빈 문자열입니다", http.StatusBadRequest)
 		return
 	}
-	item, err := getItem(session, project, id)
+	item, err := getItem(session, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

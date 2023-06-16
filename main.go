@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"errors"
 	"flag"
 	"fmt"
@@ -9,7 +8,6 @@ import (
 	"log"
 	"os"
 	"os/user"
-	"strings"
 	"time"
 
 	"github.com/unidoc/unipdf/v3/common/license"
@@ -182,59 +180,6 @@ func main() {
 			addAssetItemCmd(*flagProject, *flagName, *flagType, *flagAssettype, *flagAssettags)
 			return
 		default: //소스, 재스캔 추가
-			addOtherItemCmd(*flagProject, *flagName, *flagType, *flagPlatesize, *flagScanname, *flagScantimecodein, *flagScantimecodeout, *flagJusttimecodein, *flagJusttimecodeout, *flagScanframe, *flagScanin, *flagScanout, *flagPlatein, *flagPlateout, *flagJustin, *flagJustout)
-			if *flagUpdateParent {
-				// updateParent 옵션이 활성화되어있고, org, left가 재스캔이라면.. 원본플레이트의 정보를 업데이트한다.
-				if (*flagType != "org" && strings.Contains(*flagType, "org")) || (*flagType != "left" && strings.Contains(*flagType, "left")) {
-					session, err := mgo.Dial(*flagDBIP)
-					if err != nil {
-						log.Fatal(err)
-					}
-					defer session.Close()
-					typ := "org"
-					if strings.Contains(*flagType, "left") {
-						typ = "left"
-					}
-					item, err := getItem(session, *flagProject, *flagName+"_"+typ)
-					if err != nil {
-						log.Fatal(err)
-					}
-					item.Platesize = *flagPlatesize
-					item.ScanTimecodeIn = *flagScantimecodein
-					item.ScanTimecodeOut = *flagScantimecodeout
-					item.JustTimecodeIn = *flagJusttimecodein
-					item.JustTimecodeOut = *flagJusttimecodeout
-					item.ScanIn = *flagScanin
-					item.ScanOut = *flagScanout
-					item.ScanFrame = *flagScanframe
-					item.Scanname = *flagScanname
-					item.PlateIn = *flagPlatein
-					item.PlateOut = *flagPlateout
-					item.JustIn = *flagJustin
-					item.JustOut = *flagJustout
-					item.UseType = *flagType
-					// adminsetting 값을 가지고와서 Thumbnailmov 값을 설정한다.
-					admin, err := GetAdminSetting(session)
-					if err != nil {
-						log.Fatal(err)
-					}
-					var thumbnailMovPath bytes.Buffer
-					thumbnailMovPathTmpl, err := template.New("thumbnailMovPath").Parse(admin.ThumbnailMovPath)
-					if err != nil {
-						log.Fatal(err)
-					}
-					err = thumbnailMovPathTmpl.Execute(&thumbnailMovPath, item)
-					if err != nil {
-						log.Fatal(err)
-					}
-					item.Thummov = thumbnailMovPath.String()
-
-					err = setItem(session, *flagProject, item)
-					if err != nil {
-						log.Fatal(err)
-					}
-				}
-			}
 			return
 		}
 	} else if *flagRm == "item" && *flagName != "" && *flagProject != "" && *flagType != "" { //아이템 삭제

@@ -113,7 +113,6 @@ func handleItemDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	q := r.URL.Query()
-	project := q.Get("project")
 	id := q.Get("id")
 	session, err := mgo.Dial(*flagDBIP)
 	if err != nil {
@@ -180,7 +179,7 @@ func handleItemDetail(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Item, err = getItem(session, project, id)
+	rcp.Item, err = getItem(session, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -206,7 +205,7 @@ func handleEditItem(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	q := r.URL.Query()
 	project := q.Get("project")
-	slug := q.Get("slug")
+	id := q.Get("id")
 	session, err := mgo.Dial(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -234,7 +233,7 @@ func handleEditItem(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Item, err = getItem(session, project, slug)
+	rcp.Item, err = getItem(session, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

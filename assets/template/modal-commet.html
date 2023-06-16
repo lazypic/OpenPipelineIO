@@ -10,7 +10,6 @@
                 </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" class="form-control" id="modal-addcomment-project">
                     <input type="hidden" class="form-control" id="modal-addcomment-id">
                     <div class="form-group">
                         <label for="modal-addcomment-text" class="col-form-label">Comment:</label>
@@ -68,7 +67,6 @@
                 </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" class="form-control" id="modal-rmcomment-project">
                     <input type="hidden" class="form-control" id="modal-rmcomment-id">
                     <input type="hidden" class="form-control" id="modal-rmcomment-time">
                     <div class="form-group">
@@ -78,7 +76,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-darkmode" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-outline-danger" onclick="rmComment(document.getElementById('modal-rmcomment-project').value, document.getElementById('modal-rmcomment-id').value, document.getElementById('modal-rmcomment-time').value)" data-dismiss="modal">DELETE</button>
+                    <button type="button" class="btn btn-outline-danger" onclick="rmComment(document.getElementById('modal-rmcomment-id').value, document.getElementById('modal-rmcomment-time').value)" data-dismiss="modal">DELETE</button>
                 </div>
             </div>
         </div>
@@ -95,7 +93,6 @@
                 </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" class="form-control" id="modal-editcomment-project">
                     <input type="hidden" class="form-control" id="modal-editcomment-id">
                     <input type="hidden" class="form-control" id="modal-editcomment-time">
                     <div class="form-group">
@@ -115,7 +112,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-darkmode" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-outline-warning" title="F8" id="modal-editcomment-editbutton" onclick="editComment(document.getElementById('modal-editcomment-project').value, document.getElementById('modal-editcomment-id').value, document.getElementById('modal-editcomment-time').value, document.getElementById('modal-editcomment-text').value, document.getElementById('modal-editcomment-media').value)" data-dismiss="modal">EDIT</button>
+                    <button type="button" class="btn btn-outline-warning" title="F8" id="modal-editcomment-editbutton" onclick="editComment(document.getElementById('modal-editcomment-id').value, document.getElementById('modal-editcomment-time').value, document.getElementById('modal-editcomment-text').value, document.getElementById('modal-editcomment-media').value)" data-dismiss="modal">EDIT</button>
                 </div>
             </div>
         </div>
