@@ -2410,20 +2410,12 @@ func AddSource(session *mgo.Session, project, name, author, title, path string) 
 }
 
 // AddReference 함수는 item에 레퍼런스 링크를 추가한다.
-func AddReference(session *mgo.Session, project, name, author, title, path string) (string, error) {
+func AddReference(session *mgo.Session, id, author, title, path string) error {
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return "", err
-	}
-	typ, err := Type(session, project, name)
-	if err != nil {
-		return "", err
-	}
-	id := name + "_" + typ
+
 	i, err := getItem(session, id)
 	if err != nil {
-		return id, err
+		return err
 	}
 	r := Source{}
 	r.Date = time.Now().Format(time.RFC3339)
@@ -2433,9 +2425,9 @@ func AddReference(session *mgo.Session, project, name, author, title, path strin
 	i.References = append(i.References, r)
 	err = setItem(session, i)
 	if err != nil {
-		return id, err
+		return err
 	}
-	return id, nil
+	return nil
 }
 
 // RmSource 함수는 item에서 소스를 삭제합니다.
@@ -2470,20 +2462,11 @@ func RmSource(session *mgo.Session, project, name, title string) (string, error)
 }
 
 // RmReference 함수는 item에서 레퍼런스를 삭제합니다.
-func RmReference(session *mgo.Session, project, name, title string) (string, error) {
+func RmReference(session *mgo.Session, id, title string) error {
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return "", err
-	}
-	typ, err := Type(session, project, name)
-	if err != nil {
-		return "", err
-	}
-	id := name + "_" + typ
 	i, err := getItem(session, id)
 	if err != nil {
-		return id, err
+		return err
 	}
 	var newReferences []Source
 	for _, ref := range i.References {
@@ -2495,9 +2478,9 @@ func RmReference(session *mgo.Session, project, name, title string) (string, err
 	i.References = newReferences
 	err = setItem(session, i)
 	if err != nil {
-		return id, err
+		return err
 	}
-	return id, nil
+	return nil
 }
 
 // GetTask 함수는 item의 Task 정보를 반환한다.
