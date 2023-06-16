@@ -740,7 +740,7 @@ func handleSigninSuccess(w http.ResponseWriter, r *http.Request) {
 	}
 	type recipe struct {
 		User
-		Setting
+		Setting Setting
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting

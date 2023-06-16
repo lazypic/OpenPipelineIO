@@ -35,7 +35,7 @@ func addShotItemCmd(project, name, typ, platesize, scanname, scantimecodein, sca
 		Name:       name,
 		NetflixID:  *flagNetflixID,
 		Type:       typ,
-		ID:         name + "_" + typ,
+		ID:         project + "_" + name + "_" + typ,
 		StatusV2:   initStatusID,
 		Scanname:   scanname,
 		Dataname:   scanname, // 보통 스캔네임과 데이터네임은 같다. 데이터 입력자의 노동을 줄이기 위해 기본적으로 동일값을 넣고, 필요시 수정한다.
@@ -161,7 +161,7 @@ func addShotItemCmd(project, name, typ, platesize, scanname, scantimecodein, sca
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = addItem(session, project, i)
+	err = addItem(session, i)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -190,7 +190,7 @@ func addAssetItemCmd(project, name, typ, assettype, assettags string) {
 		Name:       name,
 		NetflixID:  *flagNetflixID,
 		Type:       typ,
-		ID:         name + "_" + typ,
+		ID:         project + "_" + name + "_" + typ,
 		StatusV2:   initStatusID,
 		Updatetime: time.Now().Format(time.RFC3339),
 		Assettype:  assettype,
@@ -227,7 +227,7 @@ func addAssetItemCmd(project, name, typ, assettype, assettags string) {
 		}
 		i.Assettags = append(i.Assettags, tag)
 	}
-	err = addItem(session, project, i)
+	err = addItem(session, i)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -253,7 +253,7 @@ func addOtherItemCmd(project, name, typ, platesize, scanname, scantimecodein, sc
 		Name:       name,
 		NetflixID:  *flagNetflixID,
 		Type:       typ,
-		ID:         name + "_" + typ,
+		ID:         project + "_" + name + "_" + typ,
 		StatusV2:   "none",
 		Dataname:   scanname, // 일반적인 프로젝트는 스캔네임과 데이터네임이 같다. PM의 노가다를 줄이기 위해서 기본적으로 같은값이 들어가고 추후 수동처리해야하는 부분은 손으로 수정한다.
 		Scanname:   scanname,
@@ -341,7 +341,7 @@ func addOtherItemCmd(project, name, typ, platesize, scanname, scantimecodein, sc
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = addItem(session, project, i)
+	err = addItem(session, i)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -10,33 +10,28 @@ import (
 
 // SetImageSize 함수는 해당 샷의 이미지 사이즈를 설정한다. // legacy
 // key 설정값 : platesize, undistortionsize, rendersize
-func SetImageSize(session *mgo.Session, project, name, key, size string) (string, error) {
-	if !(key == "platesize" || key == "dsize" || key == "undistortionsize" || key == "rendersize") {
-		return "", errors.New("잘못된 key값입니다")
+func SetImageSize(session *mgo.Session, project, id, key, size string) error {
+	if !(key == "platesize" || key == "undistortionsize" || key == "rendersize") {
+		return errors.New("잘못된 key값입니다")
 	}
 	session.SetMode(mgo.Monotonic, true)
 	err := HasProject(session, project)
 	if err != nil {
-		return "", err
+		return err
 	}
-	typ, err := Type(session, project, name)
-	if err != nil {
-		return "", err
-	}
-	id := name + "_" + typ
 	c := session.DB(*flagDBName).C("items")
-	if key == "dsize" || key == "undistortionsize" {
-		err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"dsize": size, "undistortionsize": size, "updatetime": time.Now().Format(time.RFC3339)}})
+	if key == "undistortionsize" {
+		err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"undistortionsize": size, "updatetime": time.Now().Format(time.RFC3339)}})
 		if err != nil {
-			return id, err
+			return err
 		}
 	} else {
 		err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{key: size, "updatetime": time.Now().Format(time.RFC3339)}})
 		if err != nil {
-			return id, err
+			return err
 		}
 	}
-	return id, nil
+	return nil
 }
 
 // SetTaskUser 함수는 item에 task의 user 값을 셋팅한다.

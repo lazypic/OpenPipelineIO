@@ -229,7 +229,7 @@ function setEditTaskModal(project, id, task) {
         type: "post",
         data: {
             project: project,
-            name: id2name(id),
+            id: id,
             task: task,
         },
         headers: {
@@ -601,13 +601,11 @@ function rmTask(project, id, task) {
 
 function setFrame(mode, id, frame) {
     let token = document.getElementById("token").value;
-    let project = CurrentProject()
     $.ajax({
         url: "/api/" + mode,
         type: "post",
         data: {
-            project: project,
-            name: id2name(id),
+            id: id,
             frame: frame,
         },
         headers: {
@@ -616,31 +614,31 @@ function setFrame(mode, id, frame) {
         dataType: "json",
         success: function(data) {
             if (mode === "setscanin") {
-                document.getElementById("scanin-"+data.name).innerHTML = `<span class="text-badge ml-1" title="scanin">${data.frame}</span>`;
+                document.getElementById("scanin-"+data.id).innerHTML = `<span class="text-badge ml-1" title="scanin">${data.frame}</span>`;
             }
             if (mode === "setscanout") {
-                document.getElementById("scanout-"+data.name).innerHTML = `<span class="text-badge ml-1" title="scanout">${data.frame}</span>`;
+                document.getElementById("scanout-"+data.id).innerHTML = `<span class="text-badge ml-1" title="scanout">${data.frame}</span>`;
             }
             if (mode === "setscanframe") {
-                document.getElementById("scanframe-"+data.name).innerHTML = `<span class="text-badge ml-1" title="scanframe">(${data.frame})</span>`;
+                document.getElementById("scanframe-"+data.id).innerHTML = `<span class="text-badge ml-1" title="scanframe">(${data.frame})</span>`;
             }
             if (mode === "sethandlein") {
-                document.getElementById("handlein-"+data.name).innerHTML = data.frame;
+                document.getElementById("handlein-"+data.id).innerHTML = data.frame;
             }
             if (mode === "sethandleout") {
-                document.getElementById("handleout-"+data.name).innerHTML = data.frame;
+                document.getElementById("handleout-"+data.id).innerHTML = data.frame;
             }
             if (mode === "setplatein") {
-                document.getElementById("platein-"+data.name).innerHTML = `<span class="text-white black-opbg" title="platein">${data.frame}</span>`;
+                document.getElementById("platein-"+data.id).innerHTML = `<span class="text-white black-opbg" title="platein">${data.frame}</span>`;
             }
             if (mode === "setplateout") {
-                document.getElementById("plateout-"+data.name).innerHTML = `<span class="text-white black-opbg" title="plateout">${data.frame}</span>`;
+                document.getElementById("plateout-"+data.id).innerHTML = `<span class="text-white black-opbg" title="plateout">${data.frame}</span>`;
             }
             if (mode === "setjustin") {
-                document.getElementById("justin-"+data.name).innerHTML = `<span class="text-warning black-opbg" title="justin">${data.frame}</span>`;
+                document.getElementById("justin-"+data.id).innerHTML = `<span class="text-warning black-opbg" title="justin">${data.frame}</span>`;
             }
             if (mode === "setjustout") {
-                document.getElementById("justout-"+data.name).innerHTML = `<span class="text-warning black-opbg" title="justout">${data.frame}</span>`;
+                document.getElementById("justout-"+data.id).innerHTML = `<span class="text-warning black-opbg" title="justout">${data.frame}</span>`;
             }
         },
         error: function(request,status,error){
@@ -650,23 +648,20 @@ function setFrame(mode, id, frame) {
 }
 
 
-function setScanTimecodeIn(project, id, timecode, userid) {
-    let token = document.getElementById("token").value;
+function setScanTimecodeIn(id, timecode) {
     $.ajax({
         url: "/api/setscantimecodein",
         type: "post",
         data: {
-            project: project,
-            name: id2name(id),
+            id: id,
             timecode: timecode,
-            userid: userid,
         },
         headers: {
-            "Authorization": "Basic "+ token
+            "Authorization": "Basic "+ document.getElementById("token").value,
         },
         dataType: "json",
         success: function(data) {
-            document.getElementById("scantimecodein-"+data.name).innerHTML = `<span class="text-badge ml-1">${data.timecode}</span>`;
+            document.getElementById("scantimecodein-"+data.id).innerHTML = `<span class="text-badge ml-1">${data.timecode}</span>`;
         },
         error: function(request,status,error){
             alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -793,23 +788,20 @@ function setCameraProjection() {
     });
 }
 
-function setScanTimecodeOut(project, id, timecode, userid) {
-    let token = document.getElementById("token").value;
+function setScanTimecodeOut(id, timecode) {
     $.ajax({
         url: "/api/setscantimecodeout",
         type: "post",
         data: {
-            project: project,
-            name: id2name(id),
+            id: id,
             timecode: timecode,
-            userid: userid,
         },
         headers: {
-            "Authorization": "Basic "+ token
+            "Authorization": "Basic "+ document.getElementById("token").value,
         },
         dataType: "json",
         success: function(data) {
-            document.getElementById("scantimecodeout-"+data.name).innerHTML = `<span class="text-badge ml-1">${data.timecode}</span>`;
+            document.getElementById("scantimecodeout-"+data.id).innerHTML = `<span class="text-badge ml-1">${data.timecode}</span>`;
         },
         error: function(request,status,error){
             alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -817,23 +809,20 @@ function setScanTimecodeOut(project, id, timecode, userid) {
     });
 }
 
-function setJustTimecodeIn(project, id, timecode, userid) {
-    let token = document.getElementById("token").value;
+function setJustTimecodeIn(id, timecode) {
     $.ajax({
         url: "/api/setjusttimecodein",
         type: "post",
         data: {
-            project: project,
-            name: id2name(id),
+            id: id,
             timecode: timecode,
-            userid: userid,
         },
         headers: {
-            "Authorization": "Basic "+ token
+            "Authorization": "Basic "+ document.getElementById("token").value,
         },
         dataType: "json",
         success: function(data) {
-            document.getElementById("justtimecodein-"+data.name).innerHTML = `<span class="text-warning black-opbg">${data.timecode}</span>`;
+            document.getElementById("justtimecodein-"+data.id).innerHTML = `<span class="text-warning black-opbg">${data.timecode}</span>`;
         },
         error: function(request,status,error){
             alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -841,23 +830,20 @@ function setJustTimecodeIn(project, id, timecode, userid) {
     });
 }
 
-function setJustTimecodeOut(project, id, timecode, userid) {
-    let token = document.getElementById("token").value;
+function setJustTimecodeOut(id, timecode) {
     $.ajax({
         url: "/api/setjusttimecodeout",
         type: "post",
         data: {
-            project: project,
-            name: id2name(id),
+            id: id,
             timecode: timecode,
-            userid: userid,
         },
         headers: {
-            "Authorization": "Basic "+ token
+            "Authorization": "Basic "+ document.getElementById("token").value,
         },
         dataType: "json",
         success: function(data) {
-            document.getElementById("justtimecodeout-"+data.name).innerHTML = `<span class="text-warning black-opbg">${data.timecode}</span>`;
+            document.getElementById("justtimecodeout-"+data.id).innerHTML = `<span class="text-warning black-opbg">${data.timecode}</span>`;
         },
         error: function(request,status,error){
             alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -3272,7 +3258,7 @@ function setDeadline2D(project, id, date) {
                 },
                 body: new URLSearchParams({
                     project: project,
-                    name: id2name(id),
+                    id: id,
                     date: date,
                     userid: userid,
                 })
@@ -3284,7 +3270,7 @@ function setDeadline2D(project, id, date) {
                 return response.json()
             })
             .then((data) => {
-                document.getElementById("deadline2d-"+data.name).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline2d" onclick="setDeadline2dModal('${data.project}','${data.id}')">2D:${data.shortdate}</span>`;
+                document.getElementById("deadline2d-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline2d" onclick="setDeadline2dModal('${data.project}','${data.id}')">2D:${data.shortdate}</span>`;
             })
             .catch((err) => {
                 alert(err)
@@ -3298,7 +3284,7 @@ function setDeadline2D(project, id, date) {
             },
             body: new URLSearchParams({
                 project: project,
-                name: id2name(id),
+                id: id,
                 date: date,
                 userid: userid,
             })
@@ -3310,7 +3296,7 @@ function setDeadline2D(project, id, date) {
             return response.json()
         })
         .then((data) => {
-            document.getElementById("deadline2d-"+data.name).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline2d" onclick="setDeadline2dModal('${data.project}','${data.id}')">2D:${data.shortdate}</span>`;
+            document.getElementById("deadline2d-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline2d" onclick="setDeadline2dModal('${data.project}','${data.id}')">2D:${data.shortdate}</span>`;
         })
         .catch((err) => {
             alert(err)
@@ -3354,7 +3340,7 @@ function setDeadline3D(project, id, date) {
                 type: "post",
                 data: {
                     project: project,
-                    name: id2name(id),
+                    id: id,
                     date: date,
                     userid: userid,
                 },
@@ -3363,7 +3349,7 @@ function setDeadline3D(project, id, date) {
                 },
                 dataType: "json",
                 success: function(data) {
-                    document.getElementById("deadline3d-"+data.name).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline3d" onclick="setDeadline3dModal('${data.project}','${data.id}')">3D:${data.shortdate}</span>`;
+                    document.getElementById("deadline3d-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline3d" onclick="setDeadline3dModal('${data.project}','${data.id}')">3D:${data.shortdate}</span>`;
                 },
                 error: function(request,status,error){
                     alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -3376,7 +3362,7 @@ function setDeadline3D(project, id, date) {
             type: "post",
             data: {
                 project: project,
-                name: id2name(id),
+                id: id,
                 date: date,
                 userid: userid,
             },
@@ -3385,7 +3371,7 @@ function setDeadline3D(project, id, date) {
             },
             dataType: "json",
             success: function(data) {
-                document.getElementById("deadline3d-"+data.name).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline3d" onclick="setDeadline3dModal('${data.project}','${data.id}')">3D:${data.shortdate}</span>`;
+                document.getElementById("deadline3d-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline3d" onclick="setDeadline3dModal('${data.project}','${data.id}')">3D:${data.shortdate}</span>`;
             },
             error: function(request,status,error){
                 alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -4147,7 +4133,7 @@ function setPlatesize(project, id, size) {
                 
                 data: {
                     project: project,
-                    name: id2name(id),
+                    id: id,
                     size: size,
                     userid: userid,
                 },
@@ -4156,7 +4142,7 @@ function setPlatesize(project, id, size) {
                 },
                 dataType: "json",
                 success: function(data) {
-                    document.getElementById("platesize-"+data.name).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-platesize" onclick="setPlatesizeModal('${project}', '${data.id}')">S:${data.size}</span>`;
+                    document.getElementById("platesize-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-platesize" onclick="setPlatesizeModal('${project}', '${data.id}')">S:${data.size}</span>`;
                 },
                 error: function(request,status,error){
                     alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -4170,7 +4156,7 @@ function setPlatesize(project, id, size) {
             
             data: {
                 project: project,
-                name: id2name(id),
+                id: id,
                 size: size,
                 userid: userid,
             },
@@ -4179,7 +4165,7 @@ function setPlatesize(project, id, size) {
             },
             dataType: "json",
             success: function(data) {
-                document.getElementById("platesize-"+data.name).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-platesize" onclick="setPlatesizeModal('${project}', '${data.id}')">S:${data.size}</span>`;
+                document.getElementById("platesize-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-platesize" onclick="setPlatesizeModal('${project}', '${data.id}')">S:${data.size}</span>`;
             },
             error: function(request,status,error){
                 alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -4200,7 +4186,7 @@ function setUndistortionsizeModal(project, id) {
         dataType: "json",
         success: function(data) {
             document.getElementById('modal-undistortionsize-id').value = id;
-            document.getElementById("modal-undistortionsize-size").value = data.dsize;
+            document.getElementById("modal-undistortionsize-size").value = data.undistortionsize;
         },
         error: function(request,status,error){
             alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -4224,7 +4210,7 @@ function setUndistortionsize(project, id, size) {
                 
                 data: {
                     project: project,
-                    name: id2name(id),
+                    id: id,
                     size: size,
                     userid: userid,
                 },
@@ -4233,7 +4219,7 @@ function setUndistortionsize(project, id, size) {
                 },
                 dataType: "json",
                 success: function(data) {
-                    document.getElementById("undistortionsize-"+data.name).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-undistortionsize" onclick="setUndistortionsizeModal('${project}', '${data.id}', '${data.size}')">U:${data.size}</span>`;
+                    document.getElementById("undistortionsize-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-undistortionsize" onclick="setUndistortionsizeModal('${project}', '${data.id}', '${data.size}')">U:${data.size}</span>`;
                 },
                 error: function(request,status,error){
                     alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -4247,7 +4233,7 @@ function setUndistortionsize(project, id, size) {
             
             data: {
                 project: project,
-                name: id2name(id),
+                id: id,
                 size: size,
                 userid: userid,
             },
@@ -4256,7 +4242,7 @@ function setUndistortionsize(project, id, size) {
             },
             dataType: "json",
             success: function(data) {
-                document.getElementById("undistortionsize-"+data.name).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-undistortionsize" onclick="setUndistortionsizeModal('${project}', '${data.id}', '${data.size}')">U:${data.size}</span>`;
+                document.getElementById("undistortionsize-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-undistortionsize" onclick="setUndistortionsizeModal('${project}', '${data.id}', '${data.size}')">U:${data.size}</span>`;
             },
             error: function(request,status,error){
                 alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);

@@ -5,6 +5,7 @@
 			<div class="input-group mb-3">
 				<div class="input-group-prepend">
 					<select name="Project" class="custom-select rounded-left" id="searchbox-project" onchange="changeProject();">
+						<option value="" {{if eq $.SearchOption.Project "" }}selected{{end}}>All</option>
 						{{range .Projectlist}}
 							<option value="{{.}}" {{if eq . $.SearchOption.Project}}selected{{end}}>{{.}}</option>
 						{{end}}

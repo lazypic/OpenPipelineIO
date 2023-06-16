@@ -10,27 +10,10 @@ function changeProject() {
 	let appname = document.getElementById("appname").innerText +": "
 	let e = document.getElementById("searchbox-project");
 	let project = e.options[e.selectedIndex].value;
-	document.title = appname + project;
-	// 검색에 사용되는 Template 수정하기. 모든 프로젝트가 ver2를 사용하게되면 이 코드는 레거시가 된다.
-	fetch('/api/project?id='+project, {
-        method: 'GET',
-        headers: {
-            "Authorization": "Basic "+ document.getElementById("token").value,
-        },
-    })
-    .then((response) => {
-        return response.json()
-    })
-    .then((data) => {
-		
-    })
-    .catch((error) => {
-        alert(error)
-    });
+	if (project != "") {
+		document.title = appname + project;
+	}
 }
-
-
-
 
 // selectmodeV2 함수는 검색바에서 "선택모드" 버튼을 눌렀을 때 실행되는 함수이다.
 function selectmodeV2() {

@@ -144,7 +144,6 @@ func processingScanPlateImageItem(scan ScanPlate) {
 	}
 	if scan.UndistortionWidth != 0 && scan.UndistortionHeight != 0 {
 		item.Undistortionsize = fmt.Sprintf("%dx%d", scan.UndistortionWidth, scan.UndistortionHeight)
-		item.Dsize = fmt.Sprintf("%dx%d", scan.UndistortionWidth, scan.UndistortionHeight)
 	}
 	if scan.RenderWidth != 0 && scan.RenderHeight != 0 {
 		item.Rendersize = fmt.Sprintf("%dx%d", scan.RenderWidth, scan.RenderHeight)

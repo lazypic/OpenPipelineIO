@@ -14,11 +14,11 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func addItem(session *mgo.Session, project string, i Item) error {
+func addItem(session *mgo.Session, i Item) error {
 	session.SetMode(mgo.Monotonic, true)
 	// 프로젝트가 존재하는지 체크합니다.
 	c := session.DB(*flagDBName).C("project")
-	num, err := c.Find(bson.M{"id": project}).Count()
+	num, err := c.Find(bson.M{"id": i.Project}).Count()
 	if err != nil {
 		return err
 	}
@@ -27,12 +27,12 @@ func addItem(session *mgo.Session, project string, i Item) error {
 	}
 	//문서의 중복이 있는지 체크합니다.
 	c = session.DB(*flagDBName).C("items")
-	num, err = c.Find(bson.M{"name": i.Name, "type": i.Type}).Count()
+	num, err = c.Find(bson.M{"id": i.ID}).Count()
 	if err != nil {
 		return err
 	}
 	if num != 0 {
-		return fmt.Errorf("%s 프로젝트에 이미 %s_%s 샷은 존재합니다", project, i.Name, i.Type)
+		return fmt.Errorf("%s 프로젝트에 %s 아이템이 존재합니다", i.Project, i.ID)
 	}
 	err = c.Insert(i)
 	if err != nil {
@@ -982,6 +982,22 @@ func Type(session *mgo.Session, project, name string) (string, error) {
 	return items[0].Type, nil
 }
 
+func GetID(session *mgo.Session, project, name string) (string, error) {
+	c := session.DB(*flagDBName).C("items")
+	var items []Item
+	err := c.Find(bson.M{"$and": []bson.M{{"name": name, "project": project}, {"name": name, "project": project}}}).All(&items)
+	if err != nil {
+		return "", err
+	}
+	if len(items) == 0 {
+		return "", errors.New(name + "에 해당하는 id를 DB에서 찾을 수 없습니다.")
+	}
+	if len(items) != 1 {
+		return "", errors.New(name + "값이 DB에서 고유하지 않습니다.")
+	}
+	return items[0].ID, nil
+}
+
 // SetImageSizeVer2 함수는 해당 샷의 이미지 사이즈를 설정한다.
 // key 설정값 : platesize, undistortionsize, rendersize
 func SetImageSizeVer2(session *mgo.Session, project, id, key, size string) error {
@@ -1059,7 +1075,7 @@ func SetUseType(session *mgo.Session, project, id, usetype string) error {
 
 // SetFrame 함수는 item에 프레임을 설정한다.
 // ScanIn,ScanOut,ScanFrame,PlateIn,PlateOut,JustIn,JustOut,HandleIn,HandleOut 문자를 key로 사용할 수 있다.
-func SetFrame(session *mgo.Session, project, name, key string, frame int) error {
+func SetFrame(session *mgo.Session, id, key string, frame int) error {
 	if frame == -1 {
 		return nil
 	}
@@ -1075,16 +1091,8 @@ func SetFrame(session *mgo.Session, project, name, key string, frame int) error 
 		return errors.New("scanin, scanout, scanframe, platein, plateout, justin, justout, handlein, handleout 키값만 사용가능합니다")
 	}
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return err
-	}
-	typ, err := Type(session, project, name)
-	if err != nil {
-		return err
-	}
 	c := session.DB(*flagDBName).C("items")
-	err = c.Update(bson.M{"id": name + "_" + typ}, bson.M{"$set": bson.M{key: frame, "updatetime": time.Now().Format(time.RFC3339)}})
+	err := c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{key: frame, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
 	}
@@ -1654,57 +1662,47 @@ func SetTaskDuration2nd(session *mgo.Session, project, id, task, start, end stri
 }
 
 // SetDeadline2D 함수는 item에 2D마감일을 셋팅한다.
-func SetDeadline2D(session *mgo.Session, project, name, date string) (string, error) {
+func SetDeadline2D(session *mgo.Session, project, id, date string) error {
 	session.SetMode(mgo.Monotonic, true)
 	err := HasProject(session, project)
 	if err != nil {
-		return "", err
+		return err
 	}
-	typ, err := Type(session, project, name)
-	if err != nil {
-		return "", err
-	}
-	id := name + "_" + typ
 	fullTime := ""
 	if date != "" {
 		fullTime, err = ditime.ToFullTime(19, date)
 		if err != nil {
-			return id, err
+			return err
 		}
 	}
 	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"ddline2d": fullTime, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
-		return id, err
+		return err
 	}
-	return id, nil
+	return nil
 }
 
 // SetDeadline3D 함수는 item에 3D마감일을 셋팅한다.
-func SetDeadline3D(session *mgo.Session, project, name, date string) (string, error) {
+func SetDeadline3D(session *mgo.Session, project, id, date string) error {
 	session.SetMode(mgo.Monotonic, true)
 	err := HasProject(session, project)
 	if err != nil {
-		return "", err
+		return err
 	}
-	typ, err := Type(session, project, name)
-	if err != nil {
-		return "", err
-	}
-	id := name + "_" + typ
 	fullTime := ""
 	if date != "" {
 		fullTime, err = ditime.ToFullTime(19, date)
 		if err != nil {
-			return id, err
+			return err
 		}
 	}
 	c := session.DB(*flagDBName).C("items")
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"ddline3d": fullTime, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
-		return id, err
+		return err
 	}
-	return id, nil
+	return nil
 }
 
 // SetTaskStartdate 함수는 item에 task의 startdate 값을 셋팅한다.
@@ -1983,51 +1981,27 @@ func SetAssetType(session *mgo.Session, project, name, assettype string) (string
 }
 
 // SetScanTimecodeIn 함수는 item에 Scan Timecode In을 셋팅한다.
-func SetScanTimecodeIn(session *mgo.Session, project, name, timecode string) error {
-	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return err
-	}
-	typ, err := Type(session, project, name)
-	if err != nil {
-		return err
-	}
-	if typ == "asset" {
-		return fmt.Errorf("%s 아이템은 %s 타입입니다. 처리할 수 없습니다", name, typ)
-	}
-	id := name + "_" + typ
+func SetScanTimecodeIn(session *mgo.Session, id, timecode string) error {
 	if !(regexpTimecode.MatchString(timecode) || timecode == "") {
 		return fmt.Errorf("%s 문자열은 00:00:00:00 형식의 문자열이 아닙니다", timecode)
 	}
+	session.SetMode(mgo.Monotonic, true)
 	c := session.DB(*flagDBName).C("items")
-	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"scantimecodein": timecode, "updatetime": time.Now().Format(time.RFC3339)}})
+	err := c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"scantimecodein": timecode, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-// SetScanTimecodeOut 함수는 item에 Scan Timecode In을 셋팅한다.
-func SetScanTimecodeOut(session *mgo.Session, project, name, timecode string) error {
-	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return err
-	}
-	typ, err := Type(session, project, name)
-	if err != nil {
-		return err
-	}
-	if typ == "asset" {
-		return fmt.Errorf("%s 아이템은 %s 타입입니다. 처리할 수 없습니다", name, typ)
-	}
-	id := name + "_" + typ
+// SetScanTimecodeOut 함수는 item에 Scan Timecode Out을 셋팅한다.
+func SetScanTimecodeOut(session *mgo.Session, id, timecode string) error {
 	if !(regexpTimecode.MatchString(timecode) || timecode == "") {
 		return fmt.Errorf("%s 문자열은 00:00:00:00 형식의 문자열이 아닙니다", timecode)
 	}
+	session.SetMode(mgo.Monotonic, true)
 	c := session.DB(*flagDBName).C("items")
-	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"scantimecodeout": timecode, "updatetime": time.Now().Format(time.RFC3339)}})
+	err := c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"scantimecodeout": timecode, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
 	}
@@ -2035,25 +2009,13 @@ func SetScanTimecodeOut(session *mgo.Session, project, name, timecode string) er
 }
 
 // SetJustTimecodeIn 함수는 item에 Just Timecode In을 셋팅한다.
-func SetJustTimecodeIn(session *mgo.Session, project, name, timecode string) error {
-	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return err
-	}
-	typ, err := Type(session, project, name)
-	if err != nil {
-		return err
-	}
-	if typ == "asset" {
-		return fmt.Errorf("%s 아이템은 %s 타입입니다. 처리할 수 없습니다", name, typ)
-	}
-	id := name + "_" + typ
+func SetJustTimecodeIn(session *mgo.Session, id, timecode string) error {
 	if !(regexpTimecode.MatchString(timecode) || timecode == "") {
 		return fmt.Errorf("%s 문자열은 00:00:00:00 형식의 문자열이 아닙니다", timecode)
 	}
+	session.SetMode(mgo.Monotonic, true)
 	c := session.DB(*flagDBName).C("items")
-	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"justtimecodein": timecode, "updatetime": time.Now().Format(time.RFC3339)}})
+	err := c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"justtimecodein": timecode, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
 	}
@@ -2061,25 +2023,13 @@ func SetJustTimecodeIn(session *mgo.Session, project, name, timecode string) err
 }
 
 // SetJustTimecodeOut 함수는 item에 Just Timecode In을 셋팅한다.
-func SetJustTimecodeOut(session *mgo.Session, project, name, timecode string) error {
-	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return err
-	}
-	typ, err := Type(session, project, name)
-	if err != nil {
-		return err
-	}
-	if typ == "asset" {
-		return fmt.Errorf("%s 아이템은 %s 타입입니다. 처리할 수 없습니다", name, typ)
-	}
-	id := name + "_" + typ
+func SetJustTimecodeOut(session *mgo.Session, id, timecode string) error {
 	if !(regexpTimecode.MatchString(timecode) || timecode == "") {
 		return fmt.Errorf("%s 문자열은 00:00:00:00 형식의 문자열이 아닙니다", timecode)
 	}
+	session.SetMode(mgo.Monotonic, true)
 	c := session.DB(*flagDBName).C("items")
-	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"justtimecodeout": timecode, "updatetime": time.Now().Format(time.RFC3339)}})
+	err := c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"justtimecodeout": timecode, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
 	}
@@ -2576,21 +2526,16 @@ func RmReference(session *mgo.Session, project, name, title string) (string, err
 }
 
 // GetTask 함수는 item의 Task 정보를 반환한다.
-func GetTask(session *mgo.Session, project, name, task string) (string, Task, error) {
+func GetTask(session *mgo.Session, project, id, task string) (Task, error) {
 	session.SetMode(mgo.Monotonic, true)
-	typ, err := Type(session, project, name)
-	if err != nil {
-		return "", Task{}, err
-	}
-	id := name + "_" + typ
 	i, err := getItem(session, project, id)
 	if err != nil {
-		return id, Task{}, err
+		return Task{}, err
 	}
 	if _, found := i.Tasks[task]; !found {
-		return id, Task{}, errors.New("task가 존재하지 않습니다")
+		return Task{}, errors.New("task가 존재하지 않습니다")
 	}
-	return id, i.Tasks[task], nil
+	return i.Tasks[task], nil
 }
 
 // GetShottype 함수는 item의 Shottype 정보를 반환한다.

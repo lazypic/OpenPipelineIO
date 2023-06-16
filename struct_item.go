@@ -64,7 +64,6 @@ type Item struct {
 	Finver           string          `json:"finver"`           // 파이널된 버젼
 	Findate          string          `json:"findate"`          // 파이널 데이터가 나간 날짜
 	Clientver        string          `json:"clientver"`        // 클라이언트에게 보낸 버전
-	Dsize            string          `json:"dsize"`            // 언디스토션 사이즈 legacy
 	Rendersize       string          `json:"rendersize"`       // 특수상황시 렌더사이즈. 예) 5k플레이트를 3D에서 2k영역만 잡아서 최종 아웃풋까지 이어질 때
 	Undistortionsize string          `json:"undistortionsize"` // 언디스토션 사이즈
 	OverscanRatio    float64         `json:"overscanratio"`    // 오버스캔 비율

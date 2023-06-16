@@ -365,13 +365,13 @@ func handleAPISetRenderSize(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			rcp.Project = v
-		case "name":
+		case "id":
 			v, err := PostFormValueInList(key, values)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			rcp.Name = v
+			rcp.ID = v
 		case "userid":
 			v, err := PostFormValueInList(key, values)
 			if err != nil {
@@ -394,20 +394,23 @@ func handleAPISetRenderSize(w http.ResponseWriter, r *http.Request) {
 			rcp.Size = v
 		}
 	}
-	id, err := SetImageSize(session, rcp.Project, rcp.Name, "rendersize", rcp.Size)
+	err = SetImageSize(session, rcp.Project, rcp.ID, "rendersize", rcp.Size)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.ID = id
 	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Rendersize: %s\nProject: %s, Name: %s, Author: %s", rcp.Size, rcp.Project, rcp.Name, rcp.UserID))
+	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Rendersize: %s\nID: %s, Author: %s", rcp.Size, rcp.ID, rcp.UserID))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// json 으로 결과 전송
-	data, _ := json.Marshal(rcp)
+	data, err := json.Marshal(rcp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
