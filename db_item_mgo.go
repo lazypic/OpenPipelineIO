@@ -240,7 +240,7 @@ func Distinct(session *mgo.Session, project string, key string) ([]string, error
 	}
 	session.SetMode(mgo.Monotonic, true)
 	c := session.DB(*flagDBName).C("items")
-	err := c.Find(bson.M{}).Distinct(key, &result)
+	err := c.Find(bson.M{"project": project}).Distinct(key, &result)
 	if err != nil {
 		return nil, err
 	}
@@ -256,7 +256,7 @@ func DistinctDdline(session *mgo.Session, project string, key string) ([]string,
 	}
 	session.SetMode(mgo.Monotonic, true)
 	c := session.DB(*flagDBName).C("items")
-	err := c.Find(bson.M{}).Distinct(key, &result)
+	err := c.Find(bson.M{"project": project}).Distinct(key, &result)
 	if err != nil {
 		return nil, err
 	}
@@ -295,8 +295,8 @@ func SearchAllShot(session *mgo.Session, project, sortkey string) ([]Item, error
 	session.SetMode(mgo.Monotonic, true)
 	c := session.DB(*flagDBName).C("items")
 	queries := []bson.M{}
-	queries = append(queries, bson.M{"type": "org"})
-	queries = append(queries, bson.M{"type": "left"})
+	queries = append(queries, bson.M{"project": project, "type": "org"})
+	queries = append(queries, bson.M{"project": project, "type": "left"})
 	q := bson.M{"$or": queries}
 	err := c.Find(q).Sort(sortkey).All(&results)
 	if err != nil {
@@ -310,7 +310,7 @@ func SearchAllAsset(session *mgo.Session, project, sortkey string) ([]Item, erro
 	results := []Item{}
 	session.SetMode(mgo.Monotonic, true)
 	c := session.DB(*flagDBName).C("items")
-	err := c.Find(bson.M{"type": "asset"}).Sort(sortkey).All(&results)
+	err := c.Find(bson.M{"project": project, "type": "asset"}).Sort(sortkey).All(&results)
 	if err != nil {
 		return nil, err
 	}
@@ -323,9 +323,9 @@ func SearchAll(session *mgo.Session, project, sortkey string) ([]Item, error) {
 	session.SetMode(mgo.Monotonic, true)
 	c := session.DB(*flagDBName).C("items")
 	queries := []bson.M{}
-	queries = append(queries, bson.M{"type": "org"})
-	queries = append(queries, bson.M{"type": "left"})
-	queries = append(queries, bson.M{"type": "asset"})
+	queries = append(queries, bson.M{"project": project, "type": "org"})
+	queries = append(queries, bson.M{"project": project, "type": "left"})
+	queries = append(queries, bson.M{"project": project, "type": "asset"})
 	q := bson.M{"$or": queries}
 	err := c.Find(q).Sort(sortkey).All(&results)
 	if err != nil {
@@ -344,58 +344,6 @@ func SearchTag(session *mgo.Session, op SearchOption) ([]Item, error) {
 // SearchAssettags 함수는 검색옵션으로 에셋태그를 검색할때 사용한다.
 func SearchAssettags(session *mgo.Session, op SearchOption) ([]Item, error) {
 	return SearchKey(session, op, "assettags")
-}
-
-// SearchAssetTree 함수는 에셋이름을 하나 받아서 관련된 모든 에셋을 구하는 함수이다.
-func SearchAssetTree(session *mgo.Session, op SearchOption) ([]Item, error) {
-	if op.Searchword == "" { // 검색어가 없다면 종료한다.
-		return []Item{}, nil
-	}
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("items")
-	var allAssets []Item
-	err := c.Find(bson.M{"type": "asset"}).Sort(op.Sortkey).All(&allAssets)
-	if err != nil {
-		if err == mgo.ErrNotFound {
-			return []Item{}, nil
-		}
-		return nil, err
-	}
-
-	var result []Item
-	var waittags []string
-	var donetags []string
-	waittags = append(waittags, op.Searchword) // 최초 검색단어를 대기리스트에 넣는다.
-	for len(waittags) > 0 {
-		// fmt.Println("-------------------------------------------------------------") // 디버그 구분선
-		hasDone := false
-		for _, donetag := range donetags {
-			if donetag == waittags[0] {
-				// fmt.Printf("%s는 이미 과거에 처리되었습니다.\n", waittags[0]) // 디버그를 위해서 놔둔다.
-				hasDone = true
-			}
-		}
-		for _, item := range allAssets {
-			if item.Name == waittags[0] {
-				// fmt.Printf("%s은 자기자신입니다.\n", item.Name) // 디버그를 위해서 놔둔다.
-				donetags = append(donetags, item.Name)
-				if !hasDone {
-					result = append(result, item)
-				}
-			} else {
-				for _, tag := range item.Assettags {
-					if tag == waittags[0] {
-						// fmt.Printf("%s는 %s와 연결되어 있습니다.\n", item.Name, tag) // 디버그를 위해서 놔둔다.
-						waittags = append(waittags, item.Name)
-					}
-				}
-			}
-		}
-		// fmt.Println("디버그:", waittags) // 디버그를 위해서 놔둔다.
-		// fmt.Println("디버그:", donetags) // 디버그를 위해서 놔둔다.
-		waittags = waittags[1:] // 처리한 값은 뺀다.
-	}
-	return result, nil
 }
 
 // SearchKey 함수는 Item.{key} 필드의 값과 검색어가 정확하게 일치하는 항목들만 검색한다.
@@ -423,34 +371,6 @@ func SearchKey(session *mgo.Session, op SearchOption, key string) ([]Item, error
 		{"$or": query},
 		{"$or": status},
 	}}
-	err := c.Find(q).Sort(op.Sortkey).All(&results)
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// SearchDdline 함수는 검색옵션, 파트정보(2d,3d)를 받아서 쿼리한다.
-func SearchDdline(session *mgo.Session, op SearchOption, part string) ([]Item, error) {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("items")
-	query := []bson.M{}
-	switch part {
-	case "2d":
-		query = append(query, bson.M{"ddline2d": &bson.RegEx{Pattern: "....-" + op.Searchword[0:2] + "-" + op.Searchword[2:4]}})
-	case "3d":
-		query = append(query, bson.M{"ddline3d": &bson.RegEx{Pattern: "....-" + op.Searchword[0:2] + "-" + op.Searchword[2:4]}})
-	default:
-		query = append(query, bson.M{})
-	}
-
-	status := []bson.M{}
-
-	q := bson.M{"$and": []bson.M{
-		{"$or": query},
-		{"$or": status},
-	}}
-	var results []Item
 	err := c.Find(q).Sort(op.Sortkey).All(&results)
 	if err != nil {
 		return nil, err
@@ -498,7 +418,7 @@ func Totalnum(session *mgo.Session, project string) (Infobarnum, error) {
 	c := session.DB(*flagDBName).C("items")
 
 	var results Infobarnum
-	totalnum, err := c.Find(bson.M{"$or": []bson.M{{"type": "org"}, {"type": "left"}}}).Count()
+	totalnum, err := c.Find(bson.M{"$or": []bson.M{{"project": project, "type": "org"}, {"project": project, "type": "left"}}}).Count()
 	if err != nil {
 		return Infobarnum{}, err
 	}
