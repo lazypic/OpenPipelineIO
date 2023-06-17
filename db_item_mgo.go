@@ -240,7 +240,7 @@ func Distinct(session *mgo.Session, project string, key string) ([]string, error
 	}
 	session.SetMode(mgo.Monotonic, true)
 	c := session.DB(*flagDBName).C("items")
-	err := c.Find(bson.M{}).Distinct(key, &result)
+	err := c.Find(bson.M{"project": project}).Distinct(key, &result)
 	if err != nil {
 		return nil, err
 	}
@@ -256,7 +256,7 @@ func DistinctDdline(session *mgo.Session, project string, key string) ([]string,
 	}
 	session.SetMode(mgo.Monotonic, true)
 	c := session.DB(*flagDBName).C("items")
-	err := c.Find(bson.M{}).Distinct(key, &result)
+	err := c.Find(bson.M{"project": project}).Distinct(key, &result)
 	if err != nil {
 		return nil, err
 	}

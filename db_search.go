@@ -267,7 +267,7 @@ func GenQuery(session *mgo.Session, op SearchOption) (SearchOption, bson.M) {
 		queries = append(queries, bson.M{"$or": statusQueries})
 	}
 
-	//
+	// 프로젝트 쿼리에 대해서 and 처리를 진행한다.
 	projectQueries := []bson.M{}
 	if op.Project != "" { // 빈문자열일 때 전체 프로젝트를 검색한다.
 		projectQueries = append(projectQueries, bson.M{"project": op.Project})
@@ -276,7 +276,9 @@ func GenQuery(session *mgo.Session, op SearchOption) (SearchOption, bson.M) {
 		queries = append(queries, bson.M{"$and": projectQueries})
 	}
 
+	// 최종쿼리를 지정한다.
 	q := bson.M{"$and": queries}
+
 	// 정렬설정
 	switch op.Sortkey {
 	// 스캔길이, 스캔날짜는 역순으로 정렬한다.
