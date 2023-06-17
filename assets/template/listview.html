@@ -412,18 +412,18 @@
 				</div>
 				
 				<div class="ml-2 row">
-					<div id="sources-{{.Name}}" class="row">
+					<div id="sources-{{.ID}}" class="row">
 						{{range .Sources -}}
-							<div id="source-{{$name}}-{{.Title}}">
+							<div id="source-{{$id}}-{{.Title}}">
 								<a href="{{Protocol .Path}}://{{RmProtocol .Path}}" class="badge badge-outline-darkmode ml-1" alt="{{.Author}},{{.Date}}" title="{{.Author}},{{.Date}}" target="{{ProtocolTarget .Path}}" onclick="copyClipboard('{{.Path}}')">{{.Title}}</a>
 							</div>
 						{{- end}}
 					</div>
-					<div class="ml-3" id="source-button-{{.Name}}">
+					<div class="ml-3" id="source-button-{{.ID}}">
 						{{if eq $.User.AccessLevel 4 5 6 7 8 9 10 11}}
-							<span class="add ml-1" data-toggle="modal" data-target="#modal-addsource" onclick="setAddSourceModal('{{.Project}}', '{{.ID}}')">＋</span>
+							<span class="add ml-1" data-toggle="modal" data-target="#modal-addsource" onclick="setAddSourceModal('{{.ID}}')">＋</span>
 							{{if .Sources}}	
-								<span class="remove ml-0" data-toggle="modal" data-target="#modal-rmsource" onclick="setRmSourceModal('{{.Project}}', '{{.ID}}')">－</span>
+								<span class="remove ml-0" data-toggle="modal" data-target="#modal-rmsource" onclick="setRmSourceModal('{{.ID}}')">－</span>
 							{{end}}
 						{{end}}
 					</div>

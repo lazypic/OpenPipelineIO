@@ -10,7 +10,6 @@
                 </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" class="form-control" id="modal-addsource-project">
                     <input type="hidden" class="form-control" id="modal-addsource-id">
                     <div class="form-group">
                         <div class="form-group">
@@ -26,7 +25,7 @@
                 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-darkmode" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-outline-warning" onclick="addSource(document.getElementById('modal-addsource-project').value, document.getElementById('modal-addsource-id').value, document.getElementById('modal-addsource-subject').value, document.getElementById('modal-addsource-path').value)" data-dismiss="modal">ADD</button>
+                    <button type="button" class="btn btn-outline-warning" onclick="addSource(document.getElementById('modal-addsource-id').value, document.getElementById('modal-addsource-subject').value, document.getElementById('modal-addsource-path').value)" data-dismiss="modal">ADD</button>
                 </div>
             </div>
         </div>
@@ -43,7 +42,6 @@
                 </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" class="form-control" id="modal-rmsource-project">
                     <input type="hidden" class="form-control" id="modal-rmsource-id">
                     <div class="form-group">
                         <div class="form-group">
@@ -56,7 +54,7 @@
                 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-darkmode" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-outline-danger" onclick="rmSource(document.getElementById('modal-rmsource-project').value, document.getElementById('modal-rmsource-id').value, document.getElementById('modal-rmsource-subject').value)" data-dismiss="modal">REMOVE</button>
+                    <button type="button" class="btn btn-outline-danger" onclick="rmSource(document.getElementById('modal-rmsource-id').value, document.getElementById('modal-rmsource-subject').value)" data-dismiss="modal">REMOVE</button>
                 </div>
             </div>
         </div>

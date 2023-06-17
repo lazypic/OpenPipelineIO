@@ -2376,24 +2376,15 @@ func RmComment(session *mgo.Session, id, userID, date string) (string, string, e
 }
 
 // AddSource 함수는 item에 소스링크를 추가한다.
-func AddSource(session *mgo.Session, project, name, author, title, path string) (string, error) {
+func AddSource(session *mgo.Session, id, author, title, path string) error {
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return "", err
-	}
-	typ, err := Type(session, project, name)
-	if err != nil {
-		return "", err
-	}
-	id := name + "_" + typ
 	i, err := getItem(session, id)
 	if err != nil {
-		return id, err
+		return err
 	}
 	for _, i := range i.Sources {
 		if i.Title == title {
-			return id, errors.New(title + "이 이미 존재합니다.")
+			return errors.New(title + "이 이미 존재합니다.")
 		}
 	}
 	s := Source{}
@@ -2404,9 +2395,9 @@ func AddSource(session *mgo.Session, project, name, author, title, path string) 
 	i.Sources = append(i.Sources, s)
 	err = setItem(session, i)
 	if err != nil {
-		return id, err
+		return err
 	}
-	return id, nil
+	return nil
 }
 
 // AddReference 함수는 item에 레퍼런스 링크를 추가한다.
@@ -2431,20 +2422,11 @@ func AddReference(session *mgo.Session, id, author, title, path string) error {
 }
 
 // RmSource 함수는 item에서 소스를 삭제합니다.
-func RmSource(session *mgo.Session, project, name, title string) (string, error) {
+func RmSource(session *mgo.Session, id, title string) error {
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return "", err
-	}
-	typ, err := Type(session, project, name)
-	if err != nil {
-		return "", err
-	}
-	id := name + "_" + typ
 	i, err := getItem(session, id)
 	if err != nil {
-		return id, err
+		return err
 	}
 	var newSources []Source
 	for _, source := range i.Sources {
@@ -2456,9 +2438,9 @@ func RmSource(session *mgo.Session, project, name, title string) (string, error)
 	i.Sources = newSources
 	err = setItem(session, i)
 	if err != nil {
-		return id, err
+		return err
 	}
-	return id, nil
+	return nil
 }
 
 // RmReference 함수는 item에서 레퍼런스를 삭제합니다.

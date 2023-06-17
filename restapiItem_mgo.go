@@ -5731,13 +5731,7 @@ func handleAPIRmComment(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIAddSource 함수는 아이템에 소스를 추가합니다.
 func handleAPIAddSource(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project  string `json:"project"`
-		Name     string `json:"name"`
 		ID       string `json:"id"`
 		Title    string `json:"title"`
 		Path     string `json:"path"`
@@ -5758,67 +5752,40 @@ func handleAPIAddSource(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	_, _, err = net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Project = v
-		case "name":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Name = v
-		case "title":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Title = v
-		case "userid":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if rcp.UserID == "unknown" && v != "" {
-				rcp.UserID = v
-			}
-		case "path", "url":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Path = v
-		}
-	}
-	id, err := AddSource(session, rcp.Project, rcp.Name, rcp.UserID, rcp.Title, rcp.Path)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Add Source: %s, %s\nProject: %s, Name: %s, Author: %s", rcp.Title, rcp.Path, rcp.Project, rcp.Name, rcp.UserID))
+
+	title := r.FormValue("title")
+	if title == "" {
+		http.Error(w, "need title", http.StatusBadRequest)
+		return
+	}
+	rcp.Title = title
+
+	path := r.FormValue("path")
+	if path == "" {
+		http.Error(w, "need path", http.StatusBadRequest)
+		return
+	}
+	rcp.Path = path
+
+	err = AddSource(session, rcp.ID, rcp.UserID, rcp.Title, rcp.Path)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	// json 으로 결과 전송
-	data, _ := json.Marshal(rcp)
+	data, err := json.Marshal(rcp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
@@ -5826,17 +5793,10 @@ func handleAPIAddSource(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIRmSource 함수는 아이템에서 링크소스를 삭제합니다.
 func handleAPIRmSource(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project string `json:"project"`
-		Name    string `json:"name"`
-		ID      string `json:"id"`
-		Title   string `json:"title"`
-		UserID  string `json:"userid"`
-		Error   string `json:"error"`
+		ID     string `json:"id"`
+		Title  string `json:"title"`
+		UserID string `json:"userid"`
 	}
 	rcp := Recipe{}
 	session, err := mgo.Dial(*flagDBIP)
@@ -5850,60 +5810,32 @@ func handleAPIRmSource(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	_, _, err = net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Project = v
-		case "name":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Name = v
-		case "userid":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if rcp.UserID == "unknown" && v != "" {
-				rcp.UserID = v
-			}
-		case "title":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Title = v
-		}
-	}
-	id, err := RmSource(session, rcp.Project, rcp.Name, rcp.Title)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Rm Source: %s\nProject: %s, Name: %s, Author: %s", rcp.Title, rcp.Project, rcp.Name, rcp.UserID))
+
+	title := r.FormValue("title")
+	if title == "" {
+		http.Error(w, "need title", http.StatusBadRequest)
+		return
+	}
+	rcp.Title = title
+
+	err = RmSource(session, rcp.ID, rcp.Title)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// json 으로 결과 전송
-	data, _ := json.Marshal(rcp)
+	data, err := json.Marshal(rcp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
