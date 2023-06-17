@@ -392,18 +392,18 @@
 				</div>
 				
 				<div class="ml-2 row">
-					<div id="sources-{{$.Item.Name}}" class="row">
+					<div id="sources-{{$.Item.ID}}" class="row">
 						{{range $.Item.Sources -}}
-							<div id="source-{{$.Item.Name}}-{{.Title}}">
+							<div id="source-{{$.Item.ID}}-{{.Title}}">
 								<a href="{{Protocol .Path}}://{{RmProtocol .Path}}" class="badge badge-outline-darkmode ml-1" alt="{{.Author}},{{.Date}}" title="{{.Author}},{{.Date}}" target="{{ProtocolTarget .Path}}">{{.Title}}</a>
 							</div>
 						{{- end}}
 					</div>
-					<div class="ml-3" id="source-button-{{$.Item.Name}}">
+					<div class="ml-3" id="source-button-{{$.Item.ID}}">
 						{{if eq $.User.AccessLevel 4 5 6 7 8 9 10 11}}
-							<span class="add ml-1" data-toggle="modal" data-target="#modal-addsource" onclick="setAddSourceModal('{{$.Item.Project}}', '{{$.Item.ID}}')">＋</span>
-							{{if $.Item.Sources}}	
-								<span class="remove ml-0" data-toggle="modal" data-target="#modal-rmsource" onclick="setRmSourceModal('{{$.Item.Project}}', '{{$.Item.ID}}')">－</span>
+							<span class="add ml-1" data-toggle="modal" data-target="#modal-addsource" onclick="setAddSourceModal('{{$.Item.ID}}')">＋</span>
+							{{if $.Item.Sources}}
+								<span class="remove ml-0" data-toggle="modal" data-target="#modal-rmsource" onclick="setRmSourceModal('{{$.Item.ID}}')">－</span>
 							{{end}}
 						{{end}}
 					</div>
@@ -416,18 +416,18 @@
 					<span class="text-badge">References:</span>
 				</div>
 				<div class="ml-2 row">
-					<div id="references-{{$.Item.Name}}" class="row">
+					<div id="references-{{$.Item.ID}}" class="row">
 						{{range $.Item.References -}}
-							<div id="reference-{{$.Item.Name}}-{{.Title}}">
+							<div id="reference-{{$.Item.ID}}-{{.Title}}">
 								<a href="{{Protocol .Path}}://{{RmProtocol .Path}}" class="badge badge-outline-darkmode ml-1" alt="{{.Author}},{{.Date}}" title="{{.Author}},{{.Date}}" target="{{ProtocolTarget .Path}}">{{.Title}}</a>
 							</div>
 						{{- end}}
 					</div>
-					<div class="ml-3" id="reference-button-{{$.Item.Name}}">
+					<div class="ml-3" id="reference-button-{{$.Item.ID}}">
 						{{if eq $.User.AccessLevel 4 5 6 7 8 9 10 11}}
-							<span class="add ml-1" data-toggle="modal" data-target="#modal-addreference" onclick="setAddReferenceModal('{{$.Item.Project}}','{{$.Item.ID}}')">＋</span>
+							<span class="add ml-1" data-toggle="modal" data-target="#modal-addreference" onclick="setAddReferenceModal('{{$.Item.ID}}')">＋</span>
 							{{if $.Item.References}}
-								<span class="remove ml-0" data-toggle="modal" data-target="#modal-rmreference" onclick="setRmReferenceModal('{{$.Item.Project}}','{{$.Item.ID}}')">－</span>
+								<span class="remove ml-0" data-toggle="modal" data-target="#modal-rmreference" onclick="setRmReferenceModal('{{$.Item.ID}}')">－</span>
 							{{end}}
 						{{end}}
 					</div>
@@ -589,7 +589,7 @@
 		<div class="col-sm-12 col-md-12 col-lg-12">
 			{{if eq $.User.AccessLevel 5 6 7 8 9 10 11}}
 				<div class="float-right">
-					<span class="add" data-toggle="modal" data-target="#modal-addcomment" onclick="setAddCommentModal('{{$.Item.Project}}', '{{$.Item.ID}}')">＋</span>
+					<span class="add" data-toggle="modal" data-target="#modal-addcomment" onclick="setAddCommentModal('{{$.Item.ID}}')">＋</span>
 				</div>
 			{{end}}
 			<div id="comments-{{$.Item.ID}}" onclick="selectCheckboxNone()">
@@ -597,8 +597,8 @@
 					<div id="comment-{{$.Item.ID}}-{{.Date}}">
 						<span class="text-badge">{{.Date}} / <a href="/user?id={{.Author}}" class="text-darkmode">{{.Author}}</a></span>
 						{{if eq $.User.AccessLevel 5 6 7 8 9 10 11}}
-							<span class="edit" data-toggle="modal" data-target="#modal-editcomment" onclick="setEditCommentModal('{{$.Item.Project}}','{{$.Item.ID}}','{{.Date}}','{{.Text}}','{{.MediaTitle}}','{{.Media}}')">≡</span>
-							<span class="remove" data-toggle="modal" data-target="#modal-rmcomment" onclick="setRmCommentModal('{{$.Item.Project}}', '{{$.Item.ID}}', '{{.Date}}','{{.Text}}')">×</span>
+							<span class="edit" data-toggle="modal" data-target="#modal-editcomment" onclick="setEditCommentModal('{{$.Item.ID}}','{{.Date}}','{{.Text}}','{{.MediaTitle}}','{{.Media}}')">≡</span>
+							<span class="remove" data-toggle="modal" data-target="#modal-rmcomment" onclick="setRmCommentModal('{{$.Item.ID}}', '{{.Date}}','{{.Text}}')">×</span>
 						{{end}}
 						<br>
 						<div class="text-white small">
