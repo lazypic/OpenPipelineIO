@@ -54,10 +54,7 @@ sudo firewall-cmd --reload
 
 터미널에서 간단하게 명령어를 통해 관리를 할 수 있습니다.
 
-- [Item](documents/item.md): Asset, Shot
 - [User](documents/user.md)
-- [Daily](documents/daily.md)
-- [Organization](documents/organization.md)
 
 ### RestAPI
 

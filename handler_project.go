@@ -124,7 +124,7 @@ func handleProjectinfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.User = u
-	rcp.MailDNS = *flagMailDNS
+	rcp.MailDNS = CachedAdminSetting.EmailDNS
 	if status != "" {
 		rcp.Projects, err = getStatusProjects(session, ToProjectStatus(status))
 		if err != nil {
