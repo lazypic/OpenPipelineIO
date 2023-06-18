@@ -189,7 +189,7 @@
 					</div>
 					{{if eq $.User.AccessLevel 3 4 5 6 7 8 9 10 11}}
 						<div id="button-thumb-{{$.Item.Name}}">
-							<a href="/edititem?type=item&project={{$.Item.Project}}&slug={{$.Item.ID}}" class="badge badge-darkmode ml-1">Thumb</a>
+							<a href="/edititem?type=item&project={{$.Item.Project}}&id={{$.Item.ID}}" class="badge badge-darkmode ml-1">Thumb</a>
 						</div>
 						<div id="button-edit-{{$.Item.Name}}">
 							<span class="badge badge-danger finger ml-1" {{if eq $.User.AccessLevel 4 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-iteminfo" onclick="setIteminfoModal('{{$.Item.Project}}', '{{$.Item.ID}}')"{{end}}>E</span>
