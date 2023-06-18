@@ -563,7 +563,7 @@ func handleDivisions(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.MailDNS = *flagMailDNS
+	rcp.MailDNS = CachedAdminSetting.EmailDNS
 	rcp.Divisions, err = allDivisions(session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -614,7 +614,7 @@ func handleDepartments(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.MailDNS = *flagMailDNS
+	rcp.MailDNS = CachedAdminSetting.EmailDNS
 	rcp.Departments, err = allDepartments(session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -665,7 +665,7 @@ func handleTeams(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.MailDNS = *flagMailDNS
+	rcp.MailDNS = CachedAdminSetting.EmailDNS
 	rcp.Teams, err = allTeams(session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -716,7 +716,7 @@ func handleRoles(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.MailDNS = *flagMailDNS
+	rcp.MailDNS = CachedAdminSetting.EmailDNS
 	rcp.Roles, err = allRoles(session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -767,7 +767,7 @@ func handlePositions(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.MailDNS = *flagMailDNS
+	rcp.MailDNS = CachedAdminSetting.EmailDNS
 	rcp.Positions, err = allPositions(session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

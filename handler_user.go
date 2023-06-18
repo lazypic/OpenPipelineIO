@@ -102,7 +102,7 @@ func handleEditUser(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	rcp.MailDNS = *flagMailDNS
+	rcp.MailDNS = CachedAdminSetting.EmailDNS
 	session, err := mgo.Dial(*flagDBIP)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -366,7 +366,7 @@ func handleSignup(w http.ResponseWriter, r *http.Request) {
 		Positions   []Position
 	}
 	rcp := recipe{}
-	rcp.MailDNS = *flagMailDNS
+	rcp.MailDNS = CachedAdminSetting.EmailDNS
 	rcp.CaptchaID = captcha.New()
 	session, err := mgo.Dial(*flagDBIP)
 	if err != nil {

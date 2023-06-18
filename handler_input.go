@@ -51,7 +51,7 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
 	_, rcp.OS, _ = GetInfoFromRequestHeader(r)
-	rcp.MailDNS = *flagMailDNS
+	rcp.MailDNS = CachedAdminSetting.EmailDNS
 
 	rcp.SessionID = ssid.ID
 	session, err := mgo.Dial(*flagDBIP)
