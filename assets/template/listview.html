@@ -31,7 +31,7 @@
 				<div class="thumbnailbox ml-1">
 					<!--org,left,asset 만 선택할 수 있어야 한다.-->
 					<label class="p-0 m-0 thumbnail" for="{{.ID}}" onclick="selectCheckbox('{{.ID}}')">
-						<img src="/thumbnail/{{.Project}}/{{.ID}}.jpg" onerror="this.src='/assets/img/none.jpg'" class="thumbnail border-{{.StatusV2}}">
+						<img id="thumbnail-{{.ID}}" src="/thumbnail/{{.Project}}/{{.ID}}.jpg" onerror="this.src='/assets/img/none.jpg'" class="thumbnail border-{{.StatusV2}}" data-thumbnail-id="{{.ID}}" data-thumbnail-project="{{.Project}}">
 					</label>
 					<div class="top-left">
 						{{if eq .Type "org" "left"}}
@@ -193,9 +193,6 @@
 						<a href="{{$.Setting.Protocol}}://{{.Thummov}}" class="play">PLAY</a>
 					</div>
 					{{if eq $.User.AccessLevel 3 4 5 6 7 8 9 10 11}}
-						<div id="button-thumb-{{.Name}}">
-							<a href="/edititem?type=item&project={{.Project}}&id={{.ID}}" class="badge badge-darkmode ml-1">Thumb</a>
-						</div>
 						<div id="button-edit-{{.Name}}">
 							<span class="badge badge-danger finger ml-1" {{if eq $.User.AccessLevel 3 4 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-iteminfo" onclick="setIteminfoModal('{{.Project}}', '{{.ID}}')"{{end}}>E</span>
 						</div>

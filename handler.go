@@ -688,11 +688,8 @@ func webserver(port string) {
 	r.HandleFunc("/api/fcresource/{id}", deleteFCResourceHandler).Methods("DELETE")
 
 	// Deprecated: 사용하지 않는 url, 과거호환성을 위해서 남겨둠
-	r.HandleFunc("/edititem", handleEditItem)                    // legacy
-	r.HandleFunc("/editeditem", handleEditedItem)                // legacy
 	r.HandleFunc("/api/setmov", handleAPISetTaskMov)             // legacy
 	r.HandleFunc("/api/setstartdate", handleAPISetTaskStartdate) // legacy
-	r.HandleFunc("/edititem-submit", handleEditItemSubmitv2)     // legacy
 	r.Use(mux.CORSMethodMiddleware(r))
 	http.Handle("/", r)
 

@@ -4,17 +4,12 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"io"
 	"log"
-	"mime"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strings"
 	"time"
 	"unicode"
 
-	"github.com/disintegration/imaging"
 	"gopkg.in/mgo.v2"
 )
 
@@ -185,79 +180,6 @@ func handleItemDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = TEMPLATES.ExecuteTemplate(w, "detail", rcp)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
-
-// handleEditItem 함수는 Item 편집페이지이다.
-func handleEditItem(w http.ResponseWriter, r *http.Request) {
-	ssid, err := GetSessionID(r)
-	if err != nil {
-		http.Redirect(w, r, "/signin", http.StatusSeeOther)
-		return
-	}
-	if ssid.AccessLevel == 0 {
-		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
-		return
-	}
-	w.Header().Set("Content-Type", "text/html")
-	q := r.URL.Query()
-	project := q.Get("project")
-	id := q.Get("id")
-	session, err := mgo.Dial(*flagDBIP)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer session.Close()
-	type recipe struct {
-		ID      string
-		Project Project
-		Item    Item
-		User
-		SearchOption
-		Setting Setting
-	}
-	rcp := recipe{}
-	rcp.Setting = CachedAdminSetting
-	rcp.User, err = getUser(session, ssid.ID)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	rcp.SearchOption = handleRequestToSearchOption(r)
-	rcp.Project, err = getProject(session, project)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	rcp.Item, err = getItem(session, id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = TEMPLATES.ExecuteTemplate(w, "edititem", rcp)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
-
-// handleEditedItem 함수는 Item 이 수정된 이후 이동하는 페이지이다.
-func handleEditedItem(w http.ResponseWriter, r *http.Request) {
-	ssid, err := GetSessionID(r)
-	if err != nil {
-		http.Redirect(w, r, "/signin", http.StatusSeeOther)
-		return
-	}
-	if ssid.AccessLevel == 0 {
-		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
-		return
-	}
-	w.Header().Set("Content-Type", "text/html")
-	err = TEMPLATES.ExecuteTemplate(w, "editeditem", nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -883,90 +805,4 @@ func handleAddAssetSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-}
-
-// handleEditItemSubmitv2 함수는 Item의 수정사항을 처리하는 페이지이다. legacy 코드이다.
-func handleEditItemSubmitv2(w http.ResponseWriter, r *http.Request) {
-	ssid, err := GetSessionID(r)
-	if err != nil {
-		http.Redirect(w, r, "/signin", http.StatusSeeOther)
-		return
-	}
-	if ssid.AccessLevel == 0 {
-		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
-		return
-	}
-	w.Header().Set("Content-Type", "text/html")
-	//var logstring string
-	//기존 Item의 값을 가지고 온다.
-	project := r.FormValue("project")
-	id := r.FormValue("id")
-	file, fileHandler, fileErr := r.FormFile("Thumbnail")
-	if fileErr == nil {
-		if !(fileHandler.Header.Get("Content-Type") == "image/jpeg" || fileHandler.Header.Get("Content-Type") == "image/png") {
-			http.Error(w, "업로드 파일이 jpeg 또는 png 파일이 아닙니다", http.StatusInternalServerError)
-			return
-		}
-		//파일이 없다면 fileErr 값은 "http: no such file" 값이 된다.
-		// 썸네일 파일이 존재한다면 아래 프로세스를 거친다.
-		mediatype, fileParams, err := mime.ParseMediaType(fileHandler.Header.Get("Content-Disposition"))
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		if *flagDebug {
-			fmt.Println(mediatype)
-			fmt.Println(fileParams)
-			fmt.Println(fileHandler.Header.Get("Content-Type"))
-			fmt.Println()
-		}
-		tempPath := os.TempDir() + fileHandler.Filename
-		tempFile, err := os.OpenFile(tempPath, os.O_WRONLY|os.O_CREATE, 0666)
-		if err != nil {
-			log.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		// 사용자가 업로드한 파일을 tempFile에 복사한다.
-		io.Copy(tempFile, io.LimitReader(file, MaxFileSize))
-		tempFile.Close()
-		defer os.Remove(tempPath)
-		thumbnailPath := fmt.Sprintf("%s/%s/%s.jpg", CachedAdminSetting.ThumbnailRootPath, project, id)
-		thumbnailDir := filepath.Dir(thumbnailPath)
-		// 썸네일을 생성할 경로가 존재하지 않는다면 생성한다.
-		_, err = os.Stat(thumbnailDir)
-		if os.IsNotExist(err) {
-			err := os.MkdirAll(thumbnailDir, 0775)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-		}
-		// 이미지변환
-		src, err := imaging.Open(tempPath)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		session, err := mgo.Dial(*flagDBIP)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		defer session.Close()
-		admin, err := GetAdminSetting(session)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		// Resize the cropped image to width = 200px preserving the aspect ratio.
-		resizedImage := imaging.Fill(src, admin.ThumbnailImageWidth, admin.ThumbnailImageHeight, imaging.Center, imaging.Lanczos)
-		err = imaging.Save(resizedImage, thumbnailPath)
-		if err != nil {
-			log.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-	}
-	http.Redirect(w, r, "/editeditem", http.StatusSeeOther)
 }

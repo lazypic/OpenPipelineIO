@@ -19,8 +19,7 @@ import (
 func handleAPIUploadThumbnail(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
 		Project        string `json:"project"`
-		Name           string `json:"name"`
-		Type           string `json:"type"`
+		ID             string `json:"id"`
 		Path           string `json:"path"`
 		UploadFilename string `json:"uploadfilename"`
 	}
@@ -65,23 +64,12 @@ func handleAPIUploadThumbnail(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Project = project
 
-	name := r.FormValue("name")
-	if name == "" {
-		http.Error(w, "need name", http.StatusBadRequest)
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
-	rcp.Name = name
-	typ := r.FormValue("type")
-	if typ == "" {
-		itemType, err := Type(session, rcp.Project, rcp.Name)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		rcp.Type = itemType
-	} else {
-		rcp.Type = typ
-	}
+	rcp.ID = id
 
 	if len(r.MultipartForm.File) == 0 { // 파일이 없다면 에러처리한다.
 		http.Error(w, "need thumbnail image path", http.StatusBadRequest)
