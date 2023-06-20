@@ -97,7 +97,6 @@
                     
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" class="form-control" id="modal-edittask-project">
                     <input type="hidden" class="form-control" id="modal-edittask-id">
                     <div class="row">
                         <div class="col form-group">
@@ -106,11 +105,11 @@
                         </div>
                         <div class="col form-group">
                             <label class="col-form-label">Pipelinestep</label>
-                            <select class="form-control form-control-sm" id="modal-edittask-pipelinestep" onchange="setTaskPipelinestep(document.getElementById('modal-edittask-project').value, document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, document.getElementById('modal-edittask-pipelinestep').value)"></select>
+                            <select class="form-control form-control-sm" id="modal-edittask-pipelinestep" onchange="setTaskPipelinestep(document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, document.getElementById('modal-edittask-pipelinestep').value)"></select>
                         </div>
                         <div class="col form-group">
                             <label class="col-form-label text-muted">Status</label>
-                            <select class="text-muted form-control form-control-sm" id="modal-edittask-statusv2" onchange="setTaskStatusV2(document.getElementById('modal-edittask-project').value, document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, document.getElementById('modal-edittask-statusv2').value)">
+                            <select class="text-muted form-control form-control-sm" id="modal-edittask-statusv2" onchange="setTaskStatusV2(document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, document.getElementById('modal-edittask-statusv2').value)">
                                 {{range .Status}}
                                     <option value="{{.ID}}">{{.ID}}</option>
                                 {{end}}
@@ -120,7 +119,7 @@
                     
                     <div class="form-group">
                         <label class="col-form-label">Media Path (.mov, .mp4, .rv, .png, .jpg)</label>
-                        <input type="text" class="form-control form-control-sm" id="modal-edittask-path" onchange="setTaskMov(document.getElementById('modal-edittask-project').value, document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)">
+                        <input type="text" class="form-control form-control-sm" id="modal-edittask-path" onchange="setTaskMov(document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)">
                     </div>
                     <div class="row">
                         <div class="col-4 form-group">
@@ -133,34 +132,34 @@
                         </div>
                         <div class="col-4 form-group">
                             <label class="col-form-label col-form-label-sm">Level</label>
-                            <input type="number" min="0" max="5" step="1" class="form-control form-control-sm" id="modal-edittask-level" onchange="setTaskLevel(document.getElementById('modal-edittask-project').value, document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)">
+                            <input type="number" min="0" max="5" step="1" class="form-control form-control-sm" id="modal-edittask-level" onchange="setTaskLevel(document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)">
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-3 form-group">
                             <label class="col-form-label col-form-label-sm">Start 1st / 1차시작</label>
-                            <input type=date class="form-control form-control-sm" id="modal-edittask-startdate" value="" onchange="setTaskStartdate(document.getElementById('modal-edittask-project').value, document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)"  placeholder="YYYY-MM-DD" >
+                            <input type=date class="form-control form-control-sm" id="modal-edittask-startdate" value="" onchange="setTaskStartdate(document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)"  placeholder="YYYY-MM-DD" >
                             
                         </div>
                         <div class="col-3 form-group">
                             <label class="col-form-label col-form-label-sm">Deadline 1st / 1차마감</label>
-                            <input type=date class="form-control form-control-sm" id="modal-edittask-predate" value="" onchange="setTaskPredate(document.getElementById('modal-edittask-project').value, document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)"  placeholder="YYYY-MM-DD" >
+                            <input type=date class="form-control form-control-sm" id="modal-edittask-predate" value="" onchange="setTaskPredate(document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)"  placeholder="YYYY-MM-DD" >
                             
                         </div>
                         <div class="col-3 form-group">
                             <label class="col-form-label col-form-label-sm">Start 2nd / 2차시작</label>
-                            <input type=date class="form-control form-control-sm" id="modal-edittask-startdate2nd" value="" onchange="setTaskStartdate2nd(document.getElementById('modal-edittask-project').value, document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)"  placeholder="YYYY-MM-DD" >
+                            <input type=date class="form-control form-control-sm" id="modal-edittask-startdate2nd" value="" onchange="setTaskStartdate2nd(document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)"  placeholder="YYYY-MM-DD" >
                             
                         </div>
                         <div class="col-3 form-group">
                             <label class="col-form-label col-form-label-sm">Deadline 2nd / 2차마감</label>
-                            <input type=date class="form-control form-control-sm" id="modal-edittask-date" value="" onchange="setTaskDate(document.getElementById('modal-edittask-project').value, document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)" placeholder="YYYY-MM-DD">
+                            <input type=date class="form-control form-control-sm" id="modal-edittask-date" value="" onchange="setTaskDate(document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)" placeholder="YYYY-MM-DD">
                             
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="multi-input-link" class="col-form-label col-form-label-sm">Task Notice / 공지사항</label>
-                        <input type="text" id="modal-edittask-usernote" class="form-control form-control-sm" value="" placeholder="" onchange="setTaskUserNote(document.getElementById('modal-edittask-project').value, document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)">
+                        <input type="text" id="modal-edittask-usernote" class="form-control form-control-sm" value="" placeholder="" onchange="setTaskUserNote(document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)">
                     </div>
                     
                 </div>			

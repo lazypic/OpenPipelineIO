@@ -782,7 +782,7 @@ func setTaskMov(session *mgo.Session, project, name, task, mov string) (string, 
 		return "", err
 	}
 	id := name + "_" + typ
-	err = HasTask(session, project, id, task)
+	err = HasTask(session, id, task)
 	if err != nil {
 		return id, err
 	}
@@ -801,7 +801,7 @@ func setTaskExpectDay(session *mgo.Session, project, id, task string, expectDay 
 		return err
 	}
 	c := session.DB(*flagDBName).C("items")
-	err = HasTask(session, project, id, task)
+	err = HasTask(session, id, task)
 	if err != nil {
 		return err
 	}
@@ -820,7 +820,7 @@ func setTaskResultDay(session *mgo.Session, project, id, task string, resultDay 
 		return err
 	}
 	c := session.DB(*flagDBName).C("items")
-	err = HasTask(session, project, id, task)
+	err = HasTask(session, id, task)
 	if err != nil {
 		return err
 	}
@@ -832,14 +832,10 @@ func setTaskResultDay(session *mgo.Session, project, id, task string, resultDay 
 }
 
 // setTaskUserComment함수는 해당 아이템의 Task에 UserComment를 설정하는 함수이다.
-func setTaskUserComment(session *mgo.Session, project, id, task, comment string) error {
+func setTaskUserComment(session *mgo.Session, id, task, comment string) error {
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return err
-	}
 	c := session.DB(*flagDBName).C("items")
-	err = HasTask(session, project, id, task)
+	err := HasTask(session, id, task)
 	if err != nil {
 		return err
 	}
@@ -851,20 +847,10 @@ func setTaskUserComment(session *mgo.Session, project, id, task, comment string)
 }
 
 // setTaskLevel함수는 해당 샷에 level를 설정하는 함수이다.
-func setTaskLevel(session *mgo.Session, project, name, task, level string) error {
+func setTaskLevel(session *mgo.Session, id, task, level string) error {
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return err
-	}
 	c := session.DB(*flagDBName).C("items")
-
-	typ, err := Type(session, project, name)
-	if err != nil {
-		return err
-	}
-	id := name + "_" + typ
-	err = HasTask(session, project, id, task)
+	err := HasTask(session, id, task)
 	if err != nil {
 		return err
 	}
@@ -1324,18 +1310,14 @@ func SetTaskPipelinestep(session *mgo.Session, project, id, task, pipelinestep s
 }
 
 // SetTaskStatusV2 함수는 item에 task의 status 값을 셋팅한다.
-func SetTaskStatusV2(session *mgo.Session, project, id, task, status string) (string, error) {
+func SetTaskStatusV2(session *mgo.Session, id, task, status string) error {
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return "", err
-	}
 	item, err := getItem(session, id)
 	if err != nil {
-		return "", err
+		return err
 	}
 	if _, found := item.Tasks[strings.ToLower(task)]; !found {
-		return item.Name, fmt.Errorf("%s 에 %s task가 존재하지 않습니다", id, task)
+		return fmt.Errorf("%s 에 %s task가 존재하지 않습니다", id, task)
 	}
 	t := item.Tasks[task]
 	t.StatusV2 = status
@@ -1348,7 +1330,7 @@ func SetTaskStatusV2(session *mgo.Session, project, id, task, status string) (st
 	// 입력받은 상태가 글로벌 status에 존재하는지 체크한다.
 	globalStatus, err := AllStatus(session)
 	if err != nil {
-		return item.Name, err
+		return err
 	}
 	hasStatus := false
 	for _, s := range globalStatus {
@@ -1358,30 +1340,26 @@ func SetTaskStatusV2(session *mgo.Session, project, id, task, status string) (st
 		}
 	}
 	if !hasStatus {
-		return item.Name, fmt.Errorf("%s status가 존재하지 않습니다", status)
+		return fmt.Errorf("%s status가 존재하지 않습니다", status)
 	}
 	// 아이템의 statusV2를 업데이트한다.
 	item.updateStatusV2(globalStatus)
 	err = c.Update(bson.M{"id": item.ID}, item)
 	if err != nil {
-		return item.Name, err
+		return err
 	}
-	return item.Name, nil
+	return nil
 }
 
 // HasTask 함수는 item에 task가 존재하는 체크한다.
-func HasTask(session *mgo.Session, project, id, task string) error {
+func HasTask(session *mgo.Session, id, task string) error {
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return err
-	}
 	item, err := getItem(session, id)
 	if err != nil {
 		return err
 	}
 	if _, found := item.Tasks[task]; !found {
-		return fmt.Errorf("%s 프로젝트 %s 에 %s Task가 존재하지 않습니다", project, id, task)
+		return fmt.Errorf("%s 에 %s Task가 존재하지 않습니다", id, task)
 	}
 	return nil
 }
@@ -1445,13 +1423,9 @@ func RmTask(session *mgo.Session, project, id, taskname string) error {
 }
 
 // SetTaskUserV2 함수는 item에 task의 user 값을 셋팅한다.
-func SetTaskUserV2(session *mgo.Session, project, id, task, user string) error {
+func SetTaskUserV2(session *mgo.Session, id, task, user string) error {
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return err
-	}
-	err = HasTask(session, project, id, task)
+	err := HasTask(session, id, task)
 	if err != nil {
 		return err
 	}
@@ -1468,13 +1442,9 @@ func SetTaskUserV2(session *mgo.Session, project, id, task, user string) error {
 }
 
 // SetTaskUserID 함수는 item에 task의 userid 값을 셋팅한다.
-func SetTaskUserID(session *mgo.Session, project, id, task, userid string) error {
+func SetTaskUserID(session *mgo.Session, id, task, userid string) error {
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return err
-	}
-	err = HasTask(session, project, id, task)
+	err := HasTask(session, id, task)
 	if err != nil {
 		return err
 	}
@@ -1630,7 +1600,7 @@ func SetTaskStartdate(session *mgo.Session, project, id, task, date string) erro
 		return err
 	}
 	c := session.DB(*flagDBName).C("items")
-	err = HasTask(session, project, id, task)
+	err = HasTask(session, id, task)
 	if err != nil {
 		return err
 	}
@@ -1653,7 +1623,7 @@ func SetTaskStartdate2nd(session *mgo.Session, project, id, task, date string) e
 		return err
 	}
 	c := session.DB(*flagDBName).C("items")
-	err = HasTask(session, project, id, task)
+	err = HasTask(session, id, task)
 	if err != nil {
 		return err
 	}
@@ -1680,7 +1650,7 @@ func SetTaskUserNote(session *mgo.Session, project, name, task, usernote string)
 		return err
 	}
 	id := name + "_" + typ
-	err = HasTask(session, project, id, task)
+	err = HasTask(session, id, task)
 	if err != nil {
 		return err
 	}
@@ -1700,7 +1670,7 @@ func SetTaskPredate(session *mgo.Session, project, id, task, date string) (strin
 		return "", err
 	}
 	c := session.DB(*flagDBName).C("items")
-	err = HasTask(session, project, id, task)
+	err = HasTask(session, id, task)
 	if err != nil {
 		return id, err
 	}
@@ -2386,7 +2356,7 @@ func RmReference(session *mgo.Session, id, title string) error {
 }
 
 // GetTask 함수는 item의 Task 정보를 반환한다.
-func GetTask(session *mgo.Session, project, id, task string) (Task, error) {
+func GetTask(session *mgo.Session, id, task string) (Task, error) {
 	session.SetMode(mgo.Monotonic, true)
 	i, err := getItem(session, id)
 	if err != nil {
@@ -2426,7 +2396,7 @@ func addTaskPublish(session *mgo.Session, project, name, task, key string, p Pub
 		return err
 	}
 	id := name + "_" + typ
-	err = HasTask(session, project, id, task)
+	err = HasTask(session, id, task)
 	if err != nil {
 		return err
 	}

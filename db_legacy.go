@@ -46,7 +46,7 @@ func SetTaskUser(session *mgo.Session, project, name, task, user string) (string
 		return "", err
 	}
 	id := name + "_" + typ
-	err = HasTask(session, project, id, task)
+	err = HasTask(session, id, task)
 	if err != nil {
 		return id, err
 	}
