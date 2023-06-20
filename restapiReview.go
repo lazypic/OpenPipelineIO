@@ -245,14 +245,10 @@ func handleAPIReview(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetReviewItemStatus 함수는 review의 itemstatus를 설정하는 RestAPI 이다.
 func handleAPISetReviewItemStatus(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		UserID     string `json:"userid"`
 		ID         string `json:"id"`
 		ItemStatus string `json:"itemstatus"`
+		UserID     string `json:"userid"`
 	}
 	rcp := Recipe{}
 	session, err := mgo.Dial(*flagDBIP)
@@ -269,14 +265,14 @@ func handleAPISetReviewItemStatus(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	reviewID := r.FormValue("id")
 	if reviewID == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = reviewID
 
 	itemStatus := r.FormValue("itemstatus")
 	if itemStatus == "" {
-		http.Error(w, "itemstatus를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need itemstatus", http.StatusBadRequest)
 		return
 	}
 	rcp.ItemStatus = itemStatus
@@ -294,21 +290,13 @@ func handleAPISetReviewItemStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Type을 구한다.
-	typ, err := Type(session, review.Project, review.Name)
+	// id를 구한다.
+	id, err := GetID(session, review.Project, review.Name)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// 실제 아이템의 Shot, Asset Status를 설정한다.
-	id := review.Project + "_" + review.Name + "_" + typ
 	err = SetTaskStatusV2(session, id, review.Task, itemStatus)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// slack log
-	err = slacklog(session, review.Project, fmt.Sprintf("Set Review Item Status: %s, \nProject: %s, Name: %s, Author: %s", itemStatus, review.Project, review.Name, rcp.UserID))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
