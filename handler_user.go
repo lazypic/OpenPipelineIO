@@ -358,15 +358,15 @@ func handleSignup(w http.ResponseWriter, r *http.Request) {
 	RmSessionID(w) // SignIn을 할 때 역시 기존의 세션을 지운다. 여러사용자 2중 로그인 방지
 	type recipe struct {
 		CaptchaID   string
-		MailDNS     string
 		Divisions   []Division
 		Departments []Department
 		Teams       []Team
 		Roles       []Role
 		Positions   []Position
+		Setting     Setting
 	}
 	rcp := recipe{}
-	rcp.MailDNS = CachedAdminSetting.EmailDNS
+	rcp.Setting = CachedAdminSetting
 	rcp.CaptchaID = captcha.New()
 	session, err := mgo.Dial(*flagDBIP)
 	if err != nil {
