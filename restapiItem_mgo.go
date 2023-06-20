@@ -890,12 +890,7 @@ func handleAPISetTaskExpectDay(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetTaskUserComment 함수는 Task에 UserComment를 설정한다.
 func handleAPISetTaskUserComment(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project     string `json:"project"`
 		ID          string `json:"id"`
 		Task        string `json:"task"`
 		UserComment string `json:"usercomment"`
@@ -919,15 +914,9 @@ func handleAPISetTaskUserComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -938,17 +927,12 @@ func handleAPISetTaskUserComment(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Task = task
 	rcp.UserComment = r.FormValue("usercomment")
-	err = setTaskUserComment(session, rcp.Project, rcp.ID, rcp.Task, rcp.UserComment)
+	err = setTaskUserComment(session, rcp.ID, rcp.Task, rcp.UserComment)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set UserComment: %s %s\nProject: %s, ID: %s, Author: %s", rcp.Task, rcp.UserComment, rcp.Project, rcp.ID, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {
@@ -2793,7 +2777,7 @@ func handleAPISetTaskStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// task가 존재하는지 체크한다.
-	err = HasTask(session, rcp.Project, rcp.ID, rcp.Task)
+	err = HasTask(session, rcp.ID, rcp.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -2887,7 +2871,7 @@ func handleAPISetTaskPipelinestep(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// task가 존재하는지 체크한다.
-	err = HasTask(session, rcp.Project, rcp.ID, rcp.Task)
+	err = HasTask(session, rcp.ID, rcp.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -2916,16 +2900,11 @@ func handleAPISetTaskPipelinestep(w http.ResponseWriter, r *http.Request) {
 
 // handleAPI2SetTaskStatus 함수는 아이템의 task에 대한 상태를 설정한다.
 func handleAPI2SetTaskStatus(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project string `json:"project"`
-		ID      string `json:"id"`
-		Name    string `json:"name"`
-		Task    string `json:"task"`
-		Status  string `json:"status"`
+		ID     string `json:"id"`
+		Task   string `json:"task"`
+		Status string `json:"status"`
+		UserID string `json:"userid"`
 	}
 	rcp := Recipe{}
 	session, err := mgo.Dial(*flagDBIP)
@@ -2934,31 +2913,21 @@ func handleAPI2SetTaskStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer session.Close()
-	ssid, _, err := TokenHandler(r, session)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
-	_, _, err = net.SplitHostPort(r.RemoteAddr)
+	rcp.UserID, _, err = TokenHandler(r, session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	r.ParseForm()
-	rcp.Project = r.FormValue("project")
-	if rcp.Project == "" {
+
+	id := r.FormValue("id")
+	if id == "" {
 		if err != nil {
-			http.Error(w, "프로젝트가 빈 문자열 입니다", http.StatusBadRequest)
+			http.Error(w, "need id", http.StatusBadRequest)
 			return
 		}
 	}
-	rcp.Name = r.FormValue("name")
-	if rcp.Name == "" {
-		if err != nil {
-			http.Error(w, "name이 빈 문자열 입니다", http.StatusBadRequest)
-			return
-		}
-	}
+	rcp.ID = id
 	rcp.Task = r.FormValue("task")
 	if rcp.Task == "" {
 		if err != nil {
@@ -2973,32 +2942,19 @@ func handleAPI2SetTaskStatus(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	rcp.ID = r.FormValue("id")
-	if rcp.ID == "" {
-		typ, err := Type(session, rcp.Project, rcp.Name)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		rcp.ID = rcp.Name + "_" + typ
-	}
+
 	// task가 존재하는지 체크한다.
-	err = HasTask(session, rcp.Project, rcp.ID, rcp.Task)
+	err = HasTask(session, rcp.ID, rcp.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	name, err := SetTaskStatusV2(session, rcp.Project, rcp.ID, rcp.Task, rcp.Status)
+	err = SetTaskStatusV2(session, rcp.ID, rcp.Task, rcp.Status)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Task Status: %s %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Status, rcp.Project, name, ssid))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {
@@ -3172,12 +3128,7 @@ func handleAPIAddTask(w http.ResponseWriter, r *http.Request) {
 
 // handleAPI2SetTaskUser 함수는 아이템의 task에 대한 유저를 설정한다.
 func handleAPISetTaskUser(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project         string `json:"project"`
 		ID              string `json:"id"`
 		Task            string `json:"task"`
 		Username        string `json:"username"`
@@ -3192,26 +3143,15 @@ func handleAPISetTaskUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer session.Close()
-	userID, _, err := TokenHandler(r, session)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
-	_, _, err = net.SplitHostPort(r.RemoteAddr)
+	rcp.UserID, _, err = TokenHandler(r, session)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -3225,23 +3165,18 @@ func handleAPISetTaskUser(w http.ResponseWriter, r *http.Request) {
 	if rcp.Username != "" {
 		rcp.UserID = onlyID(rcp.Username)            // id(name,team) 문자열중 id만 추출한다.
 		rcp.UsernameAndTeam = userInfo(rcp.Username) // id(name,team) 문자열을 name,team으로 바꾼다. 웹에서 보기좋게 하기 위함.
-		err = SetTaskUserID(session, rcp.Project, rcp.ID, rcp.Task, rcp.UserID)
+		err = SetTaskUserID(session, rcp.ID, rcp.Task, rcp.UserID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}
-	err = SetTaskUserV2(session, rcp.Project, rcp.ID, rcp.Task, rcp.Username)
+	err = SetTaskUserV2(session, rcp.ID, rcp.Task, rcp.Username)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Task User: %s %s\nProject: %s, ID: %s, Author: %s", rcp.Task, rcp.Username, rcp.Project, rcp.ID, userID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {
@@ -3314,7 +3249,7 @@ func handleAPISetTaskStartdate(w http.ResponseWriter, r *http.Request) {
 		rcp.ID = rcp.Name + "_" + typ
 	}
 
-	err = HasTask(session, rcp.Project, rcp.ID, rcp.Task)
+	err = HasTask(session, rcp.ID, rcp.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -3401,7 +3336,7 @@ func handleAPISetTaskStartdate2nd(w http.ResponseWriter, r *http.Request) {
 		}
 		rcp.ID = rcp.Name + "_" + typ
 	}
-	err = HasTask(session, rcp.Project, rcp.ID, rcp.Task)
+	err = HasTask(session, rcp.ID, rcp.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -3734,7 +3669,7 @@ func handleAPISetTaskPredate(w http.ResponseWriter, r *http.Request) {
 			rcp.Date = v
 		}
 	}
-	err = HasTask(session, rcp.Project, rcp.ID, rcp.Task)
+	err = HasTask(session, rcp.ID, rcp.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -3812,7 +3747,7 @@ func handleAPISetTaskDate(w http.ResponseWriter, r *http.Request) {
 	rcp.Task = task
 	rcp.Date = r.FormValue("date")
 
-	err = HasTask(session, rcp.Project, rcp.ID, rcp.Task)
+	err = HasTask(session, rcp.ID, rcp.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -3912,7 +3847,7 @@ func handleAPISetTaskDuration(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.DeadlineType = deadLineType
 
-	err = HasTask(session, rcp.Project, rcp.ID, rcp.Task)
+	err = HasTask(session, rcp.ID, rcp.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -6134,17 +6069,12 @@ func handleAPIDeadline3D(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetTaskLevel 함수는 Task에 level을 설정한다.
 func handleAPISetTaskLevel(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project string `json:"project"`
-		Name    string `json:"name"`
-		Task    string `json:"task"`
-		Level   string `json:"level"`
-		UserID  string `json:"userid"`
-		Error   string `json:"error"`
+		ID     string `json:"id"`
+		Task   string `json:"task"`
+		Level  string `json:"level"`
+		UserID string `json:"userid"`
+		Error  string `json:"error"`
 	}
 	rcp := Recipe{}
 	session, err := mgo.Dial(*flagDBIP)
@@ -6158,71 +6088,39 @@ func handleAPISetTaskLevel(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	_, _, err = net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
+	r.ParseForm()
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
-	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "userid":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if rcp.UserID == "unknown" && v != "" {
-				rcp.UserID = v
-			}
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Project = v
-		case "name":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Name = v
-		case "task":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Task = v
-		case "level":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Level = v
-		}
+	rcp.ID = id
+
+	task := r.FormValue("task")
+	if task == "" {
+		http.Error(w, "need task", http.StatusBadRequest)
+		return
 	}
+	rcp.Task = task
+
+	rcp.Level = r.FormValue("level")
 	if rcp.Level == "" {
-		http.Error(w, "level 값을 설정해주세요.", http.StatusInternalServerError)
+		http.Error(w, "need level", http.StatusInternalServerError)
 		return
 	}
 
-	err = setTaskLevel(session, rcp.Project, rcp.Name, rcp.Task, rcp.Level)
+	err = setTaskLevel(session, rcp.ID, rcp.Task, rcp.Level)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Task Level: %s %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Level, rcp.Project, rcp.Name, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
-	data, _ := json.Marshal(rcp)
+	data, err := json.Marshal(rcp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
@@ -6231,7 +6129,6 @@ func handleAPISetTaskLevel(w http.ResponseWriter, r *http.Request) {
 // handleAPITask 함수는 Task정보를 가지고온다.
 func handleAPITask(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
-		Project     string `json:"project"`
 		ID          string `json:"id"`
 		UserID      string `json:"userid"`
 		RequestTask string `json:"requesttask"`
@@ -6250,13 +6147,6 @@ func handleAPITask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "need project", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
-
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
@@ -6271,7 +6161,7 @@ func handleAPITask(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.RequestTask = task
 
-	t, err := GetTask(session, rcp.Project, rcp.ID, rcp.RequestTask)
+	t, err := GetTask(session, rcp.ID, rcp.RequestTask)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

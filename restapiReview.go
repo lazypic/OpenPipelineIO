@@ -20,11 +20,7 @@ import (
 )
 
 // handleAPIAddReviewStatusMode 함수는 review status mode에 review를 추가하는 핸들러이다.
-func handleAPIAddReviewStatusMode(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
+func handleAPIAddReview(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
 		UserID string `json:"userid"`
 		Review
@@ -42,11 +38,6 @@ func handleAPIAddReviewStatusMode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, _, err = net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
 	r.ParseForm()
 	project := r.FormValue("project")
 	if project == "" {
@@ -79,8 +70,12 @@ func handleAPIAddReviewStatusMode(w http.ResponseWriter, r *http.Request) {
 		rcp.Review.Ext = ".mp4"
 	}
 	rcp.Review.Ext = ext
-	// 리뷰 등록시 현재 Task status를 review itemStatus로 설정한다.
-	taskinfo, err := GetTask(session, rcp.Review.Project, rcp.Review.Name, rcp.Review.Task)
+	itemID, err := GetID(session, rcp.Review.Project, rcp.Review.Name)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	taskinfo, err := GetTask(session, itemID, rcp.Review.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -155,13 +150,6 @@ func handleAPIAddReviewStatusMode(w http.ResponseWriter, r *http.Request) {
 	rcp.Review.OutputDataPath = r.FormValue("outputdatapath")
 
 	err = addReview(session, rcp.Review)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("AddReview: %s, %s\nProject: %s, Name: %s, Author: %s", rcp.Review.Task, rcp.Review.Path, rcp.Review.Project, rcp.Review.Name, rcp.UserID))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -278,11 +266,6 @@ func handleAPISetReviewItemStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	_, _, err = net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
 	r.ParseForm()
 	reviewID := r.FormValue("id")
 	if reviewID == "" {
@@ -318,7 +301,8 @@ func handleAPISetReviewItemStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// 실제 아이템의 Shot, Asset Status를 설정한다.
-	_, err = SetTaskStatusV2(session, review.Project, review.Name+"_"+typ, review.Task, itemStatus)
+	id := review.Project + "_" + review.Name + "_" + typ
+	err = SetTaskStatusV2(session, id, review.Task, itemStatus)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

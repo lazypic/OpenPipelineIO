@@ -395,15 +395,13 @@ function initModalPipelinestep() {
 initModalPipelinestep() // 페이지가 로딩되면 먼저 실행한다.
 
 // setEditTaskModal 함수는 project, name, task 정보를 가지고 와서 Edit Task Modal에 값을 채운다.
-function setEditTaskModal(project, id, task) {
-    document.getElementById("modal-edittask-project").value = project;
+function setEditTaskModal(id, task) {
     document.getElementById("modal-edittask-id").value = id;
     document.getElementById("modal-edittask-title").innerHTML = "Edit Task" + multiInputTitle(id);
     $.ajax({
         url: "/api/task",
         type: "post",
         data: {
-            project: project,
             id: id,
             task: task,
         },
@@ -426,14 +424,7 @@ function setEditTaskModal(project, id, task) {
             document.getElementById('modal-edittask-user').value=data.task.user;
             document.getElementById('modal-edittask-usercomment').value=data.task.usercomment;
             document.getElementById('modal-edittask-id').value=data.id;
-            // ver2로 검색하면 modal-edittask-status 가 존재하지 않을 수 있다.
-            try {
-                document.getElementById("modal-edittask-status").value=data.task.status;
-            }
-            catch(err) {
-                document.getElementById("modal-edittask-statusv2").value=data.task.statusv2;
-            }
-            
+            document.getElementById("modal-edittask-statusv2").value=data.task.statusv2;
         },
         error: function(request,status,error){
             alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -672,7 +663,7 @@ function addTask() {
 					<div id="${data.id}-task-${data.task}-playbutton"></div>
 					<div class="ml-1">
 						<span class="add" data-toggle="modal" data-target="#modal-edittask" onclick="
-                        setEditTaskModal('${project}', '${data.id}', '${data.task}');
+                        setEditTaskModal('${data.id}', '${data.task}');
                         ">≡</span>
 					</div>
                     </div>`;
@@ -708,7 +699,7 @@ function addTask() {
 					<div id="${data.id}-task-${data.task}-playbutton"></div>
 					<div class="ml-1">
 						<span class="add" data-toggle="modal" data-target="#modal-edittask" onclick="
-                        setEditTaskModal('${project}', '${data.id}', '${data.task}');
+                        setEditTaskModal('${data.id}', '${data.task}');
                         ">≡</span>
 					</div>
 				</div>`;
@@ -2629,7 +2620,6 @@ function setTaskMov(project, id, task, mov) {
 
 function setTaskExpectDay(expectday) {
     let token = document.getElementById("token").value;
-    let project = document.getElementById('modal-edittask-project').value;
     let id = document.getElementById('modal-edittask-id').value;
     let task = document.getElementById('modal-edittask-task').value;
 
@@ -2687,7 +2677,6 @@ function setTaskExpectDay(expectday) {
 
 function setTaskResultDay(resultday) {
     let token = document.getElementById("token").value;
-    let project = document.getElementById('modal-edittask-project').value;
     let id = document.getElementById('modal-edittask-id').value;
     let task = document.getElementById('modal-edittask-task').value;
 
@@ -2744,7 +2733,6 @@ function setTaskResultDay(resultday) {
 }
 
 function setTaskUser() {
-    let project = document.getElementById('modal-edittask-project').value
     let id = document.getElementById('modal-edittask-id').value
     let task = document.getElementById('modal-edittask-task').value
     let user = document.getElementById('modal-edittask-user').value
@@ -2762,7 +2750,6 @@ function setTaskUser() {
                     "Authorization": "Basic "+ document.getElementById("token").value,
                 },
                 body: new URLSearchParams({
-                    project: project,
                     id: id,
                     task: task,
                     user: user,
@@ -2792,7 +2779,6 @@ function setTaskUser() {
                 "Authorization": "Basic "+ document.getElementById("token").value,
             },
             body: new URLSearchParams({
-                project: project,
                 id: id,
                 task: task,
                 user: user,
@@ -2819,7 +2805,6 @@ function setTaskUser() {
 
 function setTaskUserComment() {
     let token = document.getElementById("token").value;
-    let project = document.getElementById('modal-edittask-project').value
     let id = document.getElementById('modal-edittask-id').value
     let task = document.getElementById('modal-edittask-task').value
     let usercomment = document.getElementById('modal-edittask-usercomment').value
@@ -2995,7 +2980,7 @@ function setTaskPipelinestep(project, id, task, pipelinestep) {
     }
 }
 
-function setTaskStatusV2(project, id, task, status) {
+function setTaskStatusV2(id, task, status) {
     let token = document.getElementById("token").value;
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
@@ -3009,7 +2994,6 @@ function setTaskStatusV2(project, id, task, status) {
                 url: "/api2/settaskstatus",
                 type: "post",
                 data: {
-                    project: project,
                     id: id,
                     task: task,
                     status: status,
@@ -3031,7 +3015,6 @@ function setTaskStatusV2(project, id, task, status) {
             url: "/api2/settaskstatus",
             type: "post",
             data: {
-                project: project,
                 id: id,
                 task: task,
                 status: status,
@@ -4104,9 +4087,8 @@ function selectCheckboxInvert() {
     document.getElementById("topbtn").innerHTML = "Top<br>" + (invertNum)
 }
 
-function setTaskLevel(project, id, task, level) {
+function setTaskLevel(id, task, level) {
     let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
         for (var i = 0; i < cboxes.length; ++i) {
@@ -4118,11 +4100,9 @@ function setTaskLevel(project, id, task, level) {
                 url: "/api/settasklevel",
                 type: "post",
                 data: {
-                    project: project,
-                    name: id2name(id),
+                    id: id,
                     task: task,
                     level: level,
-                    userid: userid,
                 },
                 headers: {
                     "Authorization": "Basic "+ token
@@ -4141,11 +4121,9 @@ function setTaskLevel(project, id, task, level) {
             url: "/api/settasklevel",
             type: "post",
             data: {
-                project: project,
-                name: id2name(id),
+                id: id,
                 task: task,
                 level: level,
-                userid: userid,
             },
             headers: {
                 "Authorization": "Basic "+ token
@@ -4975,7 +4953,7 @@ function addReviewStatusMode() {
     let token = document.getElementById("token").value
     let reviewFps = document.getElementById("modal-addreview-statusmode-fps")
     $.ajax({
-        url: "/api/addreviewstatusmode",
+        url: "/api/addreview",
         type: "post",
         data: {
             project: document.getElementById("modal-addreview-statusmode-project").value,

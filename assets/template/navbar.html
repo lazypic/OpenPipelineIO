@@ -43,13 +43,7 @@
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <span class="dropdown-item finger" data-toggle="modal" data-target="#modal-addreview-statusmode">Add Review</span>            
-            {{if eq .User.AccessLevel 4 5 6 7 8 9 10 11}}
-              <div class="dropdown-divider"></div>
-              <span class="dropdown-item finger" onclick="setReviewAgainForWaitStatusToday()">Review again for wait status</span>
-            {{end}}
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="/daily-review-status">Daily</a>
-              <a class="dropdown-item" href="/daily-review-status" target="_blank">Daily - New Windows</a>
+            <a class="dropdown-item" href="/daily-review-status">Daily</a>
           </div>
         </li>
         {{end}}
