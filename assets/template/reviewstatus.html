@@ -45,8 +45,10 @@
                             {{if gt .SubVersion 0 }} <!-- SubVersion 값이 0 이상이면 보인다.-->
                                 <span class="ms-1 badge badge-darkmode" id="{{.ID.Hex}}-subversion">w{{ProductionVersionFormat .SubVersion}}</span>
                             {{end}}
-                            
                             <span id="review-itemstatus-{{.ID.Hex}}" class="ms-1 badge badge-{{.ItemStatus}}">{{.ItemStatus}}</span>
+                            {{if ne .ProcessStatus "done"}}
+                                <span id="review-processstatus-{{.ID.Hex}}" class="ms-1 badge badge-danger">{{.ProcessStatus}}</span>
+                            {{end}}
                             
                         </div>
                         <div class="col-1 p-0">
