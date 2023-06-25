@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="1.588 1.235 147.177 147.177" xmlns="http://www.w3.org/2000/svg">
+  <g id="Shape1" opacity="1">
+    <desc shapeid="1" type="0" basicinfo-basictype="2" basicinfo-roundedrectradius="23" basicinfo-polygonsides="6" basicinfo-starpoints="5" bounding="rect(-64.5,-64.4998,129,129)" text="" font-familyname="Helvetica" font-pixelsize="20" font-bold="0" font-underline="0" font-alignment="1" strokestyle="0" markerstart="0" markerend="0" shadowenabled="0" shadowoffsetx="0" shadowoffsety="2" shadowblur="4" shadowopacity="160" blurenabled="0" blurradius="4" transform="matrix(1.14091,0,0,1.14091,75.1763,74.8233)" pers-center="0,0" pers-size="0,0" pers-start="0,0" pers-end="0,0" locked="0" mesh="" flag=""/>
+    <path id="shapePath1" d="M1.58757,27.4758 C1.58757,12.9833 13.3361,1.23479 27.8286,1.23479 L122.524,1.23479 C137.017,1.23479 148.765,12.9833 148.765,27.4758 L148.765,122.172 C148.765,136.665 137.017,148.412 122.524,148.412 L27.8286,148.412 C13.3361,148.412 1.58757,136.665 1.58757,122.172 L1.58757,27.4758 Z" style="stroke:#323232;stroke-opacity:1;stroke-width:0;stroke-linejoin:miter;stroke-miterlimit:2;stroke-linecap:round;fill-rule:evenodd;fill:#000000;fill-opacity:1;"/>
+  </g>
+  <g transform="matrix(0.439406, 0, 0, 0.439406, 11.936234, 7.751732)" style="opacity: 1;">
+    <title>Layer 1</title>
+    <g id="Shape2">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="4" type="0" shapeid="2"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m136.002,150.657c0,-8.89 7.207,-16.097 16.097,-16.097c8.89,0 16.097,7.207 16.097,16.097c0,8.89101 -7.207,16.09801 -16.097,16.09801c-8.89,0 -16.097,-7.207 -16.097,-16.09801z" id="shapePath2"/>
+    </g>
+    <g id="Shape3">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="4" type="0" shapeid="3"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m136.002,88.4143c0,-8.8903 7.207,-16.0973 16.097,-16.0973c8.89,0 16.097,7.207 16.097,16.0973c0,8.8903 -7.207,16.0977 -16.097,16.0977c-8.89,0 -16.097,-7.2074 -16.097,-16.0977z" id="shapePath3"/>
+    </g>
+    <g id="Shape4">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="4" type="0" shapeid="4"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m188.586,57.2929c0,-8.8903 7.207,-16.0973 16.097,-16.0973c8.89101,0 16.09801,7.207 16.09801,16.0973c0,8.8903 -7.207,16.0973 -16.09801,16.0973c-8.89,0 -16.097,-7.207 -16.097,-16.0973z" id="shapePath4"/>
+    </g>
+    <g id="Shape5">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="4" type="0" shapeid="5"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m187.513,119.536c0,-8.89101 7.207,-16.098 16.097,-16.098c8.89101,0 16.09799,7.20699 16.09799,16.098c0,8.88999 -7.20699,16.09699 -16.09799,16.09699c-8.89,0 -16.097,-7.207 -16.097,-16.09699z" id="shapePath5"/>
+    </g>
+    <g id="Shape6">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="4" type="0" shapeid="6"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m239.024,149.584c0,-8.89 7.207,-16.097 16.09799,-16.097c8.89,0 16.097,7.207 16.097,16.097c0,8.89 -7.207,16.097 -16.097,16.097c-8.89099,0 -16.09799,-7.207 -16.09799,-16.097z" id="shapePath6"/>
+    </g>
+    <g id="Shape7">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="4" type="0" shapeid="7"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m239.024,89.4875c0,-8.8903 7.207,-16.09731 16.09799,-16.09731c8.89,0 16.097,7.207 16.097,16.09731c0,8.8903 -7.207,16.0975 -16.097,16.0975c-8.89099,0 -16.09799,-7.2072 -16.09799,-16.0975z" id="shapePath7"/>
+    </g>
+    <g id="Shape8">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="4" type="0" shapeid="8"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m131.709,25.0983c0,-8.8903 7.207,-16.09735 16.097,-16.09735c8.89101,0 16.09801,7.20705 16.09801,16.09735c0,8.8902 -7.207,16.0973 -16.09801,16.0973c-8.89,0 -16.097,-7.2071 -16.097,-16.0973z" id="shapePath8"/>
+    </g>
+    <g id="Shape9">
+      <desc stroke="#ffffff" fill="none" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-28.5,-61,57,122)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="0" type="0" shapeid="9"/>
+      <path fill="none" stroke-linecap="round" stroke-miterlimit="2" stroke-width="9" stroke="#ffffff" d="m154.245,156.02299l-1.073,-68.68179l55.804,-30.0483l-61.17,-32.1946" id="shapePath9"/>
+    </g>
+    <g id="Shape10">
+      <desc stroke="#ffffff" fill="none" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-24.5,-42,49,84)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="0" type="0" shapeid="10"/>
+      <path fill="none" stroke-linecap="round" stroke-miterlimit="2" stroke-width="9" stroke="#ffffff" d="m207.366,59.9757l-3.21899,60.0963l52.58398,30.049l0,-59.0238" id="shapePath10"/>
+    </g>
+    <g id="Shape11">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="0" type="0" shapeid="11"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m81.5453,120.609c0,-8.89 7.20699,-16.097 16.0973,-16.097c8.8904,0 16.0974,7.207 16.0974,16.097c0,8.88999 -7.207,16.09699 -16.0974,16.09699c-8.8903,0 -16.0973,-7.207 -16.0973,-16.09699z" id="shapePath11"/>
+    </g>
+    <g id="Shape12">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="0" type="0" shapeid="12"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m81.5453,59.9757c0,-8.8902 7.20699,-16.0973 16.0973,-16.0973c8.8904,0 16.0974,7.2071 16.0974,16.0973c0,8.8903 -7.207,16.0974 -16.0974,16.0974c-8.8903,0 -16.0973,-7.2071 -16.0973,-16.0974z" id="shapePath12"/>
+    </g>
+    <g id="Shape13">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="0" type="0" shapeid="13"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m26.6707,151.73c0,-8.89 7.207,-16.097 16.0973,-16.097c8.8903,0 16.0973,7.207 16.0973,16.097c0,8.89101 -7.207,16.09801 -16.0973,16.09801c-8.8903,0 -16.0973,-7.207 -16.0973,-16.09801z" id="shapePath13"/>
+    </g>
+    <g id="Shape14">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="0" type="0" shapeid="14"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m26.6707,213.25999c0,-8.89099 7.207,-16.09799 16.0973,-16.09799c8.8903,0 16.0973,7.207 16.0973,16.09799c0,8.89 -7.207,16.097 -16.0973,16.097c-8.8903,0 -16.0973,-7.207 -16.0973,-16.097z" id="shapePath14"/>
+    </g>
+    <g id="Shape15">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="0" type="0" shapeid="15"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m81.5453,181.77901c0,-8.89101 7.20699,-16.09801 16.0973,-16.09801c8.8904,0 16.0974,7.207 16.0974,16.09801c0,8.89 -7.207,16.097 -16.0974,16.097c-8.8903,0 -16.0973,-7.207 -16.0973,-16.097z" id="shapePath15"/>
+    </g>
+    <g id="Shape16">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="0" type="0" shapeid="16"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m26.6707,88.9509c0,-8.8903 7.207,-16.0973 16.0973,-16.0973c8.8903,0 16.0973,7.207 16.0973,16.0973c0,8.8903 -7.207,16.0971 -16.0973,16.0971c-8.8903,0 -16.0973,-7.20679 -16.0973,-16.0971z" id="shapePath16"/>
+    </g>
+    <g id="Shape17">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="4" type="0" shapeid="17"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m241.13499,213.97301c0,-8.89001 7.207,-16.097 16.097,-16.097c8.89001,0 16.09702,7.20699 16.09702,16.097c0,8.89099 -7.207,16.09799 -16.09702,16.09799c-8.89,0 -16.097,-7.207 -16.097,-16.09799z" id="shapePath17"/>
+    </g>
+    <g id="Shape18">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="4" type="0" shapeid="18"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m134.233,274.90201c0,-8.89102 7.207,-16.09802 16.097,-16.09802c8.89,0 16.097,7.207 16.097,16.09802c0,8.88998 -7.207,16.09698 -16.097,16.09698c-8.89,0 -16.097,-7.207 -16.097,-16.09698z" id="shapePath18"/>
+    </g>
+    <g id="Shape19">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="4" type="0" shapeid="19"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m81.5452,244.95399c0,-8.89099 7.207,-16.09799 16.09731,-16.09799c8.8905,0 16.0975,7.207 16.0975,16.09799c0,8.89 -7.207,16.097 -16.0975,16.097c-8.8903,0 -16.09731,-7.207 -16.09731,-16.097z" id="shapePath19"/>
+    </g>
+    <g id="Shape20">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="4" type="0" shapeid="20"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m187.513,244.95399c0,-8.89099 7.207,-16.09799 16.097,-16.09799c8.89101,0 16.09799,7.207 16.09799,16.09799c0,8.89 -7.20699,16.097 -16.09799,16.097c-8.89,0 -16.097,-7.207 -16.097,-16.097z" id="shapePath20"/>
+    </g>
+    <g id="Shape21">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="4" type="0" shapeid="21"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m134.233,213.97301c0,-8.89001 7.207,-16.097 16.097,-16.097c8.89,0 16.097,7.20699 16.097,16.097c0,8.89099 -7.207,16.09799 -16.097,16.09799c-8.89,0 -16.097,-7.207 -16.097,-16.09799z" id="shapePath21"/>
+    </g>
+    <g id="Shape22">
+      <desc fill="#ffffff" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-15,-15,30,30)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="4" type="0" shapeid="22"/>
+      <path fill="#ffffff" fill-rule="evenodd" d="m187.513,181.77901c0,-8.89101 7.207,-16.09801 16.097,-16.09801c8.89101,0 16.09799,7.207 16.09799,16.09801c0,8.89 -7.20699,16.097 -16.09799,16.097c-8.89,0 -16.097,-7.207 -16.097,-16.097z" id="shapePath22"/>
+    </g>
+    <g id="Shape23">
+      <desc stroke="#ffffff" fill="none" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-26.3577,-71.3756,52.7153,142.751)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="0" type="0" shapeid="23"/>
+      <path fill="none" stroke-linecap="round" stroke-miterlimit="2" stroke-width="9" stroke="#ffffff" d="m42.944,87.4144l55.0698,-28.0355l-0.5006,63.0801l-52.5666,28.035l-3.5045,62.07899" id="shapePath23"/>
+    </g>
+    <g id="Shape24">
+      <desc stroke="#ffffff" fill="none" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-74.1747,-57.6137,148.349,115.227)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="0" type="0" shapeid="24"/>
+      <path fill="none" stroke-linecap="round" stroke-miterlimit="2" stroke-width="9" stroke="#ffffff" d="m45.4472,152.99699l53.0672,29.037l53.5676,-30.53799l51.065,29.036l1.502,63.58101l-55.07001,-30.03801l-51.56519,30.53801l53.06719,30.539" id="shapePath24"/>
+    </g>
+    <g id="Shape25">
+      <desc stroke="#ffffff" fill="none" locked="0" pers-end="0,0" pers-start="0,0" pers-size="0,0" pers-center="0,0" blurradius="4" blurenabled="0" shadowopacity="160" shadowblur="4" shadowoffsety="2" shadowoffsetx="0" shadowenabled="0" markerend="0" markerstart="0" strokestyle="0" font-alignment="1" font-underline="0" font-bold="0" font-pixelsize="20" bounding="rect(-25.1914,-13.9952,50.3828,27.9904)" basicinfo-starpoints="5" basicinfo-polygonsides="6" basicinfo-roundedrectradius="12" basicinfo-basictype="0" type="0" shapeid="25"/>
+      <path fill="none" stroke-linecap="round" stroke-miterlimit="2" stroke-width="9" stroke="#ffffff" d="m258.71701,214.075l-54.06801,30.03801" id="shapePath25"/>
+    </g>
+  </g>
+</svg>
