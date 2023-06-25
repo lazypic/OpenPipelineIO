@@ -28,7 +28,7 @@ func handleDailyReviewStatus(w http.ResponseWriter, r *http.Request) {
 	}
 	today := time.Now().Format("2006-01-02")
 	// 오늘날짜를 구하고 리다이렉트한다.
-	http.Redirect(w, r, "/reviewstatus?searchword=daily:"+today, http.StatusSeeOther)
+	http.Redirect(w, r, "/reviewstatus?searchword=createtime:"+today, http.StatusSeeOther)
 }
 
 // handleReviewData 함수는 리뷰 영상데이터를 전송한다.
@@ -92,7 +92,9 @@ func handleReviewStatusSubmit(w http.ResponseWriter, r *http.Request) {
 	searchword := r.FormValue("searchword")
 	reviewProject := r.FormValue("reviewproject")
 	itemStatus := r.FormValue("itemstatus")
-	redirectURL := fmt.Sprintf("/reviewstatus?searchword=%s&project=%s&itemstatus=%s", searchword, reviewProject, itemStatus)
+	createtime := r.FormValue("review-createtime")
+	task := r.FormValue("review-task")
+	redirectURL := fmt.Sprintf("/reviewstatus?searchword=%s&project=%s&itemstatus=%s&createtime=%s&task=%s", searchword, reviewProject, itemStatus, createtime, task)
 	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 }
 
@@ -277,12 +279,17 @@ func handleReviewStatus(w http.ResponseWriter, r *http.Request) {
 		TasksettingNames []string
 		Project          string
 		ItemStatus       string
+		Createtime       string
+		Task             string
 		Setting
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
 	rcp.Project = q.Get("project")
 	rcp.ItemStatus = q.Get("itemstatus")
+	rcp.Createtime = q.Get("createtime")
+	rcp.Task = q.Get("task")
+
 	rcp.Searchword = q.Get("searchword")
 	id := q.Get("id")
 	err = rcp.SearchOption.LoadCookie(session, r)
@@ -313,7 +320,9 @@ func handleReviewStatus(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Searchword = setSearchFilter(rcp.Searchword, "project", rcp.Project)
 	rcp.Searchword = setSearchFilter(rcp.Searchword, "itemstatus", rcp.ItemStatus)
-
+	rcp.Searchword = setSearchFilter(rcp.Searchword, "task", rcp.Task)
+	rcp.Searchword = setSearchFilter(rcp.Searchword, "createtime", rcp.Createtime)
+	
 	rcp.Reviews, err = searchReview(session, rcp.Searchword)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
