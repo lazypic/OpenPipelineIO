@@ -394,8 +394,9 @@ function initModalPipelinestep() {
 }
 initModalPipelinestep() // 페이지가 로딩되면 먼저 실행한다.
 
-// setEditTaskModal 함수는 project, name, task 정보를 가지고 와서 Edit Task Modal에 값을 채운다.
+// setEditTaskModal 함수는 item id, task 정보를 가지고 와서 Edit Task Modal에 값을 채운다.
 function setEditTaskModal(id, task) {
+    console.log(id,task)
     document.getElementById("modal-edittask-id").value = id;
     document.getElementById("modal-edittask-title").innerHTML = "Edit Task" + multiInputTitle(id);
     $.ajax({
@@ -3033,9 +3034,8 @@ function setTaskStatusV2(id, task, status) {
     }
 }
 
-function setTaskDate(project, id, task, date) {
+function setTaskDate(id, task, date) {
     let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
         for (var i = 0; i < cboxes.length; ++i) {
@@ -3046,13 +3046,11 @@ function setTaskDate(project, id, task, date) {
             let id = cboxes[i].getAttribute("id")
             $.ajax({
                 url: "/api/settaskdate",
-                type: "post",
+                type: "POST",
                 data: {
-                    project: project,
                     id: id,
                     task: task,
                     date: date,
-                    userid: userid,
                 },
                 headers: {
                     "Authorization": "Basic "+ token
@@ -3069,13 +3067,11 @@ function setTaskDate(project, id, task, date) {
     } else {
         $.ajax({
             url: "/api/settaskdate",
-            type: "post",
+            type: "POST",
             data: {
-                project: project,
                 id: id,
                 task: task,
                 date: date,
-                userid: userid,
             },
             headers: {
                 "Authorization": "Basic "+ token
@@ -3091,9 +3087,8 @@ function setTaskDate(project, id, task, date) {
     }
 }
 
-function setTaskStartdate(project, id, task, date) {
+function setTaskStartdate(id, task, date) {
     let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
         for (var i = 0; i < cboxes.length; ++i) {
@@ -3106,11 +3101,9 @@ function setTaskStartdate(project, id, task, date) {
                 url: "/api/settaskstartdate",
                 type: "POST",
                 data: {
-                    project: project,
                     id: id,
                     task: task,
                     date: date,
-                    userid: userid,
                 },
                 headers: {
                     "Authorization": "Basic "+ token
@@ -3129,11 +3122,9 @@ function setTaskStartdate(project, id, task, date) {
             url: "/api/settaskstartdate",
             type: "post",
             data: {
-                project: project,
                 id: id,
                 task: task,
                 date: date,
-                userid: userid,
             },
             headers: {
                 "Authorization": "Basic "+ token
@@ -3149,9 +3140,8 @@ function setTaskStartdate(project, id, task, date) {
     }
 }
 
-function setTaskStartdate2nd(project, id, task, date) {
+function setTaskStartdate2nd(id, task, date) {
     let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
         for (var i = 0; i < cboxes.length; ++i) {
@@ -3164,11 +3154,9 @@ function setTaskStartdate2nd(project, id, task, date) {
                 url: "/api/settaskstartdate2nd",
                 type: "post",
                 data: {
-                    project: project,
                     id: id,
                     task: task,
                     date: date,
-                    userid: userid,
                 },
                 headers: {
                     "Authorization": "Basic "+ token
@@ -3187,11 +3175,9 @@ function setTaskStartdate2nd(project, id, task, date) {
             url: "/api/settaskstartdate2nd",
             type: "post",
             data: {
-                project: project,
                 id: id,
                 task: task,
                 date: date,
-                userid: userid,
             },
             headers: {
                 "Authorization": "Basic "+ token
@@ -3267,9 +3253,8 @@ function setTaskUserNote(project, id, task, usernote) {
 
 
 
-function setTaskPredate(project, id, task, date) {
+function setTaskPredate(id, task, date) {
     let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
         for (let i = 0; i < cboxes.length; ++i) {
@@ -3282,11 +3267,9 @@ function setTaskPredate(project, id, task, date) {
                 url: "/api/settaskpredate",
                 type: "post",
                 data: {
-                    project: project,
                     id: id,
                     task: task,
                     date: date,
-                    userid: userid,
                 },
                 headers: {
                     "Authorization": "Basic "+ token
@@ -3309,11 +3292,9 @@ function setTaskPredate(project, id, task, date) {
             url: "/api/settaskpredate",
             type: "post",
             data: {
-                project: project,
                 id: id,
                 task: task,
                 date: date,
-                userid: userid,
             },
             headers: {
                 "Authorization": "Basic "+ token

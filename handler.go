@@ -534,7 +534,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/taskduration", handleAPISetTaskDuration).Methods("POST")
 	r.HandleFunc("/api/settaskexpectday", handleAPISetTaskExpectDay)
 	r.HandleFunc("/api/settaskresultday", handleAPISetTaskResultDay)
-	r.HandleFunc("/api/settaskpredate", handleAPISetTaskPredate)
+	r.HandleFunc("/api/settaskpredate", handleAPISetTaskPredate).Methods("POST")
 	r.HandleFunc("/api/settaskstartdate", handleAPISetTaskStartdate).Methods("POST")
 	r.HandleFunc("/api/settaskstartdate2nd", handleAPISetTaskStartdate2nd).Methods("POST")
 	r.HandleFunc("/api/task", handleAPITask).Methods("POST")

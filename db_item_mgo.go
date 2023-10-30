@@ -1461,12 +1461,8 @@ func SetTaskUserID(session *mgo.Session, id, task, userid string) error {
 }
 
 // SetTaskDate 함수는 item에 task에 마감일을 셋팅한다.
-func SetTaskDate(session *mgo.Session, project, id, task, date string) error {
+func SetTaskDate(session *mgo.Session, id, task, date string) error {
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return err
-	}
 	c := session.DB(*flagDBName).C("items")
 	fullTime, err := ditime.ToFullTime(19, date)
 	if err != nil {
@@ -1593,14 +1589,10 @@ func SetDeadline3D(session *mgo.Session, project, id, date string) error {
 }
 
 // SetTaskStartdate 함수는 item에 task의 startdate 값을 셋팅한다.
-func SetTaskStartdate(session *mgo.Session, project, id, task, date string) error {
+func SetTaskStartdate(session *mgo.Session, id, task, date string) error {
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return err
-	}
 	c := session.DB(*flagDBName).C("items")
-	err = HasTask(session, id, task)
+	err := HasTask(session, id, task)
 	if err != nil {
 		return err
 	}
@@ -1616,14 +1608,11 @@ func SetTaskStartdate(session *mgo.Session, project, id, task, date string) erro
 }
 
 // SetTaskStartdate2nd 함수는 item에 task의 2차 startdate 값을 셋팅한다.
-func SetTaskStartdate2nd(session *mgo.Session, project, id, task, date string) error {
+func SetTaskStartdate2nd(session *mgo.Session, id, task, date string) error {
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return err
-	}
+
 	c := session.DB(*flagDBName).C("items")
-	err = HasTask(session, id, task)
+	err := HasTask(session, id, task)
 	if err != nil {
 		return err
 	}
@@ -1663,14 +1652,11 @@ func SetTaskUserNote(session *mgo.Session, project, name, task, usernote string)
 }
 
 // SetTaskPredate 함수는 item에 task의 predate 값을 셋팅한다.
-func SetTaskPredate(session *mgo.Session, project, id, task, date string) (string, error) {
+func SetTaskPredate(session *mgo.Session, id, task, date string) (string, error) {
 	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return "", err
-	}
+
 	c := session.DB(*flagDBName).C("items")
-	err = HasTask(session, id, task)
+	err := HasTask(session, id, task)
 	if err != nil {
 		return id, err
 	}

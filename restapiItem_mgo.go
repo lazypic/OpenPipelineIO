@@ -3217,20 +3217,7 @@ func handleAPISetTaskStartdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	rcp.Project = r.FormValue("project")
-	if rcp.Project == "" {
-		if err != nil {
-			http.Error(w, "프로젝트가 빈 문자열 입니다", http.StatusBadRequest)
-			return
-		}
-	}
-	rcp.Name = r.FormValue("name")
-	if rcp.Name == "" {
-		if err != nil {
-			http.Error(w, "name이 빈 문자열 입니다", http.StatusBadRequest)
-			return
-		}
-	}
+
 	rcp.Task = r.FormValue("task")
 	if rcp.Task == "" {
 		if err != nil {
@@ -3254,17 +3241,12 @@ func handleAPISetTaskStartdate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = SetTaskStartdate(session, rcp.Project, rcp.ID, rcp.Task, rcp.Date)
+	err = SetTaskStartdate(session, rcp.ID, rcp.Task, rcp.Date)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set %s Task StartDate: %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Date, rcp.Project, rcp.Name, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {
@@ -3279,13 +3261,11 @@ func handleAPISetTaskStartdate(w http.ResponseWriter, r *http.Request) {
 // handleAPISetTaskStartdate2nd 함수는 아이템의 task에 대한 2차 시작일을 설정한다.
 func handleAPISetTaskStartdate2nd(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
-		Project string `json:"project"`
-		ID      string `json:"id"`
-		Name    string `json:"name"`
-		Date    string `json:"date"`
-		Task    string `json:"task"`
-		UserID  string `json:"userid"`
-		Error   string `json:"error"`
+		ID     string `json:"id"`
+		Date   string `json:"date"`
+		Task   string `json:"task"`
+		UserID string `json:"userid"`
+		Error  string `json:"error"`
 	}
 	rcp := Recipe{}
 	session, err := mgo.Dial(*flagDBIP)
@@ -3305,20 +3285,6 @@ func handleAPISetTaskStartdate2nd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	rcp.Project = r.FormValue("project")
-	if rcp.Project == "" {
-		if err != nil {
-			http.Error(w, "프로젝트가 빈 문자열 입니다", http.StatusBadRequest)
-			return
-		}
-	}
-	rcp.Name = r.FormValue("name")
-	if rcp.Name == "" {
-		if err != nil {
-			http.Error(w, "name이 빈 문자열 입니다", http.StatusBadRequest)
-			return
-		}
-	}
 	rcp.Task = r.FormValue("task")
 	if rcp.Task == "" {
 		if err != nil {
@@ -3328,30 +3294,18 @@ func handleAPISetTaskStartdate2nd(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Date = r.FormValue("date") // 마감일이 빈 문자열이 될 수 있다.
 	rcp.ID = r.FormValue("id")
-	if rcp.ID == "" {
-		typ, err := Type(session, rcp.Project, rcp.Name)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		rcp.ID = rcp.Name + "_" + typ
-	}
+
 	err = HasTask(session, rcp.ID, rcp.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = SetTaskStartdate2nd(session, rcp.Project, rcp.ID, rcp.Task, rcp.Date)
+	err = SetTaskStartdate2nd(session, rcp.ID, rcp.Task, rcp.Date)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set %s Task StartDate2nd: %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Date, rcp.Project, rcp.Name, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {
@@ -3597,12 +3551,7 @@ func handleAPISetDeadline3D(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetTaskPredate 함수는 아이템의 task에 대한 1차마감일을 설정한다.
 func handleAPISetTaskPredate(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project   string `json:"project"`
 		ID        string `json:"id"`
 		Date      string `json:"date"`
 		ShortDate string `json:"shortdate"`
@@ -3630,13 +3579,7 @@ func handleAPISetTaskPredate(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	for key, values := range r.PostForm {
 		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Project = v
+
 		case "id":
 			v, err := PostFormValueInList(key, values)
 			if err != nil {
@@ -3644,15 +3587,7 @@ func handleAPISetTaskPredate(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			rcp.ID = v
-		case "userid":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if rcp.UserID == "unknown" && v != "" {
-				rcp.UserID = v
-			}
+
 		case "task":
 			v, err := PostFormValueInList(key, values)
 			if err != nil {
@@ -3674,17 +3609,12 @@ func handleAPISetTaskPredate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	rcp.ID, err = SetTaskPredate(session, rcp.Project, rcp.ID, rcp.Task, rcp.Date)
+	rcp.ID, err = SetTaskPredate(session, rcp.ID, rcp.Task, rcp.Date)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set %s Task Pre Deadline: %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Date, rcp.Project, rcp.ID, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	rcp.ShortDate = ToShortTime(rcp.Date)
 	data, _ := json.Marshal(rcp)
@@ -3696,7 +3626,6 @@ func handleAPISetTaskPredate(w http.ResponseWriter, r *http.Request) {
 // handleAPISetTaskDate 함수는 아이템의 task에 대한 최종마감일을 설정한다.
 func handleAPISetTaskDate(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
-		Project   string `json:"project"`
 		ID        string `json:"id"`
 		Date      string `json:"date"`
 		ShortDate string `json:"shortdate"`
@@ -3722,23 +3651,12 @@ func handleAPISetTaskDate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "need project", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
-	userid := r.FormValue("userid")
-	if userid == "" {
-		rcp.UserID = "unknown"
-	}
-	rcp.UserID = userid
 	task := r.FormValue("task")
 	if task == "" {
 		http.Error(w, "need task", http.StatusBadRequest)
@@ -3752,17 +3670,12 @@ func handleAPISetTaskDate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = SetTaskDate(session, rcp.Project, rcp.ID, rcp.Task, rcp.Date)
+	err = SetTaskDate(session, rcp.ID, rcp.Task, rcp.Date)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set %s Task Deadline: %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Date, rcp.Project, rcp.ID, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	rcp.ShortDate = ToShortTime(rcp.Date)
 	data, err := json.Marshal(rcp)
@@ -6152,6 +6065,7 @@ func handleAPITask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
+
 	rcp.ID = id
 
 	task := r.FormValue("task")
@@ -6166,6 +6080,7 @@ func handleAPITask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	rcp.Task = t
 	// 웹에 표시를 위해서 FullTime을 NormalTime으로 변경
 	rcp.Task.Startdate = ToNormalTime(rcp.Task.Startdate)
