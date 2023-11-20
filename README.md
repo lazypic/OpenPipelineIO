@@ -15,6 +15,7 @@ OpenPipelineIO는 영화, 드라마, 전시영상, 애니메이션, 게임 등 �
 - 내부, 외부 서버에 설치가 가능합니다.
 - 리뷰 시스템
 - 사용자별 토큰키, 암호화키, 직급별 접근권한 사용이 가능합니다.
+- [Google Site](https://sites.google.com/view/lazypic/openpipelineio)
 - [Collaborate with other open sources](https://landscape.aswf.io/?category=aswf-member-company&grouping=category&fullscreen=yes)
 
 ### 데이터베이스(mongoDB) 설치 및 서비스 실행
