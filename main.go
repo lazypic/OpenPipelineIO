@@ -118,7 +118,7 @@ func main() {
 		if err != nil {
 			log.Fatal("DB가 실행되고 있지 않습니다.")
 		}
-		admin, err := GetAdminSetting(session)
+		admin, err := GetAdminSetting(session) // V2 로 변경하기
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -42,3 +42,25 @@ func TaskSettingNamesV2(client *mongo.Client) ([]string, error) {
 	}
 	return results, nil
 }
+
+// GetAdminSettingV2 함수는 adminsetting을 DB에서 가지고 온다.
+func GetAdminSettingV2(client *mongo.Client) (Setting, error) {
+	s := Setting{}
+	collection := client.Database(*flagDBName).Collection("admin")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := collection.FindOne(ctx, bson.M{"id": "admin"}).Decode(&s)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			s.ID = "admin"
+			_, err = collection.InsertOne(ctx, s)
+			if err != nil {
+				return s, err
+			}
+			return s, nil
+		}
+		return s, err
+	}
+	return s, nil
+}
