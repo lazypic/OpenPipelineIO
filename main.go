@@ -136,7 +136,7 @@ func main() {
 		// 프로젝트가 존재하지 않는다면 test 프로젝트를 추가한다.
 		if len(plist) == 0 {
 			p := *NewProject("test")
-			err = addProject(session, p)
+			err = addProject(session, p) // **V2 로 변경하기**
 			if err != nil {
 				log.Fatal(err)
 			}
