@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -11,6 +12,8 @@ import (
 	"time"
 
 	"github.com/unidoc/unipdf/v3/common/license"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gopkg.in/mgo.v2"
 )
 
@@ -113,15 +116,29 @@ func main() {
 		}
 		return
 	} else if *flagHTTPPort != "" {
-		// 만약 프로젝트가 하나도 없다면 "TEMP" 프로젝트를 생성한다. 프로젝트가 있어야 템플릿이 작동하기 때문이다.
-		session, err := mgo.DialWithTimeout(*flagDBIP, 2*time.Second)
-		if err != nil {
-			log.Fatal("DB가 실행되고 있지 않습니다.")
-		}
-		admin, err := GetAdminSetting(session) // **V2 로 변경하기**
+		client, err := mongo.NewClient(options.Client().ApplyURI(*flagMongoDBURI))
 		if err != nil {
 			log.Fatal(err)
 		}
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		// MongoDB 연결 확인
+		if err = client.Connect(ctx); err != nil {
+			log.Fatal(err)
+		}
+
+		defer client.Disconnect(ctx)
+
+		if err = client.Ping(ctx, nil); err != nil {
+			log.Fatal("Failed to connect to MongoDB:", err)
+		}
+
+		admin, err := GetAdminSettingV2(client) // **V2 로 변경하기**
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		// 어드민설정을 한번 저장한다. CachedAdminSetting값은 매번 DB를 호출하면 안되는 작업에서 사용된다.
 		CachedAdminSetting = admin
 		// 만약 Admin설정에 ThumbnailRootPath가 잡혀있다면 그 값을 이용한다.
@@ -129,19 +146,19 @@ func main() {
 			log.Println("admin 설정창의 thumbnail 경로지정이 필요합니다.")
 		}
 
-		plist, err := Projectlist(session) // **V2 로 변경하기**
+		plist, err := ProjectlistV2(client) // **V2 로 변경하기**
 		if err != nil {
 			log.Fatal(err)
 		}
 		// 프로젝트가 존재하지 않는다면 test 프로젝트를 추가한다.
 		if len(plist) == 0 {
 			p := *NewProject("test")
-			err = addProject(session, p) // **V2 로 변경하기**
+			err = addProjectV2(client, p) // **V2 로 변경하기**
 			if err != nil {
 				log.Fatal(err)
 			}
 		}
-		session.Close()
+
 		if *flagHTTPPort == ":80" {
 			fmt.Printf("Service start: http://%s\n", ip)
 		} else if *flagHTTPPort == ":443" {
@@ -161,10 +178,10 @@ func main() {
 			go ProcessScanPlateRender() // 연산(Review데이터 등등)이 필요한 것들이 있다면 연산을 시작한다.
 		}
 		webserver(*flagHTTPPort)
+
 	}
 	if *flagHelp {
 		flag.Usage()
 		return
 	}
-	flag.Usage()
 }

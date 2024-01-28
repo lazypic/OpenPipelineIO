@@ -51,14 +51,12 @@ func GetAdminSettingV2(client *mongo.Client) (Setting, error) {
 	defer cancel()
 
 	err := collection.FindOne(ctx, bson.M{"id": "admin"}).Decode(&s)
+	fmt.Println(err)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			s.ID = "admin"
 			_, err = collection.InsertOne(ctx, s)
-			if err != nil {
-				return s, err
-			}
-			return s, nil
+			return s, err
 		}
 		return s, err
 	}
