@@ -4,17 +4,28 @@ APP="OpenPipelineIO"
 # assets 폴더의 모든 에셋을 빌드전에 assets_vfsdata.go 파일로 생성한다.
 go run assets/asset_generate.go
 
-# OS별 기본빌드
-GOOS=windows GOARCH=amd64 go build -ldflags "-X main.SHA1VER=`git rev-parse HEAD` -X main.BUILDTIME=`date -u +%Y-%m-%dT%H:%M:%S`" -o ./bin/windows/${APP} *.go
-GOOS=linux GOARCH=amd64 go build -ldflags "-X main.SHA1VER=`git rev-parse HEAD` -X main.BUILDTIME=`date -u +%Y-%m-%dT%H:%M:%S`" -o ./bin/linux/${APP} *.go
-GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.SHA1VER=`git rev-parse HEAD` -X main.BUILDTIME=`date -u +%Y-%m-%dT%H:%M:%S`" -o ./bin/darwin/${APP} *.go
+build() {
+    GOOS=$1
+    GOARCH=$2
+    OUTPUT_DIR="./bin/${GOOS}_${GOARCH}"
 
-# Github Release에 업로드 하기위해 압축
-cd ./bin/windows/ && tar -zcvf ../${APP}_windows_x86-64.tgz . && cd -
-cd ./bin/linux/ && tar -zcvf ../${APP}_linux_x86-64.tgz . && cd -
-cd ./bin/darwin/ && tar -zcvf ../${APP}_darwin_x86-64.tgz . && cd -
+    mkdir -p ${OUTPUT_DIR}
+    go build -ldflags "-X main.SHA1VER=`git rev-parse HEAD` -X main.BUILDTIME=`date -u +%Y-%m-%dT%H:%M:%S`" -o ${OUTPUT_DIR}/${APP} *.go
 
-# 삭제
-rm -rf ./bin/windows
-rm -rf ./bin/linux
-rm -rf ./bin/darwin
+    # 압축
+    cd ${OUTPUT_DIR}
+    tar -zcvf ../${APP}_${GOOS}_${GOARCH}.tgz .
+    cd -
+}
+
+# OS 및 아키텍처별 빌드
+build windows amd64
+build linux amd64
+build darwin amd64
+build darwin arm64 # Apple Silicon 지원
+
+# 디렉토리 삭제
+rm -rf ./bin/windows_amd64
+rm -rf ./bin/linux_amd64
+rm -rf ./bin/darwin_amd64
+rm -rf ./bin/darwin_arm64
