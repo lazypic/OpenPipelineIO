@@ -3,10 +3,10 @@
 - <https://brew.sh>
 
 ```bash
-brew uninstall mongodb
 brew tap mongodb/brew
-brew install mongodb-community
-brew services start mongodb-community
+brew update
+brew install mongodb-community@7.0
+brew services start mongodb-community@7.0
 brew install curl
 brew install ffmpeg
 brew install openimageio
