@@ -374,7 +374,7 @@ func handleSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer session.Close()
-	rcp.Divisions, err = allDivisions(session)
+	rcp.Divisions, err = allDivisions(session) // V2 변경할 것
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
