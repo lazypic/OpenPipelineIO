@@ -379,7 +379,7 @@ func handleSignup(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Departments, err = allDepartments(session)
+	rcp.Departments, err = allDepartments(session) // V2 변경할 것
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
