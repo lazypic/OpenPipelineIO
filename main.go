@@ -69,6 +69,26 @@ var (
 	flagSignUpAccessLevel = flag.Int("signupaccesslevel", 0, "signup access level")
 )
 
+func initMongoClient() (*mongo.Client, error) {
+	client, err := mongo.NewClient(options.Client().ApplyURI(*flagMongoDBURI))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create new MongoDB client: %w", err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err = client.Connect(ctx); err != nil {
+		return nil, fmt.Errorf("failed to connect to MongoDB: %w", err)
+	}
+
+	if err = client.Ping(ctx, nil); err != nil {
+		return nil, fmt.Errorf("failed to ping MongoDB: %w", err)
+	}
+
+	return client, nil
+}
+
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	log.SetPrefix("OpenPipelineIO: ")
@@ -116,23 +136,11 @@ func main() {
 		}
 		return
 	} else if *flagHTTPPort != "" {
-		client, err := mongo.NewClient(options.Client().ApplyURI(*flagMongoDBURI))
+		client, err := initMongoClient()
 		if err != nil {
 			log.Fatal(err)
 		}
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-
-		// MongoDB 연결 확인
-		if err = client.Connect(ctx); err != nil {
-			log.Fatal(err)
-		}
-
-		defer client.Disconnect(ctx)
-
-		if err = client.Ping(ctx, nil); err != nil {
-			log.Fatal("Failed to connect to MongoDB:", err)
-		}
+		defer client.Disconnect(context.Background())
 
 		admin, err := GetAdminSettingV2(client) // **V2 로 변경하기**
 		if err != nil {

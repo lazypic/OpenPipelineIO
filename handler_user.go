@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -368,33 +369,34 @@ func handleSignup(w http.ResponseWriter, r *http.Request) {
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
 	rcp.CaptchaID = captcha.New()
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.Divisions, err = allDivisions(session) // V2 변경할 것
+	defer client.Disconnect(context.Background())
+
+	rcp.Divisions, err = allDivisionsV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Departments, err = allDepartments(session) // V2 변경할 것
+	rcp.Departments, err = allDepartmentsV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Teams, err = allTeams(session)
+	rcp.Teams, err = allTeamsV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Roles, err = allRoles(session)
+	rcp.Roles, err = allRolesV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Positions, err = allPositions(session)
+	rcp.Positions, err = allPositionsV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
