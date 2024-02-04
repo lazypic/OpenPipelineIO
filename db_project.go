@@ -49,3 +49,39 @@ func addProjectV2(client *mongo.Client, p Project) error {
 	}
 	return nil
 }
+
+// getStatusProjectsV2 함수는 상태를 받아서 프로젝트 정보를 가지고오는 함수입니다.
+func getStatusProjectsV2(client *mongo.Client, status ProjectStatus) ([]Project, error) {
+	collection := client.Database(*flagDBName).Collection("project")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	results := []Project{}
+
+	cursor, err := collection.Find(ctx, bson.M{"status": status})
+	if err != nil {
+		return results, err
+	}
+	err = cursor.All(ctx, &results)
+	if err != nil {
+		return results, err
+	}
+	return results, nil
+}
+
+// getProjectsV2 함수는 전체 프로젝트 정보를 가지고오는 함수입니다.
+func getProjectsV2(client *mongo.Client) ([]Project, error) {
+	collection := client.Database(*flagDBName).Collection("project")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	results := []Project{}
+	cursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		return results, err
+	}
+	err = cursor.All(ctx, &results)
+	if err != nil {
+		return results, err
+	}
+	return results, nil
+}

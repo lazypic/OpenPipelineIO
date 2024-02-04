@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"html/template"
 	"log"
@@ -205,13 +206,13 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 		SearchOption
 	}
 	rcp := recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	err = rcp.SearchOption.LoadCookie(session, r)
+	defer client.Disconnect(context.Background())
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -227,7 +228,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 혹시나 프로젝트가 삭제되면 프로젝트가 존재하지 않을 수 있다. DB에 프로젝트가 존재하는지 체크한다.
-	plist, err := Projectlist(session)
+	plist, err := ProjectlistV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
