@@ -168,3 +168,20 @@ func rmTokenV2(client *mongo.Client, id string) error {
 	}
 	return nil
 }
+
+// allUsersV2 함수는 전체 프로젝트 정보를 가지고오는 함수입니다.
+func allUsersV2(client *mongo.Client) ([]User, error) {
+	collection := client.Database(*flagDBName).Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	results := []User{}
+	cursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		return results, err
+	}
+	err = cursor.All(ctx, &results)
+	if err != nil {
+		return results, err
+	}
+	return results, nil
+}

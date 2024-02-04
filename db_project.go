@@ -85,3 +85,37 @@ func getProjectsV2(client *mongo.Client) ([]Project, error) {
 	}
 	return results, nil
 }
+
+func getProjectV2(client *mongo.Client, id string) (Project, error) {
+	collection := client.Database(*flagDBName).Collection("project")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var p Project
+	result := collection.FindOne(ctx, bson.M{"id": id})
+	if result.Err() == mongo.ErrNoDocuments {
+		return p, mongo.ErrNoDocuments
+	}
+	err := result.Decode(&p)
+	if err != nil {
+		return p, err
+	}
+	return p, nil
+}
+
+// setProjectV2 함수는 프로젝트 정보를 업데이트하는 함수이다.
+func setProjectV2(client *mongo.Client, p Project) error {
+	collection := client.Database(*flagDBName).Collection("project")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	p.Updatetime = time.Now().Format(time.RFC3339)
+	filter := bson.M{"id": p.ID}
+	update := bson.D{{Key: "$set", Value: p}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id" + p.ID)
+	}
+	return nil
+}

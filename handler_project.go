@@ -189,13 +189,13 @@ func handleEditProjectSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	current, err := getProject(session, r.FormValue("Id"))
+	defer client.Disconnect(context.Background())
+	current, err := getProjectV2(client, r.FormValue("Id"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -390,7 +390,7 @@ func handleEditProjectSubmit(w http.ResponseWriter, r *http.Request) {
 	renewal.ProjectType = r.FormValue("ProjectType")
 	renewal.Prompt = r.FormValue("Prompt")
 	// 새로 변경된 정보를 DB에 저장한다.
-	err = setProject(session, renewal)
+	err = setProjectV2(client, renewal)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -412,12 +412,12 @@ func handleEditProject(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	q := r.URL.Query()
 	id := q.Get("id") // 프로젝트id에 사용할 것
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	type recipe struct {
 		Project            `json:"project"`
 		User               `json:"user"`
@@ -429,24 +429,24 @@ func handleEditProject(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	err = rcp.SearchOption.LoadCookie(session, r)
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	p, err := getProject(session, id)
+	p, err := getProjectV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.Project = p
-	u, err := getUser(session, ssid.ID)
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.User = u
-	users, err := allUsers(session)
+	users, err := allUsersV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
