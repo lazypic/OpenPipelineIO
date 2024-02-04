@@ -26,10 +26,10 @@ func handleAdminSetting(w http.ResponseWriter, r *http.Request) {
 	}
 	defer client.Disconnect(context.Background())
 	type recipe struct {
-		User        User
+		User
 		Projectlist []string
 		SearchOption
-		Setting
+		Setting Setting
 	}
 	rcp := recipe{}
 	err = rcp.SearchOption.LoadCookieV2(client, r)
@@ -53,7 +53,8 @@ func handleAdminSetting(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "text/html")
+	//w.Header().Set("Content-Type", "text/html")
+
 	err = TEMPLATES.ExecuteTemplate(w, "adminsetting", rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
