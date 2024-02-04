@@ -8,15 +8,14 @@
     </div>
     <div class="row">
         <div class="col-sm text-center text-darkmode">
-            {{.ID}} 로 가입이 완료되었습니다.<br>
-            <small class="text-muted">접속정보: {{.LastIP}}:{{.LastPort}}</small>
+            {{.User.ID}} 로 가입이 완료되었습니다.<br>
+            <small class="text-muted">접속정보: {{.User.LastIP}}:{{.User.LastPort}}</small>
         </div>
     </div>     
     <div class="text-center">
         <a href="/" class="btn btn-outline-darkmode mt-5">HOME</a>
     </div>
 </div>
-
 
 
 {{template "footerBootstrap" .}}

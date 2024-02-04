@@ -21,7 +21,6 @@ import (
 func addUser(session *mgo.Session, u User) error {
 	if u.ID == "" {
 		err := errors.New("ID가 빈 문자열입니다. 유저를 생성할 수 없습니다")
-		log.Println(err)
 		return err
 	}
 	session.SetMode(mgo.Monotonic, true)
@@ -29,18 +28,15 @@ func addUser(session *mgo.Session, u User) error {
 
 	num, err := c.Find(bson.M{"id": u.ID}).Count()
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 	if num != 0 {
 		err = errors.New(u.ID + " ID를 가진 사용자가 이미 DB에 존재합니다.")
-		log.Println(err)
 		return err
 	}
 	u.Createtime = time.Now().Format(time.RFC3339)
 	err = c.Insert(u)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 	return nil
@@ -51,12 +47,10 @@ func addToken(session *mgo.Session, u User) error {
 	c := session.DB(*flagDBName).C("token")
 	num, err := c.Find(bson.M{"token": u.Token}).Count()
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 	if num != 0 {
 		err = errors.New(u.Token + " 키가 이미 DB에 존재합니다.")
-		log.Println(err)
 		return err
 	}
 	t := Token{
@@ -66,7 +60,6 @@ func addToken(session *mgo.Session, u User) error {
 	}
 	err = c.Insert(t)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 	return nil

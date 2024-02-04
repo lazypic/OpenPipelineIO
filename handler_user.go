@@ -15,7 +15,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/dchest/captcha"
 	"github.com/disintegration/imaging"
@@ -554,8 +553,8 @@ func handleSignupSubmit(w http.ResponseWriter, r *http.Request) {
 	u.LastIP = host
 	u.LastPort = port
 	u.Token = base64.StdEncoding.EncodeToString([]byte(pw))
-	// 이 데이터가 DB로 들어가야 한다.
-	session, err := mgo.DialWithTimeout(*flagDBIP, 2*time.Second)
+
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -563,7 +562,7 @@ func handleSignupSubmit(w http.ResponseWriter, r *http.Request) {
 	// Oraganization 정보를 분석해서 사용자에 Organization 정보를 등록한다.
 	u.OrganizationsForm = r.FormValue("OrganizationsForm")
 	if u.OrganizationsForm != "" {
-		u.Organizations, err = OrganizationsFormToOrganizations(session, u.OrganizationsForm)
+		u.Organizations, err = OrganizationsFormToOrganizationsV2(client, u.OrganizationsForm)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -571,12 +570,12 @@ func handleSignupSubmit(w http.ResponseWriter, r *http.Request) {
 	}
 	// 조직 정보로 태그를 자동으로 생성한다.
 	u.SetTags()
-	err = addUser(session, u)
+	err = addUserV2(client, u)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = addToken(session, u)
+	err = addTokenV2(client, u) // <- 여기를 driver로 바꿀 것
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -584,7 +583,7 @@ func handleSignupSubmit(w http.ResponseWriter, r *http.Request) {
 	// JWT 토큰으로 쿠키를 저장한다.
 	SetSessionID(w, u.ID, u.AccessLevel, "")
 	// 가입이후 처리할 스크립트가 admin setting에 선언되어 있다면, 실행합니다.
-	setting, err := GetAdminSetting(session)
+	setting, err := GetAdminSettingV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -606,8 +605,16 @@ func handleSignupSubmit(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	type recipe struct {
+		User
+		Setting
+	}
+	rcp := recipe{}
+	rcp.User = u
+	rcp.Setting = setting
+
 	// 가입완료 페이지로 이동
-	err = TEMPLATES.ExecuteTemplate(w, "signup_success", u)
+	err = TEMPLATES.ExecuteTemplate(w, "signup_success", rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -655,12 +662,12 @@ func handleSignin(w http.ResponseWriter, r *http.Request) {
 // handleSigninSubmit 함수는 사용자 로그인값을 처리하는 핸들러이다.
 func handleSigninSubmit(w http.ResponseWriter, r *http.Request) {
 	id := r.FormValue("ID")
-	if !regexpUserID.MatchString(id) {
-		http.Error(w, "ID값은 영문,숫자로만 이루어져야 합니다", http.StatusBadRequest)
-		return
-	}
 	if id == "" {
 		http.Error(w, "ID 값이 빈 문자열 입니다", http.StatusBadRequest)
+		return
+	}
+	if !regexpUserID.MatchString(id) {
+		http.Error(w, "ID값은 영문,숫자로만 이루어져야 합니다", http.StatusBadRequest)
 		return
 	}
 	pw := r.FormValue("Password")

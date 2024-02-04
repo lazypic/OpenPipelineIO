@@ -147,3 +147,78 @@ func allPositionsV2(client *mongo.Client) ([]Position, error) {
 
 	return results, nil
 }
+
+// getDivisionV2 함수는 본부를 가지고오는 함수이다.
+func getDivisionV2(client *mongo.Client, id string) (Division, error) {
+	collection := client.Database(*flagDBName).Collection("divisions")
+	d := Division{}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := collection.FindOne(ctx, bson.M{"id": id}).Decode(&d)
+
+	if err != nil {
+		return d, err
+	}
+	return d, nil
+}
+
+// getDepartmentV2 함수는 부서를 가지고오는 함수이다.
+func getDepartmentV2(client *mongo.Client, id string) (Department, error) {
+	collection := client.Database(*flagDBName).Collection("departments")
+	d := Department{}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := collection.FindOne(ctx, bson.M{"id": id}).Decode(&d)
+
+	if err != nil {
+		return d, err
+	}
+	return d, nil
+}
+
+// getTeamV2 함수는 팀을 가지고오는 함수이다.
+func getTeamV2(client *mongo.Client, id string) (Team, error) {
+	collection := client.Database(*flagDBName).Collection("teams")
+	t := Team{}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := collection.FindOne(ctx, bson.M{"id": id}).Decode(&t)
+
+	if err != nil {
+		return t, err
+	}
+	return t, nil
+}
+
+// getRoleV2 함수는 역할을 가지고오는 함수이다.
+func getRoleV2(client *mongo.Client, id string) (Role, error) {
+	collection := client.Database(*flagDBName).Collection("roles")
+	r := Role{}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := collection.FindOne(ctx, bson.M{"id": id}).Decode(&r)
+
+	if err != nil {
+		return r, err
+	}
+	return r, nil
+}
+
+// getPositionV2 함수는 역할을 가지고오는 함수이다.
+func getPositionV2(client *mongo.Client, id string) (Position, error) {
+	collection := client.Database(*flagDBName).Collection("positions")
+	p := Position{}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := collection.FindOne(ctx, bson.M{"id": id}).Decode(&p)
+
+	if err != nil {
+		return p, err
+	}
+	return p, nil
+}
