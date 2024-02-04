@@ -153,3 +153,18 @@ func setUserV2(client *mongo.Client, u User) error {
 	}
 	return nil
 }
+
+func rmTokenV2(client *mongo.Client, id string) error {
+	collection := client.Database(*flagDBName).Collection("token")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	result := collection.FindOneAndDelete(ctx, bson.M{"id": id})
+	result.Err()
+	if result.Err() != nil {
+		if result.Err() == mongo.ErrNoDocuments {
+			return mongo.ErrNoDocuments
+		}
+		return result.Err()
+	}
+	return nil
+}

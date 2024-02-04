@@ -14,14 +14,15 @@ import (
 	"github.com/unidoc/unipdf/v3/common/license"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"gopkg.in/mgo.v2"
 )
 
 func init() {
 	// unidoc 라이센스키 발급: https://cloud.unidoc.io
 	err := license.SetMeteredKey(os.Getenv(`UNIDOC_LICENSE_API_KEY`))
-	if err != nil {
-		fmt.Println("not load unidoc module")
+	if *flagDebug {
+		if err != nil {
+			fmt.Println("not load unidoc module")
+		}
 	}
 }
 
@@ -110,27 +111,27 @@ func main() {
 	}
 	if *flagAccessLevel != -1 && *flagID != "" {
 		if user.Username != "root" {
-			log.Fatal(errors.New("사용자의 레벨을 수정하기 위해서는 root 권한이 필요합니다"))
+			log.Fatal(errors.New("need Root permission"))
 		}
-		session, err := mgo.Dial(*flagDBIP)
+		client, err := initMongoClient()
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer session.Close()
-		u, err := getUser(session, *flagID)
+		defer client.Disconnect(context.Background())
+		u, err := getUserV2(client, *flagID)
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = rmToken(session, u.ID)
+		err = rmTokenV2(client, u.ID)
 		if err != nil {
 			log.Fatal(err)
 		}
 		u.AccessLevel = AccessLevel(*flagAccessLevel)
-		err = setUser(session, u)
+		err = setUserV2(client, u)
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = addToken(session, u)
+		err = addTokenV2(client, u)
 		if err != nil {
 			log.Fatal(err)
 		}
