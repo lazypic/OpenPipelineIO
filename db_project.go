@@ -86,6 +86,30 @@ func getProjectsV2(client *mongo.Client) ([]Project, error) {
 	return results, nil
 }
 
+// OnProjectlistV2 함수는 준비중, 진행중, 백업중인 상태의 프로젝트 리스트만 출력하는 함수입니다.
+func OnProjectlistV2(client *mongo.Client) ([]string, error) {
+	collection := client.Database(*flagDBName).Collection("project")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var results []string
+	projects := []Project{}
+	cursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		return results, err
+	}
+	err = cursor.All(ctx, &projects)
+	if err != nil {
+		return results, err
+	}
+
+	for _, p := range projects {
+		if p.Status == TestProjectStatus || p.Status == PreProjectStatus || p.Status == PostProjectStatus || p.Status == BackupProjectStatus {
+			results = append(results, p.ID)
+		}
+	}
+	return results, nil
+}
+
 func getProjectV2(client *mongo.Client, id string) (Project, error) {
 	collection := client.Database(*flagDBName).Collection("project")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

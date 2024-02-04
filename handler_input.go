@@ -1,13 +1,11 @@
 package main
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"log"
 	"net/http"
-	"strings"
-
-	"gopkg.in/mgo.v2"
 )
 
 // handleInputMode 함수는 수정을 편하게 입력하는 페이지 이다.
@@ -21,7 +19,6 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	w.Header().Set("Content-Type", "text/html")
 	type recipe struct {
 		User
 		SessionID   string
@@ -54,13 +51,13 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 	rcp.MailDNS = CachedAdminSetting.EmailDNS
 
 	rcp.SessionID = ssid.ID
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	tasks, err := AllTaskSettings(session)
+	defer client.Disconnect(context.Background())
+	tasks, err := AllTaskSettingsV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -69,12 +66,12 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 	for _, t := range tasks {
 		rcp.TasksettingOrderMap[t.Name] = t.Order
 	}
-	rcp.TasksettingNames, err = TasksettingNames(session)
+	rcp.TasksettingNames, err = TaskSettingNamesV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Status, err = AllStatus(session)
+	rcp.Status, err = AllStatusV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -83,12 +80,12 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 		rcp.AllStatusIDs = append(rcp.AllStatusIDs, status.ID)
 	}
 	rcp.SearchOption = handleRequestToSearchOption(r)
-	rcp.User, err = getUser(session, ssid.ID)
+	rcp.User, err = getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Projectlist, err = OnProjectlist(session)
+	rcp.Projectlist, err = OnProjectlistV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -107,29 +104,7 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 		}
 		rcp.Projectlist = accessProjects
 	}
-	// 마이크레이션중인 프로젝트는 제거한다.
-	setting, err := GetAdminSetting(session)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	var excludeProjects []string
-	if setting.ExcludeProject != "" {
-		excludeProjects = strings.Split(strings.Replace(setting.ExcludeProject, " ", "", -1), ",")
-		var accessProjects []string
-		for _, p := range rcp.Projectlist {
-			has := false
-			for _, ep := range excludeProjects {
-				if p == ep {
-					has = true
-				}
-			}
-			if !has { // 제외할 프로젝트가 아니면 프로젝트 리스트에 포함한다.
-				accessProjects = append(accessProjects, p)
-			}
-		}
-		rcp.Projectlist = accessProjects
-	}
+
 	if len(rcp.Projectlist) == 0 {
 		http.Redirect(w, r, "/noonproject", http.StatusSeeOther)
 		return
@@ -166,7 +141,7 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Totalnum.calculatePercent()
 	if rcp.SearchOption.Project != "" {
-		rcp.Projectinfo, err = getProject(session, rcp.SearchOption.Project)
+		rcp.Projectinfo, err = getProjectV2(client, rcp.SearchOption.Project)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -235,7 +210,7 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 		MaxAge: 0,
 	}
 	http.SetCookie(w, &cookie)
-
+	w.Header().Set("Content-Type", "text/html")
 	err = TEMPLATES.ExecuteTemplate(w, "index", rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
