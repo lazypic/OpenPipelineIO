@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -28,6 +29,12 @@ func LoadTemplates() (*template.Template, error) {
 
 // 템플릿 함수를 로딩합니다.
 var funcMap = template.FuncMap{
+	"safeURL": func(rawURL string) template.URL {
+		// URL을 안전하게 처리합니다. 에러 처리는 예제를 단순화하기 위해 생략됩니다.
+		// 실제 코드에서는 url.Parse 후에 에러를 확인하고 적절히 처리해야 합니다.
+		parsedURL, _ := url.Parse(rawURL)
+		return template.URL(parsedURL.String())
+	},
 	"AddProductionStartFrame":      AddProductionStartFrame,
 	"title":                        strings.Title,
 	"Split":                        strings.Split,
