@@ -526,13 +526,13 @@ func handleRmProjectSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	project := r.FormValue("Project")
 	rmReviews := str2bool(r.FormValue("rmreviews"))
 	type recipe struct {
@@ -544,13 +544,13 @@ func handleRmProjectSubmit(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	err = rcp.SearchOption.LoadCookie(session, r)
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.Project = project
-	u, err := getUser(session, ssid.ID)
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -559,7 +559,7 @@ func handleRmProjectSubmit(w http.ResponseWriter, r *http.Request) {
 	// 리뷰데이터 삭제
 	if rmReviews {
 		// 1. 해당 프로젝트의 리뷰 데이터를 가지고 온다.
-		reviews, err := searchReview(session, "project:"+rcp.Project)
+		reviews, err := searchReviewV2(client, "project:"+rcp.Project)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -587,7 +587,7 @@ func handleRmProjectSubmit(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		// 3. 실제 Review DB 삭제
-		err = RmProjectReview(session, rcp.Project)
+		err = RmProjectReviewV2(client, rcp.Project)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -595,7 +595,7 @@ func handleRmProjectSubmit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 4. 프로젝트 삭제
-	err = rmProject(session, rcp.Project)
+	err = rmProjectV2(client, rcp.Project)
 	if err != nil {
 		rcp.Error = err.Error()
 	}

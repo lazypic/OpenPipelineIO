@@ -119,3 +119,14 @@ func setProjectV2(client *mongo.Client, p Project) error {
 	}
 	return nil
 }
+
+func rmProjectV2(client *mongo.Client, project string) error {
+	collection := client.Database(*flagDBName).Collection("project")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err := collection.DeleteOne(ctx, bson.M{"id": project})
+	if err != nil {
+		return err
+	}
+	return nil
+}
