@@ -109,32 +109,32 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/noonproject", http.StatusSeeOther)
 		return
 	}
-	rcp.Ddline3d, err = DistinctDdline(session, rcp.SearchOption.Project, "ddline3d")
+	rcp.Ddline3d, err = DistinctDdlineV2(client, rcp.SearchOption.Project, "ddline3d")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Ddline2d, err = DistinctDdline(session, rcp.SearchOption.Project, "ddline2d")
+	rcp.Ddline2d, err = DistinctDdlineV2(client, rcp.SearchOption.Project, "ddline2d")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Tags, err = Distinct(session, rcp.SearchOption.Project, "tag")
+	rcp.Tags, err = DistinctV2(client, rcp.SearchOption.Project, "tag")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Assettags, err = Distinct(session, rcp.SearchOption.Project, "assettags")
+	rcp.Assettags, err = DistinctV2(client, rcp.SearchOption.Project, "assettags")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.AllAssets, err = AllAssets(session, rcp.SearchOption.Project)
+	rcp.AllAssets, err = AllAssetsV2(client, rcp.SearchOption.Project)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Totalnum, err = Totalnum(session, rcp.SearchOption.Project)
+	rcp.Totalnum, err = TotalnumV2(client, rcp.SearchOption.Project)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

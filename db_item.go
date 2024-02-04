@@ -36,30 +36,32 @@ func addItemV2(client *mongo.Client, i Item) error {
 
 // DistinctDdline 함수는 프로젝트, dict key를 받아서 key에 사용되는 모든 마감일을 반환한다. 예) 태그
 func DistinctDdlineV2(client *mongo.Client, project string, key string) ([]string, error) {
-	var result []string
+	var results []string
 	if project == "" || key == "" {
-		return result, nil
+		return results, nil
 	}
 	collection := client.Database(*flagDBName).Collection("items")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	//err := c.Find(bson.M{"project": project}).Distinct(key, &result)
-	result, err := collection.Distinct(ctx, "project", bson.D{}) // 여기를 수정할 것
-
+	filter := bson.D{{Key: "project", Value: project}}
+	values, err := collection.Distinct(ctx, key, filter)
 	if err != nil {
-		return nil, err
+		return results, err
 	}
-	//result로 datelist를 만든다.
-	sort.Strings(result)
+	for _, value := range values {
+		results = append(results, fmt.Sprintf("%v", value))
+	}
+	sort.Strings(results)
+
 	if *flagDebug {
 		fmt.Println("DB에서 가지고온 마감일 리스트")
-		fmt.Println(result)
+		fmt.Println(results)
 		fmt.Println()
 	}
 	var before string
 	var datelist []string
-	for _, r := range result {
+	for _, r := range results {
 		if r != "" {
 			date := ToNormalTime(r)
 			if date == before {
@@ -77,4 +79,68 @@ func DistinctDdlineV2(client *mongo.Client, project string, key string) ([]strin
 		fmt.Println()
 	}
 	return datelist, nil
+}
+
+func DistinctV2(client *mongo.Client, project string, key string) ([]string, error) {
+	var results []string
+	if project == "" || key == "" {
+		return results, nil
+	}
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.D{{Key: "project", Value: project}}
+	values, err := collection.Distinct(ctx, key, filter)
+	if err != nil {
+		return results, err
+	}
+	for _, value := range values {
+		results = append(results, fmt.Sprintf("%v", value))
+	}
+	sort.Strings(results)
+	return results, nil
+}
+
+func AllAssetsV2(client *mongo.Client, project string) ([]string, error) {
+	var results []string
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	filter := []bson.M{
+		{"project": project},
+		{"type": "asset"},
+	}
+
+	values, err := collection.Distinct(ctx, "name", filter)
+	if err != nil {
+		return results, err
+	}
+	for _, value := range values {
+		if name, ok := value.(string); ok {
+			results = append(results, name)
+		}
+	}
+	sort.Strings(results)
+	return results, nil
+}
+
+func TotalnumV2(client *mongo.Client, project string) (Infobarnum, error) {
+	if project == "" {
+		return Infobarnum{}, nil
+	}
+
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var results Infobarnum
+
+	filter := bson.M{"$or": []bson.M{{"project": project, "type": "org"}, {"project": project, "type": "left"}}}
+	num, err := collection.CountDocuments(ctx, filter)
+	if err != nil {
+		return Infobarnum{}, err
+	}
+	results.Total = int(num)
+	return results, nil
 }
