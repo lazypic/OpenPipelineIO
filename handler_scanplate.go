@@ -375,7 +375,7 @@ func handleAPISearchFootages(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 사용자에게 받은 type을 설정한다.
-	for n, _ := range items {
+	for n := range items {
 		items[n].Type = typ
 		items[n].InColorspace = incolorspace   // 사용자에게 받은 InColorspace를 설정한다.
 		items[n].OutColorspace = outcolorspace // 사용자에게 받은 OutColorspace를 설정한다.

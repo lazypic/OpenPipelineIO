@@ -607,7 +607,7 @@ func handleSignupSubmit(w http.ResponseWriter, r *http.Request) {
 
 	type recipe struct {
 		User
-		Setting
+		Setting Setting
 	}
 	rcp := recipe{}
 	rcp.User = u
