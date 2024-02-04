@@ -3,7 +3,6 @@
 package main
 
 import (
-	"context"
 	"encoding/base64"
 	"errors"
 	"log"
@@ -11,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -83,21 +81,6 @@ func validToken(session *mgo.Session, token string) (Token, error) {
 	c := session.DB(*flagDBName).C("token")
 	t := Token{}
 	err := c.Find(bson.M{"token": token}).One(&t)
-	if err != nil {
-		return t, errors.New("authorization failed")
-	}
-	return t, nil
-}
-
-// validTokenV2 함수는 Token이 유효한지 체크한다.
-// mgo에서 mongo-driver로 바꾼 version이다.
-func validTokenV2(client *mongo.Client, token string) (Token, error) {
-	collection := client.Database(*flagDBName).Collection("token")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	t := Token{}
-	err := collection.FindOne(ctx, bson.M{"token": token}).Decode(&t)
 	if err != nil {
 		return t, errors.New("authorization failed")
 	}

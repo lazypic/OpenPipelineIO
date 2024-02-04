@@ -675,14 +675,16 @@ func handleSigninSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Password 값이 빈 문자열 입니다", http.StatusBadRequest)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
+
 	// 사용자가 과거에 패스워드를 5회이상 틀렸다면 로그인을 허용하지 않는다.
-	u, err := getUser(session, id)
+	u, err := getUserV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -691,12 +693,12 @@ func handleSigninSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidpass", http.StatusSeeOther)
 		return
 	}
-	err = vaildUser(session, id, pw)
+	err = vaildUserV2(client, id, pw)
 	if err != nil {
 		// 패스워드 시도횟수를 추가한다.
-		addPasswordAttempt(session, id)
+		addPasswordAttemptV2(client, id)
 		// 패스워드 시도횟수를 가지고 오기 위해서 사용자 정보를 가지고 온다.
-		u, err := getUser(session, id)
+		u, err := getUserV2(client, id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -715,7 +717,7 @@ func handleSigninSubmit(w http.ResponseWriter, r *http.Request) {
 	u.LastIP = host
 	u.LastPort = port
 	u.PasswordAttempt = 0 // 로그인에 성공하면 기존 시도한 패스워드 횟수를 초기화 한다.
-	err = setUser(session, u)
+	err = setUserV2(client, u)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
