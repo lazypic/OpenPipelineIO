@@ -193,6 +193,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 		errorHandler(w, r, http.StatusNotFound)
 		return
 	}
+
 	ssid, err := GetSessionID(r)
 	if err != nil {
 		http.Redirect(w, r, "/signin", http.StatusSeeOther)
@@ -217,7 +218,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	fmt.Println("test")
 	// 아무 상태도 선택되어있지 않다면 기본 상태설정으로 변경한다. // V2
 	if len(rcp.SearchOption.TrueStatus) == 0 {
 		err := rcp.SearchOption.setStatusDefaultV2()

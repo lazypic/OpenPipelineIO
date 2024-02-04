@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/base64"
 	"log"
 	"net/http"
@@ -63,12 +64,12 @@ func (op *SearchOption) setStatusDefaultV1() error {
 }
 
 func (op *SearchOption) setStatusDefaultV2() error {
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		return err
 	}
-	defer session.Close()
-	status, err := AllStatus(session)
+	defer client.Disconnect(context.Background())
+	status, err := AllStatusV2(client)
 	if err != nil {
 		return err
 	}

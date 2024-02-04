@@ -107,9 +107,9 @@ func AllAssetsV2(client *mongo.Client, project string) ([]string, error) {
 	collection := client.Database(*flagDBName).Collection("items")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	filter := []bson.M{
-		{"project": project},
-		{"type": "asset"},
+	filter := bson.M{
+		"project": project,
+		"type":    "asset",
 	}
 
 	values, err := collection.Distinct(ctx, "name", filter)

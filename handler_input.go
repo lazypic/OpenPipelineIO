@@ -109,36 +109,43 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/noonproject", http.StatusSeeOther)
 		return
 	}
+
 	rcp.Ddline3d, err = DistinctDdlineV2(client, rcp.SearchOption.Project, "ddline3d")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	rcp.Ddline2d, err = DistinctDdlineV2(client, rcp.SearchOption.Project, "ddline2d")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	rcp.Tags, err = DistinctV2(client, rcp.SearchOption.Project, "tag")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	rcp.Assettags, err = DistinctV2(client, rcp.SearchOption.Project, "assettags")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	rcp.AllAssets, err = AllAssetsV2(client, rcp.SearchOption.Project)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	rcp.Totalnum, err = TotalnumV2(client, rcp.SearchOption.Project)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	rcp.Totalnum.calculatePercent()
 	if rcp.SearchOption.Project != "" {
 		rcp.Projectinfo, err = getProjectV2(client, rcp.SearchOption.Project)
@@ -152,14 +159,16 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 		}
 		rcp.Dday = dday
 	}
+
 	// 페이지 검색을 진행한다. 페이지수에 맞는 아이템 갯수만 반환해야한다.
-	rcp.Items, rcp.TotalPageNum, err = SearchPage(session, rcp.SearchOption)
+	rcp.Items, rcp.TotalPageNum, err = SearchPageV2(client, rcp.SearchOption)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	// 검색바에 출력되는 갯수를 연산한다. 전체에서 갯수를 구해야한다.
-	items, err := Search(session, rcp.SearchOption)
+	items, err := SearchV2(client, rcp.SearchOption)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -216,4 +225,5 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 }
