@@ -27,7 +27,7 @@
 		<div class="pt-2 pb-3">
 			<h2 class="section-heading text-center">Edit {{.Project.ID}}</h2>
 		</div>
-		<input type="text" name="Id" value={{.Project.ID}} style="display:none">
+		<input type="text" name="Id" value="{{.Project.ID}}" style="display:none">
 		<div class="row mx-auto">
 			<div class="col-lg-3 col-md-6 col-sm-12">
 				<div class="form-group">
@@ -69,17 +69,17 @@
 					<div class="row">
 						<div class="col">
 							<small class="form-text text-muted">한글 프로젝트명</small>
-							<input type="text" name="Name" class="form-control" placeholder="한글 프로젝트명" value={{.Project.Name}}>
+							<input type="text" name="Name" class="form-control" placeholder="한글 프로젝트명" value="{{.Project.Name}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">E-mail 헤더</small>
-							<input type="text" name="MailHead" class="form-control" placeholder="메일헤더" value={{.Project.MailHead}}>
+							<input type="text" name="MailHead" class="form-control" placeholder="메일헤더" value="{{.Project.MailHead}}">
 						</div>
 					</div>
 					<div class="row">
 						<div class="col">
 							<small class="form-text text-muted">넷플릭스 Show ID</small>
-							<input type="text" name="NetflixShowID" class="form-control" placeholder="넷플릭스 Show ID" value={{.Project.NetflixShowID}}>
+							<input type="text" name="NetflixShowID" class="form-control" placeholder="넷플릭스 Show ID" value="{{.Project.NetflixShowID}}">
 						</div>
 						<div class="col">
 							<div class="form-group">
@@ -102,7 +102,7 @@
 					<div class="row">
 						<div class="col">
 							<small class="form-text text-muted">프로젝트 주요 기술이슈를 작성합니다.</small>
-							<input type="text" name="Issue" class="form-control" placeholder="이슈" value={{.Project.Issue}}>
+							<input type="text" name="Issue" class="form-control" placeholder="이슈" value="{{.Project.Issue}}">
 						</div>		
 					</div>
 					<div class="row pt-3">
@@ -129,76 +129,76 @@
 					<div class="row">
 						<div class="col">
 							<small class="form-text text-muted">감독</small>
-							<input type="text" list="userlist" name="Director" class="form-control" placeholder="감독" autocomplete="off" value={{.Project.Director}}>
+							<input type="text" list="userlist" name="Director" class="form-control" placeholder="감독" autocomplete="off" value="{{.Project.Director}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">슈퍼바이져</small>
-							<input type="text" list="userlist" name="Super" class="form-control" placeholder="슈퍼바이져" value={{.Project.Super}}>
+							<input type="text" list="userlist" name="Super" class="form-control" placeholder="슈퍼바이져" value="{{.Project.Super}}">
 						</div>
 					</div>
 					<div class="row">
 						<div class="col">
 							<small class="form-text text-muted">Onset 슈퍼바이져</small>
-							<input type="text" list="userlist" name="OnsetSuper" class="form-control" placeholder="Onset 슈퍼바이져" value={{.Project.OnsetSuper}}>
+							<input type="text" list="userlist" name="OnsetSuper" class="form-control" placeholder="Onset 슈퍼바이져" value="{{.Project.OnsetSuper}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">CG 슈퍼바이져</small>
-							<input type="text" list="userlist" name="CgSuper" class="form-control" placeholder="CG 슈퍼바이져" value={{.Project.CgSuper}}>
+							<input type="text" list="userlist" name="CgSuper" class="form-control" placeholder="CG 슈퍼바이져" value="{{.Project.CgSuper}}">
 						</div>
 					</div>
 					<div class="row">
 						<div class="col">
 							<small class="form-text text-muted">PM</small>
-							<input type="text" list="userlist" name="Pm" class="form-control" placeholder="PM" value={{.Project.Pm}}>
+							<input type="text" list="userlist" name="Pm" class="form-control" placeholder="PM" value="{{.Project.Pm}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">프로젝트 CC메일, 그룹메일</small>
-							<input type="email" name="PmEmail" class="form-control" placeholder="PM Email" value={{.Project.PmEmail}}>
+							<input type="email" name="PmEmail" class="form-control" placeholder="PM Email" value="{{.Project.PmEmail}}">
 						</div>
 					</div>
 					<div class="row">
 						<div class="col">
 							<small class="form-text text-muted">PD</small>
-							<input type="text" list="userlist" name="Pd" class="form-control" placeholder="PD" value={{.Project.Pd}}>
+							<input type="text" list="userlist" name="Pd" class="form-control" placeholder="PD" value="{{.Project.Pd}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">PA</small>
-							<input type="text" list="userlist" name="Pa" class="form-control" placeholder="PA" value={{.Project.Pa}}>
+							<input type="text" list="userlist" name="Pa" class="form-control" placeholder="PA" value="{{.Project.Pa}}">
 						</div>
 					</div>
 					<div class="form-group pt-4">
 						<label class="pb-2">카메라정보</label>
-						<input type="text" name="Camera" class="form-control" placeholder="Camera" value={{.Project.Camera}}>
+						<input type="text" name="Camera" class="form-control" placeholder="Camera" value="{{.Project.Camera}}">
 					</div>
 					<label class="pt-3">협력사 정보</label>
 					<div class="row">
 						<div class="col">
 							<small class="form-text text-muted">DI회사/담당자</small>
-							<input type="text" list="userlist" name="Di" class="form-control" placeholder="DI회사, 담당자" value={{.Project.Di}}>
+							<input type="text" list="userlist" name="Di" class="form-control" placeholder="DI회사, 담당자" value="{{.Project.Di}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">DI실 연락처</small>
-							<input type="text" name="DiContact" class="form-control" placeholder="연락처" value={{.Project.DiContact}}>
+							<input type="text" name="DiContact" class="form-control" placeholder="연락처" value="{{.Project.DiContact}}">
 						</div>
 					</div>
 					<div class="row">
 						<div class="col">
 							<small class="form-text text-muted">편집실/담당자</small>
-							<input type="text" list="userlist" name="Edit" class="form-control" placeholder="Edit회사, 담당자" value={{.Project.Edit}}>
+							<input type="text" list="userlist" name="Edit" class="form-control" placeholder="Edit회사, 담당자" value="{{.Project.Edit}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">편집실 연락처</small>
-							<input type="text" name="EditContact" class="form-control" placeholder="연락처" value={{.Project.EditContact}}>
+							<input type="text" name="EditContact" class="form-control" placeholder="연락처" value="{{.Project.EditContact}}">
 						</div>
 					</div>
 					<div class="row">
 						<div class="col">
 							<small class="form-text text-muted">사운드실/담당자</small>
-							<input type="text" list="userlist" name="Sound" class="form-control" placeholder="Sound회사, 담당자" value={{.Project.Sound}}>
+							<input type="text" list="userlist" name="Sound" class="form-control" placeholder="Sound회사, 담당자" value="{{.Project.Sound}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">사운드실 연락처</small>
-							<input type="text" name="SoundContact" class="form-control" placeholder="연락처" value={{.Project.SoundContact}}>
+							<input type="text" name="SoundContact" class="form-control" placeholder="연락처" value="{{.Project.SoundContact}}">
 						</div>
 					</div>
 				</div>
@@ -208,15 +208,15 @@
 				<label>공지사항 / 기본정보</label>
 				<div class="form-group">
 					<small class="form-text text-muted">설명 / Description</small>
-					<input type="text" name="Description" class="form-control" placeholder="Description" value={{.Project.Description}}>
+					<input type="text" name="Description" class="form-control" placeholder="Description" value="{{.Project.Description}}">
 					<small class="form-text text-muted">공지사항(OpenPipelineIO 상단에 표기됩니다.)</small>
-					<input type="text" name="Message" class="form-control" placeholder="공지사항" value={{.Project.Message}}>
+					<input type="text" name="Message" class="form-control" placeholder="공지사항" value="{{.Project.Message}}">
 					<small class="form-text text-muted">프로젝트 위키 URL</small>
-					<input type="text" name="Wiki" class="form-control" placeholder="위키주소" value={{.Project.Wiki}}>
+					<input type="text" name="Wiki" class="form-control" placeholder="위키주소" value="{{.Project.Wiki}}">
 					<small class="form-text text-muted">데일리 경로</small>
-					<input type="text" name="Daily" class="form-control" placeholder="데일리경로" value={{.Project.Daily}}>
+					<input type="text" name="Daily" class="form-control" placeholder="데일리경로" value="{{.Project.Daily}}">
 					<small class="form-text text-muted">편집본 영상 경로</small>
-					<input type="text" name="EditDir" class="form-control" placeholder="편집본경로" value={{.Project.EditDir}}>
+					<input type="text" name="EditDir" class="form-control" placeholder="편집본경로" value="{{.Project.EditDir}}">
 					<!--프로젝트 FPS-->
 					<div class="row">
 						<div class="col">
@@ -239,7 +239,7 @@
 				<label class="pt-3">AI</label>
 				<div class="form-group">
 					<small class="form-text text-muted">Global Prompt</small>
-					<input type="text" name="Prompt" class="form-control" placeholder="Prompt" value={{.Project.Prompt}}>
+					<input type="text" name="Prompt" class="form-control" placeholder="Prompt" value="{{.Project.Prompt}}">
 				</div>
 
 				<div class="form-group pt-3">
@@ -247,11 +247,11 @@
 					<div class="row">
 						<div class="col">
 							<small class="form-text text-muted">Pixel Aspect Ratio</small>
-							<input type="text" name="AspectRatio" class="form-control" placeholder="Aspect Ratio" value={{.Project.AspectRatio}}>
+							<input type="text" name="AspectRatio" class="form-control" placeholder="Aspect Ratio" value="{{.Project.AspectRatio}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">Crop AspectRatio</small>
-							<input type="text" name="CropAspectRatio" class="form-control" placeholder="Crop AspectRatio" value={{.Project.CropAspectRatio}}>
+							<input type="text" name="CropAspectRatio" class="form-control" placeholder="Crop AspectRatio" value="{{.Project.CropAspectRatio}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">Proxy Codec</small>
@@ -269,15 +269,15 @@
 					<div class="row">
 						<div class="col">
 							<small class="form-text text-muted">버전 자리수</small>
-							<input type="text" name="VersionNum" class="form-control" placeholder="Version number" value={{.Project.VersionNum}}>
+							<input type="text" name="VersionNum" class="form-control" placeholder="Version number" value="{{.Project.VersionNum}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">시퀀스 자리수</small>
-							<input type="text" name="SeqNum" class="form-control" placeholder="Seq number" value={{.Project.SeqNum}}>
+							<input type="text" name="SeqNum" class="form-control" placeholder="Seq number" value="{{.Project.SeqNum}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">시작프레임</small>
-							<input type="text" name="StartFrame" class="form-control" placeholder="Start Frame" value={{.Project.StartFrame}}>
+							<input type="text" name="StartFrame" class="form-control" placeholder="Start Frame" value="{{.Project.StartFrame}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">확장자</small>
@@ -292,11 +292,11 @@
 					<div class="row">
 						<div class="col">
 							<small class="form-text text-muted">Width</small>
-							<input type="text" name="PlateWidth" class="form-control" placeholder="Width" value={{.Project.PlateWidth}}>
+							<input type="text" name="PlateWidth" class="form-control" placeholder="Width" value="{{.Project.PlateWidth}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">Height</small>
-							<input type="text" name="PlateHeight" class="form-control" placeholder="Height" value={{.Project.PlateHeight}}>
+							<input type="text" name="PlateHeight" class="form-control" placeholder="Height" value="{{.Project.PlateHeight}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">Resize 방식</small>
@@ -326,15 +326,15 @@
 					<div class="row">
 						<div class="col">
 							<small class="form-text text-muted">Crop Width</small>
-							<input type="text" name="PlateCropWidth" class="form-control" placeholder="Width" value={{.Project.PlateCropWidth}}>
+							<input type="text" name="PlateCropWidth" class="form-control" placeholder="Width" value="{{.Project.PlateCropWidth}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">Crop Height</small>
-							<input type="text" name="PlateCropHeight" class="form-control" placeholder="Height" value={{.Project.PlateCropHeight}}>
+							<input type="text" name="PlateCropHeight" class="form-control" placeholder="Height" value="{{.Project.PlateCropHeight}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">Oparcity</small>
-							<input type="number" step="0.1" name="LetterBoxOparcity" class="form-control" placeholder="0.5" value={{.Project.LetterBoxOparcity}}>
+							<input type="number" step="0.1" name="LetterBoxOparcity" class="form-control" placeholder="0.5" value="{{.Project.LetterBoxOparcity}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">LetterBox</small>
@@ -394,10 +394,10 @@
 			<div class="col-lg-3 col-md-6 col-sm-12">
 				<div class="form-group">
 					<label class="pb-2">OCIO Path</label> <!--프로젝트에서 사용하는 Custom OCIO Path를 설정한다.-->
-					<input type="text" name="OCIOPath" class="form-control" placeholder="OCIO PATH" value={{.Project.OCIOPath}}>
+					<input type="text" name="OCIOPath" class="form-control" placeholder="OCIO PATH" value="{{.Project.OCIOPath}}">
 					<label class="pt-2 pb-2">LUT 경로</label>
 					<!--lut In,Out 컬러스페이스는 default값이 없다. 뉴크에서 lut를 적용할 때 사용하는 Vectorfield 노드에 default 값이 없기 때문이다.-->
-					<input type="text" name="Lut" class="form-control" placeholder="Lut path" value={{.Project.Lut}}>
+					<input type="text" name="Lut" class="form-control" placeholder="Lut path" value="{{.Project.Lut}}">
 					<div class="row">
 						<div class="col">
 							<small class="form-text text-muted">LUT IN Colorspace</small>
@@ -432,11 +432,11 @@
 					<div class="row">
 						<div class="col-3">
 							<small class="form-text text-muted">Width</small>
-							<input type="text" name="OutputMov.Width" class="form-control" placeholder="Width" value={{.Project.OutputMov.Width}}>
+							<input type="text" name="OutputMov.Width" class="form-control" placeholder="Width" value="{{.Project.OutputMov.Width}}">
 						</div>
 						<div class="col-3">
 							<small class="form-text text-muted">Height</small>
-							<input type="text" name="OutputMov.Height" class="form-control" placeholder="Height" value={{.Project.OutputMov.Height}}>
+							<input type="text" name="OutputMov.Height" class="form-control" placeholder="Height" value="{{.Project.OutputMov.Height}}">
 						</div>
 						<div class="col-6">
 							<small class="form-text text-muted">Codec</small>
@@ -454,15 +454,15 @@
 					<div class="row">
 						<div class="col">
 							<small class="form-text text-muted">Crop Width</small>
-							<input type="text" name="OutputMov.CropWidth" class="form-control" placeholder="Width" value={{.Project.OutputMov.CropWidth}}>
+							<input type="text" name="OutputMov.CropWidth" class="form-control" placeholder="Width" value="{{.Project.OutputMov.CropWidth}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">Crop Height</small>
-							<input type="text" name="OutputMov.CropHeight" class="form-control" placeholder="Height" value={{.Project.OutputMov.CropHeight}}>
+							<input type="text" name="OutputMov.CropHeight" class="form-control" placeholder="Height" value="{{.Project.OutputMov.CropHeight}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">Oparcity</small>
-							<input type="number" step="0.1" name="OutputMov.LetterBoxOparcity" class="form-control" placeholder="0.5" value={{.Project.OutputMov.LetterBoxOparcity}}>
+							<input type="number" step="0.1" name="OutputMov.LetterBoxOparcity" class="form-control" placeholder="0.5" value="{{.Project.OutputMov.LetterBoxOparcity}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">LetterBox</small>
@@ -527,11 +527,11 @@
 					<div class="row">
 						<div class="col-3">
 							<small class="form-text text-muted">Width</small>
-							<input type="text" name="EditMov.Width" class="form-control" placeholder="Width" value={{.Project.EditMov.Width}}>
+							<input type="text" name="EditMov.Width" class="form-control" placeholder="Width" value="{{.Project.EditMov.Width}}">
 						</div>
 						<div class="col-3">
 							<small class="form-text text-muted">Height</small>
-							<input type="text" name="EditMov.Height" class="form-control" placeholder="Height" value={{.Project.EditMov.Height}}>
+							<input type="text" name="EditMov.Height" class="form-control" placeholder="Height" value="{{.Project.EditMov.Height}}">
 						</div>
 						<div class="col-6">
 							<small class="form-text text-muted">Codec</small>
@@ -550,15 +550,15 @@
 					<div class="row">
 						<div class="col">
 							<small class="form-text text-muted">Crop Width</small>
-							<input type="text" name="EditMov.CropWidth" class="form-control" placeholder="Width" value={{.Project.EditMov.CropWidth}}>
+							<input type="text" name="EditMov.CropWidth" class="form-control" placeholder="Width" value="{{.Project.EditMov.CropWidth}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">Crop Height</small>
-							<input type="text" name="EditMov.CropHeight" class="form-control" placeholder="Height" value={{.Project.EditMov.CropHeight}}>
+							<input type="text" name="EditMov.CropHeight" class="form-control" placeholder="Height" value="{{.Project.EditMov.CropHeight}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">Oparcity</small>
-							<input type="number" step="0.1" name="EditMov.LetterBoxOparcity" class="form-control" placeholder="0.5" value={{.Project.EditMov.LetterBoxOparcity}}>
+							<input type="number" step="0.1" name="EditMov.LetterBoxOparcity" class="form-control" placeholder="0.5" value="{{.Project.EditMov.LetterBoxOparcity}}">
 						</div>
 						<div class="col">
 							<small class="form-text text-muted">LetterBox</small>
@@ -632,7 +632,7 @@
 				<div class="form-group pt-3">
 					<label>Nuke 셋팅</label><br>
 					<small class="form-text text-muted">프로젝트에 사용하는 슬레이트 기즈모 ex) slate_default</small>
-					<input type="text" name="NukeGizmo" class="form-control" placeholder="gizmo name" value={{.Project.NukeGizmo}}>
+					<input type="text" name="NukeGizmo" class="form-control" placeholder="gizmo name" value="{{.Project.NukeGizmo}}">
 				</div>
 				<div class="form-group pt-3">
 					<label>Maya 셋팅</label><br>
