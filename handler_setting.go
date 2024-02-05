@@ -73,12 +73,12 @@ func handleAdminSettingSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	s := Setting{}
 	s.ID = "admin"
 	s.AppName = r.FormValue("AppName")
@@ -218,7 +218,7 @@ func handleAdminSettingSubmit(w http.ResponseWriter, r *http.Request) {
 	s.FullcalendarSchedulerLicenseKey = r.FormValue("FullcalendarSchedulerLicenseKey")
 	s.AudioCodec = r.FormValue("audiocodec")
 	// DB에 값을 저장합니다.
-	err = SetAdminSetting(session, s)
+	err = SetAdminSettingV2(client, s)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -231,12 +231,12 @@ func handleAdminSettingSubmit(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	err = rcp.SearchOption.LoadCookie(session, r)
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	u, err := getUser(session, ssid.ID)
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

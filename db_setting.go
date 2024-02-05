@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -61,4 +62,21 @@ func GetAdminSettingV2(client *mongo.Client) (Setting, error) {
 		return s, err
 	}
 	return s, nil
+}
+
+// SetAdminsettingV2 함수는 사용자 정보를 업데이트하는 함수이다.
+func SetAdminSettingV2(client *mongo.Client, s Setting) error {
+	collection := client.Database(*flagDBName).Collection("admin")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	filter := bson.M{"id": "admin"}
+	update := bson.D{{Key: "$set", Value: s}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found")
+	}
+	return nil
 }
