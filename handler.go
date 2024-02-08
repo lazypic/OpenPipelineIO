@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -14,6 +15,7 @@ import (
 	"github.com/dchest/captcha"
 	"github.com/gorilla/mux"
 	"github.com/shurcooL/httpfs/html/vfstemplate"
+	"go.mongodb.org/mongo-driver/bson"
 	"gopkg.in/mgo.v2"
 )
 
@@ -97,13 +99,13 @@ func handleHelp(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/signin", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	u, err := getUser(session, ssid.ID)
+	defer client.Disconnect(context.Background())
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -129,19 +131,24 @@ func handleHelp(w http.ResponseWriter, r *http.Request) {
 	rcp.Sha1ver = SHA1VER
 	rcp.BuildTime = BUILDTIME
 	rcp.DBIP = *flagDBIP
-	info, err := session.BuildInfo()
+
+	var result bson.M
+	err = client.Database("admin").RunCommand(context.TODO(), bson.D{{Key: "buildInfo", Value: 1}}).Decode(&result)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.DBVer = info.Version
-	err = rcp.SearchOption.LoadCookie(session, r)
+
+	// 버전 정보 출력
+	rcp.DBVer = fmt.Sprintf("%s", result["version"])
+
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.User = u
-	rcp.Status, err = AllStatus(session)
+	rcp.Status, err = AllStatusV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

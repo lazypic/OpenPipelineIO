@@ -3,9 +3,14 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
+	"log"
+	"sort"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -184,4 +189,101 @@ func allUsersV2(client *mongo.Client) ([]User, error) {
 		return results, err
 	}
 	return results, nil
+}
+
+// searchUsersV2 함수는 검색을 입력받고 해당 검색어가 있는 사용자 정보를 가지고 옵니다.
+func searchUsersV2(client *mongo.Client, words []string) ([]User, error) {
+	collection := client.Database(*flagDBName).Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var searchwords []string
+	// 사람 이름을 가지고 검색을 자주한다.
+	for _, word := range words {
+		if isASCII(word) {
+			searchwords = append(searchwords, word)
+			continue
+		}
+		if strings.HasPrefix(word, "tag:") {
+			searchwords = append(searchwords, word)
+			continue
+		}
+		r := []rune(word)
+		if len(r) == 2 { // 이름이 2자리 일경우 "김웅"
+			searchwords = append(searchwords, string(r[0])) // 성을 추가한다.
+			searchwords = append(searchwords, string(r[1])) // 이름을 추가한다.
+			continue
+		} else if len(r) == 3 { // 이름일 확률이 높다.
+			searchwords = append(searchwords, string(r[0]))  // 성을 추가한다.
+			searchwords = append(searchwords, string(r[1:])) // 이름을 추가한다.
+			continue
+		} else if len(r) == 4 { // 이름이 4자리 일경우가 있다. 예)독고영재
+			searchwords = append(searchwords, string(r[2:])) // 이름이 고영재" 또는 "영재" 일 수 있다. 이름을 위주로 검색시킨다.
+			continue
+		}
+		searchwords = append(searchwords, word)
+	}
+
+	allQueries := []bson.M{}
+	if *flagDebug {
+		log.Println(searchwords)
+	}
+	for _, word := range searchwords {
+		orQueries := []bson.M{}
+		if strings.HasPrefix(word, "tag:") {
+			orQueries = append(orQueries, bson.M{"tags": strings.TrimPrefix(word, "tag:")})
+		} else if strings.HasPrefix(word, "id:") {
+			orQueries = append(orQueries, bson.M{"id": strings.TrimPrefix(word, "id:")})
+		} else {
+			orQueries = append(orQueries, bson.M{"id": &primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"employeenumber": &primitive.Regex{Pattern: word, Options: "i"}})
+			orQueries = append(orQueries, bson.M{"firstnamekor": &primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"lastnamekor": &primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"firstnameeng": &primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"lastnameeng": &primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"firstnamechn": &primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"lastnamechn": &primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"email": &primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"emailexternal": &primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"phone": &primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"hotline": &primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"location": &primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"tags": &primitive.Regex{Pattern: word, Options: "i"}})
+			orQueries = append(orQueries, bson.M{"lastip": &primitive.Regex{Pattern: word}})
+		}
+		allQueries = append(allQueries, bson.M{"$or": orQueries})
+	}
+
+	q := bson.M{"$and": allQueries}
+
+	var results []User
+
+	cursor, err := collection.Find(ctx, q)
+	if err != nil {
+		return results, err
+	}
+	err = cursor.All(ctx, &results)
+	if err != nil {
+		return results, err
+	}
+	return results, nil
+}
+
+func UserTagsV2(client *mongo.Client) ([]string, error) {
+	var tags []string
+
+	collection := client.Database(*flagDBName).Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{}
+	values, err := collection.Distinct(ctx, "tags", filter)
+	if err != nil {
+		return tags, err
+	}
+	for _, value := range values {
+		tags = append(tags, fmt.Sprintf("%v", value))
+	}
+	sort.Strings(tags)
+	return tags, nil
 }

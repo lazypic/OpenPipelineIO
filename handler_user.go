@@ -920,12 +920,12 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 	searchword := q.Get("search")
 	isLeave := str2bool(q.Get("isleave"))
 
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	type recipe struct {
 		User                // 로그인한 사용자 정보
 		IsLeave    bool     // 퇴사자 포함, 비포함.
@@ -939,25 +939,25 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 	rcp := recipe{}
 	rcp.IsLeave = isLeave
 	rcp.Setting = CachedAdminSetting
-	err = rcp.SearchOption.LoadCookie(session, r)
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.Searchword = searchword
-	rcp.User, err = getUser(session, ssid.ID)
+	rcp.User, err = getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	searchwords := strings.Split(strings.ReplaceAll(searchword, " ", ","), ",")
-	rcp.Users, err = searchUsers(session, searchwords)
+	rcp.Users, err = searchUsersV2(client, searchwords)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.Usernum = len(rcp.Users)
-	rcp.Tags, err = UserTags(session)
+	rcp.Tags, err = UserTagsV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
