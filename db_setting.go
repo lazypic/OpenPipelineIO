@@ -52,7 +52,6 @@ func GetAdminSettingV2(client *mongo.Client) (Setting, error) {
 	defer cancel()
 
 	err := collection.FindOne(ctx, bson.M{"id": "admin"}).Decode(&s)
-	fmt.Println(err)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			s.ID = "admin"
@@ -71,6 +70,56 @@ func SetAdminSettingV2(client *mongo.Client, s Setting) error {
 	defer cancel()
 	filter := bson.M{"id": "admin"}
 	update := bson.D{{Key: "$set", Value: s}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found")
+	}
+	return nil
+}
+
+func AddTaskSettingV2(client *mongo.Client, t Tasksetting) error {
+	collection := client.Database(*flagDBName).Collection("tasksetting")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	num, err := collection.CountDocuments(ctx, bson.M{"id": t.ID})
+	if err != nil {
+		return err
+	}
+
+	if num > 0 {
+		return errors.New("이미 Tasksetting이 존재합니다")
+	}
+
+	_, err = collection.InsertOne(ctx, t)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func getTaskSettingV2(client *mongo.Client, id string) (Tasksetting, error) {
+	collection := client.Database(*flagDBName).Collection("tasksetting")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	result := Tasksetting{}
+
+	err := collection.FindOne(ctx, bson.M{"id": id}).Decode(&result)
+	if err != nil {
+		return result, err
+	}
+	return result, nil
+}
+
+func SetTaskSettingV2(client *mongo.Client, t Tasksetting) error {
+	collection := client.Database(*flagDBName).Collection("tasksetting")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	filter := bson.M{"id": t.ID}
+	update := bson.D{{Key: "$set", Value: t}}
 	result, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
