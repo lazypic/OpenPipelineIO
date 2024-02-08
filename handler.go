@@ -16,7 +16,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/shurcooL/httpfs/html/vfstemplate"
 	"go.mongodb.org/mongo-driver/bson"
-	"gopkg.in/mgo.v2"
 )
 
 // MaxFileSize 사이즈는 웹에서 전송할 수 있는 최대 사이즈를 2기가로 제한한다.(인트라넷)
@@ -182,17 +181,14 @@ func handleHealth(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.IP = ip
 	// DB 체크
-	session, err := mgo.Dial(*flagDBIP)
+
+	client, err := initMongoClient()
 	if err != nil {
+		rcp.DB = false
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-
-	err = session.Ping()
-	if err != nil {
-		rcp.DB = false
-	}
+	defer client.Disconnect(context.Background())
 	rcp.DB = true
 
 	// 웹서버 체크
