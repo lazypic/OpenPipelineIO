@@ -103,43 +103,44 @@ func handleEditUser(w http.ResponseWriter, r *http.Request) {
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
 	rcp.MailDNS = CachedAdminSetting.EmailDNS
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.Divisions, err = allDivisions(session)
+	defer client.Disconnect(context.Background())
+
+	rcp.Divisions, err = allDivisionsV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Departments, err = allDepartments(session)
+	rcp.Departments, err = allDepartmentsV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Teams, err = allTeams(session)
+	rcp.Teams, err = allTeamsV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Roles, err = allRoles(session)
+	rcp.Roles, err = allRolesV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Positions, err = allPositions(session)
+	rcp.Positions, err = allPositionsV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.User, err = getUser(session, id)
+	rcp.User, err = getUserV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.SessionUser, err = getUser(session, ssid.ID)
+	rcp.SessionUser, err = getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -168,12 +169,13 @@ func handleEditUserSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// 유저 정보를 가지고 온다.
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
+
 	id := r.FormValue("ID")
 	if id != ssid.ID {
 		if ssid.AccessLevel != AdminAccessLevel {
@@ -181,7 +183,7 @@ func handleEditUserSubmit(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	u, err := getUser(session, id)
+	u, err := getUserV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -211,13 +213,13 @@ func handleEditUserSubmit(w http.ResponseWriter, r *http.Request) {
 		// 사용자 레벨을 업데이트한다.
 		u.AccessLevel = AccessLevel(level)
 		// 사용자 토큰을 업데이트한다.
-		t, err := getToken(session, id)
+		t, err := getTokenV2(client, id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		t.AccessLevel = AccessLevel(level)
-		err = setToken(session, t)
+		err = setTokenV2(client, t)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -228,13 +230,13 @@ func handleEditUserSubmit(w http.ResponseWriter, r *http.Request) {
 		u.AccessLevel = AccessLevel(0)
 		u.IsLeave = true
 		// 사용자 토큰을 업데이트한다.
-		t, err := getToken(session, id)
+		t, err := getTokenV2(client, id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		t.AccessLevel = AccessLevel(0)
-		err = setToken(session, t)
+		err = setTokenV2(client, t)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -246,7 +248,7 @@ func handleEditUserSubmit(w http.ResponseWriter, r *http.Request) {
 	// Oraganization 정보를 분석해서 사용자에 Organization 정보를 등록한다.
 	u.OrganizationsForm = r.FormValue("OrganizationsForm")
 	if u.OrganizationsForm != "" {
-		u.Organizations, err = OrganizationsFormToOrganizations(session, u.OrganizationsForm)
+		u.Organizations, err = OrganizationsFormToOrganizationsV2(client, u.OrganizationsForm)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -313,14 +315,14 @@ func handleEditUserSubmit(w http.ResponseWriter, r *http.Request) {
 		}
 		u.Thumbnail = true
 	}
-	err = setUser(session, u)
+	err = setUserV2(client, u)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// 사용자 수정이후 처리할 스크립트가 admin setting에 선언되어 있다면, 실행합니다.
-	setting, err := GetAdminSetting(session)
+	setting, err := GetAdminSettingV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

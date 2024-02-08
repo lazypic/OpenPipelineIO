@@ -287,3 +287,32 @@ func UserTagsV2(client *mongo.Client) ([]string, error) {
 	sort.Strings(tags)
 	return tags, nil
 }
+
+func getTokenV2(client *mongo.Client, id string) (Token, error) {
+	collection := client.Database(*flagDBName).Collection("token")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	t := Token{}
+	err := collection.FindOne(ctx, bson.M{"id": id}).Decode(&t)
+	if err != nil {
+		return t, err
+	}
+	return t, nil
+}
+
+func setTokenV2(client *mongo.Client, t Token) error {
+	collection := client.Database(*flagDBName).Collection("token")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": t.ID}
+	update := bson.D{{Key: "$set", Value: t}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id" + t.ID)
+	}
+	return nil
+}
