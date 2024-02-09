@@ -270,14 +270,13 @@ func handleAddShot(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+
+	client, err := initMongoClient()
 	if err != nil {
-		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	type recipe struct {
 		User        User
 		Projectlist []string
@@ -286,23 +285,24 @@ func handleAddShot(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	err = rcp.SearchOption.LoadCookie(session, r)
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	u, err := getUser(session, ssid.ID)
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.User = u
-	rcp.Projectlist, err = Projectlist(session)
+	rcp.Projectlist, err = ProjectlistV2(client)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "text/html")
 	err = TEMPLATES.ExecuteTemplate(w, "addShot", rcp)
 	if err != nil {
 		log.Println(err)
