@@ -810,7 +810,7 @@ func handleUpdatePassword(w http.ResponseWriter, r *http.Request) {
 	}
 	q := r.URL.Query()
 	id := q.Get("id")
-	w.Header().Set("Content-Type", "text/html")
+
 	type recipe struct {
 		User
 		SearchOption
@@ -818,22 +818,23 @@ func handleUpdatePassword(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	err = rcp.SearchOption.LoadCookie(session, r)
+	defer client.Disconnect(context.Background())
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.User, err = getUser(session, id)
+	rcp.User, err = getUserV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "text/html")
 	err = TEMPLATES.ExecuteTemplate(w, "updatepassword", rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
