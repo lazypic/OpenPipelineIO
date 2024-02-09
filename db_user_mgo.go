@@ -15,31 +15,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-// addUser 함수는 사용자를 추가하는 함수이다.
-func addUser(session *mgo.Session, u User) error {
-	if u.ID == "" {
-		err := errors.New("ID가 빈 문자열입니다. 유저를 생성할 수 없습니다")
-		return err
-	}
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("users")
-
-	num, err := c.Find(bson.M{"id": u.ID}).Count()
-	if err != nil {
-		return err
-	}
-	if num != 0 {
-		err = errors.New(u.ID + " ID를 가진 사용자가 이미 DB에 존재합니다.")
-		return err
-	}
-	u.Createtime = time.Now().Format(time.RFC3339)
-	err = c.Insert(u)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // addToken 함수는 사용자정보로 token을 추가하는 함수이다.
 func addToken(session *mgo.Session, u User) error {
 	c := session.DB(*flagDBName).C("token")
