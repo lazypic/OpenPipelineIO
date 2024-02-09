@@ -420,8 +420,6 @@ func SearchPageV2(client *mongo.Client, op SearchOption) ([]Item, int, error) {
 		return nil, 0, err
 	}
 
-	fmt.Println(results)
-
 	totalItemNum, err := collection.CountDocuments(ctx, q)
 	if err != nil {
 		return results, 0, err

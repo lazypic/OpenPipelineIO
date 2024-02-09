@@ -4,8 +4,6 @@ import (
 	"context"
 	"net/http"
 	"strconv"
-
-	"gopkg.in/mgo.v2"
 )
 
 // handleAddTasksetting 함수는 task를 추가하는 페이지이다.
@@ -194,13 +192,12 @@ func handleRmTasksetting(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	type recipe struct {
 		User User
 		SearchOption
@@ -209,22 +206,23 @@ func handleRmTasksetting(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	err = rcp.SearchOption.LoadCookie(session, r)
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	u, err := getUser(session, ssid.ID)
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.User = u
-	rcp.Tasksettings, err = AllTaskSettings(session)
+	rcp.Tasksettings, err = AllTaskSettingsV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "text/html")
 	err = TEMPLATES.ExecuteTemplate(w, "rmtasksetting", rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -243,19 +241,19 @@ func handleRmTasksettingSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	name := r.FormValue("name")
 	if name == "" {
 		http.Error(w, "task명을 입력해주세요", http.StatusBadRequest)
 		return
 	}
 	typ := r.FormValue("type")
-	err = RmTaskSetting(session, name, typ)
+	err = RmTaskSetting(client, name, typ)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -64,17 +64,6 @@ func AddTaskSetting(session *mgo.Session, t Tasksetting) error {
 	return nil
 }
 
-// RmTaskSetting 함수는 tasksetting을 DB에 추가한다.
-func RmTaskSetting(session *mgo.Session, name, typ string) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("tasksetting")
-	err := c.Remove(bson.M{"name": name, "type": typ})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // SetTaskSetting 함수는 Tasksetting 값을 바꾼다.
 func SetTaskSetting(session *mgo.Session, t Tasksetting) error {
 	session.SetMode(mgo.Monotonic, true)

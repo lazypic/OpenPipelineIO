@@ -129,3 +129,19 @@ func SetTaskSettingV2(client *mongo.Client, t Tasksetting) error {
 	}
 	return nil
 }
+
+func RmTaskSetting(client *mongo.Client, name, typ string) error {
+	collection := client.Database(*flagDBName).Collection("tasksetting")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	filter := bson.M{"name": name, "type": typ}
+
+	result := collection.FindOneAndDelete(ctx, filter)
+	if result.Err() != nil {
+		if result.Err() == mongo.ErrNoDocuments {
+			return mongo.ErrNoDocuments
+		}
+		return result.Err()
+	}
+	return nil
+}
