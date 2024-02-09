@@ -444,61 +444,6 @@ func handleNoUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// OrganizationsFormToOrganizations 함수는 form 문자를 받아서 []Organization 을 생성한다.
-func OrganizationsFormToOrganizations(session *mgo.Session, s string) ([]Organization, error) {
-	var results []Organization
-	orgs := strings.Split(s, ":")
-	for _, org := range orgs {
-		parts := strings.Split(org, ",")
-		if len(parts) != 6 { // [ Primary여부(true||false), Division, Department, Team, Role, Position ] 총 6개의 마디로 되어있다.
-			continue
-		}
-		org := Organization{}
-		if parts[0] == "true" {
-			org.Primary = true
-		} else {
-			org.Primary = false
-		}
-		if parts[1] != "unknown" {
-			division, err := getDivision(session, parts[1])
-			if err != nil {
-				return results, err
-			}
-			org.Division = division
-		}
-		if parts[2] != "unknown" {
-			department, err := getDepartment(session, parts[2])
-			if err != nil {
-				return results, err
-			}
-			org.Department = department
-		}
-		if parts[3] != "unknown" {
-			team, err := getTeam(session, parts[3])
-			if err != nil {
-				return results, err
-			}
-			org.Team = team
-		}
-		if parts[4] != "unknown" {
-			role, err := getRole(session, parts[4])
-			if err != nil {
-				return results, err
-			}
-			org.Role = role
-		}
-		if parts[5] != "unknown" {
-			position, err := getPosition(session, parts[5])
-			if err != nil {
-				return results, err
-			}
-			org.Position = position
-		}
-		results = append(results, org)
-	}
-	return results, nil
-}
-
 // handleSignupSubmit 함수는 회원가입 페이지이다.
 func handleSignupSubmit(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
