@@ -454,7 +454,6 @@ func webserver(port string) {
 	r.HandleFunc("/api/searchname", handleAPISearchname)
 	r.HandleFunc("/api/seqs", handleAPISeqs)
 	r.HandleFunc("/api/allshots", handleAPIAllShots)
-	r.HandleFunc("/api/shots", handleAPIShots) // legacy
 	r.HandleFunc("/api2/shots", handleAPI2Shots)
 	r.HandleFunc("/api/shot", handleAPIGetShot).Methods("GET")
 	r.HandleFunc("/api/item", handleAPIItem).Methods("GET") // legacy
