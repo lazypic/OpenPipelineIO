@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"reflect"
 	"strings"
 	"time"
 
@@ -13,6 +14,37 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+// CheckBsonMStructure 함수는 bson.M 구조를 체크합니다.
+func CheckBsonMStructure(data interface{}) bool {
+	// data가 bson.M 타입인지 확인합니다.
+	if reflect.TypeOf(data) != reflect.TypeOf(bson.M{}) {
+		fmt.Println("Data is not of type bson.M")
+		return false
+	}
+
+	// bson.M으로 타입 어설션을 수행합니다.
+	bsonData, _ := data.(bson.M)
+
+	// bson.M 내의 각 항목을 순회하며 타입을 체크합니다.
+	for key, value := range bsonData {
+		valueType := reflect.TypeOf(value)
+		switch value.(type) {
+		case string, int, float64, bool, primitive.Regex:
+			// 기본 타입이거나 MongoDB 특정 타입인 경우
+			fmt.Printf("Key: %s, Type: %s is valid\n", key, valueType)
+		case bson.A, bson.M:
+			// 배열이나 다른 문서인 경우 (재귀적 검사를 추가할 수 있습니다.)
+			fmt.Printf("Key: %s, Type: %s is a BSON array or document and is valid\n", key, valueType)
+		default:
+			// 예상치 못한 타입인 경우
+			fmt.Printf("Key: %s has an unexpected type: %s\n", key, valueType)
+			return false
+		}
+	}
+
+	return true
+}
 
 // GenQueryV2 함수는 검색옵션을 받아서 검색옵션과 쿼리를 반환한다.
 func GenQueryV2(client *mongo.Client, op SearchOption) (SearchOption, bson.M) {
@@ -302,6 +334,7 @@ func GenQueryV2(client *mongo.Client, op SearchOption) (SearchOption, bson.M) {
 	case "": // 기본적으로 id로 정렬한다.
 		op.Sortkey = "id"
 	}
+
 	return op, q
 }
 
@@ -325,11 +358,13 @@ func SearchV2(client *mongo.Client, op SearchOption) ([]Item, error) {
 	o, q := GenQueryV2(client, op)
 
 	findOptions := options.Find()
-	findOptions.SetSort(o.Sortkey)
+	findOptions.SetSort(bson.D{{Key: o.Sortkey, Value: -1}})
 	findOptions.SetSkip(int64(CachedAdminSetting.ItemNumberOfPage * (op.Page - 1)))
 	findOptions.SetLimit(int64(CachedAdminSetting.ItemNumberOfPage))
 
 	cursor, err := collection.Find(ctx, q, findOptions)
+
+	//cursor, err := collection.Find(ctx, q)
 	if err != nil {
 		return nil, err
 	}
@@ -367,12 +402,16 @@ func SearchPageV2(client *mongo.Client, op SearchOption) ([]Item, int, error) {
 	o, q := GenQueryV2(client, op)
 
 	findOptions := options.Find()
-	findOptions.SetSort(o.Sortkey)
+
+	findOptions.SetSort(bson.D{{Key: o.Sortkey, Value: -1}})
 	findOptions.SetSkip(int64(CachedAdminSetting.ItemNumberOfPage * (op.Page - 1)))
 	findOptions.SetLimit(int64(CachedAdminSetting.ItemNumberOfPage))
 
 	cursor, err := collection.Find(ctx, q, findOptions)
+
+	//cursor, err := collection.Find(ctx, q)
 	if err != nil {
+
 		return nil, 0, err
 	}
 	defer cursor.Close(ctx)
@@ -380,6 +419,8 @@ func SearchPageV2(client *mongo.Client, op SearchOption) ([]Item, int, error) {
 	if err := cursor.All(ctx, &results); err != nil {
 		return nil, 0, err
 	}
+
+	fmt.Println(results)
 
 	totalItemNum, err := collection.CountDocuments(ctx, q)
 	if err != nil {
