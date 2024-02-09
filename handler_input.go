@@ -57,15 +57,18 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer client.Disconnect(context.Background())
+
 	tasks, err := AllTaskSettingsV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	rcp.TasksettingOrderMap = make(map[string]float64)
 	for _, t := range tasks {
 		rcp.TasksettingOrderMap[t.Name] = t.Order
 	}
+
 	rcp.TasksettingNames, err = TaskSettingNamesV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -76,6 +79,7 @@ func handleInputMode(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	for _, status := range rcp.Status {
 		rcp.AllStatusIDs = append(rcp.AllStatusIDs, status.ID)
 	}

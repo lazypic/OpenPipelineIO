@@ -49,3 +49,67 @@ func GetInitStatusIDV2(client *mongo.Client) (string, error) {
 	}
 	return s.ID, nil
 }
+
+func AddStatusV2(client *mongo.Client, s Status) error {
+	collection := client.Database(*flagDBName).Collection("status")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	num, err := collection.CountDocuments(ctx, bson.M{"id": s.ID})
+	if err != nil {
+		return err
+	}
+	if num != 0 {
+		err = errors.New(s.ID + " Status가 이미 존재합니다")
+		return err
+	}
+	_, err = collection.InsertOne(ctx, s)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func RmStatusV2(client *mongo.Client, id string) error {
+	collection := client.Database(*flagDBName).Collection("status")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	result := collection.FindOneAndDelete(ctx, bson.M{"id": id})
+	if result.Err() != nil {
+		if result.Err() == mongo.ErrNoDocuments {
+			return mongo.ErrNoDocuments
+		}
+		return result.Err()
+	}
+	return nil
+
+}
+
+func GetStatusV2(client *mongo.Client, id string) (Status, error) {
+	collection := client.Database(*flagDBName).Collection("status")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	s := Status{}
+	err := collection.FindOne(ctx, bson.M{"id": id}).Decode(&s)
+	if err != nil {
+		return s, err
+	}
+	return s, nil
+}
+
+func SetStatusV2(client *mongo.Client, s Status) error {
+	collection := client.Database(*flagDBName).Collection("status")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": s.ID}
+	update := bson.D{{Key: "$set", Value: s}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id" + s.ID)
+	}
+	return nil
+}

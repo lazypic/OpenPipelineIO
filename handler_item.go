@@ -16,10 +16,6 @@ import (
 
 // handleSearchSubmit 함수는 검색창의 옵션을 파싱하고 검색 URI로 리다이렉션 한다. // legacy
 func handleSearchSubmit(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	ssid, err := GetSessionID(r)
 	if err != nil {
 		http.Redirect(w, r, "/signin", http.StatusSeeOther)
@@ -48,10 +44,6 @@ func handleSearchSubmit(w http.ResponseWriter, r *http.Request) {
 
 // handleSearchSubmitV2 함수는 검색창의 옵션을 파싱하고 검색 URI로 리다이렉션 한다.
 func handleSearchSubmitV2(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	ssid, err := GetSessionID(r)
 	if err != nil {
 		http.Redirect(w, r, "/signin", http.StatusSeeOther)
@@ -66,13 +58,13 @@ func handleSearchSubmitV2(w http.ResponseWriter, r *http.Request) {
 	sortkey := r.FormValue("Sortkey")
 	task := r.FormValue("Task")
 	// status를 체크할 때 마다 truestatus form에 값이 추가되어야 한다.
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	statuslist, err := AllStatus(session)
+	defer client.Disconnect(context.Background())
+	statuslist, err := AllStatusV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

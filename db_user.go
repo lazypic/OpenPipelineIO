@@ -164,7 +164,6 @@ func rmTokenV2(client *mongo.Client, id string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	result := collection.FindOneAndDelete(ctx, bson.M{"id": id})
-	result.Err()
 	if result.Err() != nil {
 		if result.Err() == mongo.ErrNoDocuments {
 			return mongo.ErrNoDocuments
@@ -224,32 +223,32 @@ func searchUsersV2(client *mongo.Client, words []string) ([]User, error) {
 		searchwords = append(searchwords, word)
 	}
 
-	allQueries := []bson.M{}
+	allQueries := bson.A{}
 	if *flagDebug {
 		log.Println(searchwords)
 	}
 	for _, word := range searchwords {
-		orQueries := []bson.M{}
+		orQueries := bson.A{}
 		if strings.HasPrefix(word, "tag:") {
 			orQueries = append(orQueries, bson.M{"tags": strings.TrimPrefix(word, "tag:")})
 		} else if strings.HasPrefix(word, "id:") {
 			orQueries = append(orQueries, bson.M{"id": strings.TrimPrefix(word, "id:")})
 		} else {
-			orQueries = append(orQueries, bson.M{"id": &primitive.Regex{Pattern: word}})
-			orQueries = append(orQueries, bson.M{"employeenumber": &primitive.Regex{Pattern: word, Options: "i"}})
-			orQueries = append(orQueries, bson.M{"firstnamekor": &primitive.Regex{Pattern: word}})
-			orQueries = append(orQueries, bson.M{"lastnamekor": &primitive.Regex{Pattern: word}})
-			orQueries = append(orQueries, bson.M{"firstnameeng": &primitive.Regex{Pattern: word}})
-			orQueries = append(orQueries, bson.M{"lastnameeng": &primitive.Regex{Pattern: word}})
-			orQueries = append(orQueries, bson.M{"firstnamechn": &primitive.Regex{Pattern: word}})
-			orQueries = append(orQueries, bson.M{"lastnamechn": &primitive.Regex{Pattern: word}})
-			orQueries = append(orQueries, bson.M{"email": &primitive.Regex{Pattern: word}})
-			orQueries = append(orQueries, bson.M{"emailexternal": &primitive.Regex{Pattern: word}})
-			orQueries = append(orQueries, bson.M{"phone": &primitive.Regex{Pattern: word}})
-			orQueries = append(orQueries, bson.M{"hotline": &primitive.Regex{Pattern: word}})
-			orQueries = append(orQueries, bson.M{"location": &primitive.Regex{Pattern: word}})
-			orQueries = append(orQueries, bson.M{"tags": &primitive.Regex{Pattern: word, Options: "i"}})
-			orQueries = append(orQueries, bson.M{"lastip": &primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"id": primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"employeenumber": primitive.Regex{Pattern: word, Options: "i"}})
+			orQueries = append(orQueries, bson.M{"firstnamekor": primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"lastnamekor": primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"firstnameeng": primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"lastnameeng": primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"firstnamechn": primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"lastnamechn": primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"email": primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"emailexternal": primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"phone": primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"hotline": primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"location": primitive.Regex{Pattern: word}})
+			orQueries = append(orQueries, bson.M{"tags": primitive.Regex{Pattern: word, Options: "i"}})
+			orQueries = append(orQueries, bson.M{"lastip": primitive.Regex{Pattern: word}})
 		}
 		allQueries = append(allQueries, bson.M{"$or": orQueries})
 	}

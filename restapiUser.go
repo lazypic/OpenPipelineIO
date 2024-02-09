@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -243,18 +244,14 @@ func handleAPISetLeaveUser(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIAutoCompliteUsers 함수는 form에서 autocomplite 에 사용되는 사용자 데이터를 반환한다.
 func handleAPIAutoCompliteUsers(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	if *flagAuthmode { // 보안모드로 실행하면, 철저하게 검사해야 한다.
-		_, accesslevel, err := TokenHandler(r, session)
+		_, accesslevel, err := TokenHandlerV2(r, client)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
@@ -264,7 +261,7 @@ func handleAPIAutoCompliteUsers(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	users, err := allUsers(session)
+	users, err := allUsersV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

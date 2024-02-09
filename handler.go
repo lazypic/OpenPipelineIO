@@ -258,8 +258,8 @@ func webserver(port string) {
 	// Item
 	r.HandleFunc("/", handleIndex)
 	r.HandleFunc("/inputmode", handleInputMode)
-	r.HandleFunc("/searchsubmit", handleSearchSubmit)
-	r.HandleFunc("/searchsubmitv2", handleSearchSubmitV2)
+	r.HandleFunc("/searchsubmit", handleSearchSubmit).Methods("POST")
+	r.HandleFunc("/searchsubmitv2", handleSearchSubmitV2).Methods("POST")
 	r.HandleFunc("/help", handleHelp)
 	r.HandleFunc("/setellite", handleSetellite)
 	r.HandleFunc("/uploadsetellite", handleUploadSetellite)
@@ -566,7 +566,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/users", handleAPISearchUser)
 	r.HandleFunc("/api/validuser", handleAPIValidUser) // 보안취약점 이슈가 있다. 다른 툴과 쉽게 연동할 때 편리하다. 보안레벨을 높게 올릴때는 허용하지 않도록 한다.
 	r.HandleFunc("/api/setleaveuser", handleAPISetLeaveUser)
-	r.HandleFunc("/api/autocompliteusers", handleAPIAutoCompliteUsers)
+	r.HandleFunc("/api/autocompliteusers", handleAPIAutoCompliteUsers).Methods("GET")
 	r.HandleFunc("/api/initpassword", handleAPIInitPassword)
 	r.HandleFunc("/api/ansiblehosts", handleAPIAnsibleHosts)
 
