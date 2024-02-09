@@ -15,29 +15,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-// addToken 함수는 사용자정보로 token을 추가하는 함수이다.
-func addToken(session *mgo.Session, u User) error {
-	c := session.DB(*flagDBName).C("token")
-	num, err := c.Find(bson.M{"token": u.Token}).Count()
-	if err != nil {
-		return err
-	}
-	if num != 0 {
-		err = errors.New(u.Token + " 키가 이미 DB에 존재합니다.")
-		return err
-	}
-	t := Token{
-		Token:       u.Token,
-		AccessLevel: u.AccessLevel,
-		ID:          u.ID,
-	}
-	err = c.Insert(t)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // setToken 함수는 사용자 정보를 업데이트하는 함수이다.
 func setToken(session *mgo.Session, t Token) error {
 	session.SetMode(mgo.Monotonic, true)
