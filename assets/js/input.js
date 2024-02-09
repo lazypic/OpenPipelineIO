@@ -4490,7 +4490,6 @@ function CurrentProject() {
 }
 
 function rmItem() {
-    let project = CurrentProject()
     let token = document.getElementById("token").value;
     let cboxes = document.getElementsByName('selectID');
     let selectNum = 0;
@@ -4510,7 +4509,6 @@ function rmItem() {
                 url: "/api/rmitemid",
                 type: "post",
                 data: {
-                    project: project,
                     id: id,
                 },
                 headers: {

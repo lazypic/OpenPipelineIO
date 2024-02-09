@@ -185,3 +185,14 @@ func getItemV2(client *mongo.Client, id string) (Item, error) {
 	}
 	return result, nil
 }
+
+func rmItemIDV2(client *mongo.Client, id string) error {
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err := collection.DeleteOne(ctx, bson.M{"id": id})
+	if err != nil {
+		return err
+	}
+	return nil
+}

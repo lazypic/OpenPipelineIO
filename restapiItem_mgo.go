@@ -144,89 +144,15 @@ func handleAPITimeinfo(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-// handleAPIRmItem 함수는 아이템을 삭제한다.
-func handleAPIRmItem(w http.ResponseWriter, r *http.Request) {
-	session, err := mgo.Dial(*flagDBIP)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer session.Close()
-
-	_, _, err = net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
-	type Recipe struct {
-		Project string `json:"project"`
-		Name    string `json:"name"`
-		Type    string `json:"typ"`
-		UserID  string `json:"userid"`
-	}
-	rcp := Recipe{}
-	userID, accessLevel, err := TokenHandler(r, session)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	if PmAccessLevel > accessLevel {
-		http.Error(w, "need permission", http.StatusUnauthorized)
-		return
-	}
-	rcp.UserID = userID
-	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "need project", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
-
-	name := r.FormValue("name")
-	if name == "" {
-		http.Error(w, "need name", http.StatusBadRequest)
-		return
-	}
-	rcp.Name = name
-
-	typ := r.FormValue("type")
-	if project == "" {
-		http.Error(w, "need project", http.StatusBadRequest)
-		return
-	}
-	rcp.Type = typ
-
-	err = rmItem(session, project, name, typ)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// slack log
-	err = slacklog(session, project, fmt.Sprintf("Remove Item: \nProject: %s, ID: %s_%s, Author: %s", project, name, typ, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	data, err := json.Marshal(rcp)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	w.Write(data)
-}
-
 // handleAPIRmItemID 함수는 아이템을 삭제한다.
 func handleAPIRmItemID(w http.ResponseWriter, r *http.Request) {
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	userID, level, err := TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	userID, level, err := TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -242,21 +168,12 @@ func handleAPIRmItemID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	type Recipe struct {
-		Project string `json:"project"`
-		ID      string `json:"id"`
-		UserID  string `json:"userid"`
+		ID     string `json:"id"`
+		UserID string `json:"userid"`
 	}
 	rcp := Recipe{}
 	rcp.UserID = userID
-
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "need project", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
-
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
@@ -264,13 +181,7 @@ func handleAPIRmItemID(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 
-	err = rmItemID(session, project, id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// slack log
-	err = slacklog(session, project, fmt.Sprintf("Remove Item: \nProject: %s, ID: %s, Author: %s", rcp.Project, rcp.ID, rcp.UserID))
+	err = rmItemIDV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
