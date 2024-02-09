@@ -126,7 +126,7 @@ func NewProject(name string) *Project {
 		SeqNum:                   4,
 		ResizeType:               "fill",
 		PostProductionProxyCodec: "Apple_Prores_422LT",
-		FxElement:                "explosion,destruction,smoke,dust",
+		FxElement:                "",
 		HoudiniImportScale:       0.1,
 		ScreenxOverlay:           1.0,
 	}
