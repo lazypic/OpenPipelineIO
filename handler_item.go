@@ -637,13 +637,13 @@ func handleAddAssetSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	initStatusID, err := GetInitStatusID(session)
+	defer client.Disconnect(context.Background())
+	initStatusID, err := GetInitStatusIDV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -667,7 +667,7 @@ func handleAddAssetSubmit(w http.ResponseWriter, r *http.Request) {
 	}
 	var success []Asset
 	var fails []Asset
-	tasks, err := AllTaskSettings(session)
+	tasks, err := AllTaskSettingsV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -713,7 +713,7 @@ func handleAddAssetSubmit(w http.ResponseWriter, r *http.Request) {
 				i.Tasks[task.Name] = t
 			}
 		}
-		err = addItem(session, i)
+		err = addItemV2(client, i)
 		if err != nil {
 			a.Error = err.Error()
 			fails = append(fails, a)
@@ -773,20 +773,20 @@ func handleAddAssetSubmit(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	err = rcp.SearchOption.LoadCookie(session, r)
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.Success = success
 	rcp.Fails = fails
-	u, err := getUser(session, ssid.ID)
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.User = u
-	status, err := AllStatus(session)
+	status, err := AllStatusV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
