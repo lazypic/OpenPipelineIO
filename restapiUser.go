@@ -14,13 +14,13 @@ import (
 func handleAPI2User(w http.ResponseWriter, r *http.Request) {
 	// GET 메소드는 사용자의 id를 받아서 사용자 정보를 반환한다.
 	if r.Method == http.MethodGet {
-		session, err := mgo.Dial(*flagDBIP)
+		client, err := initMongoClient()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		defer session.Close()
-		_, _, err = TokenHandler(r, session)
+		defer client.Disconnect(context.Background())
+		_, _, err = TokenHandlerV2(r, client)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -30,7 +30,7 @@ func handleAPI2User(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
 			return
 		}
-		user, err := getUser(session, id)
+		user, err := getUserV2(client, id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -50,14 +50,14 @@ func handleAPI2User(w http.ResponseWriter, r *http.Request) {
 		return
 		// DELETE 메소드는 사용자의 ID를 받아 해당 사용자를 DB에서 삭제한다.
 	} else if r.Method == http.MethodDelete {
-		session, err := mgo.Dial(*flagDBIP)
+		client, err := initMongoClient()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		defer session.Close()
+		defer client.Disconnect(context.Background())
 		// accesslevel 체크. user 삭제는 admin만 가능하다.
-		_, accesslevel, err := TokenHandler(r, session)
+		_, accesslevel, err := TokenHandlerV2(r, client)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
@@ -72,13 +72,13 @@ func handleAPI2User(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		// 토큰 삭제
-		err = rmToken(session, id)
+		err = rmTokenV2(client, id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		// 유저 삭제
-		err = rmUser(session, id)
+		err = rmUserV2(client, id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

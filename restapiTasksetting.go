@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"html/template"
 	"net/http"
@@ -139,17 +140,13 @@ func handleAPITasksetting(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIShotTasksetting 함수는 Shot Task 항목을 반환하는 restAPI 이다.
 func handleAPIShotTasksetting(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -158,7 +155,7 @@ func handleAPIShotTasksetting(w http.ResponseWriter, r *http.Request) {
 		Tasksettings []Tasksetting `json:"tasksettings"`
 	}
 	rcp := Recipe{}
-	rcp.Tasksettings, err = getShotTaskSetting(session)
+	rcp.Tasksettings, err = getShotTaskSettingV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

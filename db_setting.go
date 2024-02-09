@@ -29,6 +29,24 @@ func AllTaskSettingsV2(client *mongo.Client) ([]Tasksetting, error) {
 	return results, nil
 }
 
+func getShotTaskSettingV2(client *mongo.Client) ([]Tasksetting, error) {
+	results := []Tasksetting{}
+	collection := client.Database(*flagDBName).Collection("tasksetting")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	opts := options.Find()
+	opts.SetSort(bson.M{"name": 1})
+	cursor, err := collection.Find(ctx, bson.M{"type": "shot"}, opts)
+	if err != nil {
+		return results, err
+	}
+	err = cursor.All(ctx, &results)
+	if err != nil {
+		return results, err
+	}
+	return results, nil
+}
+
 func TaskSettingNamesV2(client *mongo.Client) ([]string, error) {
 	var results []string
 	collection := client.Database(*flagDBName).Collection("tasksetting")

@@ -572,7 +572,7 @@ func webserver(port string) {
 
 	// restAPI Tasksetting
 	r.HandleFunc("/api/tasksetting", handleAPITasksetting)
-	r.HandleFunc("/api/shottasksetting", handleAPIShotTasksetting)
+	r.HandleFunc("/api/shottasksetting", handleAPIShotTasksetting).Methods("GET")
 	r.HandleFunc("/api/assettasksetting", handleAPIAssetTasksetting)
 	r.HandleFunc("/api/categorytasksettings", handleAPICategoryTasksettings)
 

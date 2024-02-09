@@ -388,3 +388,15 @@ func initPassUser(client *mongo.Client, id, initpassword string) error {
 
 	return nil
 }
+
+func rmUserV2(client *mongo.Client, id string) error {
+	collection := client.Database(*flagDBName).Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	filter := bson.M{"id": id}
+	_, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+	return nil
+}
