@@ -5041,13 +5041,7 @@ func handleAPIRenameTag(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIRmTag 함수는 아이템에 태그를 삭제합니다.
 func handleAPIRmTag(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project   string `json:"project"`
-		Name      string `json:"name"`
 		ID        string `json:"id"`
 		Tag       string `json:"tag"`
 		UserID    string `json:"userid"`
@@ -5055,13 +5049,13 @@ func handleAPIRmTag(w http.ResponseWriter, r *http.Request) {
 		Error     string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5072,12 +5066,7 @@ func handleAPIRmTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
+
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
@@ -5095,17 +5084,12 @@ func handleAPIRmTag(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Tag = tag
 	rcp.IsContain = str2bool(r.FormValue("iscontain"))
-	rcp.Name, err = RmTag(session, rcp.Project, rcp.ID, rcp.Tag, rcp.IsContain)
+	rcp.ID, err = RmTag(client, rcp.ID, rcp.Tag, rcp.IsContain)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Rm Tag: %s\nProject: %s, Name: %s, Author: %s", rcp.Tag, rcp.Project, rcp.Name, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {

@@ -3922,7 +3922,6 @@ function setRmAssetTagModal(project, id) {
 }
 
 function rmTag() {
-    let project = document.getElementById('modal-rmtag-project').value
     let id = document.getElementById('modal-rmtag-id').value
     let tag = document.getElementById('modal-rmtag-tag').value
     let isContain = document.getElementById('modal-rmtag-iscontain').checked
@@ -3939,7 +3938,6 @@ function rmTag() {
                     "Authorization": "Basic "+ document.getElementById("token").value,
                 },
                 body: new URLSearchParams({
-                    project: project,
                     id: id,
                     tag: tag,
                     iscontain: isContain,
@@ -3976,7 +3974,6 @@ function rmTag() {
                 "Authorization": "Basic "+ document.getElementById("token").value,
             },
             body: new URLSearchParams({
-                project: project,
                 id: id,
                 tag: tag,
                 iscontain: isContain,
@@ -4509,6 +4506,7 @@ function rmItem() {
                 url: "/api/rmitemid",
                 type: "post",
                 data: {
+
                     id: id,
                 },
                 headers: {

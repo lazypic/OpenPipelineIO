@@ -196,3 +196,40 @@ func rmItemIDV2(client *mongo.Client, id string) error {
 	}
 	return nil
 }
+
+func RmTag(client *mongo.Client, id, inputTag string, isContain bool) (string, error) {
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	i, err := getItemV2(client, id)
+	if err != nil {
+		return "", err
+	}
+	var newTags []string
+	for _, tag := range i.Tag {
+		if isContain {
+			if strings.Contains(tag, inputTag) {
+				continue
+			}
+		}
+		if inputTag == tag {
+			continue
+		}
+		newTags = append(newTags, tag)
+	}
+	i.Tag = newTags
+	// 만약 태그에 권정보가 없더라도 권관련 태그는 날아가면 안된다. setItem을 이용한다.
+
+	filter := bson.M{"id": id}
+	update := bson.D{{Key: "$set", Value: i}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return i.ID, err
+	}
+	if result.MatchedCount == 0 {
+		return i.ID, errors.New("no document found with id" + i.ID)
+	}
+
+	return i.ID, nil
+}

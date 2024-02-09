@@ -2084,38 +2084,6 @@ func SetTags(session *mgo.Session, project, name string, tags []string) error {
 	return nil
 }
 
-// RmTag 함수는 item에 tag를 삭제한다.
-func RmTag(session *mgo.Session, project, id, inputTag string, isContain bool) (string, error) {
-	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return "", err
-	}
-	i, err := getItem(session, id)
-	if err != nil {
-		return "", err
-	}
-	var newTags []string
-	for _, tag := range i.Tag {
-		if isContain {
-			if strings.Contains(tag, inputTag) {
-				continue
-			}
-		}
-		if inputTag == tag {
-			continue
-		}
-		newTags = append(newTags, tag)
-	}
-	i.Tag = newTags
-	// 만약 태그에 권정보가 없더라도 권관련 태그는 날아가면 안된다. setItem을 이용한다.
-	err = setItem(session, i)
-	if err != nil {
-		return i.Name, err
-	}
-	return i.Name, nil
-}
-
 // RmAssetTag 함수는 item에 assettag를 삭제한다.
 func RmAssetTag(session *mgo.Session, project, id, inputTag string, isContain bool) error {
 	session.SetMode(mgo.Monotonic, true)
