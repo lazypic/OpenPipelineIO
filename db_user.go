@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"log"
@@ -312,6 +313,39 @@ func setTokenV2(client *mongo.Client, t Token) error {
 	}
 	if result.MatchedCount == 0 {
 		return errors.New("no document found with id" + t.ID)
+	}
+	return nil
+}
+
+func updatePasswordUserV2(client *mongo.Client, id, pw, newPw string) error {
+	collection := client.Database(*flagDBName).Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": id}
+	// 과거의 패스워드로 로그인가능했는지 체크한다.
+	err := vaildUserV2(client, id, pw)
+	if err != nil {
+		return err
+	}
+	// 새로운 패스워드로 업데이트 한다.
+	encryptPass, err := Encrypt(newPw)
+	if err != nil {
+		return err
+	}
+	update := bson.M{
+		"$set": bson.M{
+			"password":   encryptPass,
+			"updatetime": time.Now().Format(time.RFC3339),
+			"token":      base64.StdEncoding.EncodeToString([]byte(encryptPass)),
+		},
+	}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
 	}
 	return nil
 }

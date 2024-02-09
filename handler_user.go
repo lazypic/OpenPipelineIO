@@ -868,29 +868,29 @@ func handleUpdatePasswordSubmit(w http.ResponseWriter, r *http.Request) {
 	}
 	pw := r.FormValue("OldPassword")
 	newPw := r.FormValue("NewPassword")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	err = updatePasswordUser(session, ssid.ID, pw, newPw)
+	defer client.Disconnect(context.Background())
+	err = updatePasswordUserV2(client, ssid.ID, pw, newPw)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// 기존 토큰을 제거한다.
-	err = rmToken(session, ssid.ID)
+	err = rmTokenV2(client, ssid.ID)
 	if err != nil {
 		log.Println(err)
 	}
 	// 새로운 사용자 정보를 불러와서 토큰을 생성한다.
-	u, err := getUser(session, ssid.ID)
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = addToken(session, u)
+	err = addTokenV2(client, u)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

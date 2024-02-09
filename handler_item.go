@@ -243,6 +243,9 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	if !hasProject {
 		rcp.SearchOption.Project = plist[0]
 	}
+	if rcp.SearchOption.Page < 1 {
+		rcp.SearchOption.Page = 1
+	}
 
 	// 리다이렉션 한다.
 	url := fmt.Sprintf("/inputmode?project=%s&sortkey=%s&template=index&task=%s&searchword=%s&truestatus=%s&page=%d",

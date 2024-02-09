@@ -97,6 +97,8 @@ func handleRequestToSearchOption(r *http.Request) SearchOption {
 	page, err := strconv.Atoi(q.Get("page"))
 	if err != nil {
 		op.Page = 1 // 에러가 발생하면 1페이지로 이동한다.
+	} else if page < 1 {
+		op.Page = 1
 	} else {
 		op.Page = page
 	}
