@@ -311,23 +311,19 @@ func handleAPIAutoCompliteUsers(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIInitPassword 함수는 User의 패스워드를 Adminsetting에 설정된 패스워드를 이용해서 패스워드를 리셋한다.
 func handleAPIInitPassword(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
 		ID          string      `json:"id"`
 		AccessLevel AccessLevel `json:"accesslevel"`
 		UserID      string      `json:"userid"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, rcp.AccessLevel, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, rcp.AccessLevel, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -345,25 +341,25 @@ func handleAPIInitPassword(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 	// 사용자의 패스워드를 초기화 합니다.
-	err = initPassUser(session, rcp.ID, CachedAdminSetting.InitPassword)
+	err = initPassUser(client, rcp.ID, CachedAdminSetting.InitPassword)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// 바뀐 패스워드의 유저를 불러옵니다.
-	u, err := getUser(session, rcp.ID)
+	u, err := getUserV2(client, rcp.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// 기존 토근을 제거합니다.
-	err = rmToken(session, u.ID)
+	err = rmTokenV2(client, u.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// 유저에 새로운 토큰을 추가합니다.
-	err = addToken(session, u)
+	err = addTokenV2(client, u)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

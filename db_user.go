@@ -349,3 +349,42 @@ func updatePasswordUserV2(client *mongo.Client, id, pw, newPw string) error {
 	}
 	return nil
 }
+
+func initPassUser(client *mongo.Client, id, initpassword string) error {
+	collection := client.Database(*flagDBName).Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": id}
+
+	num, err := collection.CountDocuments(ctx, filter)
+	if err != nil {
+		return err
+	}
+	if num != 1 {
+		return errors.New("해당 유저가 존재하지 않습니다")
+	}
+
+	encryptPass, err := Encrypt(initpassword)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	update := bson.M{
+		"$set": bson.M{
+			"password":        encryptPass,
+			"passwordattempt": 0,
+			"updatetime":      time.Now().Format(time.RFC3339),
+			"token":           base64.StdEncoding.EncodeToString([]byte(encryptPass)),
+		},
+	}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+
+	return nil
+}
