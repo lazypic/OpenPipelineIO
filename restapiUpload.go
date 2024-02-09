@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"html/template"
 	"image"
@@ -12,7 +13,6 @@ import (
 	"strconv"
 
 	"github.com/disintegration/imaging"
-	"gopkg.in/mgo.v2"
 )
 
 // handleAPIUploadThumbnail 함수는 thumbnail 이미지를 업로드 하는 RestAPI 이다.
@@ -24,13 +24,13 @@ func handleAPIUploadThumbnail(w http.ResponseWriter, r *http.Request) {
 		UploadFilename string `json:"uploadfilename"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
