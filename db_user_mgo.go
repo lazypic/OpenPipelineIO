@@ -15,17 +15,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-// setToken 함수는 사용자 정보를 업데이트하는 함수이다.
-func setToken(session *mgo.Session, t Token) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("token")
-	err := c.Update(bson.M{"id": t.ID}, t)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // legacy
 // validToken 함수는 Token이 유효한지 체크한다.
 func validToken(session *mgo.Session, token string) (Token, error) {
