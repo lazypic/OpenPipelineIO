@@ -45,34 +45,32 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
 	rcp.SessionID = ssid.ID
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	err = rcp.SearchOption.LoadCookie(session, r)
+	defer client.Disconnect(context.Background())
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.User, err = getUser(session, ssid.ID)
+	rcp.User, err = getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.QueryUser, err = getUser(session, id)
+	rcp.QueryUser, err = getUserV2(client, id)
 	if err != nil {
 		http.Redirect(w, r, "/nouser?id="+id, http.StatusSeeOther)
 		return
 	}
 	err = TEMPLATES.ExecuteTemplate(w, "user", rcp)
 	if err != nil {
-		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 }
 
 // handleEditUser 함수는 유저정보를 수정하는 페이지이다.
@@ -989,20 +987,23 @@ func handleReplaceTag(w http.ResponseWriter, r *http.Request) {
 	}
 	type recipe struct {
 		User // 로그인한 사용자 정보
+		Setting
 	}
 	rcp := recipe{}
+	rcp.Setting = CachedAdminSetting
+
+	client, err := initMongoClient()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer client.Disconnect(context.Background())
+	rcp.User, err = getUserV2(client, ssid.ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer session.Close()
-	rcp.User, err = getUser(session, ssid.ID)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	err = TEMPLATES.ExecuteTemplate(w, "replacetag", rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
