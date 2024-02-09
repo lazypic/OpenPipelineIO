@@ -144,55 +144,6 @@ func handleAPISearchUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// handleAPIValidUser 함수는 사용자가 유효한지 체크하는 핸들러 입니다.
-func handleAPIValidUser(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	session, err := mgo.Dial(*flagDBIP)
-	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-		return
-	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
-	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-		return
-	}
-	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
-	var id string
-	var pw string
-	args := r.PostForm
-	for key, value := range args {
-		switch key {
-		case "id":
-			v, err := PostFormValueInList(key, value)
-			if err != nil {
-				fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-				return
-			}
-			id = v
-		case "pw":
-			v, err := PostFormValueInList(key, value)
-			if err != nil {
-				fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-				return
-			}
-			pw = v
-		}
-	}
-	err = vaildUser(session, id, pw)
-	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-		return
-	}
-	fmt.Fprintf(w, "{\"error\":\"\"}\n")
-}
-
 // handleAPISetLeaveUser 함수는 사용자의 퇴사여부를 셋팅하는 핸들러 입니다.
 func handleAPISetLeaveUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
