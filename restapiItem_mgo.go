@@ -2880,24 +2880,19 @@ func handleAPI2SetTaskStatus(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIRmTask 함수는 아이템의 task를 제거한다.
 func handleAPIRmTask(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project string `json:"project"`
-		ID      string `json:"id"`
-		Task    string `json:"task"`
-		UserID  string `json:"userid"`
+		ID     string `json:"id"`
+		Task   string `json:"task"`
+		UserID string `json:"userid"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2908,38 +2903,23 @@ func handleAPIRmTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Project = v
-		case "id":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.ID = v
-		case "task":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Task = v
+
+	id := r.FormValue("id")
+	if id == "" {
+		if err != nil {
+			http.Error(w, "need id", http.StatusBadRequest)
+			return
 		}
 	}
-	err = RmTask(session, rcp.Project, rcp.ID, rcp.Task)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	rcp.ID = id
+	rcp.Task = r.FormValue("task")
+	if rcp.Task == "" {
+		if err != nil {
+			http.Error(w, "task가 빈 문자열 입니다", http.StatusBadRequest)
+			return
+		}
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Rm Task: %s\nProject: %s, ID: %s, Author: %s", rcp.Task, rcp.Project, rcp.ID, rcp.UserID))
+	err = RmTaskV2(client, rcp.ID, rcp.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

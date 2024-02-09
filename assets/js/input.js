@@ -675,7 +675,6 @@ function rmTask(project, id, task) {
                 url: "/api/rmtask",
                 type: "post",
                 data: {
-                    project: project,
                     id: id,
                     task: task,
                 },
@@ -696,7 +695,6 @@ function rmTask(project, id, task) {
             url: "/api/rmtask",
             type: "post",
             data: {
-                project: project,
                 id: id,
                 task: task,
             },

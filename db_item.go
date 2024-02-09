@@ -274,3 +274,35 @@ func AddTaskV2(client *mongo.Client, id, task, status string) error {
 	return nil
 
 }
+
+func RmTaskV2(client *mongo.Client, id, taskname string) error {
+	item, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+
+	delete(item.Tasks, taskname)
+
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	item.Updatetime = time.Now().Format(time.RFC3339)
+
+	status, err := AllStatusV2(client)
+	if err != nil {
+		return err
+	}
+	item.updateStatusV2(status)
+
+	filter := bson.M{"id": item.ID}
+	update := bson.D{{Key: "$set", Value: item}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + item.ID)
+	}
+	return nil
+}
