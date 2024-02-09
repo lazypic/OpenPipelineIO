@@ -322,12 +322,12 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	project := r.FormValue("Project")
 	name := r.FormValue("Name")
 	typ := r.FormValue("Type")
@@ -349,22 +349,22 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 	}
 	var success []Shot
 	var fails []Shot
-	tasks, err := AllTaskSettings(session)
+	tasks, err := AllTaskSettingsV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	admin, err := GetAdminSetting(session)
+	admin, err := GetAdminSettingV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	pinfo, err := getProject(session, project)
+	pinfo, err := getProjectV2(client, project)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	initStatus, err := GetInitStatusID(session)
+	initStatus, err := GetInitStatusIDV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -480,7 +480,7 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 			fails = append(fails, s)
 			continue
 		}
-		err = addItem(session, i)
+		err = addItemV2(client, i)
 		if err != nil {
 			s.Error = err.Error()
 			fails = append(fails, s)
@@ -527,7 +527,7 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 		}
 		success = append(success, s)
 		// slack log
-		err = slacklog(session, project, fmt.Sprintf("Add Shot: %s\nProject: %s, Author: %s", name, project, ssid.ID))
+		err = slacklogV2(client, project, fmt.Sprintf("Add Shot: %s\nProject: %s, Author: %s", name, project, ssid.ID))
 		if err != nil {
 			log.Println(err)
 			continue
@@ -544,20 +544,20 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	err = rcp.SearchOption.LoadCookie(session, r)
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.Success = success
 	rcp.Fails = fails
-	u, err := getUser(session, ssid.ID)
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.User = u
-	status, err := AllStatus(session)
+	status, err := AllStatusV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

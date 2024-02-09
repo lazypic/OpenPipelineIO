@@ -514,7 +514,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/setjusttimecodeout", handleAPISetJustTimecodeOut).Methods("POST")
 	r.HandleFunc("/api/setfinver", handleAPISetFinver)
 	r.HandleFunc("/api/setfindate", handleAPISetFindate)
-	r.HandleFunc("/api/addtag", handleAPIAddTag)
+	r.HandleFunc("/api/addtag", handleAPIAddTag).Methods("POST")
 	r.HandleFunc("/api/addassettag", handleAPIAddAssetTag)
 	r.HandleFunc("/api/renametag", handleAPIRenameTag)
 	r.HandleFunc("/api/rmtag", handleAPIRmTag)

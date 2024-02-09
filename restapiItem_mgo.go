@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -4912,10 +4913,6 @@ func handleAPISetCrowdAsset(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIAddTag 함수는 아이템에 태그를 설정합니다.
 func handleAPIAddTag(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
 		Project string `json:"project"`
 		Name    string `json:"name"`
@@ -4925,13 +4922,13 @@ func handleAPIAddTag(w http.ResponseWriter, r *http.Request) {
 		Error   string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -4964,13 +4961,13 @@ func handleAPIAddTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.Tag = tag
-	rcp.Name, err = AddTag(session, rcp.Project, rcp.ID, rcp.Tag)
+	rcp.Name, err = AddTagV2(client, rcp.ID, rcp.Tag)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Add Tag: %s\nProject: %s, Name: %s, Author: %s", rcp.Tag, rcp.Project, rcp.Name, rcp.UserID))
+	err = slacklogV2(client, rcp.Project, fmt.Sprintf("Add Tag: %s\nProject: %s, Name: %s, Author: %s", rcp.Tag, rcp.Project, rcp.Name, rcp.UserID))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
