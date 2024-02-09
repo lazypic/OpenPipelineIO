@@ -225,14 +225,7 @@
 					{{end}}
 				</div>
 			{{end}}
-			<div class="mt-1 ml-2 mb-3" id="{{.Name}}-tasks">
-				
-				<!--onset Setellite-->
-				<div class="row" id="{{.Name}}-onsetbutton">
-					{{if .Rollmedia}}
-						<a href="/setellite?project={{.Project}}&searchword={{.Rollmedia}}" class="mt-1 badge badge-done statusbox text-dark" target="_blink">onset</a>
-					{{end}}
-				</div>
+			<div class="mt-1 ml-2 mb-3">
 				<!--task-->
 				{{$type := .Type}}
 				{{$assettype := .Assettype}}

@@ -486,7 +486,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/taskanduserstatusnum", handleAPITaskAndUserStatusNum)
 	r.HandleFunc("/api/userstatusnum", handleAPIUserStatusNum)
 	r.HandleFunc("/api/statusnum", handleAPIStatusNum)
-	r.HandleFunc("/api/addtask", handleAPIAddTask)
+	r.HandleFunc("/api/addtask", handleAPIAddTask).Methods("POST")
 	r.HandleFunc("/api/rmtask", handleAPIRmTask)
 	r.HandleFunc("/api/settaskuser", handleAPISetTaskUser).Methods("POST")
 	r.HandleFunc("/api/settaskusercomment", handleAPISetTaskUserComment).Methods("POST")

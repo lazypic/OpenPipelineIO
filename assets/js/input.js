@@ -576,62 +576,11 @@ function multiInputTitle(id) {
     }
 }
 
-function setDefaultPipelinestep() {
-    let type = document.getElementById("modal-addtask-type").value
-    let task = document.getElementById('modal-addtask-taskname').value
-    // 현재 태스크의 값을 가지고 온다.
-    if (type == "org" || type == "left") {
-        // 현재 태스크의 디폴트 값을 가지고 온다.
-        fetch('/api/shottasksetting', {
-            method: 'GET',
-            headers: {
-                "Authorization": "Basic "+ document.getElementById("token").value,
-            },
-        })
-        .then((response) => {
-            if (!response.ok) {
-                throw Error(response.statusText + " - " + response.url);
-            }
-            return response.json()
-        })
-        .then((data) => {
-            let tasks = data["tasksettings"];
-            for (let i = 0; i < tasks.length; i++){
-                if (tasks[i].name === task) {
-                    document.getElementById('modal-addtask-pipelinestep').value = tasks[i].pipelinestep
-                }
-            }
-        })
-    } else if (type == "asset") {
-        fetch('/api/assettasksetting', {
-            method: 'GET',
-            headers: {
-                "Authorization": "Basic "+ document.getElementById("token").value,
-            },
-        })
-        .then((response) => {
-            if (!response.ok) {
-                throw Error(response.statusText + " - " + response.url);
-            }
-            return response.json()
-        })
-        .then((data) => {
-            let tasks = data["tasksettings"];
-            for (let i = 0; i < tasks.length; i++){
-                if (tasks[i].name === task) {
-                    document.getElementById('modal-addtask-pipelinestep').value = tasks[i].pipelinestep
-                }
-            }
-        })
-    }
-}
+
 
 function addTask() {
     let token = document.getElementById("token").value;
-    let project = document.getElementById('modal-addtask-project').value
-    let id = document.getElementById('modal-addtask-id').value
-    let task = document.getElementById('modal-addtask-taskname').value
-    let pipelinestep = document.getElementById('modal-addtask-pipelinestep').value
+    
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
         for (var i = 0; i < cboxes.length; ++i) {
@@ -640,75 +589,74 @@ function addTask() {
             }
             let id = cboxes[i].getAttribute("id");
             sleep(200);
-            $.ajax({
-                url: "/api/addtask",
-                type: "post",
-                data: {
-                    project: project,
-                    id: id,
-                    task: task,
-                    pipelinestep: pipelinestep,
-                },
+
+            fetch('/api/addtask', {
+                method: 'POST',
                 headers: {
-                    "Authorization": "Basic "+ token
+                    "Authorization": "Basic "+ document.getElementById("token").value,
                 },
-                dataType: "json",
-                success: function(data) {
-                    let newItem = `<div class="row" id="${data.id}-task-${data.task}">
-					<div id="${data.id}-task-${data.task}-status">
-						<span class="finger mt-1 badge badge-${data.status} statusbox">${data.task}</span>
-					</div>
-					<div id="${data.id}-task-${data.task}-predate"></div>
-					<div id="${data.id}-task-${data.task}-date"></div>
-					<div id="${data.id}-task-${data.task}-user"></div>
-					<div id="${data.id}-task-${data.task}-playbutton"></div>
-					<div class="ml-1">
-						<span class="add" data-toggle="modal" data-target="#modal-edittask" onclick="
-                        setEditTaskModal('${data.id}', '${data.task}');
-                        ">≡</span>
-					</div>
-                    </div>`;
-                    document.getElementById(`${data.id}-tasks`).innerHTML = newItem + document.getElementById(`${data.id}-tasks`).innerHTML;
-                },
-                error: function(request,status,error){
-                    alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-                }
+                body: new URLSearchParams({
+                    id: document.getElementById('modal-addtask-id').value,
+                    task: document.getElementById('modal-addtask-taskname').value,
+                })
+            })
+            .then((response) => {
+                return response.json()
+            })
+            .then((data) => {
+                let newItem = `<div class="row" id="${data.id}-task-${data.task}">
+                <div id="${data.id}-task-${data.task}-status">
+                    <span class="finger mt-1 badge badge-${data.status} statusbox">${data.task}</span>
+                </div>
+                <div id="${data.id}-task-${data.task}-predate"></div>
+                <div id="${data.id}-task-${data.task}-date"></div>
+                <div id="${data.id}-task-${data.task}-user"></div>
+                <div id="${data.id}-task-${data.task}-playbutton"></div>
+                <div class="ml-1">
+                    <span class="add" data-toggle="modal" data-target="#modal-edittask" onclick="
+                    setEditTaskModal('${data.id}', '${data.task}');
+                    ">≡</span>
+                </div>
+                </div>`;
+                document.getElementById(`${data.id}-tasks`).innerHTML = newItem + document.getElementById(`${data.id}-tasks`).innerHTML;
+            })
+            .catch((error) => {
+                alert(error)
             });
         }
     } else {
-        $.ajax({
-            url: "/api/addtask",
-            type: "post",
-            data: {
-                project: project,
-                id: id,
-                task: task,
-                pipelinestep: pipelinestep,
-            },
+        fetch('/api/addtask', {
+            method: 'POST',
             headers: {
-                "Authorization": "Basic "+ token
+                "Authorization": "Basic "+ document.getElementById("token").value,
             },
-            dataType: "json",
-            success: function(data) {
-                let newItem = `<div class="row" id="${data.id}-task-${data.task}">
-					<div id="${data.id}-task-${data.task}-status">
-						<span class="finger mt-1 badge badge-${data.status} statusbox">${data.task}</span>
-					</div>
-					<div id="${data.id}-task-${data.task}-predate"></div>
-					<div id="${data.id}-task-${data.task}-date"></div>
-					<div id="${data.id}-task-${data.task}-user"></div>
-					<div id="${data.id}-task-${data.task}-playbutton"></div>
-					<div class="ml-1">
-						<span class="add" data-toggle="modal" data-target="#modal-edittask" onclick="
-                        setEditTaskModal('${data.id}', '${data.task}');
-                        ">≡</span>
-					</div>
-				</div>`;
-                document.getElementById(`${data.id}-tasks`).innerHTML = newItem + document.getElementById(`${data.id}-tasks`).innerHTML;
-            },
-            error: function(request,status,error){
-                alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-            }
+            body: new URLSearchParams({
+                id: document.getElementById('modal-addtask-id').value,
+                task: document.getElementById('modal-addtask-taskname').value,
+            })
+        })
+        .then((response) => {
+            return response.json()
+        })
+        .then((data) => {
+            let newItem = `<div class="row" id="${data.id}-task-${data.task}">
+            <div id="${data.id}-task-${data.task}-status">
+                <span class="finger mt-1 badge badge-${data.status} statusbox">${data.task}</span>
+            </div>
+            <div id="${data.id}-task-${data.task}-predate"></div>
+            <div id="${data.id}-task-${data.task}-date"></div>
+            <div id="${data.id}-task-${data.task}-user"></div>
+            <div id="${data.id}-task-${data.task}-playbutton"></div>
+            <div class="ml-1">
+                <span class="add" data-toggle="modal" data-target="#modal-edittask" onclick="
+                setEditTaskModal('${data.id}', '${data.task}');
+                ">≡</span>
+            </div>
+            </div>`;
+            document.getElementById(`${data.id}-tasks`).innerHTML = newItem + document.getElementById(`${data.id}-tasks`).innerHTML;
+        })
+        .catch((error) => {
+            alert(error)
         });
     }
 }
@@ -4648,12 +4596,8 @@ for (var i = 0; i < input.length; i++) {
 }
 
 function setAddTaskModal(project, id, type) {
-    // AddTaskModal창이 뜨면 맨처음 Pipelinestep의 초기값을 설정한다.
-    setDefaultPipelinestep()
     // 모달을 설정한다.
-    document.getElementById("modal-addtask-project").value = project;
     document.getElementById("modal-addtask-id").value = id;
-    document.getElementById("modal-addtask-type").value = type;
     document.getElementById("modal-addtask-title").innerHTML = "Add Task" + multiInputTitle(id);
     if (type === "org" || type === "left") {
         // Task 셋팅

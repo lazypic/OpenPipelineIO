@@ -233,3 +233,44 @@ func RmTag(client *mongo.Client, id, inputTag string, isContain bool) (string, e
 
 	return i.ID, nil
 }
+
+func AddTaskV2(client *mongo.Client, id, task, status string) error {
+	item, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+
+	taskname := strings.ToLower(task)
+	// 기존에 Task가 없다면 추가한다.
+	if _, found := item.Tasks[task]; !found {
+		t := Task{}
+		t.Title = taskname
+		t.StatusV2 = status
+		item.Tasks[task] = t
+	} else {
+		return fmt.Errorf("이미 %s 에 %s Task가 존재합니다", id, taskname)
+	}
+
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	item.Updatetime = time.Now().Format(time.RFC3339)
+	globalStatus, err := AllStatusV2(client)
+	if err != nil {
+		return err
+	}
+	item.updateStatusV2(globalStatus)
+
+	filter := bson.M{"id": item.ID}
+	update := bson.D{{Key: "$set", Value: item}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + item.ID)
+	}
+	return nil
+
+}
