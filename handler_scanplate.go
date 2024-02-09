@@ -52,7 +52,6 @@ func handleScanPlate(w http.ResponseWriter, r *http.Request) {
 		User
 		SearchOption
 		Setting          Setting
-		Pipelinesteps    []Pipelinestep
 		Projectlist      []string
 		TasksettingNames []string
 		Status           []Status
@@ -79,11 +78,7 @@ func handleScanPlate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Pipelinesteps, err = allPipelinesteps(client)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	rcp.Setting = CachedAdminSetting
 	rcp.Colorspaces, err = loadOCIOConfig()
 	if err != nil {
@@ -130,7 +125,6 @@ func handleProcess(w http.ResponseWriter, r *http.Request) {
 		User
 		SearchOption
 		Setting              Setting
-		Pipelinesteps        []Pipelinestep
 		Projectlist          []string
 		TasksettingNames     []string
 		Status               []Status
@@ -157,11 +151,7 @@ func handleProcess(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Pipelinesteps, err = allPipelinesteps(client)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	rcp.Setting = CachedAdminSetting
 	rcp.ProcessingScanPlates, err = GetUnDoneScanPlate(client)
 	//rcp.ProcessingScanPlates, err = allScanPlate(client)

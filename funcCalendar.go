@@ -80,7 +80,6 @@ func ItemsToFCEventsAndFCResource(items []Item) ([]FullCalendarEvent, []FullCale
 				taskEvent.ExtendedProps.ItemName = item.Name
 				taskEvent.ExtendedProps.Task = task
 				taskEvent.ExtendedProps.Tags = item.Tag
-				taskEvent.ExtendedProps.Pipelinestep = value.Pipelinestep
 				taskEvent.ExtendedProps.UserID = value.UserID
 				taskEvent.ExtendedProps.DeadlineType = "1st"
 				taskEvent.ExtendedProps.Key = "tasks"
@@ -115,7 +114,6 @@ func ItemsToFCEventsAndFCResource(items []Item) ([]FullCalendarEvent, []FullCale
 				taskEvent.ExtendedProps.ItemName = item.Name
 				taskEvent.ExtendedProps.Task = task
 				taskEvent.ExtendedProps.Tags = item.Tag
-				taskEvent.ExtendedProps.Pipelinestep = value.Pipelinestep
 				taskEvent.ExtendedProps.UserID = value.UserID
 				taskEvent.ExtendedProps.DeadlineType = "2nd"
 				taskEvent.ExtendedProps.Key = "tasks"

@@ -306,9 +306,6 @@ func webserver(port string) {
 	r.HandleFunc("/invalidpass", handleInvalidPass)
 	r.HandleFunc("/nouser", handleNoUser)
 
-	// Pipelinestep
-	r.HandleFunc("/pipelinesteps", handlePipelinesteps)
-
 	// Partner
 	r.HandleFunc("/partners", handlePartners)
 	r.HandleFunc("/projectsforpartner", handleProjectsForPartner)
@@ -670,14 +667,6 @@ func webserver(port string) {
 	r.HandleFunc("/api/step/{id}", getStepHandler).Methods("GET")
 	r.HandleFunc("/api/step/{id}", putStepHandler).Methods("PUT")
 	r.HandleFunc("/api/step/{id}", deleteStepHandler).Methods("DELETE")
-
-	// REST API Pipelinestep
-	r.HandleFunc("/api/pipelinestep", helpMethodOptionsHandler).Methods(http.MethodGet, http.MethodPut, http.MethodDelete, http.MethodOptions)
-	r.HandleFunc("/api/pipelinestep", postPipelinestepHandler).Methods("POST")
-	r.HandleFunc("/api/pipelinesteps", getPipelinestepsHandler).Methods("GET")
-	r.HandleFunc("/api/pipelinestep/{id}", getPipelinestepHandler).Methods("GET")
-	r.HandleFunc("/api/pipelinestep/{id}", putPipelinestepHandler).Methods("PUT")
-	r.HandleFunc("/api/pipelinestep/{id}", deletePipelinestepHandler).Methods("DELETE")
 
 	// REST API FullCalendar Event
 	r.HandleFunc("/api/fcevent", helpMethodOptionsHandler).Methods(http.MethodGet, http.MethodPut, http.MethodDelete, http.MethodOptions)

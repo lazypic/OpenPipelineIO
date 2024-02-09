@@ -1298,7 +1298,6 @@ func SetTaskPipelinestep(session *mgo.Session, project, id, task, pipelinestep s
 		return err
 	}
 	t := item.Tasks[task]
-	t.Pipelinestep = pipelinestep
 	item.Tasks[task] = t
 	c := session.DB(*flagDBName).C("items")
 	item.Updatetime = time.Now().Format(time.RFC3339)
@@ -1381,7 +1380,6 @@ func AddTask(session *mgo.Session, project, id, task, status, pipelinestep strin
 		t := Task{}
 		t.Title = taskname
 		t.StatusV2 = status
-		t.Pipelinestep = pipelinestep
 		item.Tasks[task] = t
 	} else {
 		return fmt.Errorf("이미 %s 에 %s Task가 존재합니다", id, taskname)

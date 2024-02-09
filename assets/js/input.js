@@ -345,55 +345,6 @@ function setModal(modalID, value) {
 }
 
 
-
-
-// initModalPipelinestep 함수는 modal에서 pipelinestep 값이 들어가는 부분을 일괄 옵션을 추가한다.
-function initModalPipelinestep() {
-    fetch('/api/pipelinesteps', {
-        method: 'GET',
-        headers: {
-            "Authorization": "Basic "+ document.getElementById("token").value,
-        },
-    })
-    .then((response) => {
-        if (!response.ok) {
-            throw Error(response.statusText + " - " + response.url);
-        }
-        return response.json()
-    })
-    .then((data) => {
-        // 파이프라인 스텝이 등록되지 않을 때 data가 없을 수 있다.
-        if (data === null) {
-            return
-        }
-        let selectAddtask = document.getElementById('modal-addtask-pipelinestep');
-        if (selectAddtask) {
-            selectAddtask.innerHTML = "";
-            for (let j = 0; j < data.length; j++){
-                let opt = document.createElement('option');
-                opt.value = data[j].name;
-                opt.innerHTML = data[j].name;
-                selectAddtask.appendChild(opt);
-            }
-        }
-        
-        let selectEdittask = document.getElementById('modal-edittask-pipelinestep');
-        if (selectEdittask) {
-            selectEdittask.innerHTML = "";
-            for (let i = 0; i < data.length; i++){
-                let opt = document.createElement('option');
-                opt.value = data[i].name;
-                opt.innerHTML = data[i].name;
-                selectEdittask.appendChild(opt);
-            }
-        }
-    })
-    .catch((err) => {
-        alert(err)
-    });
-}
-initModalPipelinestep() // 페이지가 로딩되면 먼저 실행한다.
-
 // setEditTaskModal 함수는 item id, task 정보를 가지고 와서 Edit Task Modal에 값을 채운다.
 function setEditTaskModal(id, task) {
     console.log(id,task)

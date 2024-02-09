@@ -239,9 +239,8 @@ func processingScanPlateImageItem(scan ScanPlate) {
 			continue
 		}
 		t := Task{
-			Title:        task.Name,
-			StatusV2:     initStatusID,
-			Pipelinestep: task.Pipelinestep, // 파이프라인 스텝을 설정한다.
+			Title:    task.Name,
+			StatusV2: initStatusID,
 		}
 		item.Tasks[task.Name] = t
 	}

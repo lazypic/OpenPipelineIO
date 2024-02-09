@@ -466,9 +466,8 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 						continue
 					}
 					t := Task{
-						Title:        task.Name,
-						StatusV2:     initStatus,
-						Pipelinestep: task.Pipelinestep, // 파이프라인 스텝을 설정한다.
+						Title:    task.Name,
+						StatusV2: initStatus,
 					}
 					i.Tasks[task.Name] = t
 				}
@@ -706,9 +705,8 @@ func handleAddAssetSubmit(w http.ResponseWriter, r *http.Request) {
 					continue
 				}
 				t := Task{
-					Title:        task.Name,
-					StatusV2:     initStatusID,
-					Pipelinestep: task.Pipelinestep, // 파이프라인 스텝을 설정한다.
+					Title:    task.Name,
+					StatusV2: initStatusID,
 				}
 				i.Tasks[task.Name] = t
 			}

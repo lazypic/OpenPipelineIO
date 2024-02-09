@@ -115,8 +115,7 @@ func handleEditTasksetting(w http.ResponseWriter, r *http.Request) {
 		User User
 		SearchOption
 		Tasksetting
-		Setting       Setting
-		Pipelinesteps []Pipelinestep
+		Setting Setting
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
