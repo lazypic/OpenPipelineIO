@@ -52,25 +52,6 @@ func getToken(session *mgo.Session, id string) (Token, error) {
 	return t, nil
 }
 
-// setUser 함수는 사용자 정보를 업데이트하는 함수이다.
-func setUser(session *mgo.Session, u User) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("users")
-	num, err := c.Find(bson.M{"id": u.ID}).Count()
-	if err != nil {
-		return err
-	}
-	if num != 1 {
-		return errors.New("해당 유저가 존재하지 않습니다")
-	}
-	u.Updatetime = time.Now().Format(time.RFC3339)
-	err = c.Update(bson.M{"id": u.ID}, u)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // updatePasswordUser 함수는 사용자 패스워드를 수정하는 함수이다.
 func updatePasswordUser(session *mgo.Session, id, pw, newPw string) error {
 	session.SetMode(mgo.Monotonic, true)
