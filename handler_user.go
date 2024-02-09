@@ -987,8 +987,8 @@ func handleReplaceTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	type recipe struct {
-		User // 로그인한 사용자 정보
-		Setting
+		User    // 로그인한 사용자 정보
+		Setting Setting
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting

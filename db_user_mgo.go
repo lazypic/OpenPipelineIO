@@ -52,28 +52,6 @@ func getToken(session *mgo.Session, id string) (Token, error) {
 	return t, nil
 }
 
-// rmUser 함수는 사용자를 삭제하는 함수이다.
-func rmUser(session *mgo.Session, id string) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("users")
-	err := c.Remove(bson.M{"id": id})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// rmToken 함수는 token 키를 삭제하는 함수이다.
-func rmToken(session *mgo.Session, id string) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("token")
-	err := c.Remove(bson.M{"id": id})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // setUser 함수는 사용자 정보를 업데이트하는 함수이다.
 func setUser(session *mgo.Session, u User) error {
 	session.SetMode(mgo.Monotonic, true)
