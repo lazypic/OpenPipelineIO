@@ -96,7 +96,11 @@ func DistinctV2(client *mongo.Client, project string, key string) ([]string, err
 	if err != nil {
 		return results, err
 	}
+
 	for _, value := range values {
+		if value == nil {
+			continue
+		}
 		results = append(results, fmt.Sprintf("%v", value))
 	}
 	sort.Strings(results)
