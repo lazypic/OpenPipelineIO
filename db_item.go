@@ -310,3 +310,36 @@ func RmTaskV2(client *mongo.Client, id, taskname string) error {
 	}
 	return nil
 }
+
+// SetNoteV2 함수는 item에 작업내용을 추가한다. Name,노트내용,에러를 반환한다.
+func SetNoteV2(client *mongo.Client, id, userID, text string, overwrite bool) error {
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	i, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+	var note string
+	if overwrite {
+		note = text
+	} else {
+		if strings.HasSuffix(i.Note.Text, "\n") {
+			note = text + i.Note.Text
+		} else {
+			note = text + "\n " + i.Note.Text
+		}
+	}
+
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"note.text": note, "note.author": userID, "note.date": time.Now().Format(time.RFC3339), "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}

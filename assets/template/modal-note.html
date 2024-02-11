@@ -10,7 +10,6 @@
                 </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" class="form-control" id="modal-setnote-project">
                     <input type="hidden" class="form-control" id="modal-setnote-id">
                     <div class="form-group">
                         <label for="modal-setnote-text" class="col-form-label">Note:</label>
@@ -24,7 +23,7 @@
                 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-darkmode" data-dismiss="modal">Close</button>
-                    <button type="button" id="modal-setnote-editbutton" title="F8" class="btn btn-outline-warning" onclick="setNote(document.getElementById('modal-setnote-project').value, document.getElementById('modal-setnote-id').value, document.getElementById('modal-setnote-text').value)" data-dismiss="modal">Edit</button>
+                    <button type="button" id="modal-setnote-editbutton" title="F8" class="btn btn-outline-warning" onclick="setNote(document.getElementById('modal-setnote-id').value, document.getElementById('modal-setnote-text').value)" data-dismiss="modal">Edit</button>
                 </div>
             </div>
         </div>
@@ -41,7 +40,6 @@
                 </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" class="form-control" id="modal-editnote-project">
                     <input type="hidden" class="form-control" id="modal-editnote-id">
                     <div class="form-group">
                         <label for="modal-editnote-text" class="col-form-label">Note:</label>

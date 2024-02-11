@@ -915,8 +915,7 @@ function setJustTimecodeOut(id, timecode) {
     });
 }
 
-function setNoteModal(project, id) {
-    document.getElementById("modal-setnote-project").value = project;
+function setNoteModal(id) {
     document.getElementById("modal-setnote-id").value = id;
     document.getElementById("modal-setnote-title").innerHTML = "Set Note" + multiInputTitle(id);
     document.getElementById("modal-setnote-text").value = "";
@@ -924,7 +923,6 @@ function setNoteModal(project, id) {
 
 function editNoteModal(project, id) {
     let token = document.getElementById("token").value;
-    document.getElementById("modal-editnote-project").value = project;
     document.getElementById("modal-editnote-id").value = id;
     document.getElementById("modal-editnote-title").innerHTML = "Set Note" + multiInputTitle(id);
     $.ajax({
@@ -942,7 +940,7 @@ function editNoteModal(project, id) {
     });
 }
 
-function setNote(project, id, text) {
+function setNote(id, text) {
     let token = document.getElementById("token").value;
     let userid = document.getElementById("userid").value;
     if (isMultiInput()) {
@@ -958,7 +956,6 @@ function setNote(project, id, text) {
                 url: "/api/setnote",
                 type: "post",
                 data: {
-                    project: project,
                     id: currentID,
                     text: text,
                     userid: userid,
@@ -988,7 +985,6 @@ function setNote(project, id, text) {
             url: "/api/setnote",
             type: "post",
             data: {
-                project: project,
                 id: id,
                 text: text,
                 userid: userid,
@@ -1014,14 +1010,13 @@ function setNote(project, id, text) {
     }
 }
 
-function editNote(project, id, text) {
+function editNote(id, text) {
     let token = document.getElementById("token").value;
     let userid = document.getElementById("userid").value;
     $.ajax({
         url: "/api/setnote",
         type: "post",
         data: {
-            project: project,
             id: id,
             text: text,
             userid: userid,

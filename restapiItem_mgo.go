@@ -5144,92 +5144,53 @@ func handleAPIRmAssetTag(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetNote 함수는 아이템에 작업내용을 설정합니다.
 func handleAPISetNote(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	type Recipe struct {
-		Project   string `json:"project"`
 		ID        string `json:"id"`
-		Name      string `json:"name"`
 		Text      string `json:"text"`
 		Overwrite bool   `json:"overwrite"`
 		UserID    string `json:"userid"`
 		Error     string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	_, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	rcp.UserID, _, err = TokenHandler(r, session)
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
-	for key, values := range r.PostForm {
-		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Project = v
-		case "id":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.ID = v
-		case "userid":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if rcp.UserID == "unknown" && v != "" {
-				rcp.UserID = v
-			}
-		case "overwrite":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Overwrite = str2bool(v)
-		case "text":
-			if len(values) == 0 {
-				rcp.Text = ""
-			} else {
-				rcp.Text = values[0]
-			}
-		}
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
+		return
 	}
-	itemName, note, err := SetNote(session, rcp.Project, rcp.ID, rcp.UserID, rcp.Text, rcp.Overwrite)
+	rcp.ID = id
+	rcp.Text = r.FormValue("text")
+	rcp.Overwrite = str2bool(r.FormValue("overwrite"))
+
+	err = SetNoteV2(client, rcp.ID, rcp.UserID, rcp.Text, rcp.Overwrite)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Note: %s\nProject: %s, Name: %s, Author: %s", note, rcp.Project, itemName, rcp.UserID))
+	data, err := json.Marshal(rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// json 으로 결과 전송
-	data, _ := json.Marshal(rcp)
+
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }
