@@ -71,7 +71,6 @@ var funcMap = template.FuncMap{
 	"TaskUser":                     TaskUser,
 	"TaskDate":                     TaskDate,
 	"TaskPredate":                  TaskPredate,
-	"GetTaskLevel":                 GetTaskLevel,
 	"ProductionVersionFormat":      ProductionVersionFormat,
 	"Protocol":                     Protocol,
 	"RmProtocol":                   RmProtocol,
@@ -523,9 +522,8 @@ func webserver(port string) {
 	r.HandleFunc("/api/deadline2d", handleAPIDeadline2D)
 	r.HandleFunc("/api/deadline3d", handleAPIDeadline3D)
 	r.HandleFunc("/api2/settaskmov", handleAPI2SetTaskMov).Methods("POST")
-	r.HandleFunc("/api/settaskusernote", handleAPISetTaskUserNote)
+	r.HandleFunc("/api/settaskusernote", handleAPISetTaskUserNote).Methods("POST")
 	r.HandleFunc("/api/setretimeplate", handleAPISetRetimePlate)
-	r.HandleFunc("/api/settasklevel", handleAPISetTaskLevel).Methods("POST")
 	r.HandleFunc("/api/setobjectid", handleAPISetObjectID)
 	r.HandleFunc("/api/setociocc", handleAPISetOCIOcc)
 	r.HandleFunc("/api/setrollmedia", handleAPISetRollmedia)

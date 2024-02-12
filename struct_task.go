@@ -15,22 +15,6 @@ type Task struct {
 	Date         string               `json:"date"`         // 2차 마감일 RFC3339
 	Mov          string               `json:"mov"`          // mov 경로
 	Mdate        string               `json:"mdate"`        // mov 업데이트 날짜 RFC3339
-	ExpectDay    int                  `json:"expectday"`    // 예측 맨데이
-	ResultDay    int                  `json:"resultday"`    // 실제 맨데이
 	UserNote     string               `json:"usernote"`     // 아티스트와 관련된 엘리먼트등의 정보를 입력하기 위해 사용.
-	TaskLevel    `json:"tasklevel"`   // 샷 레벨
 	Publishes    map[string][]Publish // 퍼블리쉬 정보, string값은 "Primary Key"가 된다.
 }
-
-// TaskLevel 은 태스크 난이도이다.
-type TaskLevel int
-
-// TaskLevel list
-const (
-	TaskLevel0 = TaskLevel(iota) // 0 쉬운난이도
-	TaskLevel1                   // 1
-	TaskLevel2                   // 2
-	TaskLevel3                   // 3
-	TaskLevel4                   // 4
-	TaskLevel5                   // 5 높은난이도
-)

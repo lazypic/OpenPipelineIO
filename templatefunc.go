@@ -177,7 +177,7 @@ var MatchFullTime = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[-+]
 var MatchUTCFullTime = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$`)
 
 // ToShortTime 템플릿함수는 시간문자열을 일반사용자의 가독성을 위해서 4자리 문자열로 바꾸어주는 함수.
-//1019, 2016-10-19, 2016-10-19T16:41:24+09:00 을 전부 1019로 바꾼다.
+// 1019, 2016-10-19, 2016-10-19T16:41:24+09:00 을 전부 1019로 바꾼다.
 func ToShortTime(t string) string {
 	if MatchNormalTime.MatchString(t) {
 		return strings.Replace(t[5:10], "-", "", -1)
@@ -539,11 +539,6 @@ func TaskDate(i Item, task string) string {
 // TaskPredate 템플릿 함수는 아이템과 Task 문자를 받아서 Predate를 반환한다.
 func TaskPredate(i Item, task string) string {
 	return reflect.ValueOf(i).FieldByName(strings.Title(task)).FieldByName("Predate").String()
-}
-
-// GetTaskLevel 템플릿 함수는 아이템과 Task 문자를 받아서 Tasklevel을 반환한다.
-func GetTaskLevel(i Item, task string) TaskLevel {
-	return TaskLevel(reflect.ValueOf(i).FieldByName(strings.Title(task)).FieldByName("TaskLevel").Int())
 }
 
 // userInfo 템플릿 함수는 id(name,team) 문자열을 받아서 name,team만 반환한다.

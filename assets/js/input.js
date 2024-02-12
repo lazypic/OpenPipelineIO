@@ -364,9 +364,6 @@ function setEditTaskModal(id, task) {
             document.getElementById('modal-edittask-startdate2nd').value=data.task.startdate2nd;
             document.getElementById('modal-edittask-predate').value=data.task.predate;
             document.getElementById('modal-edittask-date').value=data.task.date;
-            document.getElementById('modal-edittask-expectday').value=data.task.expectday;
-            document.getElementById('modal-edittask-resultday').value=data.task.resultday;
-            document.getElementById('modal-edittask-level').value=data.task.tasklevel;
             document.getElementById('modal-edittask-task').value=data.task.title;            
             document.getElementById('modal-edittask-path').value=data.task.mov;
             document.getElementById('modal-edittask-usernote').value=data.task.usernote;
@@ -2504,119 +2501,7 @@ function setTaskMov(id, task, mov) {
     });
 }
 
-function setTaskExpectDay(expectday) {
-    let token = document.getElementById("token").value;
-    let id = document.getElementById('modal-edittask-id').value;
-    let task = document.getElementById('modal-edittask-task').value;
 
-    if (isMultiInput()) {
-        let cboxes = document.getElementsByName('selectID');
-        for (var i = 0; i < cboxes.length; ++i) {
-            if(cboxes[i].checked === false) {
-                continue
-            }
-            let id = cboxes[i].getAttribute("id");
-            $.ajax({
-                url: "/api/settaskexpectday",
-                type: "post",
-                data: {
-                    project: project,
-                    id: id,
-                    task: task,
-                    expectday: expectday,
-                },
-                headers: {
-                    "Authorization": "Basic "+ token
-                },
-                dataType: "json",
-                success: function(data) {
-                    console.info(data);
-                },
-                error: function(request,status,error){
-                    alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-                }
-            });
-        }
-    } else {
-        $.ajax({
-            url: "/api/settaskexpectday",
-            type: "post",
-            data: {
-                project: project,
-                id: id,
-                task: task,
-                expectday: expectday,
-            },
-            headers: {
-                "Authorization": "Basic "+ token
-            },
-            dataType: "json",
-            success: function(data) {
-                console.info(data);
-            },
-            error: function(request,status,error){
-                alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-            }
-        });
-    }
-}
-
-function setTaskResultDay(resultday) {
-    let token = document.getElementById("token").value;
-    let id = document.getElementById('modal-edittask-id').value;
-    let task = document.getElementById('modal-edittask-task').value;
-
-    if (isMultiInput()) {
-        let cboxes = document.getElementsByName('selectID');
-        for (var i = 0; i < cboxes.length; ++i) {
-            if(cboxes[i].checked === false) {
-                continue
-            }
-            let id = cboxes[i].getAttribute("id");
-            $.ajax({
-                url: "/api/settaskresultday",
-                type: "post",
-                data: {
-                    project: project,
-                    id: id,
-                    task: task,
-                    resultday: resultday,
-                },
-                headers: {
-                    "Authorization": "Basic "+ token
-                },
-                dataType: "json",
-                success: function(data) {
-                    console.info(data);
-                },
-                error: function(request,status,error){
-                    alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-                }
-            });
-        }
-    } else {
-        $.ajax({
-            url: "/api/settaskresultday",
-            type: "post",
-            data: {
-                project: project,
-                id: id,
-                task: task,
-                resultday: resultday,
-            },
-            headers: {
-                "Authorization": "Basic "+ token
-            },
-            dataType: "json",
-            success: function(data) {
-                console.info(data);
-            },
-            error: function(request,status,error){
-                alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-            }
-        });
-    }
-}
 
 function setTaskUser() {
     let id = document.getElementById('modal-edittask-id').value
@@ -2966,9 +2851,8 @@ function setTaskStartdate2nd(id, task, date) {
     }
 }
 
-function setTaskUserNote(project, id, task, usernote) {
+function setTaskUserNote(id, task, usernote) {
     let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
         for (var i = 0; i < cboxes.length; ++i) {
@@ -2979,13 +2863,11 @@ function setTaskUserNote(project, id, task, usernote) {
             let id = cboxes[i].getAttribute("id")
             $.ajax({
                 url: "/api/settaskusernote",
-                type: "post",
+                type: "POST",
                 data: {
-                    project: project,
-                    name: id2name(id),
+                    id: id,
                     task: task,
                     usernote: usernote,
-                    userid: userid,
                 },
                 headers: {
                     "Authorization": "Basic "+ token
@@ -3002,13 +2884,11 @@ function setTaskUserNote(project, id, task, usernote) {
     } else {
         $.ajax({
             url: "/api/settaskusernote",
-            type: "post",
+            type: "POST",
             data: {
-                project: project,
-                name: id2name(id),
+                id: id,
                 task: task,
                 usernote: usernote,
-                userid: userid,
             },
             headers: {
                 "Authorization": "Basic "+ token
@@ -3822,57 +3702,6 @@ function selectCheckboxInvert() {
     document.getElementById("topbtn").innerHTML = "Top<br>" + (invertNum)
 }
 
-function setTaskLevel(id, task, level) {
-    let token = document.getElementById("token").value;
-    if (isMultiInput()) {
-        let cboxes = document.getElementsByName('selectID');
-        for (var i = 0; i < cboxes.length; ++i) {
-            if(cboxes[i].checked === false) {
-                continue
-            }
-            let id = cboxes[i].getAttribute("id");
-            $.ajax({
-                url: "/api/settasklevel",
-                type: "post",
-                data: {
-                    id: id,
-                    task: task,
-                    level: level,
-                },
-                headers: {
-                    "Authorization": "Basic "+ token
-                },
-                dataType: "json",
-                success: function(data) {
-                    console.info(data)
-                },
-                error: function(request,status,error){
-                    alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-                }
-            });
-        }
-    } else {
-        $.ajax({
-            url: "/api/settasklevel",
-            type: "post",
-            data: {
-                id: id,
-                task: task,
-                level: level,
-            },
-            headers: {
-                "Authorization": "Basic "+ token
-            },
-            dataType: "json",
-            success: function(data) {
-                console.info(data)
-            },
-            error: function(request,status,error){
-                alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-            }
-        });
-    }
-}
 
 function setObjectIDModal(project, id) {
     document.getElementById("modal-objectid-project").value = project;

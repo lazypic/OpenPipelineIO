@@ -2925,26 +2925,21 @@ func handleAPISetTaskStartdate2nd(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetTaskUserNote 함수는 아이템의 task에 대한 시작일을 설정한다.
 func handleAPISetTaskUserNote(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project  string `json:"project"`
-		Name     string `json:"name"`
+		ID       string `json:"id"`
 		Task     string `json:"task"`
 		UserNote string `json:"usernote"`
 		UserID   string `json:"userid"`
 		Error    string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2955,59 +2950,37 @@ func handleAPISetTaskUserNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Project = v
-		case "name":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Name = v
-		case "userid":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if rcp.UserID == "unknown" && v != "" {
-				rcp.UserID = v
-			}
-		case "task":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Task = v
-		case "note", "usernote":
-			if len(values) != 1 {
-				rcp.UserNote = ""
-			} else {
-				rcp.UserNote = values[0]
-			}
-		}
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
+		return
 	}
-	err = SetTaskUserNote(session, rcp.Project, rcp.Name, rcp.Task, rcp.UserNote)
+	rcp.ID = id
+	task := r.FormValue("task")
+	if task == "" {
+		http.Error(w, "need task", http.StatusBadRequest)
+		return
+	}
+	rcp.Task = task
+	userNote := r.FormValue("usernote")
+	if task == "" {
+		http.Error(w, "need task", http.StatusBadRequest)
+		return
+	}
+	rcp.UserNote = userNote
+
+	err = SetTaskUserNoteV2(client, rcp.ID, rcp.Task, rcp.UserNote)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set %s Task UserNote: %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.UserNote, rcp.Project, rcp.Name, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
-	data, _ := json.Marshal(rcp)
+	data, err := json.Marshal(rcp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
@@ -5431,65 +5404,6 @@ func handleAPIDeadline3D(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
 		return
 	}
-}
-
-// handleAPISetTaskLevel 함수는 Task에 level을 설정한다.
-func handleAPISetTaskLevel(w http.ResponseWriter, r *http.Request) {
-	type Recipe struct {
-		ID     string `json:"id"`
-		Task   string `json:"task"`
-		Level  string `json:"level"`
-		UserID string `json:"userid"`
-		Error  string `json:"error"`
-	}
-	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
-	r.ParseForm()
-	id := r.FormValue("id")
-	if id == "" {
-		http.Error(w, "need id", http.StatusBadRequest)
-		return
-	}
-	rcp.ID = id
-
-	task := r.FormValue("task")
-	if task == "" {
-		http.Error(w, "need task", http.StatusBadRequest)
-		return
-	}
-	rcp.Task = task
-
-	rcp.Level = r.FormValue("level")
-	if rcp.Level == "" {
-		http.Error(w, "need level", http.StatusInternalServerError)
-		return
-	}
-
-	err = setTaskLevel(session, rcp.ID, rcp.Task, rcp.Level)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// json 으로 결과 전송
-	data, err := json.Marshal(rcp)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	w.Write(data)
 }
 
 // handleAPITask 함수는 Task정보를 가지고온다.

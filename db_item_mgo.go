@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"reflect"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 
@@ -840,25 +839,6 @@ func setTaskUserComment(session *mgo.Session, id, task, comment string) error {
 		return err
 	}
 	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"tasks." + task + ".usercomment": comment}})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// setTaskLevel함수는 해당 샷에 level를 설정하는 함수이다.
-func setTaskLevel(session *mgo.Session, id, task, level string) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("items")
-	err := HasTask(session, id, task)
-	if err != nil {
-		return err
-	}
-	l, err := strconv.Atoi(level)
-	if err != nil {
-		return err
-	}
-	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"tasks." + task + ".tasklevel": TaskLevel(l)}})
 	if err != nil {
 		return err
 	}
