@@ -302,9 +302,9 @@
 				
 				<div class="ml-3" id="tag-button-{{.ID}}">
 					{{if eq $.User.AccessLevel 4 5 6 7 8 9 10 11}}
-						<span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('{{.Project}}', '{{.ID}}')">＋</span>
+						<span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('{{.ID}}')">＋</span>
 						{{if .Tag}}	
-							<span class="remove ml-0" data-toggle="modal" data-target="#modal-rmtag" onclick="setRmTagModal('{{.Project}}', '{{.ID}}')">－</span>
+							<span class="remove ml-0" data-toggle="modal" data-target="#modal-rmtag" onclick="setRmTagModal('{{.ID}}')">－</span>
 						{{end}}
 					{{end}}
 				</div>
@@ -342,9 +342,9 @@
 				</div>
 				<div class="ml-3" id="assettags-button-{{.ID}}">
 					{{if eq $.User.AccessLevel 4 5 6 7 8 9 10 11}}
-						<span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setAddAssetTagModal('{{.Project}}', '{{.ID}}')">＋</span>
+						<span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setAddAssetTagModal('{{.ID}}')">＋</span>
 						{{if .Tag}}	
-							<span class="remove ml-0" data-toggle="modal" data-target="#modal-rmassettag" onclick="setRmAssetTagModal('{{.Project}}', '{{.ID}}')">－</span>
+							<span class="remove ml-0" data-toggle="modal" data-target="#modal-rmassettag" onclick="setRmAssetTagModal('{{.ID}}')">－</span>
 						{{end}}
 					{{end}}
 				</div>

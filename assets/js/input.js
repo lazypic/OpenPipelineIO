@@ -180,7 +180,6 @@ fetch('/api/addassettag', {
         "Authorization": "Basic "+ document.getElementById("token").value,
     },
     body: new URLSearchParams({
-        project: project,
         id: id,
         assettag: assettag,
     })
@@ -3661,15 +3660,13 @@ function setRnum() {
     }
 }
 
-function setAddTagModal(project, id) {
-    document.getElementById("modal-addtag-project").value = project;
+function setAddTagModal(id) {
     document.getElementById("modal-addtag-id").value = id;
     document.getElementById("modal-addtag-text").value = "";
     document.getElementById("modal-addtag-title").innerHTML = "Add Tag" + multiInputTitle(id);
 }
 
-function setAddAssetTagModal(project, id) {
-    document.getElementById("modal-addassettag-project").value = project;
+function setAddAssetTagModal(id) {
     document.getElementById("modal-addassettag-id").value = id;
     document.getElementById("modal-addassettag-text").value = "";
     document.getElementById("modal-addassettag-title").innerHTML = "Add Asset Tag" + multiInputTitle(id);
@@ -3681,8 +3678,7 @@ function setRenameTagModal(project) {
     document.getElementById("modal-renametag-aftertag").value = "";
 }
 
-function addTag(project, id, tag) {
-    let userid = document.getElementById("userid").value;
+function addTag(id, tag) {
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
         for (var i = 0; i < cboxes.length; ++i) {
@@ -3696,10 +3692,8 @@ function addTag(project, id, tag) {
                     "Authorization": "Basic "+ document.getElementById("token").value,
                 },
                 body: new URLSearchParams({
-                    project: project,
                     id: id,
                     tag: tag,
-                    userid: userid,
                 })
             })
             .then((response) => {
@@ -3716,12 +3710,12 @@ function addTag(project, id, tag) {
                 // 요소갯수에 따라 버튼을 설정한다.
                 if (document.getElementById(`tags-${data.id}`).childElementCount > 0) {
                     document.getElementById("tag-button-"+data.id).innerHTML = `
-                    <span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('${data.project}','${data.id}')">＋</span>
-                    <span class="remove ml-0" data-toggle="modal" data-target="#modal-rmtag" onclick="setRmTagModal('${data.project}','${data.id}')">－</span>
+                    <span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('${data.id}')">＋</span>
+                    <span class="remove ml-0" data-toggle="modal" data-target="#modal-rmtag" onclick="setRmTagModal('${data.id}')">－</span>
                     `
                 } else {
                     document.getElementById("tag-button-"+data.id).innerHTML = `
-                    <span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('${data.project}','${data.id}')">＋</span>
+                    <span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('${data.id}')">＋</span>
                     `
                 }
             })
@@ -3736,10 +3730,8 @@ function addTag(project, id, tag) {
                 "Authorization": "Basic "+ document.getElementById("token").value,
             },
             body: new URLSearchParams({
-                project: project,
                 id: id,
                 tag: tag,
-                userid: userid,
             })
         })
         .then((response) => {
@@ -3756,12 +3748,12 @@ function addTag(project, id, tag) {
             // 요소갯수에 따라 버튼을 설정한다.
             if (document.getElementById(`tags-${data.id}`).childElementCount > 0) {
                 document.getElementById("tag-button-"+data.id).innerHTML = `
-                <span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('${data.project}','${data.id}')">＋</span>
-                <span class="remove ml-0" data-toggle="modal" data-target="#modal-rmtag" onclick="setRmTagModal('${data.project}','${data.id}')">－</span>
+                <span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('${data.id}')">＋</span>
+                <span class="remove ml-0" data-toggle="modal" data-target="#modal-rmtag" onclick="setRmTagModal('${data.id}')">－</span>
                 `
             } else {
                 document.getElementById("tag-button-"+data.id).innerHTML = `
-                <span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('${data.project}','${data.id}')">＋</span>
+                <span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('${data.id}')">＋</span>
                 `
             }
         })
@@ -3797,16 +3789,14 @@ function renameTag(project, before, after) {
     });
 }
 
-function setRmTagModal(project, id) {
-    document.getElementById("modal-rmtag-project").value = project;
+function setRmTagModal(id) {
     document.getElementById("modal-rmtag-id").value = id;
     document.getElementById("modal-rmtag-tag").value = "";
     document.getElementById("modal-rmtag-title").innerHTML = "Rm Tag" + multiInputTitle(id);
     document.getElementById("modal-rmtag-iscontain").value = false;
 }
 
-function setRmAssetTagModal(project, id) {
-    document.getElementById("modal-rmassettag-project").value = project;
+function setRmAssetTagModal(id) {
     document.getElementById("modal-rmassettag-id").value = id;
     document.getElementById("modal-rmassettag-tag").value = "";
     document.getElementById("modal-rmassettag-title").innerHTML = "Rm Asset Tag" + multiInputTitle(id);
@@ -3846,12 +3836,12 @@ function rmTag() {
                 // 요소갯수에 따라 버튼을 설정한다.
                 if (document.getElementById(`tags-${data.id}`).childElementCount > 0) {
                     document.getElementById("tag-button-"+data.id).innerHTML = `
-                    <span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('${data.project}','${data.id}')">＋</span>
-                    <span class="remove ml-0" data-toggle="modal" data-target="#modal-rmtag" onclick="setRmTagModal('${data.project}','${data.id}')">－</span>
+                    <span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('${data.id}')">＋</span>
+                    <span class="remove ml-0" data-toggle="modal" data-target="#modal-rmtag" onclick="setRmTagModal('${data.id}')">－</span>
                     `;
                 } else {
                     document.getElementById("tag-button-"+data.id).innerHTML = `
-                    <span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('${data.project}','${data.id}')">＋</span>
+                    <span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('${data.id}')">＋</span>
                     `;
                 }
             })
@@ -3882,12 +3872,12 @@ function rmTag() {
             // 요소갯수에 따라 버튼을 설정한다.
             if (document.getElementById(`tags-${data.id}`).childElementCount > 0) {
                 document.getElementById("tag-button-"+data.id).innerHTML = `
-                <span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('${data.project}','${data.id}')">＋</span>
-                <span class="remove ml-0" data-toggle="modal" data-target="#modal-rmtag" onclick="setRmTagModal('${data.project}','${data.id}')">－</span>
+                <span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('${data.id}')">＋</span>
+                <span class="remove ml-0" data-toggle="modal" data-target="#modal-rmtag" onclick="setRmTagModal('${data.id}')">－</span>
                 `;
             } else {
                 document.getElementById("tag-button-"+data.id).innerHTML = `
-                <span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('${data.project}','${data.id}')">＋</span>
+                <span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('${data.id}')">＋</span>
                 `;
             }
         })
@@ -6238,7 +6228,7 @@ function addReviewStatusModeComment() {
     });
 }
 
-function addAssetTag(project, id, assettag) {
+function addAssetTag(id, assettag) {
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
         for (var i = 0; i < cboxes.length; ++i) {
@@ -6252,7 +6242,6 @@ function addAssetTag(project, id, assettag) {
                     "Authorization": "Basic "+ document.getElementById("token").value,
                 },
                 body: new URLSearchParams({
-                    project: project,
                     id: id,
                     assettag: assettag,
                 })
@@ -6271,12 +6260,12 @@ function addAssetTag(project, id, assettag) {
                 // 요소갯수에 따라 버튼을 설정한다.
                 if (document.getElementById(`assettags-${data.id}`).childElementCount > 0) {
                     document.getElementById("assettags-button-"+data.id).innerHTML = `
-                    <span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setAddAssetTagModal('${data.project}','${data.id}')">＋</span>
-                    <span class="remove ml-0" data-toggle="modal" data-target="#modal-rmassettag" onclick="setRmAssetTagModal('${data.project}','${data.id}')">－</span>
+                    <span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setAddAssetTagModal('${data.id}')">＋</span>
+                    <span class="remove ml-0" data-toggle="modal" data-target="#modal-rmassettag" onclick="setRmAssetTagModal('${data.id}')">－</span>
                     `
                 } else {
                     document.getElementById("assettags-button-"+data.id).innerHTML = `
-                    <span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setAddAssetTagModal('${data.project}','${data.id}')">＋</span>
+                    <span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setAddAssetTagModal('${data.id}')">＋</span>
                     `
                 }
             })
@@ -6291,7 +6280,6 @@ function addAssetTag(project, id, assettag) {
                 "Authorization": "Basic "+ document.getElementById("token").value,
             },
             body: new URLSearchParams({
-                project: project,
                 id: id,
                 assettag: assettag,
             })
@@ -6310,12 +6298,12 @@ function addAssetTag(project, id, assettag) {
             // 요소갯수에 따라 버튼을 설정한다.
             if (document.getElementById(`assettags-${data.id}`).childElementCount > 0) {
                 document.getElementById("assettags-button-"+data.id).innerHTML = `
-                <span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setAddAssetTagModal('${data.project}','${data.id}')">＋</span>
-                <span class="remove ml-0" data-toggle="modal" data-target="#modal-rmassettag" onclick="setRmAssetTagModal('${data.project}','${data.id}')">－</span>
+                <span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setAddAssetTagModal('${data.id}')">＋</span>
+                <span class="remove ml-0" data-toggle="modal" data-target="#modal-rmassettag" onclick="setRmAssetTagModal('${data.id}')">－</span>
                 `
             } else {
                 document.getElementById("assettags-button-"+data.id).innerHTML = `
-                <span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setAddAssetTagModal('${data.project}','${data.id}')">＋</span>
+                <span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setAddAssetTagModal('${data.id}')">＋</span>
                 `
             }
         })
@@ -6360,12 +6348,12 @@ function rmAssetTag() {
                 // 요소갯수에 따라 버튼을 설정한다.
                 if (document.getElementById(`assettags-${data.id}`).childElementCount > 0) {
                     document.getElementById("assettags-button-"+data.id).innerHTML = `
-                    <span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setRmAssetTagModal('${data.project}','${data.id}')">＋</span>
-                    <span class="remove ml-0" data-toggle="modal" data-target="#modal-rmassettag" onclick="setRmAssetTagModal('${data.project}','${data.id}')">－</span>
+                    <span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setRmAssetTagModal('${data.id}')">＋</span>
+                    <span class="remove ml-0" data-toggle="modal" data-target="#modal-rmassettag" onclick="setRmAssetTagModal('${data.id}')">－</span>
                     `;
                 } else {
                     document.getElementById("assettags-button-"+data.id).innerHTML = `
-                    <span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setAddAssetTagModal('${data.project}','${data.id}')">＋</span>
+                    <span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setAddAssetTagModal('${data.id}')">＋</span>
                     `;
                 }
             })
@@ -6397,12 +6385,12 @@ function rmAssetTag() {
             // 요소갯수에 따라 버튼을 설정한다.
             if (document.getElementById(`assettags-${data.id}`).childElementCount > 0) {
                 document.getElementById("assettags-button-"+data.id).innerHTML = `
-                <span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setAddAssetTagModal('${data.project}','${data.id}')">＋</span>
-                <span class="remove ml-0" data-toggle="modal" data-target="#modal-rmassettag" onclick="setRmAssetTagModal('${data.project}','${data.id}')">－</span>
+                <span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setAddAssetTagModal('${data.id}')">＋</span>
+                <span class="remove ml-0" data-toggle="modal" data-target="#modal-rmassettag" onclick="setRmAssetTagModal('${data.id}')">－</span>
                 `;
             } else {
                 document.getElementById("assettags-button-"+data.id).innerHTML = `
-                <span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setAddAssetTagModal('${data.project}','${data.id}')">＋</span>
+                <span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setAddAssetTagModal('${data.id}')">＋</span>
                 `;
             }
         })

@@ -65,7 +65,7 @@ restAPI의 장점은 웹서비스의 URI를 이용하기 때문에 네트워크�
 | /api/sethandlein | handle in frame 등록 | project, name, frame | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0010&frame=1003" https://openpipeline.io/api/sethandlein` |
 | /api/sethandleout | handle out frame 등록 | project, name, frame | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0010&frame=1130" https://openpipeline.io/api/sethandleout` |
 | /api/addtag | tag 추가 | project, id, tag | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&id=SS_0010_org&tag=테스트" https://openpipeline.io/api/addtag` |
-| /api/addassettag | assettag 추가 | project, id, assettag | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&id=SS_0010_org&assettag=테스트" https://openpipeline.io/api/addassettag` |
+| /api/addassettag | assettag 추가 | id, assettag | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_SS_0010_org&assettag=테스트" https://openpipeline.io/api/addassettag` |
 | /api/rmtag | tags 삭제 | project, id, tag, (iscontain) | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&id=SS_0020_org&tag=태그3&iscontain=true" https://openpipeline.io/api/rmtag` |
 | /api/rmassettag | assettag 삭제 | project, id, assettag, (iscontain) | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&id=SS_0020_org&assettag=태그3&iscontain=true" https://openpipeline.io/api/rmassettag` |
 | /api/setnote | 작업내용 변경 | project, name, text, (userid) | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0020&text=바람이 휘날린다" https://openpipeline.io/api/setnote` |

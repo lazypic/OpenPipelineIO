@@ -4763,12 +4763,10 @@ func handleAPISetCrowdAsset(w http.ResponseWriter, r *http.Request) {
 // handleAPIAddTag 함수는 아이템에 태그를 설정합니다.
 func handleAPIAddTag(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
-		Project string `json:"project"`
-		Name    string `json:"name"`
-		ID      string `json:"id"`
-		Tag     string `json:"tag"`
-		UserID  string `json:"userid"`
-		Error   string `json:"error"`
+		ID     string `json:"id"`
+		Tag    string `json:"tag"`
+		UserID string `json:"userid"`
+		Error  string `json:"error"`
 	}
 	rcp := Recipe{}
 	client, err := initMongoClient()
@@ -4788,39 +4786,28 @@ func handleAPIAddTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
 	tag := r.FormValue("tag")
 	if tag == "" {
-		http.Error(w, "tag를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need tag", http.StatusBadRequest)
 		return
 	}
 	if !regexpTag.MatchString(tag) {
-		http.Error(w, "tag 규칙이 아닙니다", http.StatusBadRequest)
+		http.Error(w, "invalid tag rule", http.StatusBadRequest)
 		return
 	}
 	rcp.Tag = tag
-	rcp.Name, err = AddTagV2(client, rcp.ID, rcp.Tag)
+	err = AddTagV2(client, rcp.ID, rcp.Tag)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklogV2(client, rcp.Project, fmt.Sprintf("Add Tag: %s\nProject: %s, Name: %s, Author: %s", rcp.Tag, rcp.Project, rcp.Name, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {
@@ -4834,25 +4821,20 @@ func handleAPIAddTag(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIAddAssetTag 함수는 아이템에 태그를 설정합니다.
 func handleAPIAddAssetTag(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project  string `json:"project"`
 		ID       string `json:"id"`
 		Assettag string `json:"assettag"`
 		UserID   string `json:"userid"`
 		Error    string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -4863,39 +4845,29 @@ func handleAPIAddAssetTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
 	assettag := r.FormValue("assettag")
 	if assettag == "" {
-		http.Error(w, "assettag를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need assettag", http.StatusBadRequest)
 		return
 	}
 	if !regexpTag.MatchString(assettag) {
-		http.Error(w, "assettag 규칙이 아닙니다", http.StatusBadRequest)
+		http.Error(w, "invalid assettag rule", http.StatusBadRequest)
 		return
 	}
+	fmt.Println(rcp)
 	rcp.Assettag = assettag
-	err = AddAssetTag(session, rcp.Project, rcp.ID, rcp.Assettag)
+	err = AddAssetTagV2(client, rcp.ID, rcp.Assettag)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Add Asset Tag: %s\nProject: %s, ID: %s, Author: %s", rcp.Assettag, rcp.Project, rcp.ID, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {
@@ -5041,25 +5013,20 @@ func handleAPIRmTag(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIRmAssetTag 함수는 아이템에 에셋태그를 삭제합니다.
 func handleAPIRmAssetTag(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project   string `json:"project"`
 		ID        string `json:"id"`
 		Assettag  string `json:"assettag"`
 		UserID    string `json:"userid"`
 		IsContain bool   `json:"iscontain"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5070,12 +5037,6 @@ func handleAPIRmAssetTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
@@ -5093,17 +5054,12 @@ func handleAPIRmAssetTag(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Assettag = assettag
 	rcp.IsContain = str2bool(r.FormValue("iscontain"))
-	err = RmAssetTag(session, rcp.Project, rcp.ID, rcp.Assettag, rcp.IsContain)
+	err = RmAssetTagV2(client, rcp.ID, rcp.Assettag, rcp.IsContain)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Rm Asset Tag: %s\nProject: %s, ID: %s, Author: %s", rcp.Assettag, rcp.Project, rcp.ID, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {

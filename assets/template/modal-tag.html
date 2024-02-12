@@ -10,7 +10,6 @@
                 </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" class="form-control" id="modal-addtag-project">
                     <input type="hidden" class="form-control" id="modal-addtag-id">
                     <div class="form-group">
                         <div class="form-group">
@@ -22,7 +21,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-darkmode" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-outline-warning" onclick="addTag(document.getElementById('modal-addtag-project').value, document.getElementById('modal-addtag-id').value, document.getElementById('modal-addtag-text').value)" data-dismiss="modal">ADD</button>
+                    <button type="button" class="btn btn-outline-warning" onclick="addTag(document.getElementById('modal-addtag-id').value, document.getElementById('modal-addtag-text').value)" data-dismiss="modal">ADD</button>
                 </div>
             </div>
         </div>
@@ -72,7 +71,6 @@
                 </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" class="form-control" id="modal-rmtag-project">
                     <input type="hidden" class="form-control" id="modal-rmtag-id">
                     <div class="form-group">
                         <div class="form-group">
@@ -108,7 +106,6 @@
                 </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" class="form-control" id="modal-addassettag-project">
                     <input type="hidden" class="form-control" id="modal-addassettag-id">
                     <div class="form-group">
                         <div class="form-group">
@@ -120,7 +117,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-darkmode" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-outline-warning" onclick="addAssetTag(document.getElementById('modal-addassettag-project').value, document.getElementById('modal-addassettag-id').value, document.getElementById('modal-addassettag-text').value)" data-dismiss="modal">ADD</button>
+                    <button type="button" class="btn btn-outline-warning" onclick="addAssetTag(document.getElementById('modal-addassettag-id').value, document.getElementById('modal-addassettag-text').value)" data-dismiss="modal">ADD</button>
                 </div>
             </div>
         </div>

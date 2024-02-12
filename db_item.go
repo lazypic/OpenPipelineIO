@@ -150,31 +150,31 @@ func TotalnumV2(client *mongo.Client, project string) (Infobarnum, error) {
 	return results, nil
 }
 
-func AddTagV2(client *mongo.Client, id, inputTag string) (string, error) {
+func AddTagV2(client *mongo.Client, id, inputTag string) error {
 	collection := client.Database(*flagDBName).Collection("items")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	i, err := getItemV2(client, id)
 	if err != nil {
-		return id, err
+		return err
 	}
 	rmspaceTag := strings.Replace(inputTag, " ", "", -1) // 태그는 공백을 제거한다.
 	for _, tag := range i.Tag {
 		if rmspaceTag == tag {
-			return id, errors.New(inputTag + "태그는 이미 존재하고 있습니다 추가할 수 없습니다")
+			return errors.New(inputTag + "태그는 이미 존재하고 있습니다 추가할 수 없습니다")
 		}
 	}
 	newTags := append(i.Tag, rmspaceTag)
 
 	result, err := collection.UpdateOne(ctx, bson.M{"id": id}, bson.M{"$set": bson.M{"tag": newTags, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
-		return i.Name, err
+		return err
 	}
 	if result.MatchedCount == 0 {
-		return i.Name, errors.New("no document found with id" + id)
+		return errors.New("no document found with id" + id)
 	}
-	return i.Name, nil
+	return nil
 }
 
 func getItemV2(client *mongo.Client, id string) (Item, error) {
@@ -443,4 +443,58 @@ func RmCommentV2(client *mongo.Client, id, userID, date string) (string, string,
 		return id, "", err
 	}
 	return id, removeText, nil
+}
+
+func AddAssetTagV2(client *mongo.Client, id, assettag string) error {
+	i, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+	rmspaceTag := strings.Replace(assettag, " ", "", -1) // 태그는 공백을 제거한다.
+	for _, tag := range i.Assettags {
+		if rmspaceTag == tag {
+			return errors.New(assettag + "태그는 이미 존재하고 있습니다 추가할 수 없습니다")
+		}
+	}
+	newTags := append(i.Assettags, rmspaceTag)
+
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"assettags": newTags, "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + i.ID)
+	}
+	return nil
+}
+
+func RmAssetTagV2(client *mongo.Client, id, inputTag string, isContain bool) error {
+	i, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+	var newTags []string
+	for _, tag := range i.Assettags {
+		if isContain {
+			if strings.Contains(tag, inputTag) {
+				continue
+			}
+		}
+		if inputTag == tag {
+			continue
+		}
+		newTags = append(newTags, tag)
+	}
+	i.Assettags = newTags
+	// 만약 태그에 권정보가 없더라도 권관련 태그는 날아가면 안된다. setItem을 이용한다.
+	err = setItemV2(client, i)
+	if err != nil {
+		return err
+	}
+	return nil
 }

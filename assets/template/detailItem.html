@@ -313,9 +313,9 @@
 				<div class="ml-3" id="tag-button-{{$.Item.Name}}">
 					{{if eq $.Item.Type "org" "left" "asset"}}
 						{{if eq $.User.AccessLevel 4 5 6 7 8 9 10 11}}
-							<span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('{{$.Item.Project}}', '{{$.Item.ID}}')">＋</span>
+							<span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('{{$.Item.ID}}')">＋</span>
 							{{if $.Item.Tag}}	
-								<span class="remove ml-0" data-toggle="modal" data-target="#modal-rmtag" onclick="setRmTagModal('{{$.Item.Project}}', '{{$.Item.ID}}')">－</span>
+								<span class="remove ml-0" data-toggle="modal" data-target="#modal-rmtag" onclick="setRmTagModal('{{$.Item.ID}}')">－</span>
 							{{end}}
 						{{end}}
 					{{end}}
