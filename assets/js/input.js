@@ -921,12 +921,12 @@ function setNoteModal(id) {
     document.getElementById("modal-setnote-text").value = "";
 }
 
-function editNoteModal(project, id) {
+function editNoteModal(id) {
     let token = document.getElementById("token").value;
     document.getElementById("modal-editnote-id").value = id;
     document.getElementById("modal-editnote-title").innerHTML = "Set Note" + multiInputTitle(id);
     $.ajax({
-        url: `/api/item?project=${project}&id=${id}`,
+        url: `/api2/item?id=${id}`,
         headers: {
             "Authorization": "Basic "+ token
         },

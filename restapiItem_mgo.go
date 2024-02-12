@@ -16,50 +16,24 @@ import (
 
 // handleAPI2Item 함수는 아이템 자료구조를 불러온다.
 func handleAPI2GetItem(w http.ResponseWriter, r *http.Request) {
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	q := r.URL.Query()
-	project := q.Get("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
 	id := q.Get("id")
-	name := q.Get("name")
-	if id == "" && name == "" {
-		http.Error(w, "id(SS_0010_org) 또는 name(SS_0010)을 설정해주세요", http.StatusBadRequest)
+	if id == "" {
+		http.Error(w, errors.New("need id").Error(), http.StatusInternalServerError)
 		return
 	}
-	typ := q.Get("type")
-	if typ == "" || id == "" {
-		if name == "" && regexpID.MatchString(id) && typ != "" {
-			name = strings.Split(id, "_")[0] + "_" + strings.Split(id, "_")[1]
-			typ, err = Type(session, project, name)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-		} else if name != "" && typ == "" {
-			typ, err = Type(session, project, name)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-		}
-	}
-	if id == "" {
-		id = name + "_" + typ
-	}
-	item, err := getItem(session, id)
+	item, err := getItemV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5144,7 +5118,6 @@ func handleAPIRmAssetTag(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetNote 함수는 아이템에 작업내용을 설정합니다.
 func handleAPISetNote(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	type Recipe struct {
 		ID        string `json:"id"`
 		Text      string `json:"text"`
@@ -5190,7 +5163,7 @@ func handleAPISetNote(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }
