@@ -2599,13 +2599,13 @@ func handleAPI2SetTaskStatus(w http.ResponseWriter, r *http.Request) {
 		UserID string `json:"userid"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2614,34 +2614,28 @@ func handleAPI2SetTaskStatus(w http.ResponseWriter, r *http.Request) {
 
 	id := r.FormValue("id")
 	if id == "" {
-		if err != nil {
-			http.Error(w, "need id", http.StatusBadRequest)
-			return
-		}
+		http.Error(w, "need id", http.StatusBadRequest)
+		return
 	}
 	rcp.ID = id
 	rcp.Task = r.FormValue("task")
 	if rcp.Task == "" {
-		if err != nil {
-			http.Error(w, "task가 빈 문자열 입니다", http.StatusBadRequest)
-			return
-		}
+		http.Error(w, "need task", http.StatusBadRequest)
+		return
 	}
 	rcp.Status = r.FormValue("status")
 	if rcp.Status == "" {
-		if err != nil {
-			http.Error(w, "status가 빈 문자열 입니다", http.StatusBadRequest)
-			return
-		}
+		http.Error(w, "need status", http.StatusBadRequest)
+		return
 	}
 
 	// task가 존재하는지 체크한다.
-	err = HasTask(session, rcp.ID, rcp.Task)
+	err = HasTaskV2(client, rcp.ID, rcp.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = SetTaskStatusV2(session, rcp.ID, rcp.Task, rcp.Status)
+	err = SetTaskStatusV3(client, rcp.ID, rcp.Task, rcp.Status)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

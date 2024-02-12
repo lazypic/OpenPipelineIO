@@ -2757,9 +2757,9 @@ function setTaskUserComment() {
     }
 }
 
-function setTaskStatus(project, id, task, status) { // legacy
+
+function setTaskStatusV2(id, task, status) {
     let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
         for (let i = 0; i < cboxes.length; ++i) {
@@ -2781,61 +2781,6 @@ function setTaskStatus(project, id, task, status) { // legacy
                 },
                 dataType: "json",
                 success: function(data) {
-                    document.getElementById(`${data.id}-task-${data.task}-status`).innerHTML = `<span class="finger mt-1 badge badge-${data.status} statusbox" title="${data.status}">${data.task}</span>`;
-                },
-                error: function(request,status,error){
-                    alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-                }
-            });
-        }
-    } else {
-        $.ajax({
-            url: "/api2/settaskstatus",
-            type: "POST",
-            data: {
-                id: id,
-                task: task,
-                status: status,
-            },
-            headers: {
-                "Authorization": "Basic "+ token
-            },
-            dataType: "json",
-            success: function(data) {
-                document.getElementById(`${data.id}-task-${data.task}-status`).innerHTML = `<span class="finger mt-1 badge badge-${data.status} statusbox" title="${data.status}">${data.task}</span>`;
-            },
-            error: function(request,status,error){
-                alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-            }
-        });
-    }
-}
-
-
-
-function setTaskStatusV2(id, task, status) {
-    let token = document.getElementById("token").value;
-    if (isMultiInput()) {
-        let cboxes = document.getElementsByName('selectID');
-        for (let i = 0; i < cboxes.length; ++i) {
-            if(cboxes[i].checked === false) {
-                continue
-            }
-            let id = cboxes[i].getAttribute("id");
-            sleep(200);
-            $.ajax({
-                url: "/api2/settaskstatus",
-                type: "post",
-                data: {
-                    id: id,
-                    task: task,
-                    status: status,
-                },
-                headers: {
-                    "Authorization": "Basic "+ token
-                },
-                dataType: "json",
-                success: function(data) {
                     document.getElementById(`${data.id}-task-${data.task}-status`).innerHTML = `<a class="mt-1 badge badge-${data.status} statusbox" title="${data.status}">${data.task}</a>`;
                 },
                 error: function(request,status,error){
@@ -2846,7 +2791,7 @@ function setTaskStatusV2(id, task, status) {
     } else {
         $.ajax({
             url: "/api2/settaskstatus",
-            type: "post",
+            type: "POST",
             data: {
                 id: id,
                 task: task,

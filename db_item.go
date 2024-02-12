@@ -590,3 +590,52 @@ func SetTaskUserV3(client *mongo.Client, id, task, user string) error {
 	}
 	return nil
 }
+
+// SetTaskStatusV3 함수는 item에 task의 status 값을 셋팅한다.
+func SetTaskStatusV3(client *mongo.Client, id, task, status string) error {
+	item, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+	if _, found := item.Tasks[strings.ToLower(task)]; !found {
+		return fmt.Errorf("%s 에 %s task가 존재하지 않습니다", id, task)
+	}
+	t := item.Tasks[task]
+	t.StatusV2 = status
+	item.Tasks[task] = t
+
+	// 앞으로 바뀔 상태
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	// 아이템 업데이트 시간을 변경한다.
+	item.Updatetime = time.Now().Format(time.RFC3339)
+	// 입력받은 상태가 글로벌 status에 존재하는지 체크한다.
+	globalStatus, err := AllStatusV2(client)
+	if err != nil {
+		return err
+	}
+	hasStatus := false
+	for _, s := range globalStatus {
+		if s.ID == status {
+			hasStatus = true
+			break
+		}
+	}
+	if !hasStatus {
+		return fmt.Errorf("%s status가 존재하지 않습니다", status)
+	}
+	// 아이템의 statusV2를 업데이트한다.
+	item.updateStatusV2(globalStatus)
+
+	filter := bson.M{"id": item.ID}
+	update := bson.D{{Key: "$set", Value: item}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}
