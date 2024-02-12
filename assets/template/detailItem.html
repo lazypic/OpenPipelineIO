@@ -93,9 +93,9 @@
 							{{if eq $.Item.Type "org" "left"}}
 								<div id="{{$.Item.Project}}-{{$.Item.ID}}-usetype">
 									{{if $.Item.UseType}}
-										<span class="finger badge badge-warning" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-usetype" onclick="setUsetypeModal('{{$.Item.Project}}','{{$.Item.ID}}','{{$.Item.UseType}}')"{{end}}>{{$.Item.UseType}}</span>
+										<span class="finger badge badge-warning" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-usetype" onclick="setUsetypeModal('{{$.Item.ID}}')"{{end}}>{{$.Item.UseType}}</span>
 									{{else}}
-										<span class="finger badge badge-light" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-usetype" onclick="setUsetypeModal('{{$.Item.Project}}','{{$.Item.ID}}','{{$.Item.Type}}')"{{end}}>{{$.Item.Type}}</span>
+										<span class="finger badge badge-light" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-usetype" onclick="setUsetypeModal('{{$.Item.ID}}')"{{end}}>{{$.Item.Type}}</span>
 									{{end}}
 								</div>
 							{{else}}

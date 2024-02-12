@@ -120,7 +120,6 @@
                 </button>
             </div>
             <div class="modal-body">
-                <input type="hidden" class="form-control" id="modal-usetype-project">
                 <input type="hidden" class="form-control" id="modal-usetype-id">
                 <div class="form-group">
                     <select id="modal-usetype-type" class="form-control">
@@ -129,7 +128,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-darkmode" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-outline-warning" onclick="setUsetype(document.getElementById('modal-usetype-project').value, document.getElementById('modal-usetype-id').value);" data-dismiss="modal">EDIT</button>
+                <button type="button" class="btn btn-outline-warning" onclick="setUsetype(document.getElementById('modal-usetype-id').value);" data-dismiss="modal">EDIT</button>
             </div>
         </div>
         </div>

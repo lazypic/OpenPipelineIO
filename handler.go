@@ -493,7 +493,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/sethandlein", handleAPISetHandleIn).Methods("POST")
 	r.HandleFunc("/api/sethandleout", handleAPISetHandleOut).Methods("POST")
 	r.HandleFunc("/api/setshottype", handleAPISetShotType).Methods("POST")
-	r.HandleFunc("/api/setusetype", handleAPISetUseType)
+	r.HandleFunc("/api/setusetype", handleAPISetUseType).Methods("POST")
 	r.HandleFunc("/api/setassettype", handleAPISetAssetType)
 	r.HandleFunc("/api/setoutputname", handleAPISetOutputName)
 	r.HandleFunc("/api/setrnum", handleAPISetRnum) // legacy
@@ -522,8 +522,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/search", handleAPISearch)
 	r.HandleFunc("/api/deadline2d", handleAPIDeadline2D)
 	r.HandleFunc("/api/deadline3d", handleAPIDeadline3D)
-	r.HandleFunc("/api/settaskmov", handleAPISetTaskMov) // legacy
-	r.HandleFunc("/api2/settaskmov", handleAPI2SetTaskMov)
+	r.HandleFunc("/api2/settaskmov", handleAPI2SetTaskMov).Methods("POST")
 	r.HandleFunc("/api/settaskusernote", handleAPISetTaskUserNote)
 	r.HandleFunc("/api/setretimeplate", handleAPISetRetimePlate)
 	r.HandleFunc("/api/settasklevel", handleAPISetTaskLevel).Methods("POST")
@@ -542,7 +541,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/shottype", handleAPIShottype).Methods("POST")
 	r.HandleFunc("/api/setcrowdasset", handleAPISetCrowdAsset)
 	r.HandleFunc("/api/mailinfo", handleAPIMailInfo)
-	r.HandleFunc("/api/usetypes", handleAPIUseTypes)
+	r.HandleFunc("/api/usetypes", handleAPIUseTypes).Methods("GET")
 	r.HandleFunc("/api/publish", handleAPIAddTaskPublish) // legacy
 	r.HandleFunc("/api/addpublish", handleAPIAddTaskPublish)
 	r.HandleFunc("/api/setpublishstatus", handleAPISetTaskPublishStatus)
@@ -679,7 +678,6 @@ func webserver(port string) {
 	r.HandleFunc("/api/fcresource/{id}", deleteFCResourceHandler).Methods("DELETE")
 
 	// Deprecated: 사용하지 않는 url, 과거호환성을 위해서 남겨둠
-	r.HandleFunc("/api/setmov", handleAPISetTaskMov)             // legacy
 	r.HandleFunc("/api/setstartdate", handleAPISetTaskStartdate) // legacy
 	r.Use(mux.CORSMethodMiddleware(r))
 	http.Handle("/", r)

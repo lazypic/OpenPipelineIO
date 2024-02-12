@@ -660,3 +660,68 @@ func setTaskUserCommentV2(client *mongo.Client, id, task, comment string) error 
 	}
 	return nil
 }
+
+func setTaskMovV2(client *mongo.Client, id, task, mov string) error {
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := HasTaskV2(client, id, task)
+	if err != nil {
+		return err
+	}
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"tasks." + task + ".mov": mov, "tasks." + task + ".mdate": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}
+
+func UseTypesV2(client *mongo.Client, id string) (string, []string, error) {
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var results []string
+	items := []Item{}
+
+	item, err := getItemV2(client, id)
+	if err != nil {
+		return item.UseType, results, err
+	}
+
+	cursor, err := collection.Find(ctx, bson.M{"name": item.Name, "project": item.Project})
+	if err != nil {
+		return item.UseType, results, err
+	}
+	err = cursor.All(ctx, &items)
+	if err != nil {
+		return item.UseType, results, err
+	}
+
+	for _, i := range items {
+		results = append(results, i.Type)
+	}
+	return item.UseType, results, nil
+}
+
+func SetUseTypeV2(client *mongo.Client, id, usetype string) error {
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"usetype": usetype, "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}

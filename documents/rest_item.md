@@ -36,7 +36,7 @@ restAPI의 장점은 웹서비스의 URI를 이용하기 때문에 네트워크�
 | /api/settaskstartdate2nd | 2차시작일 | id, task, date | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=project_SS_0010_org&task=comp&date=1127" https://openpipeline.io/api/settaskstartdate2nd` |
 | /api/settaskpredate | 1차마감일 | id, task, date | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_RR_0010_org&task=comp&date=0506" https://openpipeline.io/api/settaskpredate` |
 | /api/settaskdate | 2차마감일 | id, task, date | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_RR_0010_org&task=comp&date=0506" https://openpipeline.io/api/settaskdate` |
-| /api2/settaskmov | mov등록 | project, name, task, mov | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=RR_0010&task=comp&mov=/show/test/test.mov" https://openpipeline.io/api2/settaskmov` |
+| /api2/settaskmov | mov등록 | id, task, mov | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_RR_0010_org&task=comp&mov=/show/test/test.mov" https://openpipeline.io/api2/settaskmov` |
 | /api/setshottype | shottype 변경 | id, shottype | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_SS_0030_org&shottype=3d" https://openpipeline.io/api/setshottype` |
 | /api/setusetype | usetype 변경 | project, id, type | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&id=SS_0030_org&type=org1" https://openpipeline.io/api/setusetype` |
 | /api2/setthummov | 썸네일mov변경 | project, name, path | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0030&path=/show/thumbnail.mov" https://openpipeline.io/api2/setthummov` |
@@ -264,13 +264,13 @@ print(data)
 circle 프로젝트 SS_0010 샷에 light 테스크에 /show/test.mov 등록하기.
 
 ```bash
-$ curl -d "project=circle&name=SS_0010&task=light&mov=/show/test.mov" https://openpipeline.io/api2/settaskmov
+$ curl -d "id=circle_SS_0010_org&task=light&mov=/show/test.mov" https://openpipeline.io/api2/settaskmov
 ```
 
 circle 프로젝트 mamma 에셋 fur 테스크에 /show/fur.mov 등록하기.
 
 ```bash
-$ curl -d "project=circle&name=mamma&task=fur&mov=/show/fur.mov" https://openpipeline.io/api2/settaskmov
+$ curl -d "project=circle_mamma_asset&task=fur&mov=/show/fur.mov" https://openpipeline.io/api2/settaskmov
 ```
 
 #### python에서 샷 mov등록하기

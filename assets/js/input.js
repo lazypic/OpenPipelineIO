@@ -443,14 +443,13 @@ function setShottypeModal(id) {
 }
 
 // setUsetypeModal 함수는 project, name을 받아서 Usetype Modal을 설정한다.
-function setUsetypeModal(project, id, selectedType) {
+function setUsetypeModal(id) {
     let token = document.getElementById("token").value;
-    document.getElementById("modal-usetype-project").value = project
     document.getElementById("modal-usetype-id").value = id
-    document.getElementById("modal-usetype-title").innerHTML = "Use Type: " + id2name(id);
+    document.getElementById("modal-usetype-title").innerHTML = "Use Type: " + id;
     $.ajax({
-        url: `/api/usetypes?project=${project}&name=${id2name(id)}`,
-        type: "get",
+        url: `/api/usetypes?id=${id}`,
+        type: "GET",
         headers: {
             "Authorization": "Basic "+ token
         },
@@ -467,7 +466,7 @@ function setUsetypeModal(project, id, selectedType) {
                 sel.appendChild(opt); 
             }
             // 이미 선택된 옵션을 selectbox에서 선택한다.
-            document.getElementById("modal-usetype-type").value=selectedType;
+            document.getElementById("modal-usetype-type").value=data.usetype;
         },
         error: function(request,status,error){
             alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -2476,15 +2475,14 @@ function setIteminfoModal(project, id) {
     });
 }
 
-function setTaskMov(project, id, task, mov) {
+function setTaskMov(id, task, mov) {
     let token = document.getElementById("token").value;
     let userid = document.getElementById("userid").value;
     $.ajax({
         url: "/api2/settaskmov",
-        type: "post",
+        type: "POST",
         data: {
-            project: project,
-            name: id2name(id),
+            id: id,
             task: task,
             mov: mov,
             userid: userid,
@@ -3310,7 +3308,7 @@ function setShottype(id) {
     }
 }
 
-function setUsetype(project, id) {
+function setUsetype(id) {
     let token = document.getElementById("token").value;
     let e = document.getElementById("modal-usetype-type");
     let type = e.options[e.selectedIndex].value;
@@ -3324,9 +3322,8 @@ function setUsetype(project, id) {
             let id = cboxes[i].getAttribute("id");
             $.ajax({
                 url: "/api/setusetype",
-                type: "post",
+                type: "POST",
                 data: {
-                    project: project,
                     id: id,
                     type: type,
                 },
@@ -3335,7 +3332,7 @@ function setUsetype(project, id) {
                 },
                 dataType: "json",
                 success: function(data) {
-                    document.getElementById(`${data.project}-${data.id}-usetype`).innerHTML = `<span class="badge badge-warning ml-1" data-toggle="modal" data-target="#modal-usetype" onclick="setUsetypeModal('${project}','${data.id}','${data.type}')">${data.type}</span>`;
+                    document.getElementById(`${data.project}-${data.id}-usetype`).innerHTML = `<span class="badge badge-warning ml-1" data-toggle="modal" data-target="#modal-usetype" onclick="setUsetypeModal('${data.id}')">${data.type}</span>`;
                 },
                 error: function(request,status,error){
                     alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -3345,9 +3342,8 @@ function setUsetype(project, id) {
     } else {
         $.ajax({
             url: "/api/setusetype",
-            type: "post",
+            type: "POST",
             data: {
-                project: project,
                 id: id,
                 type: type,
             },
@@ -3356,7 +3352,7 @@ function setUsetype(project, id) {
             },
             dataType: "json",
             success: function(data) {
-                document.getElementById(`${data.project}-${data.id}-usetype`).innerHTML = `<span class="badge badge-warning ml-1" data-toggle="modal" data-target="#modal-usetype" onclick="setUsetypeModal('${project}','${data.id}','${data.type}')">${data.type}</span>`;
+                document.getElementById(`${data.id}-usetype`).innerHTML = `<span class="badge badge-warning ml-1" data-toggle="modal" data-target="#modal-usetype" onclick="setUsetypeModal('${data.id}')">${data.type}</span>`;
             },
             error: function(request,status,error){
                 alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);

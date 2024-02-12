@@ -546,42 +546,36 @@ func handleAPIAllShots(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIUseTypes 함수는 project를 받아서 모든 샷을 출력한다.
 func handleAPIUseTypes(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	q := r.URL.Query()
-	project := q.Get("project")
-	if project == "" {
-		http.Error(w, "project 정보가 없습니다.", http.StatusUnauthorized)
+
+	id := q.Get("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusUnauthorized)
 		return
 	}
-	name := q.Get("name")
-	if name == "" {
-		http.Error(w, "name 정보가 없습니다.", http.StatusUnauthorized)
-		return
-	}
-	types, err := UseTypes(session, project, name)
+	useType, types, err := UseTypesV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	type Recipe struct {
-		Types []string `json:"types"`
+		Types   []string `json:"types"`
+		Usetype string   `json:"usetype"`
 	}
 	rcp := Recipe{}
 	rcp.Types = types
+	rcp.Usetype = useType
 	data, err := json.Marshal(rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -594,13 +588,7 @@ func handleAPIUseTypes(w http.ResponseWriter, r *http.Request) {
 
 // handleAPI2SetTaskMov 함수는 Task에 mov를 설정한다.
 func handleAPI2SetTaskMov(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project  string `json:"project"`
-		Name     string `json:"name"`
 		ID       string `json:"id"`
 		Task     string `json:"task"`
 		Mov      string `json:"mov"`
@@ -610,13 +598,13 @@ func handleAPI2SetTaskMov(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := Recipe{}
 	rcp.Protocol = CachedAdminSetting.Protocol
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -627,58 +615,25 @@ func handleAPI2SetTaskMov(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Project = v
-		case "name", "shot", "asset":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Name = v
-		case "task":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Task = v
-		case "mov": // 앞뒤샷 포함 여러개의 mov를 등록할 수 있다.
-			rcp.Mov = strings.Join(values, ";")
-		case "userid":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if rcp.UserID == "unknown" && v != "" {
-				rcp.UserID = v
-			}
-		default:
-			http.Error(w, key+"키는 사용할 수 없습니다.(project, shot, asset, task, mov 키값만 사용가능합니다.)", http.StatusBadRequest)
-			return
-		}
-	}
-
-	id, err := setTaskMov(session, rcp.Project, rcp.Name, rcp.Task, rcp.Mov)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Setmov: %s %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Mov, rcp.Project, rcp.Name, rcp.UserID))
+	task := r.FormValue("task")
+	if task == "" {
+		http.Error(w, "need task", http.StatusBadRequest)
+		return
+	}
+	rcp.Task = task
+	rcp.Mov = r.FormValue("mov")
+	err = setTaskMovV2(client, rcp.ID, rcp.Task, rcp.Mov)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {
@@ -3496,23 +3451,18 @@ func handleAPISetShotType(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetUseType 함수는 아이템의 Usetype을 설정한다.
 func handleAPISetUseType(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project string `json:"project"`
-		ID      string `json:"id"`
-		Type    string `json:"type"`
+		ID   string `json:"id"`
+		Type string `json:"type"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	ssid, _, err := TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3523,12 +3473,6 @@ func handleAPISetUseType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
@@ -3537,21 +3481,16 @@ func handleAPISetUseType(w http.ResponseWriter, r *http.Request) {
 	rcp.ID = id
 	typ := r.FormValue("type")
 	if typ == "" {
-		http.Error(w, "type을 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need type", http.StatusBadRequest)
 		return
 	}
 	rcp.Type = typ
-	err = SetUseType(session, rcp.Project, rcp.ID, rcp.Type)
+	err = SetUseTypeV2(client, rcp.ID, rcp.Type)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Usetype: %s\nProject: %s, ID: %s, Author: %s", rcp.Type, rcp.Project, rcp.ID, ssid))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	data, err := json.Marshal(rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

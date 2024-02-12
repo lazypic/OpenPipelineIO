@@ -96,11 +96,11 @@
 						{{else}}
 							<!--재스캔 사용 플레이트 표기-->
 							{{if eq .Type "org" "left"}}
-								<div id="{{.Project}}-{{.ID}}-usetype">
+								<div id="{{.ID}}-usetype">
 									{{if .UseType}}
-										<span class="finger badge badge-warning" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-usetype" onclick="setUsetypeModal('{{.Project}}','{{.ID}}','{{.UseType}}')"{{end}}>{{.UseType}}</span>
+										<span class="finger badge badge-warning" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-usetype" onclick="setUsetypeModal('{{.ID}}')"{{end}}>{{.UseType}}</span>
 									{{else}}
-										<span class="finger badge badge-light" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-usetype" onclick="setUsetypeModal('{{.Project}}','{{.ID}}','{{.Type}}')"{{end}}>{{.Type}}</span>
+										<span class="finger badge badge-light" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-usetype" onclick="setUsetypeModal('{{.ID}}')"{{end}}>{{.Type}}</span>
 									{{end}}
 								</div>
 							{{else}}
