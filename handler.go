@@ -453,7 +453,6 @@ func webserver(port string) {
 	r.HandleFunc("/api/allshots", handleAPIAllShots)
 	r.HandleFunc("/api2/shots", handleAPI2Shots)
 	r.HandleFunc("/api/shot", handleAPIGetShot).Methods("GET")
-	r.HandleFunc("/api/item", handleAPIItem).Methods("GET") // legacy
 	r.HandleFunc("/api/item", postHandleAPIItem).Methods("POST")
 	r.HandleFunc("/api/asset", handleAPIGetAsset).Methods("GET")
 	r.HandleFunc("/api/assets", handleAPIAssets)

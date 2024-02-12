@@ -805,7 +805,7 @@ function setCameraOptionModal(project, id) {
     document.getElementById("modal-cameraoption-title").innerHTML = "Camera Option" + multiInputTitle(id);
     let token = document.getElementById("token").value;
     $.ajax({
-        url: `/api/item?project=${project}&id=${id}`,
+        url: `/api2/item?id=${id}`,
         headers: {
             "Authorization": "Basic "+ token
         },
@@ -1574,7 +1574,7 @@ function setDetailCommentsModal(project, id) {
     document.getElementById("modal-detailcomments-title").innerHTML = "Detail Comments" + multiInputTitle(id);
     let token = document.getElementById("token").value;
     $.ajax({
-        url: `/api/item?project=${project}&id=${id}`,
+        url: `/api2/item?id=${id}`,
         headers: {
             "Authorization": "Basic " + token
         },
@@ -2452,7 +2452,7 @@ function setIteminfoModal(project, id) {
     document.getElementById("modal-iteminfo-title").innerHTML = "Iteminfo" + multiInputTitle(id);
     let token = document.getElementById("token").value;
     $.ajax({
-        url: `/api/item?project=${project}&id=${id}`,
+        url: `/api2/item?id=${id}`,
         headers: {
             "Authorization": "Basic " + token
         },
@@ -3220,7 +3220,7 @@ function setDeadline2dModal(project, id) {
     document.getElementById("modal-deadline2d-title").innerHTML = "Set Deadline 2D" + multiInputTitle(id);
     let token = document.getElementById("token").value;
     $.ajax({
-        url: `/api/item?project=${project}&id=${id}`,
+        url: `/api2/item?id=${id}`,
         headers: {
             "Authorization": "Basic " + token
         },
@@ -3305,7 +3305,7 @@ function setDeadline3dModal(project, id) {
     document.getElementById("modal-deadline3d-title").innerHTML = "Set Deadline 3D" + multiInputTitle(id);
     let token = document.getElementById("token").value;
     $.ajax({
-        url: `/api/item?project=${project}&id=${id}`,
+        url: `/api2/item?id=${id}`,
         headers: {
             "Authorization": "Basic " + token
         },
@@ -3492,7 +3492,7 @@ function setAssettypeModal(project, id) {
     document.getElementById("modal-assettype-project").value = project
     document.getElementById("modal-assettype-title").innerHTML = "Assettype Type" + multiInputTitle(id);
     $.ajax({
-        url: `/api/item?project=${project}&id=${id}`,
+        url: `/api2/item?id=${id}`,
         headers: {
             "Authorization": "Basic "+ token
         },
@@ -3585,7 +3585,7 @@ function setRnumModal(project, id) {
     document.getElementById("modal-setrnum-title").innerHTML = "Set Rnum number" + multiInputTitle(id);
     let token = document.getElementById("token").value;
     $.ajax({
-        url: `/api/item?project=${project}&id=${id}`,
+        url: `/api2/item?id=${id}`,
         headers: {
             "Authorization": "Basic "+ token
         },
@@ -4015,7 +4015,7 @@ function setObjectIDModal(project, id) {
     document.getElementById("modal-objectid-title").innerHTML = "Object ID" + multiInputTitle(id);
     let token = document.getElementById("token").value;
     $.ajax({
-        url: `/api/item?project=${project}&id=${id}`,
+        url: `/api2/item?id=${id}`,
         headers: {
             "Authorization": "Basic "+ token
         },
@@ -4087,7 +4087,7 @@ function setPlatesizeModal(project, id) {
     document.getElementById("modal-platesize-project").value = project
     document.getElementById("modal-platesize-title").innerHTML = "Platesize" + multiInputTitle(id);
     $.ajax({
-        url: `/api/item?project=${project}&id=${id}`,
+        url: `/api2/item?id=${id}`,
         headers: {
             "Authorization": "Basic "+ token
         },
@@ -4165,7 +4165,7 @@ function setUndistortionsizeModal(project, id) {
     document.getElementById("modal-undistortionsize-project").value = project
     document.getElementById("modal-undistortionsize-title").innerHTML = "Undistortionsize" + multiInputTitle(id);
     $.ajax({
-        url: `/api/item?project=${project}&id=${id}`,
+        url: `/api2/item?id=${id}`,
         headers: {
             "Authorization": "Basic "+ token
         },
@@ -4242,7 +4242,7 @@ function setRendersizeModal(project, id) {
     document.getElementById("modal-rendersize-project").value = project
     document.getElementById("modal-rendersize-title").innerHTML = "Rendersize" + multiInputTitle(id);
     $.ajax({
-        url: `/api/item?project=${project}&id=${id}`,
+        url: `/api2/item?id=${id}`,
         headers: {
             "Authorization": "Basic "+ token
         },

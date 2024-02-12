@@ -104,7 +104,7 @@ restAPI의 장점은 웹서비스의 URI를 이용하기 때문에 네트워크�
 | /api/setepisode | episode를 설정한다. | project, id, episode | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&id=SS_0010_org&episode=E01" https://openpipeline.io/api/setepisode`|
 | /api/setnetflixid | netflixid를 설정한다. | project, id, netflixid | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&id=SS_0010_org&netflixid=123456" https://openpipeline.io/api/setnetflixid`|
 | /api/uploadthumbnail | 썸네일 업로드 | project, name, (type) | `$ curl -X POST -H "Authorization: Basic <Token>" -F project=TEMP -F name=SS_0010 -F "image=@/path/thumbnail.png" "https://openpipeline.io/api/uploadthumbnail"`|
-| /api/item | 샷 추가 | json | `$ curl -X POST -H "Authorization: Basic <Token>" -d '{"project":"TEMP","id":"SS_0010_org","name":"SS_0010","type":"org","statusv2":"assign","tasks":{"mm":{"title":"mm","statusv2":"assign"}}}' "https://openpipeline.io/api/item"`|
+| /api2/item | 샷 추가 | json | `$ curl -X POST -H "Authorization: Basic <Token>" -d '{"id":"TEMP_SS_0010_org","name":"SS_0010","type":"org","statusv2":"assign","tasks":{"mm":{"title":"mm","statusv2":"assign"}}}' "https://openpipeline.io/api/item"`|
 
 
 #### URL Encode

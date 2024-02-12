@@ -343,3 +343,104 @@ func SetNoteV2(client *mongo.Client, id, userID, text string, overwrite bool) er
 	}
 	return nil
 }
+
+func AddCommentV2(client *mongo.Client, id, userID, authorName, date, text, media, mediatitle string) error {
+
+	i, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+	c := Comment{
+		Date:       date,
+		Author:     userID,
+		AuthorName: authorName,
+		Text:       text,
+		Media:      media,
+		MediaTitle: mediatitle,
+	}
+	i.Comments = append(i.Comments, c)
+	err = setItemV2(client, i)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func setItemV2(client *mongo.Client, i Item) error {
+	i.Updatetime = time.Now().Format(time.RFC3339)
+	status, err := AllStatusV2(client)
+	if err != nil {
+		return err
+	}
+	i.updateStatusV2(status)
+	i.setRnumTag() // 롤넘버에 따른 테그 셋팅
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": i.ID}
+	update := bson.D{{Key: "$set", Value: i}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + i.ID)
+	}
+	return nil
+}
+
+func EditCommentV2(client *mongo.Client, id, date, authorName, text, mediatitle, media string) error {
+	i, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+	var comments []Comment
+	for _, c := range i.Comments {
+		if c.Date == date {
+			c.AuthorName = authorName
+			c.Text = text
+			c.MediaTitle = mediatitle
+			c.Media = media
+			comments = append(comments, c)
+			continue
+		}
+		comments = append(comments, c)
+	}
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"comments": comments, "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + i.ID)
+	}
+	return nil
+}
+
+func RmCommentV2(client *mongo.Client, id, userID, date string) (string, string, error) {
+	i, err := getItemV2(client, id)
+	if err != nil {
+		return id, "", err
+	}
+	var newComments []Comment
+	var removeText string
+	for _, comment := range i.Comments {
+		if comment.Date == date {
+			removeText = comment.Text
+			continue
+		}
+		newComments = append(newComments, comment)
+	}
+	i.Comments = newComments
+	err = setItemV2(client, i)
+	if err != nil {
+		return id, "", err
+	}
+	return id, removeText, nil
+}

@@ -48,7 +48,6 @@ func handleAPI2GetItem(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-// handleAPIItemV2 함수는 아이템 자료구조를 불러온다.
 func handleAPITimeinfo(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
@@ -5183,19 +5182,19 @@ func handleAPIAddComment(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := Recipe{}
 	rcp.Protocol = CachedAdminSetting.Protocol
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	// 사용자의 이름을 구한다.
-	u, err := getUser(session, rcp.UserID)
+	u, err := getUserV2(client, rcp.UserID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized) // 사용자가 존재하지 않으면 당연히 Comment를 작성하면 안된다.
 		return
@@ -5222,7 +5221,7 @@ func handleAPIAddComment(w http.ResponseWriter, r *http.Request) {
 	rcp.Media = r.FormValue("media")
 	rcp.MediaTitle = r.FormValue("mediatitle")
 	rcp.Date = time.Now().Format(time.RFC3339)
-	err = AddComment(session, rcp.ID, rcp.UserID, rcp.AuthorName, rcp.Date, rcp.Text, rcp.Media, rcp.MediaTitle)
+	err = AddCommentV2(client, rcp.ID, rcp.UserID, rcp.AuthorName, rcp.Date, rcp.Text, rcp.Media, rcp.MediaTitle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5252,19 +5251,19 @@ func handleAPIEditComment(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := Recipe{}
 	rcp.Protocol = CachedAdminSetting.Protocol
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	// 사용자의 이름을 구한다.
-	u, err := getUser(session, rcp.UserID)
+	u, err := getUserV2(client, rcp.UserID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized) // 사용자가 존재하지 않으면 당연히 Comment를 작성하면 안된다.
 		return
@@ -5296,7 +5295,7 @@ func handleAPIEditComment(w http.ResponseWriter, r *http.Request) {
 	rcp.Text = text
 	rcp.Media = r.FormValue("media")
 	rcp.MediaTitle = r.FormValue("mediatitle")
-	err = EditComment(session, rcp.ID, rcp.Time, rcp.AuthorName, rcp.Text, rcp.MediaTitle, rcp.Media)
+	err = EditCommentV2(client, rcp.ID, rcp.Time, rcp.AuthorName, rcp.Text, rcp.MediaTitle, rcp.Media)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5322,13 +5321,13 @@ func handleAPIRmComment(w http.ResponseWriter, r *http.Request) {
 		UserID string `json:"userid"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5352,7 +5351,7 @@ func handleAPIRmComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.Date = date
-	rcp.ID, rcp.Text, err = RmComment(session, rcp.ID, rcp.UserID, rcp.Date)
+	rcp.ID, rcp.Text, err = RmCommentV2(client, rcp.ID, rcp.UserID, rcp.Date)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
