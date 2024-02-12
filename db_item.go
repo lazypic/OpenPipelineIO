@@ -498,3 +498,24 @@ func RmAssetTagV2(client *mongo.Client, id, inputTag string, isContain bool) err
 	}
 	return nil
 }
+
+func SetShotTypeV2(client *mongo.Client, id, shottype string) error {
+	err := validShottype(strings.ToLower(shottype))
+	if err != nil {
+		return err
+	}
+
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"shottype": strings.ToLower(shottype), "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}

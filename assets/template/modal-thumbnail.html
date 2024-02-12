@@ -91,7 +91,6 @@
                 </button>
             </div>
             <div class="modal-body">
-                <input type="hidden" class="form-control" id="modal-shottype-project">
                 <input type="hidden" class="form-control" id="modal-shottype-id">
                 <div class="form-group">
                     <select id="modal-shottype-type" class="form-control">
@@ -104,7 +103,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-darkmode" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-outline-warning" onclick="setShottype(document.getElementById('modal-shottype-project').value, document.getElementById('modal-shottype-id').value);" data-dismiss="modal">EDIT</button>
+                <button type="button" class="btn btn-outline-warning" onclick="setShottype(document.getElementById('modal-shottype-id').value);" data-dismiss="modal">EDIT</button>
             </div>
         </div>
         </div>

@@ -3641,26 +3641,20 @@ func handleAPISetTaskDuration(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetShotType 함수는 아이템의 shot type을 설정한다.
 func handleAPISetShotType(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project string `json:"project"`
-		Name    string `json:"name"`
-		ID      string `json:"id"`
-		Type    string `json:"type"`
-		UserID  string `json:"userid"`
-		Error   string `json:"error"`
+		ID     string `json:"id"`
+		Type   string `json:"type"`
+		UserID string `json:"userid"`
+		Error  string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3671,56 +3665,29 @@ func handleAPISetShotType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	for key, value := range r.PostForm {
-		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, value)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Project = v
-		case "name":
-			v, err := PostFormValueInList(key, value)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Name = v
-		case "userid":
-			v, err := PostFormValueInList(key, value)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if rcp.UserID == "unknown" && v != "" {
-				rcp.UserID = v
-			}
-		case "type", "shottype":
-			if len(value) == 0 {
-				rcp.Type = ""
-			} else {
-				rcp.Type = value[0]
-			}
-		}
-	}
-	id, err := SetShotType(session, rcp.Project, rcp.Name, rcp.Type)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Shottype: %s\nProject: %s, Name: %s, Author: %s", rcp.Type, rcp.Project, rcp.Name, rcp.UserID))
+	rcp.Type = r.FormValue("shottype")
+
+	err = SetShotTypeV2(client, rcp.ID, rcp.Type)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	// json 으로 결과 전송
 	if rcp.Type == "" { // template에서 렌더링시에는 빈 문자열이면 눈에 보이지 않기 때문에 none으로 반환한다.
 		rcp.Type = "none"
 	}
-	data, _ := json.Marshal(rcp)
+	data, err := json.Marshal(rcp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
@@ -3763,7 +3730,7 @@ func handleAPISetUseType(w http.ResponseWriter, r *http.Request) {
 	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -5846,55 +5813,43 @@ func handleAPITask(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIShottype 함수는 Shottype 정보를 가지고온다.
 func handleAPIShottype(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project  string `json:"project"`
-		Name     string `json:"name"`
+		ID       string `json:"id"`
 		UserID   string `json:"userid"`
 		Shottype string `json:"shottype"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Project = v
-		case "name":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Name = v
-		}
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
+		return
 	}
-	typ, err := GetShottype(session, rcp.Project, rcp.Name)
+	rcp.ID = id
+	i, err := getItemV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Shottype = typ
+	rcp.Shottype = i.Shottype
+
 	// json 으로 결과 전송
-	data, _ := json.Marshal(rcp)
+	data, err := json.Marshal(rcp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)

@@ -109,8 +109,8 @@
 									<span class="badge badge-light ml-1">{{.Type}}</span>
 								</div>
 							{{end}}
-							<div id="shottype-{{.Name}}">
-								<span class="finger badge badge-light ml-1" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-shottype" onclick="setShottypeModal('{{.Project}}','{{.ID}}')"{{end}}>{{if .Shottype}}{{.Shottype}}{{else}}none{{end}}</span>
+							<div id="shottype-{{.ID}}">
+								<span class="finger badge badge-light ml-1" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-shottype" onclick="setShottypeModal('{{.ID}}')"{{end}}>{{if .Shottype}}{{.Shottype}}{{else}}none{{end}}</span>
 							</div>
 						{{end}}
 					</div>

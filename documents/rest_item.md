@@ -38,7 +38,7 @@ restAPI의 장점은 웹서비스의 URI를 이용하기 때문에 네트워크�
 | /api/settaskpredate | 1차마감일 | id, task, date | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_RR_0010_org&task=comp&date=0506" https://openpipeline.io/api/settaskpredate` |
 | /api/settaskdate | 2차마감일 | id, task, date | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_RR_0010_org&task=comp&date=0506" https://openpipeline.io/api/settaskdate` |
 | /api2/settaskmov | mov등록 | project, name, task, mov | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=RR_0010&task=comp&mov=/show/test/test.mov" https://openpipeline.io/api2/settaskmov` |
-| /api/setshottype | shottype 변경 | project, name, type | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0030&shottype=3d" https://openpipeline.io/api/setshottype` |
+| /api/setshottype | shottype 변경 | id, shottype | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_SS_0030_org&shottype=3d" https://openpipeline.io/api/setshottype` |
 | /api/setusetype | usetype 변경 | project, id, type | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&id=SS_0030_org&type=org1" https://openpipeline.io/api/setusetype` |
 | /api2/setthummov | 썸네일mov변경 | project, name, path | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0030&path=/show/thumbnail.mov" https://openpipeline.io/api2/setthummov` |
 | /api/setbeforemov | 썸네일 이전 mov 등록 | project, name, path, (userid) | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0030&path=/show/before.mov" https://openpipeline.io/api/setbeforemov` |
