@@ -782,13 +782,13 @@ func handleAPISetTaskUserComment(w http.ResponseWriter, r *http.Request) {
 		UserID      string `json:"userid"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -807,12 +807,12 @@ func handleAPISetTaskUserComment(w http.ResponseWriter, r *http.Request) {
 	rcp.ID = id
 	task := r.FormValue("task")
 	if task == "" {
-		http.Error(w, "task를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need task", http.StatusBadRequest)
 		return
 	}
 	rcp.Task = task
 	rcp.UserComment = r.FormValue("usercomment")
-	err = setTaskUserComment(session, rcp.ID, rcp.Task, rcp.UserComment)
+	err = setTaskUserCommentV2(client, rcp.ID, rcp.Task, rcp.UserComment)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

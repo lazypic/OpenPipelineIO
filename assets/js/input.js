@@ -2706,9 +2706,8 @@ function setTaskUserComment() {
             sleep(200);
             $.ajax({
                 url: "/api/settaskusercomment",
-                type: "post",
+                type: "POST",
                 data: {
-                    project: project,
                     id: id,
                     task: task,
                     usercomment: usercomment,
@@ -2732,9 +2731,8 @@ function setTaskUserComment() {
     } else {
         $.ajax({
             url: "/api/settaskusercomment",
-            type: "post",
+            type: "POST",
             data: {
-                project: project,
                 id: id,
                 task: task,
                 usercomment: usercomment,

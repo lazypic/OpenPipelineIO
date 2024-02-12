@@ -639,3 +639,24 @@ func SetTaskStatusV3(client *mongo.Client, id, task, status string) error {
 	}
 	return nil
 }
+
+func setTaskUserCommentV2(client *mongo.Client, id, task, comment string) error {
+	err := HasTaskV2(client, id, task)
+	if err != nil {
+		return err
+	}
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"tasks." + task + ".usercomment": comment}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}
