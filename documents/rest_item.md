@@ -30,8 +30,7 @@ restAPI의 장점은 웹서비스의 URI를 이용하기 때문에 네트워크�
 | /api/deadline2d | 2D마감일 리스트 | project | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP" https://openpipeline.io/api/deadline2d` |
 | /api/deadline3d | 3D마감일 리스트 | project | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP" https://openpipeline.io/api/deadline3d` |
 | /api/rmitemid | 아이템 삭제 | project, id | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=circle&id=SS_0010_org" https://openpipeline.io/api/rmitemid` |
-| /api/settaskstatus | 상태수정 | project, name, task, status | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=circle&name=SS_0010&task=comp&status=wip" https://openpipeline.io/api/settaskstatus` |
-| /api2/settaskstatus | 상태수정 | project, name, task, status | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=project_SS_0010_org&task=comp&status=wip" https://openpipeline.io/api2/settaskstatus` |
+| /api2/settaskstatus | 상태수정 | id, task, status | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=project_SS_0010_org&task=comp&status=wip" https://openpipeline.io/api2/settaskstatus` |
 | /api/settaskuser | 사용자설정 | project, id, task, user | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&id=SS_0010_org&task=comp&user=d10191(김한웅,개발팀)" https://openpipeline.io/api/settaskuser` |
 | /api/settaskstartdate | 1차시작일 | project, name, task, date | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0010&task=comp&date=0506" https://openpipeline.io/api/settaskstartdate` |
 | /api/settaskstartdate2nd | 2차시작일 | id, task, date | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=project_SS_0010_org&task=comp&date=1127" https://openpipeline.io/api/settaskstartdate2nd` |

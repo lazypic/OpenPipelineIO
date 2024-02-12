@@ -215,19 +215,6 @@ def Shots(project, seq):
 		return [], shots["error"]
 	return shots["data"], None
 
-def SetStatus(project, name, task, status):
-	"""
-	아이템의 task에 대한 상태를 설정한다.
-	에러문자열을 반환한다. 에러가 없다면 ""문자를 반환한다.
-	"""
-	data = "project=%s&name=%s&task=%s&status=%s" % (project, name, task, status)
-	try:
-		request = urllib2.Request("https://openpipeline.io/api/setstatus", data)
-		err = urllib2.urlopen(request).read()
-	except:
-		err = "restAPI에 접근할 수 없습니다."
-	return err
-
 def SetStartdate(project, name, task, startdate):
 	"""
 	아이템의 task에 대한 시작일을 설정한다.

@@ -474,8 +474,6 @@ func webserver(port string) {
 	r.HandleFunc("/api/setbeforemov", handleAPISetBeforemov)
 	r.HandleFunc("/api/setaftermov", handleAPISetAftermov)
 	r.HandleFunc("/api/seteditmov", handleAPISetEditmov)
-	r.HandleFunc("/api/settaskstatus", handleAPISetTaskStatus) // legacy
-	r.HandleFunc("/api/settaskpipelinestep", handleAPISetTaskPipelinestep)
 	r.HandleFunc("/api2/settaskstatus", handleAPI2SetTaskStatus).Methods("POST")
 	r.HandleFunc("/api/taskstatusnum", handleAPITaskStatusNum)
 	r.HandleFunc("/api/taskanduserstatusnum", handleAPITaskAndUserStatusNum)
@@ -524,7 +522,6 @@ func webserver(port string) {
 	r.HandleFunc("/api/search", handleAPISearch)
 	r.HandleFunc("/api/deadline2d", handleAPIDeadline2D)
 	r.HandleFunc("/api/deadline3d", handleAPIDeadline3D)
-	r.HandleFunc("/api/setstatus", handleAPISetTaskStatus)
 	r.HandleFunc("/api/settaskmov", handleAPISetTaskMov) // legacy
 	r.HandleFunc("/api2/settaskmov", handleAPI2SetTaskMov)
 	r.HandleFunc("/api/settaskusernote", handleAPISetTaskUserNote)

@@ -2590,199 +2590,6 @@ func handleAPISetEditmov(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-// handleAPISetTaskStatus 함수는 아이템의 task에 대한 상태를 설정한다.
-func handleAPISetTaskStatus(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
-	type Recipe struct {
-		Project string `json:"project"`
-		ID      string `json:"id"`
-		Name    string `json:"name"`
-		Task    string `json:"task"`
-		Status  string `json:"status"`
-		UserID  string `json:"userid"`
-		Error   string `json:"error"`
-	}
-	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
-	_, _, err = net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
-	r.ParseForm()
-	rcp.Project = r.FormValue("project")
-	if rcp.Project == "" {
-		if err != nil {
-			http.Error(w, "프로젝트가 빈 문자열 입니다", http.StatusBadRequest)
-			return
-		}
-	}
-	rcp.Name = r.FormValue("name")
-	if rcp.Name == "" {
-		if err != nil {
-			http.Error(w, "name이 빈 문자열 입니다", http.StatusBadRequest)
-			return
-		}
-	}
-	rcp.Task = r.FormValue("task")
-	if rcp.Task == "" {
-		if err != nil {
-			http.Error(w, "task가 빈 문자열 입니다", http.StatusBadRequest)
-			return
-		}
-	}
-	rcp.Status = r.FormValue("status")
-	if rcp.Status == "" {
-		if err != nil {
-			http.Error(w, "status가 빈 문자열 입니다", http.StatusBadRequest)
-			return
-		}
-	}
-	rcp.ID = r.FormValue("id")
-	if rcp.ID == "" {
-		typ, err := Type(session, rcp.Project, rcp.Name)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		rcp.ID = rcp.Name + "_" + typ
-	}
-
-	// task가 존재하는지 체크한다.
-	err = HasTask(session, rcp.ID, rcp.Task)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	err = SetTaskStatus(session, rcp.Project, rcp.ID, rcp.Task, rcp.Status)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Task Status: %s %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Status, rcp.Project, rcp.ID, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// json 으로 결과 전송
-	data, err := json.Marshal(rcp)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	w.Write(data)
-}
-
-// handleAPISetTaskPipelinestep 함수는 아이템의 task에 pipelinestep 을 설정한다.
-func handleAPISetTaskPipelinestep(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
-	type Recipe struct {
-		Project      string `json:"project"`
-		ID           string `json:"id"`
-		Name         string `json:"name"`
-		Task         string `json:"task"`
-		Pipelinestep string `json:"pipelinestep"`
-		UserID       string `json:"userid"`
-		Error        string `json:"error"`
-	}
-	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
-	_, _, err = net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
-	r.ParseForm()
-	rcp.Project = r.FormValue("project")
-	if rcp.Project == "" {
-		if err != nil {
-			http.Error(w, "프로젝트가 빈 문자열 입니다", http.StatusBadRequest)
-			return
-		}
-	}
-	rcp.Name = r.FormValue("name")
-	if rcp.Name == "" {
-		if err != nil {
-			http.Error(w, "name이 빈 문자열 입니다", http.StatusBadRequest)
-			return
-		}
-	}
-	rcp.Task = r.FormValue("task")
-	if rcp.Task == "" {
-		if err != nil {
-			http.Error(w, "task가 빈 문자열 입니다", http.StatusBadRequest)
-			return
-		}
-	}
-	rcp.Pipelinestep = r.FormValue("pipelinestep")
-
-	rcp.ID = r.FormValue("id")
-	if rcp.ID == "" {
-		typ, err := Type(session, rcp.Project, rcp.Name)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		rcp.ID = rcp.Name + "_" + typ
-	}
-
-	// task가 존재하는지 체크한다.
-	err = HasTask(session, rcp.ID, rcp.Task)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	err = SetTaskPipelinestep(session, rcp.Project, rcp.ID, rcp.Task, rcp.Pipelinestep)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Task Pipelinestep: %s %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Pipelinestep, rcp.Project, rcp.ID, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// json 으로 결과 전송
-	data, err := json.Marshal(rcp)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	w.Write(data)
-}
-
 // handleAPI2SetTaskStatus 함수는 아이템의 task에 대한 상태를 설정한다.
 func handleAPI2SetTaskStatus(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
@@ -2959,7 +2766,6 @@ func handleAPIAddTask(w http.ResponseWriter, r *http.Request) {
 	}
 	err = AddTaskV2(client, rcp.ID, rcp.Task, rcp.Status)
 	if err != nil {
-		fmt.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -2970,7 +2776,6 @@ func handleAPIAddTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(rcp)
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
@@ -2987,17 +2792,18 @@ func handleAPISetTaskUser(w http.ResponseWriter, r *http.Request) {
 		Error           string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
+
 	r.ParseForm()
 	id := r.FormValue("id")
 	if id == "" {
@@ -3007,7 +2813,7 @@ func handleAPISetTaskUser(w http.ResponseWriter, r *http.Request) {
 	rcp.ID = id
 	task := r.FormValue("task")
 	if task == "" {
-		http.Error(w, "task를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need task", http.StatusBadRequest)
 		return
 	}
 	rcp.Task = task
@@ -3015,13 +2821,14 @@ func handleAPISetTaskUser(w http.ResponseWriter, r *http.Request) {
 	if rcp.Username != "" {
 		rcp.UserID = onlyID(rcp.Username)            // id(name,team) 문자열중 id만 추출한다.
 		rcp.UsernameAndTeam = userInfo(rcp.Username) // id(name,team) 문자열을 name,team으로 바꾼다. 웹에서 보기좋게 하기 위함.
-		err = SetTaskUserID(session, rcp.ID, rcp.Task, rcp.UserID)
+		err = SetTaskUserIDV2(client, rcp.ID, rcp.Task, rcp.UserID)
 		if err != nil {
+			fmt.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}
-	err = SetTaskUserV2(session, rcp.ID, rcp.Task, rcp.Username)
+	err = SetTaskUserV3(client, rcp.ID, rcp.Task, rcp.Username)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5761,13 +5568,13 @@ func handleAPITask(w http.ResponseWriter, r *http.Request) {
 		Task        `json:"task"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5778,7 +5585,6 @@ func handleAPITask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
-
 	rcp.ID = id
 
 	task := r.FormValue("task")
@@ -5788,7 +5594,7 @@ func handleAPITask(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.RequestTask = task
 
-	t, err := GetTask(session, rcp.ID, rcp.RequestTask)
+	t, err := GetTaskV2(client, rcp.ID, rcp.RequestTask)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

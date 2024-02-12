@@ -519,3 +519,74 @@ func SetShotTypeV2(client *mongo.Client, id, shottype string) error {
 	}
 	return nil
 }
+
+func GetTaskV2(client *mongo.Client, id, task string) (Task, error) {
+	i, err := getItemV2(client, id)
+	if err != nil {
+		return Task{}, err
+	}
+	if _, found := i.Tasks[task]; !found {
+		return Task{}, errors.New("no task")
+	}
+	return i.Tasks[task], nil
+}
+
+func HasTaskV2(client *mongo.Client, id, task string) error {
+	item, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+	if _, found := item.Tasks[task]; !found {
+		return fmt.Errorf("%s 에 %s Task가 존재하지 않습니다", id, task)
+	}
+	return nil
+}
+
+func SetTaskUserIDV2(client *mongo.Client, id, task, userid string) error {
+	err := HasTaskV2(client, id, task)
+	if err != nil {
+		return err
+	}
+	item, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	filter := bson.M{"id": item.ID}
+	update := bson.M{"$set": bson.M{"tasks." + task + ".userid": userid, "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}
+
+func SetTaskUserV3(client *mongo.Client, id, task, user string) error {
+	err := HasTaskV2(client, id, task)
+	if err != nil {
+		return err
+	}
+	item, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	filter := bson.M{"id": item.ID}
+	update := bson.M{"$set": bson.M{"tasks." + task + ".user": user, "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}

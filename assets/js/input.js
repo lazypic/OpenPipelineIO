@@ -346,7 +346,6 @@ function setModal(modalID, value) {
 
 // setEditTaskModal 함수는 item id, task 정보를 가지고 와서 Edit Task Modal에 값을 채운다.
 function setEditTaskModal(id, task) {
-    console.log(id,task)
     document.getElementById("modal-edittask-id").value = id;
     document.getElementById("modal-edittask-title").innerHTML = "Edit Task" + multiInputTitle(id);
     $.ajax({
@@ -368,8 +367,7 @@ function setEditTaskModal(id, task) {
             document.getElementById('modal-edittask-expectday').value=data.task.expectday;
             document.getElementById('modal-edittask-resultday').value=data.task.resultday;
             document.getElementById('modal-edittask-level').value=data.task.tasklevel;
-            document.getElementById('modal-edittask-task').value=data.task.title;
-            document.getElementById('modal-edittask-pipelinestep').value=data.task.pipelinestep;
+            document.getElementById('modal-edittask-task').value=data.task.title;            
             document.getElementById('modal-edittask-path').value=data.task.mov;
             document.getElementById('modal-edittask-usernote').value=data.task.usernote;
             document.getElementById('modal-edittask-user').value=data.task.user;
@@ -2771,14 +2769,12 @@ function setTaskStatus(project, id, task, status) { // legacy
             let id = cboxes[i].getAttribute("id");
             sleep(200);
             $.ajax({
-                url: "/api/settaskstatus",
-                type: "post",
+                url: "/api2/settaskstatus",
+                type: "POST",
                 data: {
-                    project: project,
                     id: id,
                     task: task,
                     status: status,
-                    userid: userid,
                 },
                 headers: {
                     "Authorization": "Basic "+ token
@@ -2794,14 +2790,12 @@ function setTaskStatus(project, id, task, status) { // legacy
         }
     } else {
         $.ajax({
-            url: "/api/settaskstatus",
-            type: "post",
+            url: "/api2/settaskstatus",
+            type: "POST",
             data: {
-                project: project,
                 id: id,
                 task: task,
                 status: status,
-                userid: userid,
             },
             headers: {
                 "Authorization": "Basic "+ token
@@ -2817,58 +2811,7 @@ function setTaskStatus(project, id, task, status) { // legacy
     }
 }
 
-function setTaskPipelinestep(project, id, task, pipelinestep) {
-    let token = document.getElementById("token").value;
-    if (isMultiInput()) {
-        let cboxes = document.getElementsByName('selectID');
-        for (let i = 0; i < cboxes.length; ++i) {
-            if(cboxes[i].checked === false) {
-                continue
-            }
-            let id = cboxes[i].getAttribute("id");
-            sleep(200);
-            $.ajax({
-                url: "/api/settaskpipelinestep",
-                type: "post",
-                data: {
-                    project: project,
-                    id: id,
-                    task: task,
-                    pipelinestep: pipelinestep,
-                },
-                headers: {
-                    "Authorization": "Basic "+ token
-                },
-                dataType: "json",
-                success: function(data) {
-                },
-                error: function(request,status,error){
-                    alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-                }
-            });
-        }
-    } else {
-        $.ajax({
-            url: "/api/settaskpipelinestep",
-            type: "post",
-            data: {
-                project: project,
-                id: id,
-                task: task,
-                pipelinestep: pipelinestep,
-            },
-            headers: {
-                "Authorization": "Basic "+ token
-            },
-            dataType: "json",
-            success: function(data) {
-            },
-            error: function(request,status,error){
-                alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-            }
-        });
-    }
-}
+
 
 function setTaskStatusV2(id, task, status) {
     let token = document.getElementById("token").value;

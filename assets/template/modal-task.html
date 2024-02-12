@@ -95,10 +95,6 @@
                             <input type="text" class="form-control form-control-sm" id="modal-edittask-task" disabled>
                         </div>
                         <div class="col form-group">
-                            <label class="col-form-label">Pipelinestep</label>
-                            <select class="form-control form-control-sm" id="modal-edittask-pipelinestep" onchange="setTaskPipelinestep(document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, document.getElementById('modal-edittask-pipelinestep').value)"></select>
-                        </div>
-                        <div class="col form-group">
                             <label class="col-form-label text-muted">Status</label>
                             <select class="text-muted form-control form-control-sm" id="modal-edittask-statusv2" onchange="setTaskStatusV2(document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, document.getElementById('modal-edittask-statusv2').value)">
                                 {{range .Status}}
