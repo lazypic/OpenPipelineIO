@@ -881,32 +881,6 @@ func GetID(session *mgo.Session, project, name string) (string, error) {
 	return items[0].ID, nil
 }
 
-// SetImageSizeVer2 함수는 해당 샷의 이미지 사이즈를 설정한다.
-// key 설정값 : platesize, undistortionsize, rendersize
-func SetImageSizeVer2(session *mgo.Session, project, id, key, size string) error {
-	if !(key == "platesize" || key == "dsize" || key == "undistortionsize" || key == "rendersize") {
-		return errors.New("잘못된 key값입니다")
-	}
-	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return err
-	}
-	c := session.DB(*flagDBName).C("items")
-	if key == "dsize" || key == "undistortionsize" {
-		err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"dsize": size, "undistortionsize": size, "updatetime": time.Now().Format(time.RFC3339)}})
-		if err != nil {
-			return err
-		}
-	} else {
-		err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{key: size, "updatetime": time.Now().Format(time.RFC3339)}})
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 // SetTimecode 함수는 item에 Timecode를 설정한다.
 // ScanTimecodeIn,ScanTimecodeOut,JustTimecodeIn,JustTimecoeOut 문자를 key로 사용할 수 있다.
 func SetTimecode(session *mgo.Session, project, name, key, timecode string) error {

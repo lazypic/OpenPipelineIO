@@ -27,7 +27,7 @@ func handleAPI2User(w http.ResponseWriter, r *http.Request) {
 		}
 		id := r.FormValue("id")
 		if id == "" {
-			http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+			http.Error(w, "need id", http.StatusBadRequest)
 			return
 		}
 		user, err := getUserV2(client, id)
@@ -68,7 +68,7 @@ func handleAPI2User(w http.ResponseWriter, r *http.Request) {
 		}
 		id := r.FormValue("id")
 		if id == "" {
-			http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+			http.Error(w, "need id", http.StatusBadRequest)
 			return
 		}
 		// 토큰 삭제
@@ -287,7 +287,7 @@ func handleAPIInitPassword(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id

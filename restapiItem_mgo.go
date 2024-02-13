@@ -67,7 +67,7 @@ func handleAPITimeinfo(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 
@@ -685,7 +685,7 @@ func handleAPISetTaskExpectDay(w http.ResponseWriter, r *http.Request) {
 	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -1633,7 +1633,7 @@ func handleAPISetCameraPubPath(w http.ResponseWriter, r *http.Request) {
 	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -1704,7 +1704,7 @@ func handleAPISetCameraPubTask(w http.ResponseWriter, r *http.Request) {
 	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -1774,7 +1774,7 @@ func handleAPISetCameraLensmm(w http.ResponseWriter, r *http.Request) {
 	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -1844,13 +1844,13 @@ func handleAPISetCameraProjection(w http.ResponseWriter, r *http.Request) {
 	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
 	projection := r.FormValue("projection")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.Projection = str2bool(projection)
@@ -2012,7 +2012,7 @@ func handleAPISetSeq(w http.ResponseWriter, r *http.Request) {
 
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -2079,7 +2079,7 @@ func handleAPISetNetflixID(w http.ResponseWriter, r *http.Request) {
 
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -2145,7 +2145,7 @@ func handleAPISetPlatePath(w http.ResponseWriter, r *http.Request) {
 
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -2447,7 +2447,7 @@ func handleAPISetEditmov(w http.ResponseWriter, r *http.Request) {
 	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -3721,7 +3721,7 @@ func handleAPISetScanname(w http.ResponseWriter, r *http.Request) {
 	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -3914,7 +3914,7 @@ func handleAPISetScanTimecodeIn(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -4011,7 +4011,7 @@ func handleAPISetJustTimecodeIn(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -4546,7 +4546,7 @@ func handleAPIRmTag(w http.ResponseWriter, r *http.Request) {
 
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -4606,7 +4606,7 @@ func handleAPIRmAssetTag(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -4800,7 +4800,7 @@ func handleAPIEditComment(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -4864,7 +4864,7 @@ func handleAPIRmComment(w http.ResponseWriter, r *http.Request) {
 
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -5027,7 +5027,7 @@ func handleAPIAddReference(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -5435,7 +5435,7 @@ func handleAPIMailInfo(w http.ResponseWriter, r *http.Request) {
 	rcp.Lang = r.FormValue("lang")
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -5940,7 +5940,7 @@ func handleAPIRmTaskPublishKey(w http.ResponseWriter, r *http.Request) {
 	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -6018,7 +6018,7 @@ func handleAPIRmTaskPublish(w http.ResponseWriter, r *http.Request) {
 	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -6175,7 +6175,7 @@ func handleAPISetTaskPublishStatus(w http.ResponseWriter, r *http.Request) {
 	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -6279,7 +6279,7 @@ func handleAPISetSeason(w http.ResponseWriter, r *http.Request) {
 
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -6346,7 +6346,7 @@ func handleAPISetEpisode(w http.ResponseWriter, r *http.Request) {
 
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -6376,24 +6376,19 @@ func handleAPISetEpisode(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetOverscanRatio 함수는 아이템의 OverscanRatio 값을 설정한다.
 func handleAPISetOverscanRatio(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project       string  `json:"project"`
 		ID            string  `json:"id"`
 		OverscanRatio float64 `json:"overscanratio"`
 		UserID        string  `json:"userid"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -6404,16 +6399,9 @@ func handleAPISetOverscanRatio(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
-
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -6424,17 +6412,12 @@ func handleAPISetOverscanRatio(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.OverscanRatio = ratio
 
-	err = SetOverscanRatio(session, rcp.Project, rcp.ID, rcp.OverscanRatio)
+	err = SetOverscanRatioV2(client, rcp.ID, rcp.OverscanRatio)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set OverscanRatio: %f\nProject: %s, ID: %s, Author: %s", rcp.OverscanRatio, rcp.Project, rcp.ID, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {
@@ -6448,24 +6431,19 @@ func handleAPISetOverscanRatio(w http.ResponseWriter, r *http.Request) {
 
 // handleAPI2RenderSize 함수는 아이템에 RenderSize를 설정한다.
 func handleAPI2SetRenderSize(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project string `json:"project"`
-		ID      string `json:"id"`
-		Size    string `json:"size"`
-		UserID  string `json:"userid"`
+		ID     string `json:"id"`
+		Size   string `json:"size"`
+		UserID string `json:"userid"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -6476,35 +6454,23 @@ func handleAPI2SetRenderSize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
 	size := r.FormValue("size")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need size", http.StatusBadRequest)
 		return
 	}
 	if !regexpImageSize.MatchString(size) {
-		http.Error(w, "2048x1152 형태로 입력해주세요", http.StatusBadRequest)
+		http.Error(w, "Please enter in the format of 2048x1152", http.StatusBadRequest)
 		return
 	}
 	rcp.Size = size
-	err = SetImageSizeVer2(session, rcp.Project, rcp.ID, "rendersize", rcp.Size)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Rendersize: %s\nProject: %s, ID: %s, Author: %s", rcp.Size, rcp.Project, rcp.ID, rcp.UserID))
+	err = SetImageSizeV2(client, rcp.ID, "rendersize", rcp.Size)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -225,7 +225,7 @@ func handleAPIReview(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	review, err := getReview(session, id)
@@ -360,7 +360,7 @@ func handleAPIAddReviewComment(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -470,7 +470,7 @@ func handleAPIAddReviewStatusModeComment(w http.ResponseWriter, r *http.Request)
 	r.ParseForm()
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -578,7 +578,7 @@ func handleAPIEditReviewComment(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
 	reviewID := r.FormValue("id")
 	if reviewID == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = reviewID
@@ -651,7 +651,7 @@ func handleAPIRmReviewComment(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
 	reviewID := r.FormValue("id")
 	if reviewID == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = reviewID
@@ -731,7 +731,7 @@ func handleAPIRmReview(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
 	reviewID := r.FormValue("id")
 	if reviewID == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = reviewID
@@ -800,7 +800,7 @@ func handleAPISetReviewProject(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
 	reviewID := r.FormValue("id")
 	if reviewID == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = reviewID
@@ -852,7 +852,7 @@ func handleAPISetReviewTask(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
 	reviewID := r.FormValue("id")
 	if reviewID == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = reviewID
@@ -904,7 +904,7 @@ func handleAPISetReviewName(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
 	reviewID := r.FormValue("id")
 	if reviewID == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = reviewID
@@ -956,7 +956,7 @@ func handleAPISetReviewPath(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
 	reviewID := r.FormValue("id")
 	if reviewID == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = reviewID
@@ -1008,7 +1008,7 @@ func handleAPISetReviewCreatetime(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
 	reviewID := r.FormValue("id")
 	if reviewID == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = reviewID
@@ -1071,7 +1071,7 @@ func handleAPISetReviewMainVersion(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
 	reviewID := r.FormValue("id")
 	if reviewID == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = reviewID
@@ -1127,7 +1127,7 @@ func handleAPISetReviewSubVersion(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
 	reviewID := r.FormValue("id")
 	if reviewID == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = reviewID
@@ -1183,7 +1183,7 @@ func handleAPISetReviewFps(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
 	reviewID := r.FormValue("id")
 	if reviewID == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = reviewID
@@ -1239,7 +1239,7 @@ func handleAPISetReviewDescription(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
 	reviewID := r.FormValue("id")
 	if reviewID == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = reviewID
@@ -1286,7 +1286,7 @@ func handleAPISetReviewCameraInfo(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
 	reviewID := r.FormValue("id")
 	if reviewID == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = reviewID
@@ -1331,7 +1331,7 @@ func handleAPIReviewOutputDataPath(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		reviewID := r.FormValue("id")
 		if reviewID == "" {
-			http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+			http.Error(w, "need id", http.StatusBadRequest)
 			return
 		}
 		rcp.ID = reviewID
@@ -1381,7 +1381,7 @@ func handleAPISetReviewProcessStatus(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
 	reviewID := r.FormValue("id")
 	if reviewID == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = reviewID
@@ -1437,7 +1437,7 @@ func handleAPIUploadReviewDrawing(w http.ResponseWriter, r *http.Request) {
 	}
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.Data.ID = bson.ObjectIdHex(id)
@@ -1581,7 +1581,7 @@ func handleAPIRmReviewDrawing(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
@@ -1659,7 +1659,7 @@ func handleAPIReviewDrawingFrame(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id

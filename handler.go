@@ -457,9 +457,8 @@ func webserver(port string) {
 	r.HandleFunc("/api/assets", handleAPIAssets)
 	r.HandleFunc("/api/setplatesize", handleAPISetPlateSize).Methods("POST")
 	r.HandleFunc("/api/setundistortionsize", handleAPISetUnDistortionSize).Methods("POST")
-	r.HandleFunc("/api/setrendersize", handleAPISetRenderSize) // legacy
-	r.HandleFunc("/api2/setrendersize", handleAPI2SetRenderSize)
-	r.HandleFunc("/api/setoverscanratio", handleAPISetOverscanRatio)
+	r.HandleFunc("/api2/setrendersize", handleAPI2SetRenderSize).Methods("POST")
+	r.HandleFunc("/api/setoverscanratio", handleAPISetOverscanRatio).Methods("POST")
 	r.HandleFunc("/api/setcamerapubpath", handleAPISetCameraPubPath)
 	r.HandleFunc("/api/setcamerapubtask", handleAPISetCameraPubTask)
 	r.HandleFunc("/api/setcameralensmm", handleAPISetCameraLensmm)

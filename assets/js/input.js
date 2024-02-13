@@ -3907,9 +3907,8 @@ function setUndistortionsize(project, id, size) {
     }
 }
 
-function setRendersizeModal(project, id) {
+function setRendersizeModal(id) {
     let token = document.getElementById("token").value;
-    document.getElementById("modal-rendersize-project").value = project
     document.getElementById("modal-rendersize-title").innerHTML = "Rendersize" + multiInputTitle(id);
     $.ajax({
         url: `/api2/item?id=${id}`,
@@ -3929,11 +3928,9 @@ function setRendersizeModal(project, id) {
 }
 
 function setRendersize() {
-    let project = document.getElementById('modal-rendersize-project').value;
     let id = document.getElementById('modal-rendersize-id').value;
     let size = document.getElementById('modal-rendersize-size').value;
     let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
         for (var i = 0; i < cboxes.length; ++i) {
@@ -3946,7 +3943,6 @@ function setRendersize() {
                 type: "POST",
                 
                 data: {
-                    project: project,
                     id: id,
                     size: size,
                 },
@@ -3955,7 +3951,7 @@ function setRendersize() {
                 },
                 dataType: "json",
                 success: function(data) {
-                    document.getElementById("rendersize-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-rendersize" onclick="setRendersizeModal('${project}', '${data.id}')">R:${data.size}</span>`;
+                    document.getElementById("rendersize-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-rendersize" onclick="setRendersizeModal('${data.id}')">R:${data.size}</span>`;
                 },
                 error: function(request,status,error){
                     alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -3968,7 +3964,6 @@ function setRendersize() {
             type: "POST",
             
             data: {
-                project: project,
                 id: id,
                 size: size,
             },
@@ -3977,7 +3972,7 @@ function setRendersize() {
             },
             dataType: "json",
             success: function(data) {
-                document.getElementById("rendersize-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-rendersize" onclick="setRendersizeModal('${project}', '${data.id}')">R:${data.size}</span>`;
+                document.getElementById("rendersize-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-rendersize" onclick="setRendersizeModal('${data.id}')">R:${data.size}</span>`;
             },
             error: function(request,status,error){
                 alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -3987,7 +3982,6 @@ function setRendersize() {
 }
 
 function setOverscanRatio() {
-    let project = document.getElementById('modal-rendersize-project').value;
     let id = document.getElementById('modal-rendersize-id').value;
     let ratio = document.getElementById('modal-rendersize-overscanratio').value;
     let token = document.getElementById("token").value;
@@ -4001,9 +3995,7 @@ function setOverscanRatio() {
             $.ajax({
                 url: "/api/setoverscanratio",
                 type: "POST",
-                
                 data: {
-                    project: project,
                     id: id,
                     ratio: ratio,
                 },
@@ -4012,7 +4004,7 @@ function setOverscanRatio() {
                 },
                 dataType: "json",
                 success: function(data) {
-                    document.getElementById("overscanratio-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-rendersize" onclick="setRendersizeModal('${project}', '${data.id}')">OSR:${data.overscanratio}</span>`;
+                    document.getElementById("overscanratio-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-rendersize" onclick="setRendersizeModal('${data.id}')">OSR:${data.overscanratio}</span>`;
                 },
                 error: function(request,status,error){
                     alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -4025,7 +4017,6 @@ function setOverscanRatio() {
             type: "POST",
             
             data: {
-                project: project,
                 id: id,
                 ratio: ratio,
             },
@@ -4034,7 +4025,7 @@ function setOverscanRatio() {
             },
             dataType: "json",
             success: function(data) {
-                document.getElementById("overscanratio-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-rendersize" onclick="setRendersizeModal('${project}', '${data.id}')">OSR:${data.overscanratio}</span>`;
+                document.getElementById("overscanratio-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-rendersize" onclick="setRendersizeModal('${data.id}')">OSR:${data.overscanratio}</span>`;
             },
             error: function(request,status,error){
                 alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
