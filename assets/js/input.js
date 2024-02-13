@@ -2975,8 +2975,7 @@ function rfc3339toNormaltime(t) {
 }
 
 // setDeadline2dModal 함수는 project, id 정보를 이용해서 Deadline2d Modal 값을 채운다.
-function setDeadline2dModal(project, id) {
-    document.getElementById("modal-deadline2d-project").value = project;
+function setDeadline2dModal(id) {
     document.getElementById("modal-deadline2d-id").value = id;
     document.getElementById("modal-deadline2d-title").innerHTML = "Set Deadline 2D" + multiInputTitle(id);
     let token = document.getElementById("token").value;
@@ -2996,9 +2995,7 @@ function setDeadline2dModal(project, id) {
 }
 
 
-function setDeadline2D(project, id, date) {
-    let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
+function setDeadline2D(id, date) {
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
         for (var i = 0; i < cboxes.length; ++i) {
@@ -3012,10 +3009,8 @@ function setDeadline2D(project, id, date) {
                     "Authorization": "Basic "+ document.getElementById("token").value,
                 },
                 body: new URLSearchParams({
-                    project: project,
                     id: id,
                     date: date,
-                    userid: userid,
                 })
             })
             .then((response) => {
@@ -3025,7 +3020,7 @@ function setDeadline2D(project, id, date) {
                 return response.json()
             })
             .then((data) => {
-                document.getElementById("deadline2d-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline2d" onclick="setDeadline2dModal('${data.project}','${data.id}')">2D:${data.shortdate}</span>`;
+                document.getElementById("deadline2d-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline2d" onclick="setDeadline2dModal('${data.id}')">2D:${data.shortdate}</span>`;
             })
             .catch((err) => {
                 alert(err)
@@ -3038,10 +3033,8 @@ function setDeadline2D(project, id, date) {
                 "Authorization": "Basic "+ document.getElementById("token").value,
             },
             body: new URLSearchParams({
-                project: project,
                 id: id,
                 date: date,
-                userid: userid,
             })
         })
         .then((response) => {
@@ -3051,7 +3044,7 @@ function setDeadline2D(project, id, date) {
             return response.json()
         })
         .then((data) => {
-            document.getElementById("deadline2d-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline2d" onclick="setDeadline2dModal('${data.project}','${data.id}')">2D:${data.shortdate}</span>`;
+            document.getElementById("deadline2d-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline2d" onclick="setDeadline2dModal('${data.id}')">2D:${data.shortdate}</span>`;
         })
         .catch((err) => {
             alert(err)

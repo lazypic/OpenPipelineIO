@@ -785,3 +785,25 @@ func SetDeadline3DV2(client *mongo.Client, id, date string) error {
 	}
 	return nil
 }
+
+func SetDeadline2DV2(client *mongo.Client, id, date string) error {
+	fullTime, err := ditime.ToFullTime(19, date)
+	if err != nil {
+		return err
+	}
+
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"ddline2d": fullTime, "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}

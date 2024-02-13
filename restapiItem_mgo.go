@@ -2989,8 +2989,6 @@ func handleAPISetTaskUserNote(w http.ResponseWriter, r *http.Request) {
 // handleAPISetDeadline2D 함수는 아이템의 2D 마감일을 설정한다.
 func handleAPISetDeadline2D(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
-		Project   string `json:"project"`
-		Name      string `json:"name"`
 		ID        string `json:"id"`
 		Date      string `json:"date"`
 		ShortDate string `json:"shortdate"`
@@ -2998,13 +2996,15 @@ func handleAPISetDeadline2D(w http.ResponseWriter, r *http.Request) {
 		Error     string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3014,33 +3014,20 @@ func handleAPISetDeadline2D(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
+
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "need project", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
+	fmt.Println(id)
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
+
 	date := r.FormValue("date")
 	rcp.Date = date
-	userid := r.FormValue("userid")
-	if userid == "" {
-		rcp.UserID = "unknown"
-	}
-	rcp.UserID = userid
-	err = SetDeadline2D(session, rcp.Project, rcp.ID, rcp.Date)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Deadline2D: %s\nProject: %s, Name: %s, Author: %s", rcp.Date, rcp.Project, rcp.Name, rcp.UserID))
+	fmt.Println(rcp)
+	err = SetDeadline2DV2(client, rcp.ID, rcp.Date)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

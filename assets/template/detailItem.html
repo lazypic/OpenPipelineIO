@@ -40,7 +40,7 @@
 						
 						{{if eq $.Item.Type "org" "left" "asset"}}
 							<div class="row" id="deadline2d-{{$.Item.ID}}">
-								<span class="black-opbg" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#deadline2d" onclick="setDeadline2dModal('{{$.Item.Project}}', '{{$.Item.ID}}', '{{ToNormalTime $.Item.Ddline2d}}')"{{end}}>{{if $.Item.Ddline2d}}2D:{{ToShortTime $.Item.Ddline2d}}{{else}}2D:{{end}}</span>
+								<span class="black-opbg" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#deadline2d" onclick="setDeadline2dModal('{{$.Item.ID}}', '{{ToNormalTime $.Item.Ddline2d}}')"{{end}}>{{if $.Item.Ddline2d}}2D:{{ToShortTime $.Item.Ddline2d}}{{else}}2D:{{end}}</span>
 							</div>
 						{{end}}
 					</div>
