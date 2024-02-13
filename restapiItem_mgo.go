@@ -870,21 +870,19 @@ func handleAPISetTaskResultDay(w http.ResponseWriter, r *http.Request) {
 // handleAPIUnDistortionSize 함수는 아이템의 DistortionSize를 설정한다.
 func handleAPISetUnDistortionSize(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
-		Project string `json:"project"`
-		Name    string `json:"name"`
-		ID      string `json:"id"`
-		Size    string `json:"size"`
-		UserID  string `json:"userid"`
-		Error   string `json:"error"`
+		ID     string `json:"id"`
+		Size   string `json:"size"`
+		UserID string `json:"userid"`
+		Error  string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -895,55 +893,25 @@ func handleAPISetUnDistortionSize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Project = v
-		case "id":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.ID = v
-		case "userid":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if rcp.UserID == "unknown" && v != "" {
-				rcp.UserID = v
-			}
-		case "size":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if !regexpImageSize.MatchString(v) {
-				http.Error(w, "2048x1152 형태로 입력해주세요", http.StatusBadRequest)
-				return
-			}
-			rcp.Size = v
-		}
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
+		return
 	}
-	err = SetImageSize(session, rcp.Project, rcp.ID, "undistortionsize", rcp.Size)
+	rcp.ID = id
+	size := r.FormValue("size")
+	if !regexpImageSize.MatchString(size) {
+		http.Error(w, "Please enter in the format of 2048x1152", http.StatusBadRequest)
+		return
+	}
+	rcp.Size = size
+
+	err = SetImageSizeV2(client, rcp.ID, "undistortionsize", rcp.Size)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Undistortionsize: %s\nID: %s, Author: %s", rcp.Size, rcp.ID, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {
@@ -1581,7 +1549,7 @@ func handleAPISetPlateSize(w http.ResponseWriter, r *http.Request) {
 	rcp.ID = id
 	size := r.FormValue("size")
 	if !regexpImageSize.MatchString(size) {
-		http.Error(w, "2048x1152 형태로 입력해주세요", http.StatusBadRequest)
+		http.Error(w, "Please enter in the format of 2048x1152", http.StatusBadRequest)
 		return
 	}
 	rcp.Size = size
