@@ -1569,25 +1569,20 @@ func handleAPISetCameraPubPath(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetCameraPubTask 함수는 아이템의 Camera PubTask를 설정한다.
 func handleAPISetCameraPubTask(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project string `json:"project"`
-		ID      string `json:"id"`
-		Task    string `json:"task"`
-		UserID  string `json:"userid"`
-		Error   string `json:"error"`
+		ID     string `json:"id"`
+		Task   string `json:"task"`
+		UserID string `json:"userid"`
+		Error  string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1598,12 +1593,6 @@ func handleAPISetCameraPubTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
@@ -1612,21 +1601,16 @@ func handleAPISetCameraPubTask(w http.ResponseWriter, r *http.Request) {
 	rcp.ID = id
 	task := r.FormValue("task")
 	if task == "" {
-		http.Error(w, "task를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need task", http.StatusBadRequest)
 		return
 	}
 	rcp.Task = task
-	err = SetCameraPubTask(session, rcp.Project, rcp.ID, rcp.Task)
+	err = SetCameraPubTaskV2(client, rcp.ID, rcp.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Camera Pub Task: %s\nProject: %s, ID: %s, Author: %s", rcp.Task, rcp.Project, rcp.ID, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {
@@ -1640,24 +1624,19 @@ func handleAPISetCameraPubTask(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetCameraLensmm 함수는 아이템의 Camera Lensmm를 설정한다.
 func handleAPISetCameraLensmm(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project string `json:"project"`
-		ID      string `json:"id"`
-		Lensmm  string `json:"lensmm"`
-		UserID  string `json:"userid"`
+		ID     string `json:"id"`
+		Lensmm string `json:"lensmm"`
+		UserID string `json:"userid"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1668,12 +1647,6 @@ func handleAPISetCameraLensmm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
@@ -1682,21 +1655,16 @@ func handleAPISetCameraLensmm(w http.ResponseWriter, r *http.Request) {
 	rcp.ID = id
 	lensmm := r.FormValue("lensmm")
 	if lensmm == "" {
-		http.Error(w, "lensmm를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need lensmm", http.StatusBadRequest)
 		return
 	}
 	rcp.Lensmm = lensmm
-	err = SetCameraLensmm(session, rcp.Project, rcp.ID, rcp.Lensmm)
+	err = SetCameraLensmmV2(client, rcp.ID, rcp.Lensmm)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Camera Lens mm: %s\nProject: %s, ID: %s, Author: %s", rcp.Lensmm, rcp.Project, rcp.ID, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {

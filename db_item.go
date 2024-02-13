@@ -1011,3 +1011,42 @@ func SetTaskEnd(client *mongo.Client, id, task, date string) error {
 	}
 	return nil
 }
+
+func SetCameraPubTaskV2(client *mongo.Client, id, task string) error {
+	if !(task == "" || task == "mm" || task == "layout" || task == "ani") {
+		return errors.New("none(빈문자열), mm, layout, ani 팀만 카메라 publish가 가능합니다")
+	}
+
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"productioncam.pubtask": task, "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}
+
+func SetCameraLensmmV2(client *mongo.Client, id, lensmm string) error {
+
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"productioncam.lensmm": lensmm, "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}
