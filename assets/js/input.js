@@ -3333,8 +3333,7 @@ function setAssettype(project, id) {
 }
 
 // setRnumModal 함수는 project, id 정보를 이용해서 Edit Rnum Modal 값을 채운다.
-function setRnumModal(project, id) {
-    document.getElementById("modal-setrnum-project").value = project;
+function setRnumModal(id) {
     document.getElementById("modal-setrnum-id").value = id;
     document.getElementById("modal-setrnum-title").innerHTML = "Set Rnum number" + multiInputTitle(id);
     let token = document.getElementById("token").value;
@@ -3363,12 +3362,11 @@ function setRnum() {
             }
             let id = cboxes[i].getAttribute("id");
             fetch('/api2/setrnum', {
-                method: 'post',
+                method: 'POST',
                 headers: {
                     "Authorization": "Basic "+ document.getElementById("token").value,
                 },
                 body: new URLSearchParams({
-                    project: document.getElementById('modal-setrnum-project').value,
                     id: id,
                     rnum: document.getElementById('modal-setrnum-text').value,
                 })
@@ -3389,12 +3387,11 @@ function setRnum() {
         }
     } else {
         fetch('/api2/setrnum', {
-            method: 'post',
+            method: 'POST',
             headers: {
                 "Authorization": "Basic "+ document.getElementById("token").value,
             },
             body: new URLSearchParams({
-                project: document.getElementById('modal-setrnum-project').value,
                 id: document.getElementById('modal-setrnum-id').value,
                 rnum: document.getElementById('modal-setrnum-text').value,
             })

@@ -3933,25 +3933,20 @@ func handleAPISetAssetType(w http.ResponseWriter, r *http.Request) {
 
 // handleAPI2SetRnum 함수는 아이템에 롤넘버를 설정합니다.
 func handleAPI2SetRnum(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project string `json:"project"`
-		ID      string `json:"id"`
-		Rnum    string `json:"rnum"`
-		UserID  string `json:"userid"`
-		Error   string `json:"error"`
+		ID     string `json:"id"`
+		Rnum   string `json:"rnum"`
+		UserID string `json:"userid"`
+		Error  string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3962,21 +3957,15 @@ func handleAPI2SetRnum(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
 	rnum := r.FormValue("rnum")
 	if id == "" {
-		http.Error(w, "id를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need rnum", http.StatusBadRequest)
 		return
 	}
 	rcp.Rnum = rnum
@@ -3984,13 +3973,7 @@ func handleAPI2SetRnum(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, rcp.Rnum+"값은 A0001 형식이 아닙니다.", http.StatusBadRequest)
 		return
 	}
-	err = SetRnum(session, rcp.Project, rcp.ID, rcp.Rnum)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Rnum: %s\nProject: %s, ID: %s, Author: %s", rcp.Rnum, rcp.Project, rcp.ID, rcp.UserID))
+	err = SetRnumV2(client, rcp.ID, rcp.Rnum)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -749,3 +749,16 @@ func SetTaskUserNoteV2(client *mongo.Client, id, task, usernote string) error {
 	}
 	return nil
 }
+
+func SetRnumV2(client *mongo.Client, id, rnum string) error {
+	item, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+	item.Rnum = rnum
+	err = setItemV2(client, item)
+	if err != nil {
+		return err
+	}
+	return nil
+}
