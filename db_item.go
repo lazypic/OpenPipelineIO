@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/digital-idea/ditime"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -759,6 +760,28 @@ func SetRnumV2(client *mongo.Client, id, rnum string) error {
 	err = setItemV2(client, item)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func SetDeadline3DV2(client *mongo.Client, id, date string) error {
+	fullTime, err := ditime.ToFullTime(19, date)
+	if err != nil {
+		return err
+	}
+
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"ddline3d": fullTime, "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
 	}
 	return nil
 }

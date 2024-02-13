@@ -146,7 +146,7 @@ function wfs(host, task, type, assettype, project, name, seq, cut, token) {
 	let WFSPATH = "";
 	$.ajax({
 		url: "/api/tasksetting",
-		type: "post",
+		type: "POST",
 		data: {
 			os: "", // os를 설정하지 않으면 WFSPath를 불러온다.
 			task: task,
@@ -350,7 +350,7 @@ function setEditTaskModal(id, task) {
     document.getElementById("modal-edittask-title").innerHTML = "Edit Task" + multiInputTitle(id);
     $.ajax({
         url: "/api/task",
-        type: "post",
+        type: "POST",
         data: {
             id: id,
             task: task,
@@ -385,7 +385,7 @@ function setTimeModal(project, id) {
     document.getElementById("modal-edittime-title").innerHTML = "Edit Time" + multiInputTitle(id);
     $.ajax({
         url: "/api/timeinfo",
-        type: "post",
+        type: "POST",
         data: {
             "project": project,
             "id": id,
@@ -615,7 +615,7 @@ function rmTask(project, id, task) {
             sleep(200);
             $.ajax({
                 url: "/api/rmtask",
-                type: "post",
+                type: "POST",
                 data: {
                     id: id,
                     task: task,
@@ -635,7 +635,7 @@ function rmTask(project, id, task) {
     } else {
         $.ajax({
             url: "/api/rmtask",
-            type: "post",
+            type: "POST",
             data: {
                 id: id,
                 task: task,
@@ -658,7 +658,7 @@ function setFrame(mode, id, frame) {
     let token = document.getElementById("token").value;
     $.ajax({
         url: "/api/" + mode,
-        type: "post",
+        type: "POST",
         data: {
             id: id,
             frame: frame,
@@ -706,7 +706,7 @@ function setFrame(mode, id, frame) {
 function setScanTimecodeIn(id, timecode) {
     $.ajax({
         url: "/api/setscantimecodein",
-        type: "post",
+        type: "POST",
         data: {
             id: id,
             timecode: timecode,
@@ -727,7 +727,7 @@ function setScanTimecodeIn(id, timecode) {
 function setCameraPubTask() {
     $.ajax({
         url: "/api/setcamerapubtask",
-        type: "post",
+        type: "POST",
         data: {
             project: document.getElementById('modal-cameraoption-project').value,
             id: document.getElementById('modal-cameraoption-id').value,
@@ -749,7 +749,7 @@ function setCameraPubTask() {
 function setCameraLensmm() {
     $.ajax({
         url: "/api/setcameralensmm",
-        type: "post",
+        type: "POST",
         data: {
             project: document.getElementById('modal-cameraoption-project').value,
             id: document.getElementById('modal-cameraoption-id').value,
@@ -771,7 +771,7 @@ function setCameraLensmm() {
 function setCameraPubPath() {
     $.ajax({
         url: "/api/setcamerapubpath",
-        type: "post",
+        type: "POST",
         data: {
             project: document.getElementById('modal-cameraoption-project').value,
             id: document.getElementById('modal-cameraoption-id').value,
@@ -820,7 +820,7 @@ function setCameraOptionModal(project, id) {
 function setCameraProjection() {
     $.ajax({
         url: "/api/setcameraprojection",
-        type: "post",
+        type: "POST",
         data: {
             project: document.getElementById('modal-cameraoption-project').value,
             id: document.getElementById('modal-cameraoption-id').value,
@@ -846,7 +846,7 @@ function setCameraProjection() {
 function setScanTimecodeOut(id, timecode) {
     $.ajax({
         url: "/api/setscantimecodeout",
-        type: "post",
+        type: "POST",
         data: {
             id: id,
             timecode: timecode,
@@ -867,7 +867,7 @@ function setScanTimecodeOut(id, timecode) {
 function setJustTimecodeIn(id, timecode) {
     $.ajax({
         url: "/api/setjusttimecodein",
-        type: "post",
+        type: "POST",
         data: {
             id: id,
             timecode: timecode,
@@ -888,7 +888,7 @@ function setJustTimecodeIn(id, timecode) {
 function setJustTimecodeOut(id, timecode) {
     $.ajax({
         url: "/api/setjusttimecodeout",
-        type: "post",
+        type: "POST",
         data: {
             id: id,
             timecode: timecode,
@@ -945,7 +945,7 @@ function setNote(id, text) {
             sleep(200);
             $.ajax({
                 url: "/api/setnote",
-                type: "post",
+                type: "POST",
                 data: {
                     id: currentID,
                     text: text,
@@ -974,7 +974,7 @@ function setNote(id, text) {
         let overwrite = document.getElementById("modal-setnote-overwrite").checked;
         $.ajax({
             url: "/api/setnote",
-            type: "post",
+            type: "POST",
             data: {
                 id: id,
                 text: text,
@@ -1006,7 +1006,7 @@ function editNote(id, text) {
     let userid = document.getElementById("userid").value;
     $.ajax({
         url: "/api/setnote",
-        type: "post",
+        type: "POST",
         data: {
             id: id,
             text: text,
@@ -1253,7 +1253,7 @@ function addComment() {
             sleep(200);
             $.ajax({
                 url: "/api/addcomment",
-                type: "post",
+                type: "POST",
                 data: {                    
                     id: currentID,
                     text: text,
@@ -1300,7 +1300,7 @@ function addComment() {
     } else {
         $.ajax({
             url: "/api/addcomment",
-            type: "post",
+            type: "POST",
             data: {
                 id: id,
                 text: text,
@@ -1355,7 +1355,7 @@ function editComment() {
     let media = document.getElementById('modal-editcomment-media').value
     $.ajax({
         url: "/api/editcomment",
-        type: "post",
+        type: "POST",
         data: {
             id: id,
             time: time,
@@ -1446,7 +1446,7 @@ function setRmReviewCommentModal(id, time) {
     // review id의 데이터를 가지고 와서 모달을 설정한다.
     $.ajax({
         url: "/api/review",
-        type: "post",
+        type: "POST",
         data: {
             id: id,
         },
@@ -1476,7 +1476,7 @@ function setEditReviewCommentModal(id, time) {
     // review id의 데이터를 가지고 와서 모달을 설정한다.
     $.ajax({
         url: "/api/review",
-        type: "post",
+        type: "POST",
         data: {
             id: id,
         },
@@ -1504,7 +1504,7 @@ function setRmReviewModal(id) {
     // review id의 데이터를 가지고 와서 모달을 설정한다.
     $.ajax({
         url: "/api/review",
-        type: "post",
+        type: "POST",
         data: {
             id: id,
         },
@@ -1631,7 +1631,7 @@ function rmComment(id, date) {
     let token = document.getElementById("token").value;
     $.ajax({
         url: "/api/rmcomment",
-        type: "post",
+        type: "POST",
         data: {
             id: id,
             date: date
@@ -1653,7 +1653,7 @@ function rmReview() {
     let token = document.getElementById("token").value;
     $.ajax({
         url: "/api/rmreview",
-        type: "post",
+        type: "POST",
         data: {
             id: document.getElementById("modal-rmreview-id").value,
         },
@@ -1675,7 +1675,7 @@ function editReviewComment() {
     let token = document.getElementById("token").value;
     $.ajax({
         url: "/api/editreviewcomment",
-        type: "post",
+        type: "POST",
         data: {
             id: document.getElementById("modal-editreviewcomment-id").value,
             time: document.getElementById("modal-editreviewcomment-time").value,
@@ -1711,7 +1711,7 @@ function rmReviewComment() {
     let token = document.getElementById("token").value;
     $.ajax({
         url: "/api/rmreviewcomment",
-        type: "post",
+        type: "POST",
         data: {
             id: document.getElementById("modal-rmreviewcomment-id").value,
             time: document.getElementById("modal-rmreviewcomment-time").value,
@@ -1734,7 +1734,7 @@ function rmReviewComment() {
 function rmPublishKey() {
     $.ajax({
         url: "/api/rmpublishkey",
-        type: "post",
+        type: "POST",
         data: {
             project: document.getElementById('modal-rmpublishkey-project').value,
             id: document.getElementById('modal-rmpublishkey-id').value,
@@ -1757,7 +1757,7 @@ function rmPublishKey() {
 function rmPublish() {
     $.ajax({
         url: "/api/rmpublish",
-        type: "post",
+        type: "POST",
         data: {
             project: document.getElementById('modal-rmpublish-project').value,
             id: document.getElementById('modal-rmpublish-id').value,
@@ -1798,7 +1798,7 @@ function addSource(id, title, path) {
             let currentID = cboxes[i].getAttribute("id")
             $.ajax({
                 url: "/api/addsource",
-                type: "post",
+                type: "POST",
                 data: {
                     id: currentID,
                     title: title,
@@ -1838,7 +1838,7 @@ function addSource(id, title, path) {
     } else {
         $.ajax({
             url: "/api/addsource",
-            type: "post",
+            type: "POST",
             data: {
                 id: id,
                 title: title,
@@ -1894,7 +1894,7 @@ function rmSource(id, title) {
             currentID = cboxes[i].getAttribute("id");
             $.ajax({
                 url: "/api/rmsource",
-                type: "post",
+                type: "POST",
                 data: {
                     id: currentID,
                     title: title,
@@ -1925,7 +1925,7 @@ function rmSource(id, title) {
     } else {
         $.ajax({
             url: "/api/rmsource",
-            type: "post",
+            type: "POST",
             data: {
                 id: id,
                 title: title,
@@ -1973,7 +1973,7 @@ function addReference(id, title, path) {
             let currentID = cboxes[i].getAttribute("id")
             $.ajax({
                 url: "/api/addreference",
-                type: "post",
+                type: "POST",
                 data: {
                     id: currentID,
                     title: title,
@@ -2013,7 +2013,7 @@ function addReference(id, title, path) {
     } else {
         $.ajax({
             url: "/api/addreference",
-            type: "post",
+            type: "POST",
             data: {
                 id: id,
                 title: title,
@@ -2069,7 +2069,7 @@ function rmReference(id, title) {
             currentID = cboxes[i].getAttribute("id");
             $.ajax({
                 url: "/api/rmreference",
-                type: "post",
+                type: "POST",
                 data: {
                     id: currentID,
                     title: title,
@@ -2100,7 +2100,7 @@ function rmReference(id, title) {
     } else {
         $.ajax({
             url: "/api/rmreference",
-            type: "post",
+            type: "POST",
             data: {
                 id: id,
                 title: title,
@@ -2132,7 +2132,7 @@ function rmReference(id, title) {
 function setSeq(seq) {
     $.ajax({
         url: "/api/setseq",
-        type: "post",
+        type: "POST",
         data: {
             project: document.getElementById('modal-iteminfo-project').value,
             id: document.getElementById('modal-iteminfo-id').value,
@@ -2155,7 +2155,7 @@ function setSeq(seq) {
 function setSeason(season) {
     $.ajax({
         url: "/api/setseason",
-        type: "post",
+        type: "POST",
         data: {
             project: document.getElementById('modal-iteminfo-project').value,
             id: document.getElementById('modal-iteminfo-id').value,
@@ -2177,7 +2177,7 @@ function setSeason(season) {
 function setEpisode(episode) {
     $.ajax({
         url: "/api/setepisode",
-        type: "post",
+        type: "POST",
         data: {
             project: document.getElementById('modal-iteminfo-project').value,
             id: document.getElementById('modal-iteminfo-id').value,
@@ -2199,7 +2199,7 @@ function setEpisode(episode) {
 function setPlatePath(path) {
     $.ajax({
         url: "/api/setplatepath",
-        type: "post",
+        type: "POST",
         data: {
             project: document.getElementById('modal-iteminfo-project').value,
             id: document.getElementById('modal-iteminfo-id').value,
@@ -2225,7 +2225,7 @@ function setThummov(path) {
     let id = document.getElementById('modal-iteminfo-id').value;
     $.ajax({
         url: "/api/setthummov",
-        type: "post",
+        type: "POST",
         data: {
             project: project,
             name: id2name(id),
@@ -2252,7 +2252,7 @@ function setBeforemov(path) {
     let id = document.getElementById('modal-iteminfo-id').value;
     $.ajax({
         url: "/api/setbeforemov",
-        type: "post",
+        type: "POST",
         data: {
             project: project,
             name: id2name(id),
@@ -2279,7 +2279,7 @@ function setAftermov(path) {
     let id = document.getElementById('modal-iteminfo-id').value;
     $.ajax({
         url: "/api/setaftermov",
-        type: "post",
+        type: "POST",
         data: {
             project: project,
             name: id2name(id),
@@ -2306,7 +2306,7 @@ function setEditmov(path) {
     let id = document.getElementById('modal-iteminfo-id').value;
     $.ajax({
         url: "/api/seteditmov",
-        type: "post",
+        type: "POST",
         data: {
             project: project,
             id: id,
@@ -2332,7 +2332,7 @@ function setRetimeplate(project, id, path) {
     let userid = document.getElementById("userid").value;
     $.ajax({
         url: "/api/setretimeplate",
-        type: "post",
+        type: "POST",
         data: {
             project: project,
             name: id2name(id),
@@ -2361,7 +2361,7 @@ function setOCIOcc(project, id, path) {
     let userid = document.getElementById("userid").value;
     $.ajax({
         url: "/api/setociocc",
-        type: "post",
+        type: "POST",
         data: {
             project: project,
             name: id2name(id),
@@ -2390,7 +2390,7 @@ function setRollmedia(project, id, rollmedia) {
     let userid = document.getElementById("userid").value;
     $.ajax({
         url: "/api/setrollmedia",
-        type: "post",
+        type: "POST",
         data: {
             project: project,
             name: id2name(id),
@@ -2418,7 +2418,7 @@ function setScanname(project, id, scanname) {
     let token = document.getElementById("token").value;
     $.ajax({
         url: "/api/setscanname",
-        type: "post",
+        type: "POST",
         data: {
             project: project,
             id: id,
@@ -2778,7 +2778,7 @@ function setTaskStartdate(id, task, date) {
     } else {
         $.ajax({
             url: "/api/settaskstartdate",
-            type: "post",
+            type: "POST",
             data: {
                 id: id,
                 task: task,
@@ -2810,7 +2810,7 @@ function setTaskStartdate2nd(id, task, date) {
             let id = cboxes[i].getAttribute("id")
             $.ajax({
                 url: "/api/settaskstartdate2nd",
-                type: "post",
+                type: "POST",
                 data: {
                     id: id,
                     task: task,
@@ -2831,7 +2831,7 @@ function setTaskStartdate2nd(id, task, date) {
     } else {
         $.ajax({
             url: "/api/settaskstartdate2nd",
-            type: "post",
+            type: "POST",
             data: {
                 id: id,
                 task: task,
@@ -2918,7 +2918,7 @@ function setTaskPredate(id, task, date) {
             sleep(200)
             $.ajax({
                 url: "/api/settaskpredate",
-                type: "post",
+                type: "POST",
                 data: {
                     id: id,
                     task: task,
@@ -2943,7 +2943,7 @@ function setTaskPredate(id, task, date) {
     } else {
         $.ajax({
             url: "/api/settaskpredate",
-            type: "post",
+            type: "POST",
             data: {
                 id: id,
                 task: task,
@@ -3060,8 +3060,7 @@ function setDeadline2D(project, id, date) {
 }
 
 // setDeadline3dModal 함수는 project, id 정보를 이용해서 Deadline3d Modal 값을 채운다.
-function setDeadline3dModal(project, id) {
-    document.getElementById("modal-deadline3d-project").value = project;
+function setDeadline3dModal(id) {
     document.getElementById("modal-deadline3d-id").value = id;
     document.getElementById("modal-deadline3d-title").innerHTML = "Set Deadline 3D" + multiInputTitle(id);
     let token = document.getElementById("token").value;
@@ -3080,9 +3079,8 @@ function setDeadline3dModal(project, id) {
     });
 }
 
-function setDeadline3D(project, id, date) {
+function setDeadline3D(id, date) {
     let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
         for (var i = 0; i < cboxes.length; ++i) {
@@ -3092,19 +3090,17 @@ function setDeadline3D(project, id, date) {
             let id = cboxes[i].getAttribute("id");
             $.ajax({
                 url: "/api/setdeadline3d",
-                type: "post",
+                type: "POST",
                 data: {
-                    project: project,
                     id: id,
                     date: date,
-                    userid: userid,
                 },
                 headers: {
                     "Authorization": "Basic "+ token
                 },
                 dataType: "json",
                 success: function(data) {
-                    document.getElementById("deadline3d-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline3d" onclick="setDeadline3dModal('${data.project}','${data.id}')">3D:${data.shortdate}</span>`;
+                    document.getElementById("deadline3d-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline3d" onclick="setDeadline3dModal('${data.id}')">3D:${data.shortdate}</span>`;
                 },
                 error: function(request,status,error){
                     alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -3114,19 +3110,17 @@ function setDeadline3D(project, id, date) {
     } else {
         $.ajax({
             url: "/api/setdeadline3d",
-            type: "post",
+            type: "POST",
             data: {
-                project: project,
                 id: id,
                 date: date,
-                userid: userid,
             },
             headers: {
                 "Authorization": "Basic "+ token
             },
             dataType: "json",
             success: function(data) {
-                document.getElementById("deadline3d-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline3d" onclick="setDeadline3dModal('${data.project}','${data.id}')">3D:${data.shortdate}</span>`;
+                document.getElementById("deadline3d-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#deadline3d" onclick="setDeadline3dModal('${data.id}')">3D:${data.shortdate}</span>`;
             },
             error: function(request,status,error){
                 alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -3275,7 +3269,7 @@ function setAssettype(project, id) {
             let id = cboxes[i].getAttribute("id");
             $.ajax({
                 url: "/api/setassettype",
-                type: "post",
+                type: "POST",
                 data: {
                     project: project,
                     name: id2name(id),
@@ -3304,7 +3298,7 @@ function setAssettype(project, id) {
     } else {
         $.ajax({
             url: "/api/setassettype",
-            type: "post",
+            type: "POST",
             data: {
                 project: project,
                 name: id2name(id),
@@ -3521,7 +3515,7 @@ function renameTag(project, before, after) {
     let token = document.getElementById("token").value;
     $.ajax({
         url: "/api/renametag",
-        type: "post",
+        type: "POST",
         
         data: {
             project: project,
@@ -3726,7 +3720,7 @@ function setObjectID(project, id, innum, outnum) {
     let userid = document.getElementById("userid").value;
     $.ajax({
         url: "/api/setobjectid",
-        type: "post",
+        type: "POST",
         data: {
             project: project,
             name: id2name(id),
@@ -3751,7 +3745,7 @@ function setCrowdAsset(project, id) {
     let token = document.getElementById("token").value;
     $.ajax({
         url: "/api/setcrowdasset",
-        type: "post",
+        type: "POST",
         data: {
             project: project,
             name: id2name(id),
@@ -3806,7 +3800,7 @@ function setPlatesize(project, id, size) {
             let id = cboxes[i].getAttribute("id");
             $.ajax({
                 url: "/api/setplatesize",
-                type: "post",
+                type: "POST",
                 
                 data: {
                     project: project,
@@ -3829,7 +3823,7 @@ function setPlatesize(project, id, size) {
     } else {
         $.ajax({
             url: "/api/setplatesize",
-            type: "post",
+            type: "POST",
             
             data: {
                 project: project,
@@ -3883,7 +3877,7 @@ function setUndistortionsize(project, id, size) {
             let id = cboxes[i].getAttribute("id");
             $.ajax({
                 url: "/api/setundistortionsize",
-                type: "post",
+                type: "POST",
                 
                 data: {
                     project: project,
@@ -3906,7 +3900,7 @@ function setUndistortionsize(project, id, size) {
     } else {
         $.ajax({
             url: "/api/setundistortionsize",
-            type: "post",
+            type: "POST",
             
             data: {
                 project: project,
@@ -3964,7 +3958,7 @@ function setRendersize() {
             let id = cboxes[i].getAttribute("id");
             $.ajax({
                 url: "/api2/setrendersize",
-                type: "post",
+                type: "POST",
                 
                 data: {
                     project: project,
@@ -3986,7 +3980,7 @@ function setRendersize() {
     } else {
         $.ajax({
             url: "/api2/setrendersize",
-            type: "post",
+            type: "POST",
             
             data: {
                 project: project,
@@ -4021,7 +4015,7 @@ function setOverscanRatio() {
             let id = cboxes[i].getAttribute("id");
             $.ajax({
                 url: "/api/setoverscanratio",
-                type: "post",
+                type: "POST",
                 
                 data: {
                     project: project,
@@ -4043,7 +4037,7 @@ function setOverscanRatio() {
     } else {
         $.ajax({
             url: "/api/setoverscanratio",
-            type: "post",
+            type: "POST",
             
             data: {
                 project: project,
@@ -4087,7 +4081,7 @@ function rmItem() {
             sleep(200);
             $.ajax({
                 url: "/api/rmitemid",
-                type: "post",
+                type: "POST",
                 data: {
 
                     id: id,
@@ -4364,7 +4358,7 @@ function changeStatusURI(status) {
 function mailInfo(project, id) {
     $.ajax({
         url: "/api/mailinfo",
-        type: "post",
+        type: "POST",
         data: {
             "project": project,
             "id": id,
@@ -4510,7 +4504,7 @@ function addReviewStatusMode() {
     let reviewFps = document.getElementById("modal-addreview-statusmode-fps")
     $.ajax({
         url: "/api/addreview",
-        type: "post",
+        type: "POST",
         data: {
             project: document.getElementById("modal-addreview-statusmode-project").value,
             name: document.getElementById("modal-addreview-statusmode-name").value,
@@ -4551,7 +4545,7 @@ function clickReviewStatusModeCommentButton() {
 function setReviewProcessStatus(id, status) {
     $.ajax({
         url: "/api/setreviewprocessstatus",
-        type: "post",
+        type: "POST",
         data: {
             status: status,
             id: id,
@@ -4579,7 +4573,7 @@ function setReviewProcessStatus(id, status) {
 function setReviewProject() {
     $.ajax({
         url: "/api/setreviewproject",
-        type: "post",
+        type: "POST",
         data: {
             id: document.getElementById("modal-editreview-id").value,
             project: document.getElementById("modal-editreview-project").value,
@@ -4601,7 +4595,7 @@ function setReviewProject() {
 function setReviewTask() {
     $.ajax({
         url: "/api/setreviewtask",
-        type: "post",
+        type: "POST",
         data: {
             id: document.getElementById("modal-editreview-id").value,
             task: document.getElementById("modal-editreview-task").value,
@@ -4623,7 +4617,7 @@ function setReviewTask() {
 function setReviewPath() {
     $.ajax({
         url: "/api/setreviewpath",
-        type: "post",
+        type: "POST",
         data: {
             id: document.getElementById("modal-editreview-id").value,
             path: document.getElementById("modal-editreview-path").value,
@@ -4645,7 +4639,7 @@ function setReviewPath() {
 function setReviewCreatetime() {
     $.ajax({
         url: "/api/setreviewcreatetime",
-        type: "post",
+        type: "POST",
         data: {
             id: document.getElementById("modal-editreview-id").value,
             createtime: document.getElementById("modal-editreview-createtime").value,
@@ -4692,7 +4686,7 @@ function setReviewCreatetimeNow() {
     let time = rfc3339(date)
     $.ajax({
         url: "/api/setreviewcreatetime",
-        type: "post",
+        type: "POST",
         data: {
             id: document.getElementById("modal-editreview-id").value,
             createtime: time,
@@ -4715,7 +4709,7 @@ function setReviewCreatetimeNow() {
 function setReviewMainVersion() {
     $.ajax({
         url: "/api/setreviewmainversion",
-        type: "post",
+        type: "POST",
         data: {
             id: document.getElementById("modal-editreview-id").value,
             mainversion: document.getElementById("modal-editreview-mainversion").value,
@@ -4737,7 +4731,7 @@ function setReviewMainVersion() {
 function setReviewSubVersion() {
     $.ajax({
         url: "/api/setreviewsubversion",
-        type: "post",
+        type: "POST",
         data: {
             id: document.getElementById("modal-editreview-id").value,
             subversion: document.getElementById("modal-editreview-subversion").value,
@@ -4759,7 +4753,7 @@ function setReviewSubVersion() {
 function setReviewFps() {
     $.ajax({
         url: "/api/setreviewfps",
-        type: "post",
+        type: "POST",
         data: {
             id: document.getElementById("modal-editreview-id").value,
             fps: document.getElementById("modal-editreview-fps").value,
@@ -4781,7 +4775,7 @@ function setReviewFps() {
 function setReviewDescription() {
     $.ajax({
         url: "/api/setreviewdescription",
-        type: "post",
+        type: "POST",
         data: {
             id: document.getElementById("modal-editreview-id").value,
             description: document.getElementById("modal-editreview-description").value,
@@ -4803,7 +4797,7 @@ function setReviewDescription() {
 function setReviewCameraInfo() {
     $.ajax({
         url: "/api/setreviewcamerainfo",
-        type: "post",
+        type: "POST",
         data: {
             id: document.getElementById("modal-editreview-id").value,
             camerainfo: document.getElementById("modal-editreview-camerainfo").value,
@@ -4848,7 +4842,7 @@ function ReviewOutputDataPath() {
 function setReviewName() {
     $.ajax({
         url: "/api/setreviewname",
-        type: "post",
+        type: "POST",
         data: {
             id: document.getElementById("modal-editreview-id").value,
             name: document.getElementById("modal-editreview-name").value,
@@ -4870,7 +4864,7 @@ function setReviewName() {
 function addReviewComment() {
     $.ajax({
         url: "/api/addreviewcomment",
-        type: "post",
+        type: "POST",
         data: {
             id: document.getElementById("current-review-id").value,
             text: document.getElementById("review-comment").value,
@@ -4931,7 +4925,7 @@ function addReviewComment() {
 function addReviewCommentText(text) {
     $.ajax({
         url: "/api/addreviewcomment",
-        type: "post",
+        type: "POST",
         data: {
             id: document.getElementById("current-review-id").value,
             text: text,
@@ -5053,7 +5047,7 @@ function selectReviewItem(id) {
     // 기존에 드로잉 되어 있는 데이터를 가지고 온다.
     $.ajax({
         url: "/api/review",
-        type: "post",
+        type: "POST",
         data: {
             id: id,
         },
@@ -5110,7 +5104,7 @@ function selectReviewItem(id) {
     prevDrawing.addEventListener("click", function() {
         $.ajax({
             url: "/api/reviewdrawingframe",
-            type: "post",
+            type: "POST",
             data: {
                 id: id,
                 frame: document.getElementById("currentframe").innerHTML,
@@ -5133,7 +5127,7 @@ function selectReviewItem(id) {
     nextDrawing.addEventListener("click", function() {
         $.ajax({
             url: "/api/reviewdrawingframe",
-            type: "post",
+            type: "POST",
             data: {
                 id: id,
                 frame: document.getElementById("currentframe").innerHTML,
@@ -5589,7 +5583,7 @@ function removeDrawingAndData() {
     // 서버에 파일이 존재하면 삭제한다.
     $.ajax({
         url: "/api/rmreviewdrawing",
-        type: "post",
+        type: "POST",
         data: {
             id: document.getElementById("current-review-id").value,
             frame: parseInt(document.getElementById("currentframe").innerHTML),
@@ -5670,7 +5664,7 @@ function rvplay(id) {
     // review id의 데이터를 가지고 path값을 구하고 프로토콜을 통해 rv player에 연결한다.
     $.ajax({
         url: "/api/review",
-        type: "post",
+        type: "POST",
         data: {
             id: id,
         },
@@ -5773,7 +5767,7 @@ function initPasswordUsers() {
     for (let i = 0; i < users.length; i++) {
         $.ajax({
             url: "/api/initpassword",
-            type: "post",
+            type: "POST",
             data: {
                 id: users[i],
             },
@@ -5797,7 +5791,7 @@ function initPasswordUsers() {
 function setReviewAgainForWaitStatusToday() {
     $.ajax({
         url: "/api/setreviewagainforwaitstatustoday",
-        type: "post",
+        type: "POST",
         data: {},
         headers: {
             "Authorization": "Basic "+ document.getElementById("token").value

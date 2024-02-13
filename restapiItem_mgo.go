@@ -3060,8 +3060,6 @@ func handleAPISetDeadline2D(w http.ResponseWriter, r *http.Request) {
 // handleAPISetDeadline3D 함수는 아이템의 3D 마감일을 설정한다.
 func handleAPISetDeadline3D(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
-		Project   string `json:"project"`
-		Name      string `json:"name"`
 		ID        string `json:"id"`
 		Date      string `json:"date"`
 		ShortDate string `json:"shortdate"`
@@ -3069,13 +3067,13 @@ func handleAPISetDeadline3D(w http.ResponseWriter, r *http.Request) {
 		Error     string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3086,12 +3084,7 @@ func handleAPISetDeadline3D(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "need project", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
+
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
@@ -3100,22 +3093,13 @@ func handleAPISetDeadline3D(w http.ResponseWriter, r *http.Request) {
 	rcp.ID = id
 	date := r.FormValue("date")
 	rcp.Date = date
-	userid := r.FormValue("userid")
-	if userid == "" {
-		rcp.UserID = "unknown"
-	}
-	rcp.UserID = userid
-	err = SetDeadline3D(session, rcp.Project, rcp.ID, rcp.Date)
+
+	err = SetDeadline3DV2(client, rcp.ID, rcp.Date)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Deadline3D: %s\nProject: %s, Name: %s, Author: %s", rcp.Date, rcp.Project, rcp.Name, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	rcp.ShortDate = ToShortTime(rcp.Date) // 웹사이트에 렌더링시 사용한다.
 	data, err := json.Marshal(rcp)

@@ -64,7 +64,6 @@
             </button>
             </div>
             <div class="modal-body">
-                <input type="hidden" class="form-control" id="modal-deadline3d-project">
                 <input type="hidden" class="form-control" id="modal-deadline3d-id">
                 <div class="form-group">
                     <label for="deadline3d-date" class="col-form-label">Deadline 3D:</label>
@@ -73,7 +72,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-darkmode" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-outline-warning" onclick="setDeadline3D(document.getElementById('modal-deadline3d-project').value, document.getElementById('modal-deadline3d-id').value, document.getElementById('modal-deadline3d-date').value)" data-dismiss="modal">EDIT</button>
+                <button type="button" class="btn btn-outline-warning" onclick="setDeadline3D(document.getElementById('modal-deadline3d-id').value, document.getElementById('modal-deadline3d-date').value)" data-dismiss="modal">EDIT</button>
             </div>
         </div>
         </div>

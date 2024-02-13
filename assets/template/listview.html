@@ -41,7 +41,7 @@
 						{{end}}
 						{{if eq .Type "org" "left" "asset"}}
 							<div class="row" id="deadline3d-{{.ID}}">
-								<span class="black-opbg" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#deadline3d" onclick="setDeadline3dModal('{{.Project}}', '{{.ID}}', '{{ToNormalTime .Ddline3d}}')"{{end}}>{{if .Ddline3d}}3D:{{ToShortTime .Ddline3d}}{{else}}3D:{{end}}</span>
+								<span class="black-opbg" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#deadline3d" onclick="setDeadline3dModal('{{.ID}}', '{{ToNormalTime .Ddline3d}}')"{{end}}>{{if .Ddline3d}}3D:{{ToShortTime .Ddline3d}}{{else}}3D:{{end}}</span>
 							</div>
 						{{end}}
 						
