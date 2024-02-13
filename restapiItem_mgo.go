@@ -2633,76 +2633,6 @@ func handleAPISetTaskUser(w http.ResponseWriter, r *http.Request) {
 // handleAPISetTaskStartdate 함수는 아이템의 task에 대한 시작일을 설정한다.
 func handleAPISetTaskStartdate(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
-		Project string `json:"project"`
-		ID      string `json:"id"`
-		Name    string `json:"name"`
-		Date    string `json:"date"`
-		Task    string `json:"task"`
-		UserID  string `json:"userid"`
-		Error   string `json:"error"`
-	}
-	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
-	_, _, err = net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
-	r.ParseForm()
-
-	rcp.Task = r.FormValue("task")
-	if rcp.Task == "" {
-		if err != nil {
-			http.Error(w, "task가 빈 문자열 입니다", http.StatusBadRequest)
-			return
-		}
-	}
-	rcp.Date = r.FormValue("date") // 마감일이 빈 문자열이 될 수 있다.
-	rcp.ID = r.FormValue("id")
-	if rcp.ID == "" {
-		typ, err := Type(session, rcp.Project, rcp.Name)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		rcp.ID = rcp.Name + "_" + typ
-	}
-
-	err = HasTask(session, rcp.ID, rcp.Task)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	err = SetTaskStartdate(session, rcp.ID, rcp.Task, rcp.Date)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// json 으로 결과 전송
-	data, err := json.Marshal(rcp)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	w.Write(data)
-}
-
-// handleAPISetTaskStartdate2nd 함수는 아이템의 task에 대한 2차 시작일을 설정한다.
-func handleAPISetTaskStartdate2nd(w http.ResponseWriter, r *http.Request) {
-	type Recipe struct {
 		ID     string `json:"id"`
 		Date   string `json:"date"`
 		Task   string `json:"task"`
@@ -2710,13 +2640,13 @@ func handleAPISetTaskStartdate2nd(w http.ResponseWriter, r *http.Request) {
 		Error  string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2727,22 +2657,27 @@ func handleAPISetTaskStartdate2nd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
+
 	rcp.Task = r.FormValue("task")
 	if rcp.Task == "" {
-		if err != nil {
-			http.Error(w, "task가 빈 문자열 입니다", http.StatusBadRequest)
-			return
-		}
+		http.Error(w, "need task", http.StatusBadRequest)
+		return
 	}
 	rcp.Date = r.FormValue("date") // 마감일이 빈 문자열이 될 수 있다.
 	rcp.ID = r.FormValue("id")
+	if rcp.ID == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
+		return
 
-	err = HasTask(session, rcp.ID, rcp.Task)
+	}
+
+	err = HasTaskV2(client, rcp.ID, rcp.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = SetTaskStartdate2nd(session, rcp.ID, rcp.Task, rcp.Date)
+	fmt.Println(rcp)
+	err = SetTaskStart(client, rcp.ID, rcp.Task, rcp.Date)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5223,10 +5158,8 @@ func handleAPITask(w http.ResponseWriter, r *http.Request) {
 
 	rcp.Task = t
 	// 웹에 표시를 위해서 FullTime을 NormalTime으로 변경
-	rcp.Task.Startdate = ToNormalTime(rcp.Task.Startdate)
-	rcp.Task.Predate = ToNormalTime(rcp.Task.Predate)
-	rcp.Task.Startdate2nd = ToNormalTime(rcp.Task.Startdate2nd)
-	rcp.Task.Date = ToNormalTime(rcp.Task.Date)
+	rcp.Task.Start = ToNormalTime(rcp.Task.Start)
+	rcp.Task.End = ToNormalTime(rcp.Task.End)
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {

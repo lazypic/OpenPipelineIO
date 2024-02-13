@@ -1443,7 +1443,7 @@ func SetTaskDuration(session *mgo.Session, project, id, task, start, end string)
 	if err != nil {
 		return err
 	}
-	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"tasks." + task + ".startdate": startTime, "tasks." + task + ".date": endTime, "updatetime": time.Now().Format(time.RFC3339)}})
+	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"tasks." + task + ".start": startTime, "tasks." + task + ".date": endTime, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
 	}
@@ -1466,7 +1466,7 @@ func SetTaskDuration1st(session *mgo.Session, project, id, task, start, end stri
 	if err != nil {
 		return err
 	}
-	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"tasks." + task + ".startdate": startTime, "tasks." + task + ".predate": endTime, "updatetime": time.Now().Format(time.RFC3339)}})
+	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"tasks." + task + ".start": startTime, "tasks." + task + ".end": endTime, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
 	}
@@ -1552,27 +1552,7 @@ func SetTaskStartdate(session *mgo.Session, id, task, date string) error {
 	if err != nil {
 		return err
 	}
-	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"tasks." + task + ".startdate": fullTime, "updatetime": time.Now().Format(time.RFC3339)}})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// SetTaskStartdate2nd 함수는 item에 task의 2차 startdate 값을 셋팅한다.
-func SetTaskStartdate2nd(session *mgo.Session, id, task, date string) error {
-	session.SetMode(mgo.Monotonic, true)
-
-	c := session.DB(*flagDBName).C("items")
-	err := HasTask(session, id, task)
-	if err != nil {
-		return err
-	}
-	fullTime, err := ditime.ToFullTime(19, date)
-	if err != nil {
-		return err
-	}
-	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"tasks." + task + ".startdate2nd": fullTime, "updatetime": time.Now().Format(time.RFC3339)}})
+	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"tasks." + task + ".start": fullTime, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return err
 	}
@@ -1616,7 +1596,7 @@ func SetTaskPredate(session *mgo.Session, id, task, date string) (string, error)
 	if err != nil {
 		return id, err
 	}
-	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"tasks." + task + ".predate": fullTime, "updatetime": time.Now().Format(time.RFC3339)}})
+	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"tasks." + task + ".end": fullTime, "updatetime": time.Now().Format(time.RFC3339)}})
 	if err != nil {
 		return id, err
 	}

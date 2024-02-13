@@ -110,25 +110,13 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-3 form-group">
-                            <label class="col-form-label col-form-label-sm">Start 1st / 1차시작</label>
-                            <input type=date class="form-control form-control-sm" id="modal-edittask-startdate" value="" onchange="setTaskStartdate(document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)"  placeholder="YYYY-MM-DD" >
-                            
+                        <div class="col-6 form-group">
+                            <label class="col-form-label col-form-label-sm">Start 시작일</label>
+                            <input type=date class="form-control form-control-sm" id="modal-edittask-start" value="" onchange="setTaskStart(document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)"  placeholder="YYYY-MM-DD" >
                         </div>
-                        <div class="col-3 form-group">
-                            <label class="col-form-label col-form-label-sm">Deadline 1st / 1차마감</label>
-                            <input type=date class="form-control form-control-sm" id="modal-edittask-predate" value="" onchange="setTaskPredate(document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)"  placeholder="YYYY-MM-DD" >
-                            
-                        </div>
-                        <div class="col-3 form-group">
-                            <label class="col-form-label col-form-label-sm">Start 2nd / 2차시작</label>
-                            <input type=date class="form-control form-control-sm" id="modal-edittask-startdate2nd" value="" onchange="setTaskStartdate2nd(document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)"  placeholder="YYYY-MM-DD" >
-                            
-                        </div>
-                        <div class="col-3 form-group">
-                            <label class="col-form-label col-form-label-sm">Deadline 2nd / 2차마감</label>
-                            <input type=date class="form-control form-control-sm" id="modal-edittask-date" value="" onchange="setTaskDate(document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)" placeholder="YYYY-MM-DD">
-                            
+                        <div class="col-6 form-group">
+                            <label class="col-form-label col-form-label-sm">End 마감일</label>
+                            <input type=date class="form-control form-control-sm" id="modal-edittask-end" value="" onchange="setTaskEnd(document.getElementById('modal-edittask-id').value, document.getElementById('modal-edittask-task').value, this.value)"  placeholder="YYYY-MM-DD" >
                         </div>
                     </div>
                     <div class="form-group">

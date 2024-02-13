@@ -1439,8 +1439,8 @@ func handleExportExcelSubmit(w http.ResponseWriter, r *http.Request) {
 			text = i.Tasks[t].StatusV2
 
 			text += "\n" + i.Tasks[t].User
-			text += "\n" + ToNormalTime(i.Tasks[t].Predate)
-			text += "\n" + ToNormalTime(i.Tasks[t].Date)
+			text += "\n" + ToNormalTime(i.Tasks[t].Start)
+			text += "\n" + ToNormalTime(i.Tasks[t].End)
 			f.SetCellValue(sheet, pos, text)
 			f.SetCellStyle(sheet, pos, pos, statusStyle)
 		}
@@ -1837,8 +1837,8 @@ func handleDownloadExcelFile(w http.ResponseWriter, r *http.Request) {
 			text = i.Tasks[t].StatusV2
 
 			text += "\n" + i.Tasks[t].User
-			text += "\n" + ToNormalTime(i.Tasks[t].Predate)
-			text += "\n" + ToNormalTime(i.Tasks[t].Date)
+			text += "\n" + ToNormalTime(i.Tasks[t].Start)
+			text += "\n" + ToNormalTime(i.Tasks[t].End)
 			f.SetCellValue(sheet, pos, text)
 			f.SetCellStyle(sheet, pos, pos, statusStyle)
 		}

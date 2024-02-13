@@ -101,14 +101,14 @@ func GenQueryV2(client *mongo.Client, op SearchOption) (SearchOption, bson.M) {
 			if len(selectTasks) == 0 {
 				for _, task := range allTasks {
 					query = append(query, bson.M{"tasks." + strings.ToLower(task) + ".date": &primitive.Regex{Pattern: regFullTime}})
-					query = append(query, bson.M{"tasks." + strings.ToLower(task) + ".predate": &primitive.Regex{Pattern: regFullTime}})
+					query = append(query, bson.M{"tasks." + strings.ToLower(task) + ".end": &primitive.Regex{Pattern: regFullTime}})
 				}
 				query = append(query, bson.M{"ddline2d": &primitive.Regex{Pattern: regFullTime}})
 				query = append(query, bson.M{"ddline3d": &primitive.Regex{Pattern: regFullTime}})
 			} else {
 				for _, task := range selectTasks {
 					query = append(query, bson.M{"tasks." + task + ".date": &primitive.Regex{Pattern: regFullTime}})
-					query = append(query, bson.M{"tasks." + task + ".predate": &primitive.Regex{Pattern: regFullTime}})
+					query = append(query, bson.M{"tasks." + task + ".end": &primitive.Regex{Pattern: regFullTime}})
 				}
 			}
 			query = append(query, bson.M{"name": &primitive.Regex{Pattern: word}}) // 샷 이름에 숫자가 포함되는 경우도 검색한다.
@@ -309,7 +309,7 @@ func GenQueryV2(client *mongo.Client, op SearchOption) (SearchOption, bson.M) {
 		}
 	case "taskpredate":
 		if len(selectTasks) != 0 {
-			op.Sortkey = "tasks." + op.Task + ".predate"
+			op.Sortkey = "tasks." + op.Task + ".end"
 		}
 	case "": // 기본적으로 id로 정렬한다.
 		op.Sortkey = "id"

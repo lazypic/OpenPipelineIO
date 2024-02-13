@@ -959,3 +959,29 @@ func SetJustTimecodeOutV2(client *mongo.Client, id, timecode string) error {
 	}
 	return nil
 }
+
+func SetTaskStart(client *mongo.Client, id, task, date string) error {
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := HasTaskV2(client, id, task)
+	if err != nil {
+		return err
+	}
+	fullTime, err := ditime.ToFullTime(19, date)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"tasks." + task + ".start": fullTime, "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}

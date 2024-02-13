@@ -237,15 +237,12 @@
 					{{range mapToSlice .Tasks $.TasksettingOrderMap}}
 						<div class="row" id="{{$id}}-task-{{.Title}}">
 							<div id="{{$id}}-task-{{.Title}}-status">
-								<span class="finger mt-1 badge badge-{{.StatusV2}} statusbox{{CheckDate .Predate .Date .Mdate $.SearchOption.Searchword}}" data-toggle="tooltip" data-placement="left" title="{{.StatusV2}}"
+								<span class="finger mt-1 badge badge-{{.StatusV2}} statusbox{{CheckDate .End .Mdate $.SearchOption.Searchword}}" data-toggle="tooltip" data-placement="left" title="{{.StatusV2}}"
 								onclick="wfs('{{$.Setting.WFS}}', '{{.Title}}', '{{$type}}', '{{$assettype}}', '{{$.SearchOption.Project}}', '{{$name}}', '{{$seq}}', '{{$cut}}', '{{$.User.Token}}');"
 								>{{.Title}}</span>
 							</div>
-							<div id="{{$id}}-task-{{.Title}}-predate">
-								<span class="mt-1 ml-1 badge badge-{{CheckDdlinev2 .Predate}}" title="1차마감">{{ToShortTime .Predate}}</span>
-							</div>
-							<div id="{{$id}}-task-{{.Title}}-date">
-								<span class="mt-1 ml-1 badge badge-{{CheckDdlinev2 .Date}}" title="2차마감">{{ToShortTime .Date}}</span>
+							<div id="{{$id}}-task-{{.Title}}-end">
+								<span class="mt-1 ml-1 badge badge-{{CheckDdlinev2 .End}}" title="마감일">{{ToShortTime .End}}</span>
 							</div>
 							<div id="{{$id}}-task-{{.Title}}-user">
 								<a href="/user?id={{onlyID .User}}" class="mt-1 ml-1 badge badge-light">{{userInfo .User }}</a>

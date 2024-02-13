@@ -360,10 +360,8 @@ function setEditTaskModal(id, task) {
         },
         dataType: "json",
         success: function(data) {
-            document.getElementById('modal-edittask-startdate').value=data.task.startdate;
-            document.getElementById('modal-edittask-startdate2nd').value=data.task.startdate2nd;
-            document.getElementById('modal-edittask-predate').value=data.task.predate;
-            document.getElementById('modal-edittask-date').value=data.task.date;
+            document.getElementById('modal-edittask-start').value=data.task.start;
+            document.getElementById('modal-edittask-end').value=data.task.end;
             document.getElementById('modal-edittask-task').value=data.task.title;            
             document.getElementById('modal-edittask-path').value=data.task.mov;
             document.getElementById('modal-edittask-usernote').value=data.task.usernote;
@@ -2744,7 +2742,7 @@ function setTaskDate(id, task, date) {
     }
 }
 
-function setTaskStartdate(id, task, date) {
+function setTaskStart(id, task, date) {
     let token = document.getElementById("token").value;
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
@@ -2755,7 +2753,7 @@ function setTaskStartdate(id, task, date) {
             sleep(200)
             let id = cboxes[i].getAttribute("id")
             $.ajax({
-                url: "/api/settaskstartdate",
+                url: "/api/settaskstart",
                 type: "POST",
                 data: {
                     id: id,
@@ -2776,7 +2774,7 @@ function setTaskStartdate(id, task, date) {
         }
     } else {
         $.ajax({
-            url: "/api/settaskstartdate",
+            url: "/api/settaskstart",
             type: "POST",
             data: {
                 id: id,
@@ -2797,58 +2795,6 @@ function setTaskStartdate(id, task, date) {
     }
 }
 
-function setTaskStartdate2nd(id, task, date) {
-    let token = document.getElementById("token").value;
-    if (isMultiInput()) {
-        let cboxes = document.getElementsByName('selectID');
-        for (var i = 0; i < cboxes.length; ++i) {
-            if(cboxes[i].checked === false) {
-                continue
-            }
-            sleep(200)
-            let id = cboxes[i].getAttribute("id")
-            $.ajax({
-                url: "/api/settaskstartdate2nd",
-                type: "POST",
-                data: {
-                    id: id,
-                    task: task,
-                    date: date,
-                },
-                headers: {
-                    "Authorization": "Basic "+ token
-                },
-                dataType: "json",
-                success: function(data) {
-                    //console.log(data.date);
-                },
-                error: function(request,status,error){
-                    alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-                }
-            });
-        }
-    } else {
-        $.ajax({
-            url: "/api/settaskstartdate2nd",
-            type: "POST",
-            data: {
-                id: id,
-                task: task,
-                date: date,
-            },
-            headers: {
-                "Authorization": "Basic "+ token
-            },
-            dataType: "json",
-            success: function(data) {
-                //console.log(data.date);
-            },
-            error: function(request,status,error){
-                alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-            }
-        });
-    }
-}
 
 function setTaskUserNote(id, task, usernote) {
     let token = document.getElementById("token").value;

@@ -65,14 +65,14 @@ func GenQuery(session *mgo.Session, op SearchOption) (SearchOption, bson.M) {
 			if len(selectTasks) == 0 {
 				for _, task := range allTasks {
 					query = append(query, bson.M{"tasks." + strings.ToLower(task) + ".date": &bson.RegEx{Pattern: regFullTime}})
-					query = append(query, bson.M{"tasks." + strings.ToLower(task) + ".predate": &bson.RegEx{Pattern: regFullTime}})
+					query = append(query, bson.M{"tasks." + strings.ToLower(task) + ".end": &bson.RegEx{Pattern: regFullTime}})
 				}
 				query = append(query, bson.M{"ddline2d": &bson.RegEx{Pattern: regFullTime}})
 				query = append(query, bson.M{"ddline3d": &bson.RegEx{Pattern: regFullTime}})
 			} else {
 				for _, task := range selectTasks {
 					query = append(query, bson.M{"tasks." + task + ".date": &bson.RegEx{Pattern: regFullTime}})
-					query = append(query, bson.M{"tasks." + task + ".predate": &bson.RegEx{Pattern: regFullTime}})
+					query = append(query, bson.M{"tasks." + task + ".end": &bson.RegEx{Pattern: regFullTime}})
 				}
 			}
 			query = append(query, bson.M{"name": &bson.RegEx{Pattern: word}}) // 샷 이름에 숫자가 포함되는 경우도 검색한다.
@@ -272,7 +272,7 @@ func GenQuery(session *mgo.Session, op SearchOption) (SearchOption, bson.M) {
 		}
 	case "taskpredate":
 		if len(selectTasks) != 0 {
-			op.Sortkey = "tasks." + op.Task + ".predate"
+			op.Sortkey = "tasks." + op.Task + ".end"
 		}
 	case "": // 기본적으로 id로 정렬한다.
 		op.Sortkey = "id"

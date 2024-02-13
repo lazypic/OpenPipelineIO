@@ -248,21 +248,15 @@ func Str2List(str string) []string {
 
 // CheckDate 함수는 1차마감, 2차마감, mov업데이이트날짜와 검색어를 비교하여 statusbox의 색깔을 반영
 // 검색어에 날짜형식의 검색어만 적용된다.(2017-12-05, 1205)
-func CheckDate(predate, date, mdate, searches string) string {
+func CheckDate(end, mdate, searches string) string {
 	for _, search := range strings.Split(searches, " ") {
 		if MatchNormalTime.MatchString(search) && ToNormalTime(mdate) == search {
 			return "_daily" // 파랑색
 		}
-		if MatchFullTime.MatchString(predate) && MatchShortTime.MatchString(search) {
-			head := strings.Split(predate, "T")[0]
+		if MatchFullTime.MatchString(end) && MatchShortTime.MatchString(search) {
+			head := strings.Split(end, "T")[0]
 			if strings.Replace(head[5:], "-", "", -1) == search {
 				return "_deadline" // 빨강색
-			}
-		}
-		if MatchFullTime.MatchString(date) && MatchShortTime.MatchString(search) {
-			head := strings.Split(date, "T")[0]
-			if strings.Replace(head[5:], "-", "", -1) == search {
-				return "_deadline"
 			}
 		}
 	}
