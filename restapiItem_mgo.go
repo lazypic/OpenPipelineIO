@@ -49,29 +49,25 @@ func handleAPI2GetItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleAPITimeinfo(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
+	r.ParseForm()
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 
-	item, err := getItem(session, id)
+	item, err := getItemV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1144,13 +1140,13 @@ func handleAPISetScanIn(w http.ResponseWriter, r *http.Request) {
 		Frame int    `json:"frame"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1161,30 +1157,22 @@ func handleAPISetScanIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "id":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.ID = v
-		case "frame":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			n, err := strconv.Atoi(v)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Frame = n
-		}
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
+		return
 	}
-	err = SetFrame(session, rcp.ID, "scanin", rcp.Frame)
+	rcp.ID = id
+
+	frame := r.FormValue("frame")
+	n, err := strconv.Atoi(frame)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	rcp.Frame = n
+
+	err = SetFrameV2(client, rcp.ID, "scanin", rcp.Frame)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1208,13 +1196,13 @@ func handleAPISetScanOut(w http.ResponseWriter, r *http.Request) {
 		Frame int    `json:"frame"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1225,30 +1213,22 @@ func handleAPISetScanOut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "id":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.ID = v
-		case "frame":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			n, err := strconv.Atoi(v)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Frame = n
-		}
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
+		return
 	}
-	err = SetFrame(session, rcp.ID, "scanout", rcp.Frame)
+	rcp.ID = id
+
+	frame := r.FormValue("frame")
+	n, err := strconv.Atoi(frame)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	rcp.Frame = n
+
+	err = SetFrameV2(client, rcp.ID, "scanout", rcp.Frame)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1272,13 +1252,13 @@ func handleAPISetScanFrame(w http.ResponseWriter, r *http.Request) {
 		Frame int    `json:"frame"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1289,30 +1269,22 @@ func handleAPISetScanFrame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "id":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.ID = v
-		case "frame":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			n, err := strconv.Atoi(v)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Frame = n
-		}
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
+		return
 	}
-	err = SetFrame(session, rcp.ID, "scanframe", rcp.Frame)
+	rcp.ID = id
+
+	frame := r.FormValue("frame")
+	n, err := strconv.Atoi(frame)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	rcp.Frame = n
+
+	err = SetFrameV2(client, rcp.ID, "scanframe", rcp.Frame)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3900,13 +3872,13 @@ func handleAPISetScanTimecodeIn(w http.ResponseWriter, r *http.Request) {
 		Timecode string `json:"timecode"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3919,7 +3891,7 @@ func handleAPISetScanTimecodeIn(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 	rcp.Timecode = r.FormValue("timecode")
-	err = SetScanTimecodeIn(session, rcp.ID, rcp.Timecode)
+	err = SetScanTimecodeInV2(client, rcp.ID, rcp.Timecode)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3943,36 +3915,31 @@ func handleAPISetScanTimecodeOut(w http.ResponseWriter, r *http.Request) {
 		Timecode string `json:"timecode"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "id":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.ID = v
-		case "timecode":
-			if len(values) == 0 {
-				rcp.Timecode = ""
-			} else {
-				rcp.Timecode = values[0]
-			}
-		}
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
+		return
 	}
-	err = SetScanTimecodeOut(session, rcp.ID, rcp.Timecode)
+	rcp.ID = id
+	rcp.Timecode = r.FormValue("timecode")
+	err = SetScanTimecodeInV2(client, rcp.ID, rcp.Timecode)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = SetScanTimecodeOutV2(client, rcp.ID, rcp.Timecode)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

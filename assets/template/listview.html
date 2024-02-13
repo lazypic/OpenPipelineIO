@@ -137,30 +137,30 @@
 					</div>
 					<div class="bottom-left">
 						<div class="row">
-							<span class="text-white black-opbg" id="handlein-{{.ID}}" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{.Project}}', '{{.ID}}');"{{end}}>{{.HandleIn}}</span>
+							<span class="text-white black-opbg" id="handlein-{{.ID}}" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{.ID}}');"{{end}}>{{.HandleIn}}</span>
 							<span class="text-white black-opbg">/</span>
-							<span class="text-white black-opbg" id="handleout-{{.ID}}" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{.Project}}', '{{.ID}}');"{{end}}>{{.HandleOut}}</span>						
+							<span class="text-white black-opbg" id="handleout-{{.ID}}" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{.ID}}');"{{end}}>{{.HandleOut}}</span>						
 						</div>
 						<div class="row" id="platein-{{.ID}}">
 							{{if .PlateIn}}
-								<span class="text-white black-opbg" title="platein" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{.Project}}', '{{.ID}}');"{{end}}>{{.PlateIn}}</span>
+								<span class="text-white black-opbg" title="platein" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{.ID}}');"{{end}}>{{.PlateIn}}</span>
 							{{end}}
 						</div>
 						<div class="row" id="justin-{{.ID}}">
 							{{if .JustIn}}
-								<span class="text-warning black-opbg" title="justin" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{.Project}}', '{{.ID}}');"{{end}}>{{.JustIn}}</span>
+								<span class="text-warning black-opbg" title="justin" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{.ID}}');"{{end}}>{{.JustIn}}</span>
 							{{end}}
 						</div>
 						<div class="row" id="justtimecodein-{{.ID}}">
 							{{if .JustTimecodeIn}}
-								<span class="text-warning black-opbg" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{.Project}}', '{{.ID}}');"{{end}}>{{.JustTimecodeIn}}</span>
+								<span class="text-warning black-opbg" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{.ID}}');"{{end}}>{{.JustTimecodeIn}}</span>
 							{{end}}
 						</div>
 					</div>
 					<div class="bottom-right">
 						<div class="row" id="plateout-{{.ID}}">
 							{{if .PlateOut}}
-								<span class="text-white black-opbg" title="plateout" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{.Project}}', '{{.ID}}');"{{end}}>
+								<span class="text-white black-opbg" title="plateout" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{.ID}}');"{{end}}>
 									{{.PlateOut}}
 									{{if and .PlateIn .PlateOut}}
 										({{Framecal .PlateIn .PlateOut}})
@@ -170,7 +170,7 @@
 						</div>
 						<div class="row" id="justout-{{.ID}}">
 							{{if .JustOut}}
-								<span class="text-warning black-opbg" title="justout" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{.Project}}', '{{.ID}}');"{{end}}>
+								<span class="text-warning black-opbg" title="justout" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{.ID}}');"{{end}}>
 									{{.JustOut}}
 									{{if and .JustIn .JustOut}}
 										({{Framecal .JustIn .JustOut}})
@@ -180,7 +180,7 @@
 						</div>
 						<div class="row" id="justtimecodeout-{{.ID}}" >
 							{{if .JustTimecodeOut}}
-								<span class="text-warning black-opbg" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{.Project}}', '{{.ID}}');"{{end}}>{{.JustTimecodeOut}}</span>
+								<span class="text-warning black-opbg" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#edittime" onclick="setTimeModal('{{.ID}}');"{{end}}>{{.JustTimecodeOut}}</span>
 							{{end}}
 						</div>
 					</div>
@@ -460,7 +460,7 @@
 						<span id="{{.Project}}-{{.ID}}-scanname" class="text-badge ml-1" title="scanname">{{.Scanname}}</span>
 					{{end}}
 				</div>
-				<div id="scanin-{{.Name}}">
+				<div id="scanin-{{.ID}}">
 					{{if .ScanIn}}
 						<span class="text-badge ml-1">{{.ScanIn}}</span>
 					{{end}}
@@ -470,12 +470,12 @@
 						<span class="text-badge ml-1">-</span>
 					</div>
 				{{end}}
-				<div id="scanout-{{.Name}}">
+				<div id="scanout-{{.ID}}">
 					{{if .ScanOut}}
 						<span class="text-badge ml-1">{{.ScanOut}}</span>
 					{{end}}
 				</div>
-				<div id="scanframe-{{.Name}}">
+				<div id="scanframe-{{.ID}}">
 					{{if .ScanFrame}}
 						<span class="text-badge ml-1">({{.ScanFrame}})</span>
 					{{end}}

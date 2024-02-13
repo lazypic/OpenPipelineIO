@@ -441,7 +441,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/setellitesearch", handleAPISetelliteSearch)
 
 	// restAPI Item
-	r.HandleFunc("/api/timeinfo", handleAPITimeinfo)
+	r.HandleFunc("/api/timeinfo", handleAPITimeinfo).Methods("POST")
 	r.HandleFunc("/api2/item", handleAPI2GetItem).Methods("GET")
 	r.HandleFunc("/api/rmitemid", handleAPIRmItemID).Methods("POST")
 	r.HandleFunc("/api/items", handleAPI2Items)  // legacy

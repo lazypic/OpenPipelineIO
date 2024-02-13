@@ -379,7 +379,7 @@ function setEditTaskModal(id, task) {
 }
 
 // setTimeModal 함수는 id 정보를 가지고 와서 Edit Time Modal 값을 채운다.
-function setTimeModal(project, id) {
+function setTimeModal(id) {
     let token = document.getElementById("token").value;
     document.getElementById("modal-edittime-id").value = id;
     document.getElementById("modal-edittime-title").innerHTML = "Edit Time" + multiInputTitle(id);
@@ -387,7 +387,6 @@ function setTimeModal(project, id) {
         url: "/api/timeinfo",
         type: "POST",
         data: {
-            "project": project,
             "id": id,
         },
         headers: {

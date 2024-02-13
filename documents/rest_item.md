@@ -50,7 +50,7 @@ restAPI의 장점은 웹서비스의 URI를 이용하기 때문에 네트워크�
 | /api/setdeadline3d | 3D마감일 등록 | project, name, date | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0010&date=0712" https://openpipeline.io/api/setdeadline3d` |
 | /api/setscantimecodein | 스캔 타임코드IN 등록 | project, name, timecode | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_SS_0010_org&timecode=01:00:01:21" https://openpipeline.io/api/setscantimecodein` |
 | /api/setscantimecodeout | 스캔 타임코드OUT 등록 | project, name, timecode | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_SS_0010_org&timecode=01:00:01:21" https://openpipeline.io/api/setscantimecodeout` |
-| /api/setscanin | scan in frame 등록 | project, name, frame | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0010&frame=654231" https://openpipeline.io/api/setscanin` |
+| /api/setscanin | scan in frame 등록 | id, frame | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_SS_0010_org&frame=654231" https://openpipeline.io/api/setscanin` |
 | /api/setscanout | scan out frame 등록 | project, name, frame | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0010&frame=654331" https://openpipeline.io/api/setscanout` |
 | /api/setscanframe | scan frame 등록 | project, name, frame | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0010&frame=100" https://openpipeline.io/api/setscanframe` |
 | /api/setjusttimecodein | JUST 타임코드IN 등록 | project, name, timecode | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_SS_0010_org&timecode=01:00:01:21" https://openpipeline.io/api/setjusttimecodein`|
