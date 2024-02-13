@@ -3760,9 +3760,8 @@ function setCrowdAsset(project, id) {
     });
 }
 
-function setPlatesizeModal(project, id) {
+function setPlatesizeModal(id) {
     let token = document.getElementById("token").value;
-    document.getElementById("modal-platesize-project").value = project
     document.getElementById("modal-platesize-title").innerHTML = "Platesize" + multiInputTitle(id);
     $.ajax({
         url: `/api2/item?id=${id}`,
@@ -3781,9 +3780,8 @@ function setPlatesizeModal(project, id) {
 }
 
 
-function setPlatesize(project, id, size) {
+function setPlatesize(id, size) {
     let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
         for (var i = 0; i < cboxes.length; ++i) {
@@ -3794,19 +3792,16 @@ function setPlatesize(project, id, size) {
             $.ajax({
                 url: "/api/setplatesize",
                 type: "POST",
-                
                 data: {
-                    project: project,
                     id: id,
                     size: size,
-                    userid: userid,
                 },
                 headers: {
                     "Authorization": "Basic "+ token
                 },
                 dataType: "json",
                 success: function(data) {
-                    document.getElementById("platesize-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-platesize" onclick="setPlatesizeModal('${project}', '${data.id}')">S:${data.size}</span>`;
+                    document.getElementById("platesize-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-platesize" onclick="setPlatesizeModal('${data.id}')">S:${data.size}</span>`;
                 },
                 error: function(request,status,error){
                     alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -3817,19 +3812,16 @@ function setPlatesize(project, id, size) {
         $.ajax({
             url: "/api/setplatesize",
             type: "POST",
-            
             data: {
-                project: project,
                 id: id,
                 size: size,
-                userid: userid,
             },
             headers: {
                 "Authorization": "Basic "+ token
             },
             dataType: "json",
             success: function(data) {
-                document.getElementById("platesize-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-platesize" onclick="setPlatesizeModal('${project}', '${data.id}')">S:${data.size}</span>`;
+                document.getElementById("platesize-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-platesize" onclick="setPlatesizeModal('${data.id}')">S:${data.size}</span>`;
             },
             error: function(request,status,error){
                 alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);

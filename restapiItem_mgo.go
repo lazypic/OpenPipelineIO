@@ -1550,21 +1550,19 @@ func handleAPISetHandleOut(w http.ResponseWriter, r *http.Request) {
 // handleAPIPlateSize 함수는 아이템의 PlateSize를 설정한다.
 func handleAPISetPlateSize(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
-		Project string `json:"project"`
-		Name    string `json:"name"`
-		ID      string `json:"id"`
-		Size    string `json:"size"`
-		UserID  string `json:"userid"`
-		Error   string `json:"error"`
+		ID     string `json:"id"`
+		Size   string `json:"size"`
+		UserID string `json:"userid"`
+		Error  string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1575,51 +1573,20 @@ func handleAPISetPlateSize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Project = v
-		case "id":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.ID = v
-		case "userid":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if rcp.UserID == "unknown" && v != "" {
-				rcp.UserID = v
-			}
-		case "size":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if !regexpImageSize.MatchString(v) {
-				http.Error(w, "2048x1152 형태로 입력해주세요", http.StatusBadRequest)
-				return
-			}
-			rcp.Size = v
-		}
-	}
-	err = SetImageSize(session, rcp.Project, rcp.ID, "platesize", rcp.Size)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Platesize: %s\nID: %s, Author: %s", rcp.Size, rcp.ID, rcp.UserID))
+	rcp.ID = id
+	size := r.FormValue("size")
+	if !regexpImageSize.MatchString(size) {
+		http.Error(w, "2048x1152 형태로 입력해주세요", http.StatusBadRequest)
+		return
+	}
+	rcp.Size = size
+
+	err = SetImageSizeV2(client, rcp.ID, "platesize", rcp.Size)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2772,7 +2739,6 @@ func handleAPISetTaskUser(w http.ResponseWriter, r *http.Request) {
 		rcp.UsernameAndTeam = userInfo(rcp.Username) // id(name,team) 문자열을 name,team으로 바꾼다. 웹에서 보기좋게 하기 위함.
 		err = SetTaskUserIDV2(client, rcp.ID, rcp.Task, rcp.UserID)
 		if err != nil {
-			fmt.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -3017,7 +2983,7 @@ func handleAPISetDeadline2D(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseForm()
 	id := r.FormValue("id")
-	fmt.Println(id)
+
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
 		return
@@ -3026,7 +2992,6 @@ func handleAPISetDeadline2D(w http.ResponseWriter, r *http.Request) {
 
 	date := r.FormValue("date")
 	rcp.Date = date
-	fmt.Println(rcp)
 	err = SetDeadline2DV2(client, rcp.ID, rcp.Date)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

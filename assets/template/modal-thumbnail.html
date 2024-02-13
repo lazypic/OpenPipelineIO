@@ -177,7 +177,6 @@
             </button>
             </div>
             <div class="modal-body">
-                <input type="hidden" class="form-control" id="modal-platesize-project">
                 <input type="hidden" class="form-control" id="modal-platesize-id">
 
                 <div class="form-group">
@@ -187,7 +186,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-darkmode" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-outline-warning" onclick="setPlatesize(document.getElementById('modal-platesize-project').value, document.getElementById('modal-platesize-id').value, document.getElementById('modal-platesize-size').value)" data-dismiss="modal">EDIT</button>
+                <button type="button" class="btn btn-outline-warning" onclick="setPlatesize(document.getElementById('modal-platesize-id').value, document.getElementById('modal-platesize-size').value)" data-dismiss="modal">EDIT</button>
             </div>
         </div>
         </div>
