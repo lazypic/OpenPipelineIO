@@ -2676,7 +2676,7 @@ func handleAPISetTaskStartdate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	fmt.Println(rcp)
+
 	err = SetTaskStart(client, rcp.ID, rcp.Task, rcp.Date)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
