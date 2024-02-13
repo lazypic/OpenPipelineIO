@@ -3830,9 +3830,8 @@ function setPlatesize(id, size) {
     }
 }
 
-function setUndistortionsizeModal(project, id) {
+function setUndistortionsizeModal(id) {
     let token = document.getElementById("token").value;
-    document.getElementById("modal-undistortionsize-project").value = project
     document.getElementById("modal-undistortionsize-title").innerHTML = "Undistortionsize" + multiInputTitle(id);
     $.ajax({
         url: `/api2/item?id=${id}`,
@@ -3850,9 +3849,9 @@ function setUndistortionsizeModal(project, id) {
     });
 }
 
-function setUndistortionsize(project, id, size) {
+function setUndistortionsize(id, size) {
     let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
+
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
         for (var i = 0; i < cboxes.length; ++i) {
@@ -3863,19 +3862,16 @@ function setUndistortionsize(project, id, size) {
             $.ajax({
                 url: "/api/setundistortionsize",
                 type: "POST",
-                
                 data: {
-                    project: project,
                     id: id,
                     size: size,
-                    userid: userid,
                 },
                 headers: {
                     "Authorization": "Basic "+ token
                 },
                 dataType: "json",
                 success: function(data) {
-                    document.getElementById("undistortionsize-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-undistortionsize" onclick="setUndistortionsizeModal('${project}', '${data.id}', '${data.size}')">U:${data.size}</span>`;
+                    document.getElementById("undistortionsize-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-undistortionsize" onclick="setUndistortionsizeModal('${data.id}', '${data.size}')">U:${data.size}</span>`;
                 },
                 error: function(request,status,error){
                     alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -3888,17 +3884,15 @@ function setUndistortionsize(project, id, size) {
             type: "POST",
             
             data: {
-                project: project,
                 id: id,
                 size: size,
-                userid: userid,
             },
             headers: {
                 "Authorization": "Basic "+ token
             },
             dataType: "json",
             success: function(data) {
-                document.getElementById("undistortionsize-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-undistortionsize" onclick="setUndistortionsizeModal('${project}', '${data.id}', '${data.size}')">U:${data.size}</span>`;
+                document.getElementById("undistortionsize-"+data.id).innerHTML = `<span class="black-opbg" data-toggle="modal" data-target="#modal-undistortionsize" onclick="setUndistortionsizeModal('${data.id}', '${data.size}')">U:${data.size}</span>`;
             },
             error: function(request,status,error){
                 alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
