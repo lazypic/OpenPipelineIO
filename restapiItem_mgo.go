@@ -3893,13 +3893,13 @@ func handleAPISetJustTimecodeIn(w http.ResponseWriter, r *http.Request) {
 		Timecode string `json:"timecode"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3913,8 +3913,8 @@ func handleAPISetJustTimecodeIn(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 	rcp.Timecode = r.FormValue("timecode")
-	fmt.Println(rcp)
-	err = SetJustTimecodeIn(session, rcp.ID, rcp.Timecode)
+
+	err = SetJustTimecodeInV2(client, rcp.ID, rcp.Timecode)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -3938,37 +3938,27 @@ func handleAPISetJustTimecodeOut(w http.ResponseWriter, r *http.Request) {
 		Timecode string `json:"timecode"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "id":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.ID = v
-
-		case "timecode":
-			if len(values) == 0 {
-				rcp.Timecode = ""
-			} else {
-				rcp.Timecode = values[0]
-			}
-		}
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
+		return
 	}
-	err = SetJustTimecodeOut(session, rcp.ID, rcp.Timecode)
+	rcp.ID = id
+	rcp.Timecode = r.FormValue("timecode")
+
+	err = SetJustTimecodeOutV2(client, rcp.ID, rcp.Timecode)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
