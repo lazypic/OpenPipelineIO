@@ -57,7 +57,7 @@ restAPI의 장점은 웹서비스의 URI를 이용하기 때문에 네트워크�
 | /api/setjusttimecodeout | JUST 타임코드OUT 등록 | project, name, timecode | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_SS_0010_org&timecode=01:00:01:21" https://openpipeline.io/api/setjusttimecodeout` |
 | /api/setfinver | 최종데이터 버전 등록 | project, name, version | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0010&version=1" https://openpipeline.io/api/setfinver` |
 | /api/setfindate | 최종데이터 아웃풋 날짜 등록 | project, name, date | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0010&date=0711" https://openpipeline.io/api/setfindate` |
-| /api/setplatein | plate in frame 등록 | project, name, frame | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0010&frame=1001" https://openpipeline.io/api/setplatein` |
+| /api/setplatein | plate in frame 등록 | id, frame | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_SS_0010_org&frame=1001" https://openpipeline.io/api/setplatein` |
 | /api/setplateout | plate out frame 등록 | project, name, frame | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0010&frame=1130" https://openpipeline.io/api/setplateout` |
 | /api/setjustin | just in frame 등록 | project, name, frame | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0010&frame=1003" https://openpipeline.io/api/setjustin` |
 | /api/setjustout | just out frame 등록 | project, name, frame | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0010&frame=1130" https://openpipeline.io/api/setjustout` |
