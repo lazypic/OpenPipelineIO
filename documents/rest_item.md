@@ -32,8 +32,8 @@ restAPI의 장점은 웹서비스의 URI를 이용하기 때문에 네트워크�
 | /api/rmitemid | 아이템 삭제 | project, id | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=circle&id=SS_0010_org" https://openpipeline.io/api/rmitemid` |
 | /api2/settaskstatus | 상태수정 | id, task, status | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=project_SS_0010_org&task=comp&status=wip" https://openpipeline.io/api2/settaskstatus` |
 | /api/settaskuser | 사용자설정 | project, id, task, user | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&id=SS_0010_org&task=comp&user=d10191(김한웅,개발팀)" https://openpipeline.io/api/settaskuser` |
-| /api/settaskstartdate | 시작일 | project, name, task, date | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0010&task=comp&date=0506" https://openpipeline.io/api/settaskstartdate` |
-| /api/settaskpredate | 마감일 | id, task, date | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_RR_0010_org&task=comp&date=0506" https://openpipeline.io/api/settaskpredate` |
+| /api/settaskstart | 시작일 | project, name, task, date | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0010&task=comp&date=0506" https://openpipeline.io/api/settaskstart` |
+| /api/settaskend | 마감일 | id, task, date | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_RR_0010_org&task=comp&date=0506" https://openpipeline.io/api/settaskend` |
 | /api2/settaskmov | mov등록 | id, task, mov | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_RR_0010_org&task=comp&mov=/show/test/test.mov" https://openpipeline.io/api2/settaskmov` |
 | /api/setshottype | shottype 변경 | id, shottype | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_SS_0030_org&shottype=3d" https://openpipeline.io/api/setshottype` |
 | /api/setusetype | usetype 변경 | project, id, type | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&id=SS_0030_org&type=org1" https://openpipeline.io/api/setusetype` |

@@ -2657,19 +2657,18 @@ func handleAPISetTaskStartdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-
-	rcp.Task = r.FormValue("task")
-	if rcp.Task == "" {
-		http.Error(w, "need task", http.StatusBadRequest)
-		return
-	}
-	rcp.Date = r.FormValue("date") // 마감일이 빈 문자열이 될 수 있다.
 	rcp.ID = r.FormValue("id")
 	if rcp.ID == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
 		return
 
 	}
+	rcp.Task = r.FormValue("task")
+	if rcp.Task == "" {
+		http.Error(w, "need task", http.StatusBadRequest)
+		return
+	}
+	rcp.Date = r.FormValue("date") // 마감일이 빈 문자열이 될 수 있다.
 
 	err = HasTaskV2(client, rcp.ID, rcp.Task)
 	if err != nil {
@@ -2870,7 +2869,7 @@ func handleAPISetDeadline3D(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleAPISetTaskPredate 함수는 아이템의 task에 대한 1차마감일을 설정한다.
-func handleAPISetTaskPredate(w http.ResponseWriter, r *http.Request) {
+func handleAPISetTaskEnd(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
 		ID        string `json:"id"`
 		Date      string `json:"date"`
@@ -2880,13 +2879,13 @@ func handleAPISetTaskPredate(w http.ResponseWriter, r *http.Request) {
 		Error     string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2897,39 +2896,25 @@ func handleAPISetTaskPredate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
+	rcp.ID = r.FormValue("id")
+	if rcp.ID == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
+		return
 
-		case "id":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.ID = v
-
-		case "task":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Task = v
-		case "date":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Date = v
-		}
 	}
-	err = HasTask(session, rcp.ID, rcp.Task)
+	rcp.Task = r.FormValue("task")
+	if rcp.Task == "" {
+		http.Error(w, "need task", http.StatusBadRequest)
+		return
+	}
+	rcp.Date = r.FormValue("date") // 마감일이 빈 문자열이 될 수 있다.
+
+	err = HasTaskV2(client, rcp.ID, rcp.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	rcp.ID, err = SetTaskPredate(session, rcp.ID, rcp.Task, rcp.Date)
+	err = SetTaskEnd(client, rcp.ID, rcp.Task, rcp.Date)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -2937,7 +2922,11 @@ func handleAPISetTaskPredate(w http.ResponseWriter, r *http.Request) {
 
 	// json 으로 결과 전송
 	rcp.ShortDate = ToShortTime(rcp.Date)
-	data, _ := json.Marshal(rcp)
+	data, err := json.Marshal(rcp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)

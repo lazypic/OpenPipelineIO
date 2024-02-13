@@ -2851,7 +2851,7 @@ function setTaskUserNote(id, task, usernote) {
 
 
 
-function setTaskPredate(id, task, date) {
+function setTaskEnd(id, task, date) {
     let token = document.getElementById("token").value;
     if (isMultiInput()) {
         let cboxes = document.getElementsByName('selectID');
@@ -2862,7 +2862,7 @@ function setTaskPredate(id, task, date) {
             let id = cboxes[i].getAttribute("id");
             sleep(200)
             $.ajax({
-                url: "/api/settaskpredate",
+                url: "/api/settaskend",
                 type: "POST",
                 data: {
                     id: id,
@@ -2875,9 +2875,9 @@ function setTaskPredate(id, task, date) {
                 dataType: "json",
                 success: function(data) {
                     if (data.shortdate === "") {
-                        document.getElementById(`${data.id}-task-${data.task}-predate`).innerHTML = "";
+                        document.getElementById(`${data.id}-task-${data.task}-end`).innerHTML = "";
                     } else {
-                        document.getElementById(`${data.id}-task-${data.task}-predate`).innerHTML = `<span class="mt-1 ml-1 badge badge-outline-darkmode">${data.shortdate}</span>`;
+                        document.getElementById(`${data.id}-task-${data.task}-end`).innerHTML = `<span class="mt-1 ml-1 badge badge-outline-darkmode">${data.shortdate}</span>`;
                     }
                 },
                 error: function(request,status,error){
@@ -2887,7 +2887,7 @@ function setTaskPredate(id, task, date) {
         }
     } else {
         $.ajax({
-            url: "/api/settaskpredate",
+            url: "/api/settaskend",
             type: "POST",
             data: {
                 id: id,
@@ -2900,9 +2900,9 @@ function setTaskPredate(id, task, date) {
             dataType: "json",
             success: function(data) {
                 if (data.shortdate === "") {
-                    document.getElementById(`${data.id}-task-${data.task}-predate`).innerHTML = "";
+                    document.getElementById(`${data.id}-task-${data.task}-end`).innerHTML = "";
                 } else {
-                    document.getElementById(`${data.id}-task-${data.task}-predate`).innerHTML = `<span class="mt-1 ml-1 badge badge-outline-darkmode">${data.shortdate}</span>`;
+                    document.getElementById(`${data.id}-task-${data.task}-end`).innerHTML = `<span class="mt-1 ml-1 badge badge-outline-darkmode">${data.shortdate}</span>`;
                 }
             },
             error: function(request,status,error){
