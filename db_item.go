@@ -1034,13 +1034,29 @@ func SetCameraPubTaskV2(client *mongo.Client, id, task string) error {
 }
 
 func SetCameraLensmmV2(client *mongo.Client, id, lensmm string) error {
-
 	collection := client.Database(*flagDBName).Collection("items")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	filter := bson.M{"id": id}
 	update := bson.M{"$set": bson.M{"productioncam.lensmm": lensmm, "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}
+
+func SetCameraPubPathV2(client *mongo.Client, id, path string) error {
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"productioncam.pubpath": path, "updatetime": time.Now().Format(time.RFC3339)}}
 	result, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err

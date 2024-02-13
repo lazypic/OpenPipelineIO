@@ -1497,12 +1497,7 @@ func PostFormValueInList(key string, values []string) (string, error) {
 
 // handleAPISetCameraPubPath 함수는 아이템의 Camera PubPath를 설정한다.
 func handleAPISetCameraPubPath(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project  string `json:"project"`
 		ID       string `json:"id"`
 		Path     string `json:"path"`
 		UserID   string `json:"userid"`
@@ -1510,13 +1505,13 @@ func handleAPISetCameraPubPath(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := Recipe{}
 	rcp.Protocol = CachedAdminSetting.Protocol
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1527,12 +1522,6 @@ func handleAPISetCameraPubPath(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
@@ -1545,13 +1534,7 @@ func handleAPISetCameraPubPath(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.Path = path
-	err = SetCameraPubPath(session, rcp.Project, rcp.ID, rcp.Path)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Camera Pub Path: %s\nProject: %s, ID: %s, Author: %s", rcp.Path, rcp.Project, rcp.ID, rcp.UserID))
+	err = SetCameraPubPathV2(client, rcp.ID, rcp.Path)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -459,7 +459,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/setundistortionsize", handleAPISetUnDistortionSize).Methods("POST")
 	r.HandleFunc("/api2/setrendersize", handleAPI2SetRenderSize).Methods("POST")
 	r.HandleFunc("/api/setoverscanratio", handleAPISetOverscanRatio).Methods("POST")
-	r.HandleFunc("/api/setcamerapubpath", handleAPISetCameraPubPath)
+	r.HandleFunc("/api/setcamerapubpath", handleAPISetCameraPubPath).Methods("POST")
 	r.HandleFunc("/api/setcamerapubtask", handleAPISetCameraPubTask).Methods("POST")
 	r.HandleFunc("/api/setcameralensmm", handleAPISetCameraLensmm).Methods("POST")
 	r.HandleFunc("/api/setcameraprojection", handleAPISetCameraProjection)
