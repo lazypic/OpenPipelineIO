@@ -4755,13 +4755,13 @@ func handleAPIAddReference(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := Recipe{}
 	rcp.Protocol = CachedAdminSetting.Protocol
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -4776,7 +4776,7 @@ func handleAPIAddReference(w http.ResponseWriter, r *http.Request) {
 
 	title := r.FormValue("title")
 	if title == "" {
-		http.Error(w, "title를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need title", http.StatusBadRequest)
 		return
 	}
 	rcp.Title = title
@@ -4788,7 +4788,7 @@ func handleAPIAddReference(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Path = path
 
-	err = AddReference(session, rcp.ID, rcp.UserID, rcp.Title, rcp.Path)
+	err = AddReferenceV2(client, rcp.ID, rcp.UserID, rcp.Title, rcp.Path)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -4813,13 +4813,13 @@ func handleAPIRmReference(w http.ResponseWriter, r *http.Request) {
 		UserID string `json:"userid"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -4844,7 +4844,7 @@ func handleAPIRmReference(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.Title = title
 
-	err = RmReference(session, rcp.ID, rcp.Title)
+	err = RmReferenceV2(client, rcp.ID, rcp.Title)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

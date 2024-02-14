@@ -1126,3 +1126,41 @@ func RmSourceV2(client *mongo.Client, id, title string) error {
 	}
 	return nil
 }
+
+func AddReferenceV2(client *mongo.Client, id, author, title, path string) error {
+	i, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+	r := Source{}
+	r.Date = time.Now().Format(time.RFC3339)
+	r.Author = author
+	r.Title = title
+	r.Path = path
+	i.References = append(i.References, r)
+	err = setItemV2(client, i)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func RmReferenceV2(client *mongo.Client, id, title string) error {
+	i, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+	var newReferences []Source
+	for _, ref := range i.References {
+		if ref.Title == title {
+			continue
+		}
+		newReferences = append(newReferences, ref)
+	}
+	i.References = newReferences
+	err = setItemV2(client, i)
+	if err != nil {
+		return err
+	}
+	return nil
+}
