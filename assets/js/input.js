@@ -2131,7 +2131,6 @@ function setSeq(seq) {
         url: "/api/setseq",
         type: "POST",
         data: {
-            project: document.getElementById('modal-iteminfo-project').value,
             id: document.getElementById('modal-iteminfo-id').value,
             seq: seq,
         },

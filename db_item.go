@@ -1181,3 +1181,20 @@ func SetEpisodeV2(client *mongo.Client, id, episode string) error {
 	}
 	return nil
 }
+
+func SetSeqV2(client *mongo.Client, id, seq string) error {
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"seq": seq, "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}
