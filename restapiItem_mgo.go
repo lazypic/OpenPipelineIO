@@ -1965,25 +1965,20 @@ func handleAPI2SetThummov(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetBeforemov 함수는 아이템의 Before mov 값을 설정한다.
 func handleAPISetBeforemov(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project string `json:"project"`
-		Name    string `json:"name"`
-		Path    string `json:"path"`
-		UserID  string `json:"userid"`
-		Error   string `json:"error"`
+		ID     string `json:"id"`
+		Path   string `json:"path"`
+		UserID string `json:"userid"`
+		Error  string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1994,52 +1989,30 @@ func handleAPISetBeforemov(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-				return
-			}
-			rcp.Project = v
-		case "name":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Name = v
-		case "userid":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if rcp.UserID == "unknown" && v != "" {
-				rcp.UserID = v
-			}
-		case "path":
-			if len(values) != 1 {
-				rcp.Path = ""
-			} else {
-				rcp.Path = values[0]
-			}
-		}
-	}
-	err = SetBeforemov(session, rcp.Project, rcp.Name, rcp.Path)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Beforemov: %s\nProject: %s, Name: %s, Author: %s", rcp.Path, rcp.Project, rcp.Name, rcp.UserID))
+	rcp.ID = id
+	path := r.FormValue("path")
+	if path == "" {
+		http.Error(w, "path를 설정해주세요", http.StatusBadRequest)
+		return
+	}
+	rcp.Path = path
+
+	err = SetBeforemovV2(client, rcp.ID, rcp.Path)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// json 으로 결과 전송
-	data, _ := json.Marshal(rcp)
+	data, err := json.Marshal(rcp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
@@ -2047,25 +2020,20 @@ func handleAPISetBeforemov(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetAftermov 함수는 아이템의 After mov 값을 설정한다.
 func handleAPISetAftermov(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project string `json:"project"`
-		Name    string `json:"name"`
-		Path    string `json:"path"`
-		UserID  string `json:"userid"`
-		Error   string `json:"error"`
+		ID     string `json:"id"`
+		Path   string `json:"path"`
+		UserID string `json:"userid"`
+		Error  string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2076,52 +2044,32 @@ func handleAPISetAftermov(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-				return
-			}
-			rcp.Project = v
-		case "name":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Name = v
-		case "userid":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if rcp.UserID == "unknown" && v != "" {
-				rcp.UserID = v
-			}
-		case "path":
-			if len(values) != 1 {
-				rcp.Path = ""
-			} else {
-				rcp.Path = values[0]
-			}
-		}
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
+		return
 	}
-	err = SetAftermov(session, rcp.Project, rcp.Name, rcp.Path)
+	rcp.ID = id
+	path := r.FormValue("path")
+	if path == "" {
+		http.Error(w, "path를 설정해주세요", http.StatusBadRequest)
+		return
+	}
+	rcp.Path = path
+
+	err = SetAftermovV2(client, rcp.ID, rcp.Path)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Aftermov: %s\nProject: %s, Name: %s, Author: %s", rcp.Path, rcp.Project, rcp.Name, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
-	data, _ := json.Marshal(rcp)
+	data, err := json.Marshal(rcp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
