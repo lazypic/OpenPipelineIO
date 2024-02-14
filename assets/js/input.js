@@ -2213,25 +2213,19 @@ function setPlatePath(path) {
 }
 
 function setThummov(path) {
-    let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
-    let project = document.getElementById('modal-iteminfo-project').value;
-    let id = document.getElementById('modal-iteminfo-id').value;
     $.ajax({
         url: "/api/setthummov",
         type: "POST",
         data: {
-            project: project,
-            name: id2name(id),
+            id: document.getElementById('modal-iteminfo-id').value,
             path: path,
-            userid: userid,
         },
         headers: {
-            "Authorization": "Basic "+ token
+            "Authorization": "Basic "+ document.getElementById("token").value
         },
         dataType: "json",
         success: function(data) {
-            document.getElementById("button-thumbplay-"+data.name).innerHTML = `<a href="${data.protocol}://${data.path}" class="play">PLAY</a>`;
+            document.getElementById("button-thumbplay-"+data.id).innerHTML = `<a href="${data.protocol}://${data.path}" class="play">PLAY</a>`;
         },
         error: function(request,status,error){
             alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
