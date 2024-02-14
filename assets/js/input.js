@@ -2450,7 +2450,6 @@ function setIteminfoModal(project, id) {
             document.getElementById('modal-iteminfo-type').value = data.type;
             document.getElementById('modal-iteminfo-seq').value = data.seq;
             document.getElementById('modal-iteminfo-cut').value = data.cut;
-            document.getElementById('modal-iteminfo-season').value = data.season;
             document.getElementById('modal-iteminfo-episode').value = data.episode;
             document.getElementById('modal-iteminfo-platepath').value = data.platepath;
             document.getElementById('modal-iteminfo-thummov').value = data.thummov;
@@ -2461,7 +2460,6 @@ function setIteminfoModal(project, id) {
             document.getElementById('modal-iteminfo-ociocc').value = data.ociocc;
             document.getElementById('modal-iteminfo-rollmedia').value = data.rollmedia;
             document.getElementById('modal-iteminfo-scanname').value = data.scanname;
-            document.getElementById('modal-iteminfo-netflixid').value = data.netflixid;
         },
         error: function(request,status,error){
             alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);

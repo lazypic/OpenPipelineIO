@@ -13,9 +13,6 @@
 		<div class="col-sm-12 col-md-6 col-lg-2">
 			<div class="row pl-1">
 				<span class="text-white itemname">{{.Project}}: </span>
-				{{if .Season}}
-					<span class="text-white itemname">{{.Season}}_</span>
-				{{end}}
 				{{if .Episode}}
 					<span class="text-white itemname">{{.Episode}}_</span>
 				{{end}}
@@ -497,13 +494,7 @@
 						<span class="text-badge ml-1">{{.ScanTimecodeOut}}</span>
 					{{end}}
 				</div>
-				<div id="{{.Project}}-{{.ID}}-netflixid">
-					{{if .NetflixID}}
-						<span class="text-badge netflix-red ml-1">NetflixID: {{.NetflixID}}</span>
-					{{end}}
-				</div>
 			</div>
-
 		</div>
 
 		<!--Comments-->

@@ -464,7 +464,6 @@ func webserver(port string) {
 	r.HandleFunc("/api/setcameralensmm", handleAPISetCameraLensmm).Methods("POST")
 	r.HandleFunc("/api/setcameraprojection", handleAPISetCameraProjection).Methods("POST")
 	r.HandleFunc("/api/setseq", handleAPISetSeq)
-	r.HandleFunc("/api/setseason", handleAPISetSeason)
 	r.HandleFunc("/api/setepisode", handleAPISetEpisode)
 	r.HandleFunc("/api/setplatepath", handleAPISetPlatePath)
 	r.HandleFunc("/api/setthummov", handleAPISetThummov) // legacy
@@ -543,7 +542,6 @@ func webserver(port string) {
 	r.HandleFunc("/api/rmpublish", handleAPIRmTaskPublish)
 	r.HandleFunc("/api/rmpublishkey", handleAPIRmTaskPublishKey)
 	r.HandleFunc("/api/uploadthumbnail", handleAPIUploadThumbnail).Methods("POST")
-	r.HandleFunc("/api/setnetflixid", handleAPISetNetflixID)
 
 	// restAPI USER
 	r.HandleFunc("/api2/user", handleAPI2User)

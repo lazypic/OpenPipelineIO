@@ -7,9 +7,6 @@
 		<div class="col-sm-12 col-md-6 col-lg-2">
 			<div>
 				<span class="text-white itemname">{{$.Item.Project}}: </span>
-				{{if $.Item.Season}}
-					<span class="text-white itemname">{{$.Item.Season}}_</span>
-				{{end}}
 				{{if $.Item.Episode}}
 					<span class="text-white itemname">{{$.Item.Episode}}_</span>
 				{{end}}
@@ -485,11 +482,6 @@
 				<div id="scantimecodeout-{{$.Item.Name}}">
 					{{if $.Item.ScanTimecodeOut}}
 						<span class="text-badge ml-1">{{$.Item.ScanTimecodeOut}}</span>
-					{{end}}
-				</div>
-				<div id="{{$.Item.Project}}-{{$.Item.ID}}-netflixid">
-					{{if $.Item.NetflixID}}
-						<span class="text-badge netflix-red ml-1">NetflixID: {{$.Item.NetflixID}}</span>
 					{{end}}
 				</div>
 			</div>
