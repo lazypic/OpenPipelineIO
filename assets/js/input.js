@@ -2176,7 +2176,6 @@ function setEpisode(episode) {
         url: "/api/setepisode",
         type: "POST",
         data: {
-            project: document.getElementById('modal-iteminfo-project').value,
             id: document.getElementById('modal-iteminfo-id').value,
             episode: episode,
         },
