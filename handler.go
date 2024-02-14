@@ -465,8 +465,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/setcameraprojection", handleAPISetCameraProjection).Methods("POST")
 	r.HandleFunc("/api/setseq", handleAPISetSeq).Methods("POST")
 	r.HandleFunc("/api/setepisode", handleAPISetEpisode).Methods("POST")
-	r.HandleFunc("/api/setplatepath", handleAPISetPlatePath)
-	r.HandleFunc("/api/setthummov", handleAPISetThummov) // legacy
+	r.HandleFunc("/api/setplatepath", handleAPISetPlatePath).Methods("POST")
 	r.HandleFunc("/api2/setthummov", handleAPI2SetThummov)
 	r.HandleFunc("/api/setbeforemov", handleAPISetBeforemov)
 	r.HandleFunc("/api/setaftermov", handleAPISetAftermov)

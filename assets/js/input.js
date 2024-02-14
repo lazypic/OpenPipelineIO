@@ -2196,7 +2196,6 @@ function setPlatePath(path) {
         url: "/api/setplatepath",
         type: "POST",
         data: {
-            project: document.getElementById('modal-iteminfo-project').value,
             id: document.getElementById('modal-iteminfo-id').value,
             path: path,
         },
