@@ -5916,24 +5916,19 @@ func handleAPISetTaskPublishStatus(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetEpisode 함수는 아이템의 episode 값을 설정한다.
 func handleAPISetEpisode(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project string `json:"project"`
 		ID      string `json:"id"`
 		Episode string `json:"episode"`
 		UserID  string `json:"userid"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5944,12 +5939,6 @@ func handleAPISetEpisode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 
 	id := r.FormValue("id")
 	if id == "" {
@@ -5959,17 +5948,12 @@ func handleAPISetEpisode(w http.ResponseWriter, r *http.Request) {
 	rcp.ID = id
 	rcp.Episode = r.FormValue("episode")
 
-	err = SetEpisode(session, rcp.Project, rcp.ID, rcp.Episode)
+	err = SetEpisodeV2(client, rcp.ID, rcp.Episode)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Episode: %s\nProject: %s, ID: %s, Author: %s", rcp.Episode, rcp.Project, rcp.ID, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {
