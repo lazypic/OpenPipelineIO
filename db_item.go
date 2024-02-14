@@ -1083,3 +1083,46 @@ func SetCameraProjectionV2(client *mongo.Client, id string, isProjection bool) e
 	}
 	return nil
 }
+
+func AddSourceV2(client *mongo.Client, id, author, title, path string) error {
+	i, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+	for _, i := range i.Sources {
+		if i.Title == title {
+			return errors.New(title + " already exists")
+		}
+	}
+	s := Source{}
+	s.Date = time.Now().Format(time.RFC3339)
+	s.Author = author
+	s.Title = title
+	s.Path = path
+	i.Sources = append(i.Sources, s)
+	err = setItemV2(client, i)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func RmSourceV2(client *mongo.Client, id, title string) error {
+	i, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+	var newSources []Source
+	for _, source := range i.Sources {
+		if source.Title == title {
+			continue
+		}
+		newSources = append(newSources, source)
+	}
+	i.Sources = newSources
+	err = setItemV2(client, i)
+	if err != nil {
+		return err
+	}
+	return nil
+}
