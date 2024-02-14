@@ -24,9 +24,8 @@ type Version struct {
 
 // Item 자료구조는 하나의 항목에 대한 자료구조이다.
 type Item struct {
-	Project   string `json:"project"`   // 프로젝트명
-	ID        string `json:"id"`        // ID
-	NetflixID string `json:"netflixid"` // NetflixID
+	Project string `json:"project"` // 프로젝트명
+	ID      string `json:"id"`      // ID
 
 	// 현장정보
 	// 현장에서 사용하는 카메라 데이터 이름. 슈퍼바이저 툴과 연동하기 위해서 Key로 사용된다.
@@ -38,7 +37,6 @@ type Item struct {
 	Scanname         string          `json:"scanname"`         // 스캔이름
 	Platesize        string          `json:"platesize"`        // 플레이트 이미지사이즈
 	Name             string          `json:"name"`             // 샷이름 SS_0010
-	Season           string          `json:"season"`           // 시즌명
 	Episode          string          `json:"episode"`          // 에피소드명
 	Seq              string          `json:"seq"`              // 시퀀스이름 SS_0010 에서 SS문자에 해당하는값. 에셋이면 "" 문자열이 들어간다.
 	Cut              string          `json:"cut"`              // 시퀀스이름 SS_0010 에서 0010문자에 해당하는값. 에셋이면 "" 문자열이 들어간다.

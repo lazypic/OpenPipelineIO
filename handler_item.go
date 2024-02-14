@@ -331,12 +331,10 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 	project := r.FormValue("Project")
 	name := r.FormValue("Name")
 	typ := r.FormValue("Type")
-	season := r.FormValue("Season")
 	episode := r.FormValue("Episode")
 	mkdir := str2bool(r.FormValue("Mkdir"))
 	genTask := str2bool(r.FormValue("GenTask"))
 	setRendersize := str2bool(r.FormValue("SetRendersize"))
-	netflixID := r.FormValue("NetflixID")
 	f := func(c rune) bool {
 		return !unicode.IsLetter(c) && !unicode.IsNumber(c) && c != '_'
 	}
@@ -385,7 +383,6 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 		now := time.Now().Format(time.RFC3339)
 		i := Item{}
 		i.Name = name
-		i.NetflixID = netflixID
 		i.SetSeq() // Name을 이용해서 Seq를 설정한다.
 		i.SetCut() // Name을 이용해서 Cut을 설정한다.
 		i.Type = typ
@@ -393,7 +390,6 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 		i.Project = project
 		i.ID = i.Project + "_" + i.Name + "_" + i.Type
 		i.Shottype = "2d"
-		i.Season = season
 		i.Episode = episode
 
 		// adminsetting에서 값을 가지고 와서 경로를 설정한다.
@@ -654,7 +650,6 @@ func handleAddAssetSubmit(w http.ResponseWriter, r *http.Request) {
 	crowdAsset := str2bool(r.FormValue("CrowdAsset"))
 	mkdir := str2bool(r.FormValue("Mkdir"))
 	genTask := str2bool(r.FormValue("GenTask"))
-	netflixID := r.FormValue("NetflixID")
 	f := func(c rune) bool {
 		return !unicode.IsLetter(c) && !unicode.IsNumber(c) && c != '_'
 	}
@@ -693,7 +688,6 @@ func handleAddAssetSubmit(w http.ResponseWriter, r *http.Request) {
 		i.Assettype = assettype
 		i.Assettags = []string{assettype, construction}
 		i.CrowdAsset = crowdAsset
-		i.NetflixID = netflixID
 		if genTask {
 			// 기본적으로 생성해야할 Task를 추가한다.
 			i.Tasks = make(map[string]Task)
