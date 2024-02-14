@@ -463,7 +463,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/setcamerapubtask", handleAPISetCameraPubTask).Methods("POST")
 	r.HandleFunc("/api/setcameralensmm", handleAPISetCameraLensmm).Methods("POST")
 	r.HandleFunc("/api/setcameraprojection", handleAPISetCameraProjection).Methods("POST")
-	r.HandleFunc("/api/setseq", handleAPISetSeq)
+	r.HandleFunc("/api/setseq", handleAPISetSeq).Methods("POST")
 	r.HandleFunc("/api/setepisode", handleAPISetEpisode).Methods("POST")
 	r.HandleFunc("/api/setplatepath", handleAPISetPlatePath)
 	r.HandleFunc("/api/setthummov", handleAPISetThummov) // legacy
