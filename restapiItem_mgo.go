@@ -2077,25 +2077,20 @@ func handleAPISetAftermov(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetEditmov 함수는 아이템의 Edit mov 값을 설정한다.
 func handleAPISetEditmov(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project string `json:"project"`
-		ID      string `json:"id"`
-		Path    string `json:"path"`
-		UserID  string `json:"userid"`
-		Error   string `json:"error"`
+		ID     string `json:"id"`
+		Path   string `json:"path"`
+		UserID string `json:"userid"`
+		Error  string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -2106,12 +2101,7 @@ func handleAPISetEditmov(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
+
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
@@ -2120,22 +2110,17 @@ func handleAPISetEditmov(w http.ResponseWriter, r *http.Request) {
 	rcp.ID = id
 	path := r.FormValue("path")
 	if path == "" {
-		http.Error(w, "path를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need path", http.StatusBadRequest)
 		return
 	}
 	rcp.Path = path
 
-	err = SetEditmov(session, rcp.Project, rcp.ID, rcp.Path)
+	err = SetEditmovV2(client, rcp.ID, rcp.Path)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Editmov: %s\nProject: %s, ID: %s, Author: %s", rcp.Path, rcp.Project, rcp.ID, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {

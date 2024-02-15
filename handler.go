@@ -469,7 +469,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/setthummov", handleAPI2SetThummov).Methods("POST")
 	r.HandleFunc("/api/setbeforemov", handleAPISetBeforemov).Methods("POST")
 	r.HandleFunc("/api/setaftermov", handleAPISetAftermov).Methods("POST")
-	r.HandleFunc("/api/seteditmov", handleAPISetEditmov)
+	r.HandleFunc("/api/seteditmov", handleAPISetEditmov).Methods("POST")
 	r.HandleFunc("/api2/settaskstatus", handleAPI2SetTaskStatus).Methods("POST")
 	r.HandleFunc("/api/taskstatusnum", handleAPITaskStatusNum)
 	r.HandleFunc("/api/taskanduserstatusnum", handleAPITaskAndUserStatusNum)
