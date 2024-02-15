@@ -114,7 +114,7 @@
 					<div class="centered-left"></div>
 					<div class="centered-right">
 						<!--Retime-->
-						<div class="row" id="button-retime-{{.Name}}">
+						<div class="row" id="button-retime-{{.ID}}">
 							{{if .Retimeplate}}
 								<a href="{{$.Setting.Protocol}}{{.Retimeplate}}" class="badge badge-danger">R</a>
 							{{end}}
@@ -451,7 +451,7 @@
 				</div>
 				<div>
 					{{if .Scanname}}
-						<span id="{{.Project}}-{{.ID}}-scanname" class="text-badge ml-1" title="scanname">{{.Scanname}}</span>
+						<span id="{{.ID}}-scanname" class="text-badge ml-1" title="scanname">{{.Scanname}}</span>
 					{{end}}
 				</div>
 				<div id="scanin-{{.ID}}">

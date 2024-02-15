@@ -1997,7 +1997,7 @@ func handleAPISetBeforemov(w http.ResponseWriter, r *http.Request) {
 	rcp.ID = id
 	path := r.FormValue("path")
 	if path == "" {
-		http.Error(w, "path를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need path", http.StatusBadRequest)
 		return
 	}
 	rcp.Path = path
@@ -3013,13 +3013,8 @@ func handleAPISetOutputName(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetRetimePlate 함수는 아이템의 retimeplate 값을 설정합니다.
 func handleAPISetRetimePlate(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project  string `json:"project"`
-		Name     string `json:"name"`
+		ID       string `json:"id"`
 		Path     string `json:"path"`
 		UserID   string `json:"userid"`
 		Error    string `json:"error"`
@@ -3027,13 +3022,13 @@ func handleAPISetRetimePlate(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := Recipe{}
 	rcp.Protocol = CachedAdminSetting.Protocol
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3044,216 +3039,31 @@ func handleAPISetRetimePlate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-				return
-			}
-			rcp.Project = v
-		case "name":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Name = v
-		case "userid":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if rcp.UserID == "unknown" && v != "" {
-				rcp.UserID = v
-			}
-		case "path", "retimeplate", "plate":
-			if len(values) == 1 {
-				rcp.Path = values[0]
-			} else {
-				rcp.Path = ""
-			}
-		}
-	}
-	err = SetRetimePlate(session, rcp.Project, rcp.Name, rcp.Path)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Retime Plate: %s\nProject: %s, Name: %s, Author: %s", rcp.Path, rcp.Project, rcp.Name, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	rcp.ID = id
+	path := r.FormValue("path")
+	if path == "" {
+		http.Error(w, "need path", http.StatusBadRequest)
 		return
 	}
-	// json 으로 결과 전송
-	data, _ := json.Marshal(rcp)
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	w.Write(data)
-}
+	rcp.Path = path
 
-// handleAPISetOCIOcc 함수는 아이템의 OCIO .cc 파일을 설정합니다.
-func handleAPISetOCIOcc(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
-	type Recipe struct {
-		Project string `json:"project"`
-		Name    string `json:"name"`
-		Path    string `json:"path"`
-		UserID  string `json:"userid"`
-		Error   string `json:"error"`
-	}
-	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	err = SetRetimePlateV2(client, rcp.ID, rcp.Path)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
-	_, _, err = net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
-	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Project = v
-		case "name":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Name = v
-		case "userid":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if rcp.UserID == "unknown" && v != "" {
-				rcp.UserID = v
-			}
-		case "path", "cc", "ociocc", "ocio":
-			if len(values) == 1 {
-				rcp.Path = values[0]
-			} else {
-				rcp.Path = ""
-			}
-		}
-	}
-	err = SetOCIOcc(session, rcp.Project, rcp.Name, rcp.Path)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set OCIO .cc: %s\nProject: %s, Name: %s, Author: %s", rcp.Path, rcp.Project, rcp.Name, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// json 으로 결과 전송
-	data, _ := json.Marshal(rcp)
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	w.Write(data)
-}
 
-// handleAPISetRollmedia 함수는 아이템의 Setellite Rollmedia를 설정합니다.
-func handleAPISetRollmedia(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
-	type Recipe struct {
-		Project   string `json:"project"`
-		Name      string `json:"name"`
-		Rollmedia string `json:"rollmedia"`
-		UserID    string `json:"userid"`
-		Error     string `json:"error"`
-	}
-	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
-	_, _, err = net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
-	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Project = v
-		case "name":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Name = v
-		case "userid":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if rcp.UserID == "unknown" && v != "" {
-				rcp.UserID = v
-			}
-		case "rollmedia":
-			if len(values) == 1 {
-				rcp.Rollmedia = values[0]
-			} else {
-				rcp.Rollmedia = ""
-			}
-		}
-	}
-	err = SetRollmedia(session, rcp.Project, rcp.Name, rcp.Rollmedia)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Rollmedia: %s\nProject: %s, Name: %s, Author: %s", rcp.Rollmedia, rcp.Project, rcp.Name, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// json 으로 결과 전송
-	data, _ := json.Marshal(rcp)
+	data, err := json.Marshal(rcp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
@@ -3261,24 +3071,19 @@ func handleAPISetRollmedia(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetScanname 함수는 아이템의 Scanname 값을 설정합니다.
 func handleAPISetScanname(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project  string `json:"project"`
 		ID       string `json:"id"`
 		Scanname string `json:"scanname"`
 		UserID   string `json:"userid"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3289,12 +3094,7 @@ func handleAPISetScanname(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
+
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
@@ -3302,17 +3102,12 @@ func handleAPISetScanname(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 	rcp.Scanname = r.FormValue("scanname")
-	err = SetScanname(session, rcp.Project, rcp.ID, rcp.Scanname)
+	err = UpdateItem(client, rcp.ID, "scanname", rcp.Scanname)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Scanname: %s\nProject: %s, Name: %s, Author: %s", rcp.Scanname, rcp.Project, rcp.ID, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {

@@ -11,6 +11,7 @@ import (
 	"github.com/digital-idea/ditime"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"gopkg.in/mgo.v2"
 )
 
 func addItemV2(client *mongo.Client, i Item) error {
@@ -1280,6 +1281,50 @@ func SetEditmovV2(client *mongo.Client, id, path string) error {
 	}
 	if result.MatchedCount == 0 {
 		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}
+
+func SetRetimePlateV2(client *mongo.Client, id, path string) error {
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"retimeplate": path, "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}
+
+func UpdateItem(client *mongo.Client, id, key, value string) error {
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{key: value, "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}
+
+func SetItem(session *mgo.Session, project, id, scanname string) error {
+	session.SetMode(mgo.Monotonic, true)
+	c := session.DB(*flagDBName).C("items")
+	err := c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"scanname": scanname, "updatetime": time.Now().Format(time.RFC3339)}})
+	if err != nil {
+		return err
 	}
 	return nil
 }

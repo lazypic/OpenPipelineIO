@@ -2300,17 +2300,14 @@ function setEditmov(path) {
 }
 
 
-function setRetimeplate(project, id, path) {
+function setRetimeplate(id, path) {
     let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
     $.ajax({
         url: "/api/setretimeplate",
         type: "POST",
         data: {
-            project: project,
-            name: id2name(id),
+            id: id,
             path: path,
-            userid: userid,
         },
         headers: {
             "Authorization": "Basic "+ token
@@ -2318,9 +2315,9 @@ function setRetimeplate(project, id, path) {
         dataType: "json",
         success: function(data) {
             if (data.path === "") {
-                document.getElementById("button-retime-"+data.name).innerHTML = "";
+                document.getElementById("button-retime-"+data.id).innerHTML = "";
             } else {
-                document.getElementById("button-retime-"+data.name).innerHTML = `<a href="${data.protocol}://${data.path}" class="badge badge-danger">R</a>`;
+                document.getElementById("button-retime-"+data.id).innerHTML = `<a href="${data.protocol}://${data.path}" class="badge badge-danger">R</a>`;
             }
         },
         error: function(request,status,error){
@@ -2329,80 +2326,21 @@ function setRetimeplate(project, id, path) {
     });
 }
 
-function setOCIOcc(project, id, path) {
-    let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
-    $.ajax({
-        url: "/api/setociocc",
-        type: "POST",
-        data: {
-            project: project,
-            name: id2name(id),
-            path: path,
-            userid: userid,
-        },
-        headers: {
-            "Authorization": "Basic "+ token
-        },
-        dataType: "json",
-        success: function(data) {
-            if (data.path === "") {
-                document.getElementById("button-ociocc-"+data.name).innerHTML = "";
-            } else {
-                document.getElementById("button-ociocc-"+data.name).innerHTML = `<span class="badge badge-info mt-1">N</span>`;
-            }
-        },
-        error: function(request,status,error){
-            alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-        }
-    });
-}
 
-function setRollmedia(project, id, rollmedia) {
-    let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
-    $.ajax({
-        url: "/api/setrollmedia",
-        type: "POST",
-        data: {
-            project: project,
-            name: id2name(id),
-            rollmedia: rollmedia,
-            userid: userid,
-        },
-        headers: {
-            "Authorization": "Basic "+ token
-        },
-        dataType: "json",
-        success: function(data) {
-            if (data.rollmedia === "") {
-                document.getElementById(data.name+"-onsetbutton").innerHTML = "";
-            } else {
-                document.getElementById(data.name+"-onsetbutton").innerHTML = `<a href="/setellite?project=${project}&searchword=${data.rollmedia}" class="badge badge-done statusbox text-dark" target="_blink">onset</a>`;
-            }
-        },
-        error: function(request,status,error){
-            alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-        }
-    });
-}
-
-function setScanname(project, id, scanname) {
-    let token = document.getElementById("token").value;
+function setScanname(id, scanname) {
     $.ajax({
         url: "/api/setscanname",
         type: "POST",
         data: {
-            project: project,
             id: id,
             scanname: scanname,
         },
         headers: {
-            "Authorization": "Basic "+ token
+            "Authorization": "Basic "+ document.getElementById("token").value
         },
         dataType: "json",
         success: function(data) {
-            document.getElementById(`${data.project}-${data.id}-scanname`).innerHTML = data.scanname;
+            document.getElementById(`${data.id}-scanname`).innerHTML = data.scanname;
         },
         error: function(request,status,error){
             alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -2433,8 +2371,6 @@ function setIteminfoModal(project, id) {
             document.getElementById('modal-iteminfo-aftermov').value = data.aftermov;
             document.getElementById('modal-iteminfo-editmov').value = data.editmov;
             document.getElementById('modal-iteminfo-retimeplate').value = data.retimeplate;
-            document.getElementById('modal-iteminfo-ociocc').value = data.ociocc;
-            document.getElementById('modal-iteminfo-rollmedia').value = data.rollmedia;
             document.getElementById('modal-iteminfo-scanname').value = data.scanname;
         },
         error: function(request,status,error){

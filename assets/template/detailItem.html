@@ -109,19 +109,19 @@
 					<div class="centered-left"></div>
 					<div class="centered-right">
 						<!--Retime-->
-						<div class="row" id="button-retime-{{$.Item.Name}}">
+						<div class="row" id="button-retime-{{$.Item.ID}}">
 							{{if $.Item.Retimeplate}}
 								<a href="{{$.Setting.Protocol}}://{{$.Item.Retimeplate}}" class="badge badge-danger">R</a>
 							{{end}}
 						</div>
 						<!--Just Mark-->
-						<div class="row" id="button-just-{{$.Item.Name}}">
+						<div class="row" id="button-just-{{$.Item.ID}}">
 							{{if and $.Item.JustIn $.Item.JustOut}}
 								<span class="badge badge-warning mt-1">J</span>
 							{{end}}
 						</div>
 						<!--OCIOcc-->
-						<div class="row" id="button-ociocc-{{$.Item.Name}}">
+						<div class="row" id="button-ociocc-{{$.Item.ID}}">
 							{{if $.Item.OCIOcc}}
 								<span class="badge badge-info mt-1">N</span>
 							{{end}}
@@ -441,7 +441,7 @@
 				</div>
 				<div>
 					{{if $.Item.Scanname}}
-						<span id="{{$.Item.Project}}-{{$.Item.ID}}-scanname" class="text-badge ml-1" title="scanname">{{$.Item.Scanname}}</span>
+						<span id="{{$.Item.ID}}-scanname" class="text-badge ml-1" title="scanname">{{$.Item.Scanname}}</span>
 					{{end}}
 				</div>
 				<div id="scanin-{{$.Item.Name}}">
