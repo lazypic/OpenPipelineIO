@@ -11,7 +11,6 @@ import (
 	"github.com/digital-idea/ditime"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"gopkg.in/mgo.v2"
 )
 
 func addItemV2(client *mongo.Client, i Item) error {
@@ -1319,12 +1318,21 @@ func UpdateItem(client *mongo.Client, id, key, value string) error {
 	return nil
 }
 
-func SetItem(session *mgo.Session, project, id, scanname string) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("items")
-	err := c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"scanname": scanname, "updatetime": time.Now().Format(time.RFC3339)}})
+func SetAssetTypeV2(client *mongo.Client, id, assettype string) (string, string, error) {
+	_, err := validAssettype(assettype)
 	if err != nil {
-		return err
+		return "", assettype, err
 	}
-	return nil
+	i, err := getItemV2(client, id)
+	if err != nil {
+		return "", assettype, err
+	}
+	beforeType := i.Assettype
+	i.Assettype = assettype
+	i.setAssettags()
+	err = setItemV2(client, i)
+	if err != nil {
+		return beforeType, assettype, err
+	}
+	return beforeType, assettype, nil
 }

@@ -490,7 +490,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/sethandleout", handleAPISetHandleOut).Methods("POST")
 	r.HandleFunc("/api/setshottype", handleAPISetShotType).Methods("POST")
 	r.HandleFunc("/api/setusetype", handleAPISetUseType).Methods("POST")
-	r.HandleFunc("/api/setassettype", handleAPISetAssetType)
+	r.HandleFunc("/api/setassettype", handleAPISetAssetType).Methods("POST")
 	r.HandleFunc("/api/setoutputname", handleAPISetOutputName)
 	r.HandleFunc("/api2/setrnum", handleAPI2SetRnum).Methods("POST")
 	r.HandleFunc("/api/setdeadline2d", handleAPISetDeadline2D).Methods("POST")

@@ -79,8 +79,8 @@
 					</div>
 					<div class="centered-bottom row">
 						{{if eq .Type "asset"}}
-							<div id="assettype-{{.Name}}">
-								<span class="badge badge-light finger" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-assettype" onclick="setAssettypeModal('{{.Project}}', '{{.ID}}')"{{end}}>{{.Assettype}}</span>
+							<div id="assettype-{{.ID}}">
+								<span class="badge badge-light finger" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-assettype" onclick="setAssettypeModal('{{.ID}}')"{{end}}>{{.Assettype}}</span>
 							</div>
 							
 							<div id="crowdasset-{{.ID}}" class="ml-1">

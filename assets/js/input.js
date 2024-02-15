@@ -3083,9 +3083,8 @@ function setUsetype(id) {
     }
 }
 
-function setAssettypeModal(project, id) {
+function setAssettypeModal(id) {
     let token = document.getElementById("token").value;
-    document.getElementById("modal-assettype-project").value = project
     document.getElementById("modal-assettype-title").innerHTML = "Assettype Type" + multiInputTitle(id);
     $.ajax({
         url: `/api2/item?id=${id}`,
@@ -3103,9 +3102,8 @@ function setAssettypeModal(project, id) {
     });
 }
 
-function setAssettype(project, id) {
+function setAssettype(id) {
     let token = document.getElementById("token").value;
-    let userid = document.getElementById("userid").value;
     let types = document.getElementById("modal-assettype-type");
     let assettype = types.options[types.selectedIndex].value;
     if (isMultiInput()) {
@@ -3119,10 +3117,8 @@ function setAssettype(project, id) {
                 url: "/api/setassettype",
                 type: "POST",
                 data: {
-                    project: project,
-                    name: id2name(id),
+                    id: id,
                     assettype: assettype,
-                    userid: userid,
                 },
                 headers: {
                     "Authorization": "Basic "+ token
@@ -3130,13 +3126,13 @@ function setAssettype(project, id) {
                 dataType: "json",
                 success: function(data) {
                     // assettype button update
-                    document.getElementById("assettype-"+data.name).innerHTML = `<span class="badge badge-light ml-1" data-toggle="modal" data-target="#modal-assettype" onclick="setAssettypeModal('${project}', '${data.id}')">${data.type}</span>`;
+                    document.getElementById("assettype-"+data.id).innerHTML = `<span class="badge badge-light ml-1" data-toggle="modal" data-target="#modal-assettype" onclick="setAssettypeModal('${data.id}')">${data.type}</span>`;
                     // remove old assettype tag
-                    document.getElementById(`assettag-${data.name}-${data.oldtype}`).remove();
+                    document.getElementById(`assettag-${data.id}-${data.oldtype}`).remove();
                     // add new assettype tag
                     let url = `/inputmode?project=${data.project}&searchword=assettags:${data.type}&sortkey=slug&sortkey=slug&assign=true&ready=true&wip=true&confirm=true&done=false&omit=false&hold=false&out=false&none=false&task=`;
-                    source = `<div id="tag-${data.name}-${data.type}"><a href="${url}" class="badge badge-outline-darkmode ml-1" alt="${data.userid}" title="${data.userid}">${data.type}</a></div>`;
-                    document.getElementById("assettags-"+data.name).innerHTML = document.getElementById("assettags-"+data.name).innerHTML + source;
+                    source = `<div id="tag-${data.id}-${data.type}"><a href="${url}" class="badge badge-outline-darkmode ml-1" alt="${data.userid}" title="${data.userid}">${data.type}</a></div>`;
+                    document.getElementById("assettags-"+data.id).innerHTML = document.getElementById("assettags-"+data.id).innerHTML + source;
                 },
                 error: function(request,status,error){
                     alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -3148,10 +3144,8 @@ function setAssettype(project, id) {
             url: "/api/setassettype",
             type: "POST",
             data: {
-                project: project,
-                name: id2name(id),
+                id: id,
                 assettype: assettype,
-                userid: userid,
             },
             headers: {
                 "Authorization": "Basic "+ token
@@ -3159,13 +3153,13 @@ function setAssettype(project, id) {
             dataType: "json",
             success: function(data) {
                 // assettype button update
-                document.getElementById("assettype-"+data.name).innerHTML = `<span class="badge badge-light ml-1" data-toggle="modal" data-target="#modal-assettype" onclick="setAssettypeModal('${project}', '${data.id}')">${data.type}</span>`;
+                document.getElementById("assettype-"+data.id).innerHTML = `<span class="badge badge-light ml-1" data-toggle="modal" data-target="#modal-assettype" onclick="setAssettypeModal('${data.id}')">${data.type}</span>`;
                 // remove old assettype tag
-                document.getElementById(`assettag-${data.name}-${data.oldtype}`).remove();
+                document.getElementById(`assettag-${data.id}-${data.oldtype}`).remove();
                 // add new assettype tag
                 let url = `/inputmode?project=${data.project}&searchword=assettags:${data.type}&sortkey=slug&sortkey=slug&assign=true&ready=true&wip=true&confirm=true&done=false&omit=false&hold=false&out=false&none=false&task=`;
                 source = `<div id="tag-${data.name}-${data.type}"><a href="${url}" class="badge badge-outline-darkmode ml-1" alt="${data.userid}" title="${data.userid}">${data.type}</a></div>`;
-                document.getElementById("assettags-"+data.name).innerHTML = document.getElementById("assettags-"+data.name).innerHTML + source;
+                document.getElementById("assettags-"+data.id).innerHTML = document.getElementById("assettags-"+data.id).innerHTML + source;
             },
             error: function(request,status,error){
                 alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);

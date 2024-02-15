@@ -41,7 +41,7 @@ restAPI의 장점은 웹서비스의 URI를 이용하기 때문에 네트워크�
 | /api/setbeforemov | 썸네일 이전 mov 등록 | project, name, path, (userid) | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0030&path=/show/before.mov" https://openpipeline.io/api/setbeforemov` |
 | /api/setaftermov | 썸네일 이후 mov 등록 | project, name, path, (userid) | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0030&path=/show/after.mov" https://openpipeline.io/api/setaftermov` |
 | /api/seteditmov | 편집본 mov 등록 | id, path | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_id=SS_0030_org&path=/show/edit.mov" https://openpipeline.io/api/seteditmov` |
-| /api/setassettype | assettype 변경 | project, name, type | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=mamma&type=prop" https://openpipeline.io/api/setassettype` |
+| /api/setassettype | assettype 변경 | id, type | `$ curl -X POST -H "Authorization: Basic <Token>" -d "id=TEMP_mamma_asset&type=prop" https://openpipeline.io/api/setassettype` |
 | /api/setoutputname | 아웃풋이름 등록 | project, name, outputname | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0010&outputname=S101_010_010" https://openpipeline.io/api/setoutputname` |
 | /api2/setrnum | 롤넘버 등록 | project, id, rnum | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&id=SS_0010_org&rnum=A0001" https://openpipeline.io/api2/setrnum` |
 | /api/setdeadline2d | 2D마감일 등록 | project, name, date | `$ curl -X POST -H "Authorization: Basic <Token>" -d "project=TEMP&name=SS_0010&date=0712" https://openpipeline.io/api/setdeadline2d` |
