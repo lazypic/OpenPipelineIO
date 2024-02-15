@@ -233,15 +233,12 @@
 					{{range mapToSlice $.Item.Tasks $.TasksettingOrderMap}}
 						<div class="row" id="{{$.Item.ID}}-task-{{.Title}}">
 							<div id="{{$.Item.ID}}-task-{{.Title}}-status">
-								<span class="finger mt-1 badge badge-{{.StatusV2}} statusbox{{CheckDate .Predate .Date .Mdate $.SearchOption.Searchword}}" data-toggle="tooltip" data-placement="left" title="{{.StatusV2}}"
+								<span class="finger mt-1 badge badge-{{.StatusV2}} statusbox{{CheckDate .End .Mdate $.SearchOption.Searchword}}" data-toggle="tooltip" data-placement="left" title="{{.StatusV2}}"
 								onclick="wfs('{{$.Setting.WFS}}', '{{.Title}}', '{{$type}}', '{{$assettype}}', '{{$.SearchOption.Project}}', '{{$.Item.Name}}', '{{$.Item.Seq}}', '{{$.Item.Cut}}', '{{$.User.Token}}');"
 								>{{.Title}}</span>
 							</div>
 							<div id="{{$.Item.ID}}-task-{{.Title}}-predate">
-								<span class="mt-1 ml-1 badge badge-{{CheckDdlinev2 .Predate}}" title="1차마감">{{ToShortTime .Predate}}</span>
-							</div>
-							<div id="{{$.Item.ID}}-task-{{.Title}}-date">
-								<span class="mt-1 ml-1 badge badge-{{CheckDdlinev2 .Date}}" title="2차마감">{{ToShortTime .Date}}</span>
+								<span class="mt-1 ml-1 badge badge-{{CheckDdlinev2 .End}}" title="마감일">{{ToShortTime .End}}</span>
 							</div>
 							
 							<div id="{{$.Item.ID}}-task-{{.Title}}-user">

@@ -10,8 +10,6 @@ import (
 	"strings"
 	"time"
 	"unicode"
-
-	"gopkg.in/mgo.v2"
 )
 
 // handleSearchSubmit 함수는 검색창의 옵션을 파싱하고 검색 URI로 리다이렉션 한다. // legacy
@@ -87,10 +85,6 @@ func handleSearchSubmitV2(w http.ResponseWriter, r *http.Request) {
 
 // handleItemDetail 함수는 아이템 디테일 페이지를 출력한다.
 func handleItemDetail(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
 	ssid, err := GetSessionID(r)
 	if err != nil {
 		http.Redirect(w, r, "/signin", http.StatusSeeOther)
@@ -102,12 +96,12 @@ func handleItemDetail(w http.ResponseWriter, r *http.Request) {
 	}
 	q := r.URL.Query()
 	id := q.Get("id")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	type recipe struct {
 		User        User
 		Projectlist []string
@@ -122,30 +116,30 @@ func handleItemDetail(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	err = rcp.SearchOption.LoadCookie(session, r)
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	u, err := getUser(session, ssid.ID)
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.User = u
-	rcp.Projectlist, err = Projectlist(session)
+	rcp.Projectlist, err = ProjectlistV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if rcp.SearchOption.Project != "" {
-		rcp.Projectinfo, err = getProject(session, rcp.SearchOption.Project)
+		rcp.Projectinfo, err = getProjectV2(client, rcp.SearchOption.Project)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}
-	tasks, err := AllTaskSettings(session)
+	tasks, err := AllTaskSettingsV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -154,7 +148,7 @@ func handleItemDetail(w http.ResponseWriter, r *http.Request) {
 	for _, t := range tasks {
 		rcp.TasksettingOrderMap[t.Name] = t.Order
 	}
-	rcp.Status, err = AllStatus(session)
+	rcp.Status, err = AllStatusV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -162,12 +156,12 @@ func handleItemDetail(w http.ResponseWriter, r *http.Request) {
 	for _, status := range rcp.Status {
 		rcp.AllStatusIDs = append(rcp.AllStatusIDs, status.ID)
 	}
-	rcp.TasksettingNames, err = TasksettingNames(session)
+	rcp.TasksettingNames, err = TaskSettingNamesV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Item, err = getItem(session, id)
+	rcp.Item, err = getItemV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

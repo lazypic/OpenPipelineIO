@@ -266,7 +266,7 @@ func webserver(port string) {
 	r.HandleFunc("/addshot_submit", handleAddShotSubmit)
 	r.HandleFunc("/addasset", handleAddAsset)
 	r.HandleFunc("/addasset_submit", handleAddAssetSubmit)
-	r.HandleFunc("/detail", handleItemDetail)
+	r.HandleFunc("/detail", handleItemDetail).Methods("GET")
 
 	// Review
 	r.HandleFunc("/daily-review-status", handleDailyReviewStatus)
