@@ -1336,3 +1336,28 @@ func SetAssetTypeV2(client *mongo.Client, id, assettype string) (string, string,
 	}
 	return beforeType, assettype, nil
 }
+
+func SetTaskDurationV2(client *mongo.Client, id, task, start, end string) error {
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	startTime, err := ditime.ToFullTime(10, start)
+	if err != nil {
+		return err
+	}
+	endTime, err := ditime.ToFullTime(19, end)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"tasks." + task + ".start": startTime, "tasks." + task + ".end": endTime, "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}

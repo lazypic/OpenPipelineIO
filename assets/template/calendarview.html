@@ -59,10 +59,8 @@
 							"Authorization": "Basic "+ document.getElementById("token").value,
 						},
 						body: new URLSearchParams({
-							project: info.event.extendedProps.project,
 							id: info.event.extendedProps.itemid,
 							task: info.event.extendedProps.task,
-							deadlinetype: info.event.extendedProps.deadlinetype,
 							start: info.event.startStr,
 							end: endStr,
 						})
@@ -74,7 +72,7 @@
 						return response.json()
 					})
 					.then((data) => {
-						document.getElementById(`${data.id}-task-${data.task}-date`).innerHTML = `<span class="mt-1 ml-1 badge badge-darkmode">${data.shortend}</span>`;
+						document.getElementById(`${data.id}-task-${data.task}-end`).innerHTML = `<span class="mt-1 ml-1 badge badge-darkmode">${data.shortend}</span>`;
 						// 이곳에서 이벤트를 업데이트 해야한다.
 						console.log(info)
 					})
@@ -123,10 +121,8 @@
 							"Authorization": "Basic "+ document.getElementById("token").value,
 						},
 						body: new URLSearchParams({
-							project: info.event.extendedProps.project,
 							id: info.event.extendedProps.itemid,
 							task: info.event.extendedProps.task,
-							deadlinetype: info.event.extendedProps.deadlinetype,
 							start: info.event.startStr,
 							end: endStr,
 						})
@@ -138,7 +134,7 @@
 						return response.json()
 					})
 					.then((data) => {
-						document.getElementById(`${data.id}-task-${data.task}-date`).innerHTML = `<span class="mt-1 ml-1 badge badge-darkmode">${data.shortend}</span>`;
+						document.getElementById(`${data.id}-task-${data.task}-end`).innerHTML = `<span class="mt-1 ml-1 badge badge-darkmode">${data.shortend}</span>`;
 						
 					})
 					.catch((err) => {

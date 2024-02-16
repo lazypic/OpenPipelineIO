@@ -2750,48 +2750,35 @@ func handleAPISetTaskDate(w http.ResponseWriter, r *http.Request) {
 // handleAPISetTaskDuration 함수는 아이템의 task에 대한 시작일, 종료일을 설정한다.
 func handleAPISetTaskDuration(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
-		Project      string `json:"project"`
-		ID           string `json:"id"`
-		Start        string `json:"start"`
-		End          string `json:"end"`
-		ShortStart   string `json:"shortstart"`
-		ShortEnd     string `json:"shortend"`
-		Task         string `json:"task"`
-		DeadlineType string `json:"deadlinetype"`
-		UserID       string `json:"userid"`
-		Error        string `json:"error"`
+		ID         string `json:"id"`
+		Start      string `json:"start"`
+		End        string `json:"end"`
+		ShortStart string `json:"shortstart"`
+		ShortEnd   string `json:"shortend"`
+		Task       string `json:"task"`
+		UserID     string `json:"userid"`
+		Error      string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "need project", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
-	userid := r.FormValue("userid")
-	if userid == "" {
-		rcp.UserID = "unknown"
-	}
-	rcp.UserID = userid
 	task := r.FormValue("task")
 	if task == "" {
 		http.Error(w, "need task", http.StatusBadRequest)
@@ -2812,30 +2799,17 @@ func handleAPISetTaskDuration(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.End = end
 	rcp.ShortEnd = ToShortTime(rcp.End)
-	deadLineType := r.FormValue("deadlinetype")
-	if deadLineType == "" {
-		http.Error(w, "need deadlinetype", http.StatusBadRequest)
-		return
-	}
-	rcp.DeadlineType = deadLineType
 
-	err = HasTask(session, rcp.ID, rcp.Task)
+	err = HasTaskV2(client, rcp.ID, rcp.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if rcp.DeadlineType == "1st" {
-		err = SetTaskDuration1st(session, rcp.Project, rcp.ID, rcp.Task, rcp.Start, rcp.End)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-	} else {
-		err = SetTaskDuration2nd(session, rcp.Project, rcp.ID, rcp.Task, rcp.Start, rcp.End)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+
+	err = SetTaskDurationV2(client, rcp.ID, rcp.Task, rcp.Start, rcp.End)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)

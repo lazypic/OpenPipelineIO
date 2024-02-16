@@ -81,7 +81,6 @@ func ItemsToFCEventsAndFCResource(items []Item) ([]FullCalendarEvent, []FullCale
 				taskEvent.ExtendedProps.Task = task
 				taskEvent.ExtendedProps.Tags = item.Tag
 				taskEvent.ExtendedProps.UserID = value.UserID
-				taskEvent.ExtendedProps.DeadlineType = "1st"
 				taskEvent.ExtendedProps.Key = "tasks"
 				taskEvent.ResourceId = item.ID + task
 				events = append(events, taskEvent)
