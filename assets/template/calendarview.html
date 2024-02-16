@@ -30,8 +30,7 @@
 							"Authorization": "Basic "+ document.getElementById("token").value,
 						},
 						body: new URLSearchParams({
-							project: info.event.extendedProps.project,
-							name: info.event.extendedProps.itemname,
+							id: info.event.extendedProps.itemid,
 							date: info.event.startStr,
 						})
 					})
