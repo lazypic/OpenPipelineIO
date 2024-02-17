@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net"
@@ -181,7 +182,7 @@ func handleUploadExcel(w http.ResponseWriter, r *http.Request) {
 
 	switch mimeType {
 	case "text/csv":
-		data, err := ioutil.ReadAll(file)
+		data, err := io.ReadAll(file)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -192,13 +193,13 @@ func handleUploadExcel(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		path := tmp + "/" + header.Filename // 업로드한 파일 리스트를 불러오기 위해 뒤에 붙는 Unixtime을 제거한다.
-		err = ioutil.WriteFile(path, data, 0666)
+		err = os.WriteFile(path, data, 0666)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	case "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/docxconverter", "application/haansoftxlsx", "application/kset", "application/vnd.ms-excel.12", "application/vnd.openxmlformats-officedocument.spreadsheetml.shee", "x-softmaker-pm": // MS-Excel, Google & Libre Excel
-		data, err := ioutil.ReadAll(file)
+		data, err := io.ReadAll(file)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -209,7 +210,7 @@ func handleUploadExcel(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		path := tmp + "/" + header.Filename // 업로드한 파일 리스트를 불러오기 위해 뒤에 붙는 Unixtime을 제거한다.
-		err = ioutil.WriteFile(path, data, 0666)
+		err = os.WriteFile(path, data, 0666)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
