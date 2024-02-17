@@ -266,10 +266,6 @@ func handleUploadJSON(w http.ResponseWriter, r *http.Request) {
 
 // handleReportExcel 함수는 excel 파일을 체크하고 분석 보고서로 Redirection 한다.
 func handleReportExcel(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
 	ssid, err := GetSessionID(r)
 	if err != nil {
 		http.Redirect(w, r, "/signin", http.StatusSeeOther)
@@ -281,12 +277,12 @@ func handleReportExcel(w http.ResponseWriter, r *http.Request) {
 	}
 	q := r.URL.Query()
 	project := q.Get("project")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	// 파일네임을 구한다.
 	tmppath, err := userTemppath(ssid.ID)
 	if err != nil {
@@ -327,12 +323,12 @@ func handleReportExcel(w http.ResponseWriter, r *http.Request) {
 
 	rcp.SessionID = ssid.ID
 	rcp.SearchOption = handleRequestToSearchOption(r)
-	rcp.User, err = getUser(session, ssid.ID)
+	rcp.User, err = getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Projectlist, err = OnProjectlist(session)
+	rcp.Projectlist, err = OnProjectlistV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -451,7 +447,7 @@ func handleReportExcel(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		row.checkerror(session, project)
+		row.checkerrorV2(client, project)
 		rcp.Errornum += row.Errornum
 		rows = append(rows, row)
 	}
@@ -2032,10 +2028,6 @@ func handleDownloadCsvFile(w http.ResponseWriter, r *http.Request) {
 
 // handleDownloadExcelTemplate 함수는 빈 export template을 다운로드 한다.
 func handleDownloadExcelTemplate(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
 	ssid, err := GetSessionID(r)
 	if err != nil {
 		http.Redirect(w, r, "/signin", http.StatusSeeOther)
@@ -2045,12 +2037,12 @@ func handleDownloadExcelTemplate(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 
 	f := excelize.NewFile()
 	sheet := "Sheet1"

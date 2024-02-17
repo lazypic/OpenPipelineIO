@@ -1361,3 +1361,27 @@ func SetTaskDurationV2(client *mongo.Client, id, task, start, end string) error 
 	}
 	return nil
 }
+
+func TypeV2(client *mongo.Client, project, name string) (string, error) {
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var items []Item
+	filter := bson.M{"$or": []bson.M{{"name": name, "type": "org"}, {"name": name, "type": "left"}, {"name": name, "type": "asset"}}}
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		return "", err
+	}
+	err = cursor.All(ctx, &items)
+	if err != nil {
+		return "", err
+	}
+	if len(items) == 0 {
+		return "", errors.New(name + "에 해당하는 org,left,asset 타입을 DB에서 찾을 수 없습니다.")
+	}
+	if len(items) != 1 {
+		return "", errors.New(name + "값이 DB에서 고유하지 않습니다.")
+	}
+	return items[0].Type, nil
+}
