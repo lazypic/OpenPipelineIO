@@ -11,6 +11,7 @@ import (
 	"github.com/digital-idea/ditime"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func addItemV2(client *mongo.Client, i Item) error {
@@ -1446,4 +1447,79 @@ func SetFinverV2(client *mongo.Client, id, version string) error {
 		return errors.New("no document found with id: " + id)
 	}
 	return nil
+}
+
+func SearchAllShotV2(client *mongo.Client, project, sortkey string) ([]Item, error) {
+	results := []Item{}
+	queries := []bson.M{}
+	queries = append(queries, bson.M{"project": project, "type": "org"})
+	queries = append(queries, bson.M{"project": project, "type": "left"})
+	filter := bson.M{"$or": queries}
+
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	opts := options.Find()
+	opts.SetSort(bson.M{sortkey: 1})
+
+	cursor, err := collection.Find(ctx, filter, opts)
+	if err != nil {
+		return nil, err
+	}
+	err = cursor.All(ctx, &results)
+	if err != nil {
+		return nil, err
+	}
+	return results, nil
+}
+
+func SearchAllAssetV2(client *mongo.Client, project, sortkey string) ([]Item, error) {
+	results := []Item{}
+
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	opts := options.Find()
+	opts.SetSort(bson.M{sortkey: 1})
+
+	filter := bson.M{"project": project, "type": "asset"}
+
+	cursor, err := collection.Find(ctx, filter, opts)
+	if err != nil {
+		return nil, err
+	}
+	err = cursor.All(ctx, &results)
+	if err != nil {
+		return nil, err
+	}
+	return results, nil
+}
+
+func SearchAllV2(client *mongo.Client, project, sortkey string) ([]Item, error) {
+	results := []Item{}
+
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	opts := options.Find()
+	opts.SetSort(bson.M{sortkey: 1})
+
+	queries := []bson.M{}
+	queries = append(queries, bson.M{"project": project, "type": "org"})
+	queries = append(queries, bson.M{"project": project, "type": "left"})
+	queries = append(queries, bson.M{"project": project, "type": "asset"})
+	filter := bson.M{"$or": queries}
+
+	cursor, err := collection.Find(ctx, filter, opts)
+	if err != nil {
+		return nil, err
+	}
+	err = cursor.All(ctx, &results)
+	if err != nil {
+		return nil, err
+	}
+	return results, nil
 }

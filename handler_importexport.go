@@ -1126,10 +1126,6 @@ func handleExportJSON(w http.ResponseWriter, r *http.Request) {
 
 // handleExportExcelSubmit 함수는 export excel을 처리한다.
 func handleExportExcelSubmit(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	ssid, err := GetSessionID(r)
 	if err != nil {
 		http.Redirect(w, r, "/signin", http.StatusSeeOther)
@@ -1139,12 +1135,12 @@ func handleExportExcelSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	project := r.FormValue("project")
 	format := r.FormValue("format")
 	sortkey := r.FormValue("sortkey")
@@ -1153,19 +1149,19 @@ func handleExportExcelSubmit(w http.ResponseWriter, r *http.Request) {
 	var searchItems []Item
 	switch format {
 	case "shot":
-		searchItems, err = SearchAllShot(session, project, sortkey)
+		searchItems, err = SearchAllShotV2(client, project, sortkey)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	case "asset":
-		searchItems, err = SearchAllAsset(session, project, sortkey)
+		searchItems, err = SearchAllAssetV2(client, project, sortkey)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	case "", "all":
-		searchItems, err = SearchAll(session, project, sortkey)
+		searchItems, err = SearchAllV2(client, project, sortkey)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -1186,7 +1182,7 @@ func handleExportExcelSubmit(w http.ResponseWriter, r *http.Request) {
 	// status에 필요한 컬러를 불러온다.
 	bgcolor := make(map[string]string)
 	textcolor := make(map[string]string)
-	status, err := AllStatus(session)
+	status, err := AllStatusV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1240,7 +1236,7 @@ func handleExportExcelSubmit(w http.ResponseWriter, r *http.Request) {
 		"2D마감",
 		"3D마감",
 	}
-	tasks, err := TasksettingNamesByExcelOrder(session)
+	tasks, err := TasksettingNamesByExcelOrderV2(client)
 	if err != nil {
 		log.Println(err)
 	}
