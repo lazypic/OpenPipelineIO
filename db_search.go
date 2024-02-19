@@ -339,8 +339,8 @@ func SearchV2(client *mongo.Client, op SearchOption) ([]Item, error) {
 
 	findOptions := options.Find()
 	findOptions.SetSort(bson.D{{Key: o.Sortkey, Value: -1}})
-	findOptions.SetSkip(int64(CachedAdminSetting.ItemNumberOfPage * (op.Page - 1)))
-	findOptions.SetLimit(int64(CachedAdminSetting.ItemNumberOfPage))
+	//findOptions.SetSkip(int64(CachedAdminSetting.ItemNumberOfPage * (op.Page - 1)))
+	//findOptions.SetLimit(int64(CachedAdminSetting.ItemNumberOfPage))
 
 	cursor, err := collection.Find(ctx, q, findOptions)
 

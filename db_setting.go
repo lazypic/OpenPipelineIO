@@ -163,3 +163,27 @@ func RmTaskSetting(client *mongo.Client, name, typ string) error {
 	}
 	return nil
 }
+
+func TasksettingNamesByExcelOrderV2(client *mongo.Client) ([]string, error) {
+	var tasksettings []Tasksetting
+	var results []string
+
+	collection := client.Database(*flagDBName).Collection("tasksetting")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	opts := options.Find()
+	opts.SetSort(bson.M{"excelorder": 1})
+	cursor, err := collection.Find(ctx, bson.D{}, opts)
+	if err != nil {
+		return results, err
+	}
+	err = cursor.All(ctx, &tasksettings)
+	if err != nil {
+		return results, err
+	}
+	for _, t := range tasksettings {
+		results = append(results, t.Name)
+	}
+	return Unique(results), nil
+}

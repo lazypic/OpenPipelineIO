@@ -1533,10 +1533,6 @@ func handleExportJSONSubmit(w http.ResponseWriter, r *http.Request) {
 
 // handleDownloadExcelFile 함수는 전송된 값을 이용해서 export excel을 처리한다.
 func handleDownloadExcelFile(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
 	ssid, err := GetSessionID(r)
 	if err != nil {
 		http.Redirect(w, r, "/signin", http.StatusSeeOther)
@@ -1546,24 +1542,24 @@ func handleDownloadExcelFile(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	q := r.URL.Query()
 	op := SearchOption{}
 	project := q.Get("project")
 	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need project", http.StatusBadRequest)
 		return
 	}
 	op.Project = project
 	op.Task = q.Get("task")
 	searchword := q.Get("searchword")
 	if searchword == "" {
-		http.Error(w, "검색어를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need searchword", http.StatusBadRequest)
 		return
 	}
 	op.Searchword = searchword
@@ -1573,7 +1569,7 @@ func handleDownloadExcelFile(w http.ResponseWriter, r *http.Request) {
 	op.Assets = true
 	op.Type2d = true
 	op.Type3d = true
-	items, err := Search(session, op)
+	items, err := SearchV2(client, op)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1582,7 +1578,7 @@ func handleDownloadExcelFile(w http.ResponseWriter, r *http.Request) {
 	// status에 필요한 컬러를 불러온다.
 	bgcolor := make(map[string]string)
 	textcolor := make(map[string]string)
-	status, err := AllStatus(session)
+	status, err := AllStatusV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1636,7 +1632,7 @@ func handleDownloadExcelFile(w http.ResponseWriter, r *http.Request) {
 		"2D마감",
 		"3D마감",
 	}
-	tasks, err := TasksettingNamesByExcelOrder(session)
+	tasks, err := TasksettingNamesByExcelOrderV2(client)
 	if err != nil {
 		log.Println(err)
 	}
