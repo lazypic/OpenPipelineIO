@@ -1368,7 +1368,7 @@ func TypeV2(client *mongo.Client, project, name string) (string, error) {
 	defer cancel()
 
 	var items []Item
-	filter := bson.M{"$or": []bson.M{{"name": name, "type": "org"}, {"name": name, "type": "left"}, {"name": name, "type": "asset"}}}
+	filter := bson.M{"$or": []bson.M{{"project": project, "name": name, "type": "org"}, {"project": project, "name": name, "type": "left"}, {"project": project, "name": name, "type": "asset"}}}
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
 		return "", err
