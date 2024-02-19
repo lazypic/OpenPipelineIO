@@ -566,10 +566,6 @@ func handleReportJSON(w http.ResponseWriter, r *http.Request) {
 
 // handleExcelSubmit 함수는 excel 파일을 전송한다.
 func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	ssid, err := GetSessionID(r)
 	if err != nil {
 		http.Redirect(w, r, "/signin", http.StatusSeeOther)
@@ -579,14 +575,14 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	// 사용자의 이름을 구한다.
-	u, err := getUser(session, ssid.ID)
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized) // 사용자가 존재하지 않으면 당연히 Comment를 작성하면 안된다.
 		return
@@ -637,7 +633,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 	rcp.Setting = CachedAdminSetting
 	rcp.SessionID = ssid.ID
 	rcp.SearchOption = handleRequestToSearchOption(r)
-	rcp.User, err = getUser(session, ssid.ID)
+	rcp.User, err = getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -674,11 +670,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 		if name == "" { // 샷이름이 없다면 넘긴다.
 			continue
 		}
-		typ, err := Type(session, project, name)
-		if err != nil {
-			continue // 샷 타입을 가지고 올 수 없다면 넘긴다.
-		}
-		id, err := GetID(session, project, name)
+		id, err := GetIDV2(client, project, name)
 		if err != nil {
 			continue // 샷 타입을 가지고 올 수 없다면 넘긴다.
 		}
@@ -689,7 +681,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if rnum != "" {
-			err := SetRnum(session, project, name+"_"+typ, rnum)
+			err := SetRnumV2(client, id, rnum)
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
@@ -702,7 +694,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if shottype != "" {
-			_, err := SetShotType(session, project, name, shottype)
+			err := SetShotTypeV2(client, id, shottype)
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
@@ -715,9 +707,9 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if note != "" {
-			itemName, _, err := SetNote(session, project, name+"_"+typ, ssid.ID, note, overwrite)
+			err := SetNoteV2(client, id, ssid.ID, note, overwrite)
 			if err != nil {
-				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: itemName, Error: err.Error()})
+				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
 			}
 		}
@@ -728,7 +720,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if comment != "" {
-			err = AddComment(session, id, ssid.ID, authorName, time.Now().Format(time.RFC3339), comment, "", "")
+			err = AddCommentV2(client, id, ssid.ID, authorName, time.Now().Format(time.RFC3339), comment, "", "")
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
@@ -747,7 +739,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 					rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: "tag에는 특수문자를 사용할 수 없습니다"})
 					continue
 				}
-				_, err = AddTag(session, project, name+"_"+typ, removeSpaceTag)
+				err = AddTagV2(client, id, removeSpaceTag)
 				if err != nil {
 					rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 					continue
@@ -765,7 +757,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 				source := strings.Split(s, ":")
 				title := strings.TrimSpace(source[0])
 				path := strings.TrimSpace(source[1])
-				err = AddSource(session, id, ssid.ID, title, path)
+				err = AddSourceV2(client, id, ssid.ID, title, path)
 				if err != nil {
 					rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 					continue
@@ -780,7 +772,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if justTimecodeIn != "" {
-			err = SetJustTimecodeIn(session, id, justTimecodeIn)
+			err = SetJustTimecodeInV2(client, id, justTimecodeIn)
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
@@ -793,7 +785,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if justTimecodeOut != "" {
-			err = SetJustTimecodeOut(session, id, justTimecodeOut)
+			err = SetJustTimecodeOutV2(client, id, justTimecodeOut)
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
@@ -811,7 +803,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
 			}
-			err = SetDeadline2D(session, project, id, date)
+			err = SetDeadline2DV2(client, id, date)
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
@@ -829,7 +821,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
 			}
-			err = SetDeadline3D(session, project, id, date)
+			err = SetDeadline3DV2(client, id, date)
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
@@ -847,7 +839,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
 			}
-			err = SetFindate(session, project, name, date)
+			err = SetFindateV2(client, id, date)
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
@@ -860,7 +852,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if finver != "" {
-			err = SetFinver(session, project, name, finver)
+			err = SetFinverV2(client, id, finver)
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
@@ -878,7 +870,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
 			}
-			err = SetFrame(session, id, "handlein", num)
+			err = SetFrameV2(client, id, "handlein", num)
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
@@ -896,7 +888,7 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue
 			}
-			err = SetFrame(session, id, "handleout", num)
+			err = SetFrameV2(client, id, "handleout", num)
 			if err != nil {
 				rcp.ErrorItems = append(rcp.ErrorItems, ErrorItem{Name: name, Error: err.Error()})
 				continue

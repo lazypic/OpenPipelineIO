@@ -1378,10 +1378,72 @@ func TypeV2(client *mongo.Client, project, name string) (string, error) {
 		return "", err
 	}
 	if len(items) == 0 {
-		return "", errors.New(name + "에 해당하는 org,left,asset 타입을 DB에서 찾을 수 없습니다.")
+		return "", errors.New(name + "no item")
 	}
 	if len(items) != 1 {
 		return "", errors.New(name + "값이 DB에서 고유하지 않습니다.")
 	}
 	return items[0].Type, nil
+}
+
+func GetIDV2(client *mongo.Client, project, name string) (string, error) {
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var items []Item
+	filter := bson.M{"$or": []bson.M{{"project": project, "name": name}, {"project": project, "name": name}, {"project": project, "name": name}}}
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		return "", err
+	}
+	err = cursor.All(ctx, &items)
+	if err != nil {
+		return "", err
+	}
+	if len(items) == 0 {
+		return "", errors.New(name + "no item")
+	}
+	if len(items) != 1 {
+		return "", errors.New(name + "값이 DB에서 고유하지 않습니다.")
+	}
+	return items[0].ID, nil
+}
+
+func SetFindateV2(client *mongo.Client, id, date string) error {
+	fullTime, err := ditime.ToFullTime(19, date)
+	if err != nil {
+		return err
+	}
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"findate": fullTime, "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
+}
+
+func SetFinverV2(client *mongo.Client, id, version string) error {
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": id}
+	update := bson.M{"$set": bson.M{"finver": version, "updatetime": time.Now().Format(time.RFC3339)}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id: " + id)
+	}
+	return nil
 }
