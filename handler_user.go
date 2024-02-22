@@ -18,7 +18,6 @@ import (
 
 	"github.com/dchest/captcha"
 	"github.com/disintegration/imaging"
-	"gopkg.in/mgo.v2"
 )
 
 // handleUser 함수는 유저정보를 출력하는 페이지이다.
@@ -968,21 +967,17 @@ func handleReplaceTagSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	src := r.FormValue("src")
 	dst := r.FormValue("dst")
 
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	// Tags replace
-	err = ReplaceTags(session, src, dst)
+	err = ReplaceTagsV2(client, src, dst)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

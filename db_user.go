@@ -400,3 +400,41 @@ func rmUserV2(client *mongo.Client, id string) error {
 	}
 	return nil
 }
+
+func ReplaceTagsV2(client *mongo.Client, old, new string) error {
+	collection := client.Database(*flagDBName).Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var users []User
+	filter := bson.M{"tags": primitive.Regex{Pattern: old}}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		return err
+	}
+	err = cursor.All(ctx, &users)
+	if err != nil {
+		return err
+	}
+
+	for _, u := range users {
+		var newTags []string
+		for _, tag := range u.Tags {
+			if tag == old {
+				newTags = append(newTags, new)
+				continue
+			}
+			newTags = append(newTags, tag)
+		}
+		u.Tags = newTags
+		update := bson.D{{Key: "$set", Value: u}}
+		_, err = collection.UpdateOne(ctx, bson.M{"id": u.ID}, update)
+		if err != nil {
+			return err
+		}
+
+	}
+	// 각 유저를 체크하면서 태그이름을 변경한다.
+	return nil
+}

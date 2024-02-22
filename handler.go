@@ -300,7 +300,7 @@ func webserver(port string) {
 	r.HandleFunc("/edituser", handleEditUser)
 	r.HandleFunc("/edituser-submit", handleEditUserSubmit)
 	r.HandleFunc("/replacetag", handleReplaceTag)
-	r.HandleFunc("/replacetag_submit", handleReplaceTagSubmit)
+	r.HandleFunc("/replacetag_submit", handleReplaceTagSubmit).Methods("POST")
 	r.HandleFunc("/invalidaccess", handleInvalidAccess)
 	r.HandleFunc("/invalidpass", handleInvalidPass)
 	r.HandleFunc("/nouser", handleNoUser)
