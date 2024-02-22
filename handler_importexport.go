@@ -1077,7 +1077,7 @@ func handleExportJSON(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	w.Header().Set("Content-Type", "text/html")
+
 	type recipe struct {
 		User
 		Projectlist []string
@@ -1117,7 +1117,7 @@ func handleExportJSON(w http.ResponseWriter, r *http.Request) {
 		}
 		rcp.Projectlist = accessProjects
 	}
-
+	w.Header().Set("Content-Type", "text/html")
 	err = TEMPLATES.ExecuteTemplate(w, "exportjson", rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1842,10 +1842,6 @@ func handleDownloadExcelFile(w http.ResponseWriter, r *http.Request) {
 
 // handleDownloadJSONFile 함수는 전송된 값을 이용해서 export json을 처리한다.
 func handleDownloadJSONFile(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
 	ssid, err := GetSessionID(r)
 	if err != nil {
 		http.Redirect(w, r, "/signin", http.StatusSeeOther)
@@ -1855,24 +1851,24 @@ func handleDownloadJSONFile(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	q := r.URL.Query()
 	op := SearchOption{}
 	project := q.Get("project")
 	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need project", http.StatusBadRequest)
 		return
 	}
 	op.Project = project
 	op.Task = q.Get("task")
 	searchword := q.Get("searchword")
 	if searchword == "" {
-		http.Error(w, "검색어를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need searchword", http.StatusBadRequest)
 		return
 	}
 	op.Searchword = searchword
@@ -1882,7 +1878,7 @@ func handleDownloadJSONFile(w http.ResponseWriter, r *http.Request) {
 	op.Assets = true
 	op.Type2d = true
 	op.Type3d = true
-	items, err := Search(session, op)
+	items, err := SearchV2(client, op)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1899,7 +1895,7 @@ func handleDownloadJSONFile(w http.ResponseWriter, r *http.Request) {
 	}
 	defer os.RemoveAll(tempDir)
 	filename := "currentPage.json"
-	err = ioutil.WriteFile(tempDir+"/"+filename, data, 0664)
+	err = os.WriteFile(tempDir+"/"+filename, data, 0664)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

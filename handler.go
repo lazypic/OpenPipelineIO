@@ -365,7 +365,7 @@ func webserver(port string) {
 	r.HandleFunc("/upload-json", handleUploadJSON)
 	r.HandleFunc("/download-excel-template", handleDownloadExcelTemplate).Methods("GET")
 	r.HandleFunc("/download-excel-file", handleDownloadExcelFile).Methods("GET")
-	r.HandleFunc("/download-json-file", handleDownloadJSONFile)
+	r.HandleFunc("/download-json-file", handleDownloadJSONFile).Methods("GET")
 	r.HandleFunc("/download-csv-file", handleDownloadCsvFile).Methods("GET")
 	r.HandleFunc("/export-dump-project", handleExportDumpProject)
 
