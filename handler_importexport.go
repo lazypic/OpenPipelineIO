@@ -906,10 +906,6 @@ func handleExcelSubmit(w http.ResponseWriter, r *http.Request) {
 
 // handleJSONSubmit 함수는 json 파일을 전송한다.
 func handleJSONSubmit(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	ssid, err := GetSessionID(r)
 	if err != nil {
 		http.Redirect(w, r, "/signin", http.StatusSeeOther)
@@ -919,12 +915,12 @@ func handleJSONSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	// 파일네임을 구한다.
 	tmppath, err := userTemppath(ssid.ID)
 	if err != nil {
@@ -964,7 +960,7 @@ func handleJSONSubmit(w http.ResponseWriter, r *http.Request) {
 	rcp.Setting = CachedAdminSetting
 	rcp.SessionID = ssid.ID
 	rcp.SearchOption = handleRequestToSearchOption(r)
-	rcp.User, err = getUser(session, ssid.ID)
+	rcp.User, err = getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -983,10 +979,10 @@ func handleJSONSubmit(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, i := range rows {
 		if overwrite {
-			err = setItem(session, i) // 기존데이터를 덮어쓰기 한다.
+			err = setItemV2(client, i) // 기존데이터를 덮어쓰기 한다.
 			if err != nil && err == mgo.ErrNotFound {
 				// 새로운 데이터를 추가한다.
-				err = addItem(session, i)
+				err = addItemV2(client, i)
 				if err != nil {
 					log.Println(err)
 				}
@@ -995,7 +991,7 @@ func handleJSONSubmit(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 			// 새로운 데이터를 추가한다.
-			err = addItem(session, i)
+			err = addItemV2(client, i)
 			if err != nil {
 				log.Println(err)
 			}

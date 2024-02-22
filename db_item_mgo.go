@@ -13,33 +13,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func addItem(session *mgo.Session, i Item) error {
-	session.SetMode(mgo.Monotonic, true)
-	// 프로젝트가 존재하는지 체크합니다.
-	c := session.DB(*flagDBName).C("project")
-	num, err := c.Find(bson.M{"id": i.Project}).Count()
-	if err != nil {
-		return err
-	}
-	if num != 1 {
-		return errors.New("프로젝트가 존재하지 않습니다")
-	}
-	//문서의 중복이 있는지 체크합니다.
-	c = session.DB(*flagDBName).C("items")
-	num, err = c.Find(bson.M{"id": i.ID}).Count()
-	if err != nil {
-		return err
-	}
-	if num != 0 {
-		return fmt.Errorf("%s 프로젝트에 %s 아이템이 존재합니다", i.Project, i.ID)
-	}
-	err = c.Insert(i)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func setItem(session *mgo.Session, i Item) error {
 	session.SetMode(mgo.Monotonic, true)
 	i.Updatetime = time.Now().Format(time.RFC3339)
