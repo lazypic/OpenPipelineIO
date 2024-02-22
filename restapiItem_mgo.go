@@ -5433,10 +5433,6 @@ func handleAPIRmTaskPublish(w http.ResponseWriter, r *http.Request) {
 
 // handleAPITaskPublishStatus 함수는 task > publish > status 정보를 변경한다.
 func handleAPISetTaskPublishStatus(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
 		Project    string `json:"project"`
 		ID         string `json:"id"`
@@ -5448,13 +5444,13 @@ func handleAPISetTaskPublishStatus(w http.ResponseWriter, r *http.Request) {
 		UserID     string `json:"userid"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5468,7 +5464,7 @@ func handleAPISetTaskPublishStatus(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	project := r.FormValue("project")
 	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need project", http.StatusBadRequest)
 		return
 	}
 	rcp.Project = project
@@ -5480,25 +5476,25 @@ func handleAPISetTaskPublishStatus(w http.ResponseWriter, r *http.Request) {
 	rcp.ID = id
 	task := r.FormValue("task")
 	if task == "" {
-		http.Error(w, "task를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need task", http.StatusBadRequest)
 		return
 	}
 	rcp.Task = task
 	key := r.FormValue("key")
 	if key == "" {
-		http.Error(w, "key를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need key", http.StatusBadRequest)
 		return
 	}
 	rcp.Key = key
 	path := r.FormValue("path")
 	if path == "" {
-		http.Error(w, "path를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need path", http.StatusBadRequest)
 		return
 	}
 	rcp.Path = path
 	createtime := r.FormValue("createtime")
 	if createtime == "" {
-		http.Error(w, "createtime을 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need createtime", http.StatusBadRequest)
 		return
 	}
 	rcp.Createtime = createtime
@@ -5508,7 +5504,7 @@ func handleAPISetTaskPublishStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rcp.Status = status
-	i, err := getItem(session, id)
+	i, err := getItemV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5518,17 +5514,12 @@ func handleAPISetTaskPublishStatus(w http.ResponseWriter, r *http.Request) {
 			i.Tasks[task].Publishes[key][n].Status = rcp.Status
 		}
 	}
-	err = setItem(session, i)
+	err = setItemV2(client, i)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Publish Status: key: %s, updatetime: %s, status: %s\nProject: %s, ID: %s, Author: %s", rcp.Key, rcp.Createtime, rcp.Status, rcp.Project, rcp.ID, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	data, err := json.Marshal(rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
