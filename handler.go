@@ -444,8 +444,6 @@ func webserver(port string) {
 	r.HandleFunc("/api/timeinfo", handleAPITimeinfo).Methods("POST")
 	r.HandleFunc("/api2/item", handleAPI2GetItem).Methods("GET")
 	r.HandleFunc("/api/rmitemid", handleAPIRmItemID).Methods("POST")
-	r.HandleFunc("/api/items", handleAPI2Items)  // legacy
-	r.HandleFunc("/api2/items", handleAPI2Items) // legacy
 	r.HandleFunc("/api3/items", handleAPI3Items)
 	r.HandleFunc("/api/searchname", handleAPISearchname)
 	r.HandleFunc("/api/seqs", handleAPISeqs)
@@ -666,8 +664,6 @@ func webserver(port string) {
 	r.HandleFunc("/api/fcresource/{id}", putFCResourceHandler).Methods("PUT")
 	r.HandleFunc("/api/fcresource/{id}", deleteFCResourceHandler).Methods("DELETE")
 
-	// Deprecated: 사용하지 않는 url, 과거호환성을 위해서 남겨둠
-	r.HandleFunc("/api/setstartdate", handleAPISetTaskStartdate) // legacy
 	r.Use(mux.CORSMethodMiddleware(r))
 	http.Handle("/", r)
 

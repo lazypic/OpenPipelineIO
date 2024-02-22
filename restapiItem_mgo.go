@@ -204,55 +204,6 @@ func handleAPISearchname(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// handleAPI2Items 함수는 아이템을 검색한다. // legacy
-func handleAPI2Items(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	session, err := mgo.Dial(*flagDBIP)
-	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-		return
-	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
-	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-		return
-	}
-	type recipe struct {
-		Data []Item `json:"data"`
-	}
-	rcp := recipe{}
-	q, err := URLUnescape(r.URL)
-	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-		return
-	}
-	op := SearchOption{
-		Project:    q.Get("project"),
-		Searchword: q.Get("searchword"),
-		Sortkey:    q.Get("sortkey"),
-		Shot:       str2bool(q.Get("shot")),
-		Assets:     str2bool(q.Get("asset")),
-		Type3d:     str2bool(q.Get("type3d")),
-		Type2d:     str2bool(q.Get("type2d")),
-	}
-	result, err := Search(session, op)
-	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-		return
-	}
-	rcp.Data = result
-	err = json.NewEncoder(w).Encode(rcp)
-	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-		return
-	}
-}
-
 // handleAPI3Items 함수는 아이템을 검색한다.
 func handleAPI3Items(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
