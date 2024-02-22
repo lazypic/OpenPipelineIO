@@ -531,9 +531,8 @@ func webserver(port string) {
 	r.HandleFunc("/api/settaskend", handleAPISetTaskEnd).Methods("POST")
 	r.HandleFunc("/api/shottype", handleAPIShottype).Methods("POST")
 	r.HandleFunc("/api/setcrowdasset", handleAPISetCrowdAsset)
-	r.HandleFunc("/api/mailinfo", handleAPIMailInfo)
+	r.HandleFunc("/api/mailinfo", handleAPIMailInfo).Methods("POST")
 	r.HandleFunc("/api/usetypes", handleAPIUseTypes).Methods("GET")
-	r.HandleFunc("/api/publish", handleAPIAddTaskPublish) // legacy
 	r.HandleFunc("/api/addpublish", handleAPIAddTaskPublish).Methods("POST")
 	r.HandleFunc("/api/setpublishstatus", handleAPISetTaskPublishStatus).Methods("POST")
 	r.HandleFunc("/api/rmpublish", handleAPIRmTaskPublish).Methods("POST")

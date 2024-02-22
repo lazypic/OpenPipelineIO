@@ -4696,10 +4696,6 @@ func handleAPIShottype(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIMailInfo 함수는 Email을 전송할 때 필요한 정보를 가지고온다.
 func handleAPIMailInfo(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
 		Project               string   `json:"project"`
 		ID                    string   `json:"id"` // SS_0010_org 형태
@@ -4713,13 +4709,13 @@ func handleAPIMailInfo(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := Recipe{}
 	rcp.ZimbraWebmailEndpoint = CachedAdminSetting.ZimbraWebmailEndpoint
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -4739,7 +4735,7 @@ func handleAPIMailInfo(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ID = id
 
-	p, err := getProject(session, rcp.Project)
+	p, err := getProjectV2(client, rcp.Project)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -4753,7 +4749,7 @@ func handleAPIMailInfo(w http.ResponseWriter, r *http.Request) {
 	} else if regexpUserInfo.MatchString(p.PmEmail) {
 		// User가 설정되어 있을 수 있다.
 		id := strings.Split(p.PmEmail, "(")[0]
-		u, err := getUser(session, id)
+		u, err := getUserV2(client, id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -4770,7 +4766,7 @@ func handleAPIMailInfo(w http.ResponseWriter, r *http.Request) {
 	} else {
 		rcp.Header = p.MailHead
 	}
-	i, err := getItem(session, rcp.ID)
+	i, err := getItemV2(client, rcp.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -4782,7 +4778,7 @@ func handleAPIMailInfo(w http.ResponseWriter, r *http.Request) {
 			if id == rcp.UserID { // 자기 자신에게 이메일을 보내지 않는다.
 				continue
 			}
-			u, err := getUser(session, id)
+			u, err := getUserV2(client, id)
 			if err != nil {
 				continue
 			}
@@ -4806,11 +4802,11 @@ func handleAPIMailInfo(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 			// Task 아티스트의 팀장을 구한다.
-			leaderlist1, err := searchUsers(session, []string{teamName, "팀장"})
+			leaderlist1, err := searchUsersV2(client, []string{teamName, "팀장"})
 			if err != nil {
 				continue
 			}
-			leaderlist2, err := searchUsers(session, []string{teamName, "Lead"})
+			leaderlist2, err := searchUsersV2(client, []string{teamName, "Lead"})
 			if err != nil {
 				continue
 			}
