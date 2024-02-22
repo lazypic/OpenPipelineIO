@@ -2063,17 +2063,13 @@ func handleDownloadExcelTemplate(w http.ResponseWriter, r *http.Request) {
 
 // handleExportDumpProject 함수는 전송된 값을 이용해서 export json을 처리한다.
 func handleExportDumpProject(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, accessLevel, err := TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, accessLevel, err := TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
