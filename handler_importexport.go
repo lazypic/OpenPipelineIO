@@ -1087,19 +1087,19 @@ func handleExportJSON(w http.ResponseWriter, r *http.Request) {
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
 	rcp.SessionID = ssid.ID
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 
-	rcp.User, err = getUser(session, ssid.ID)
+	rcp.User, err = getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Projectlist, err = OnProjectlist(session)
+	rcp.Projectlist, err = OnProjectlistV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
