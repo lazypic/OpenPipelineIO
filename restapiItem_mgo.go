@@ -5054,13 +5054,8 @@ func handleAPIStatusNum(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIAddTaskPublish 함수는 task의 publish 정보를 기록하는 핸들러이다.
 func handleAPIAddTaskPublish(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project        string `json:"project"`
-		Name           string `json:"name"`
+		ID             string `json:"id"`
 		Task           string `json:"task"`
 		Key            string `json:"key"`          // Primary Key
 		SecondaryKey   string `json:"secondarykey"` // Secondary Key
@@ -5079,13 +5074,13 @@ func handleAPIAddTaskPublish(w http.ResponseWriter, r *http.Request) {
 		AuthorNameKor  string `json:"authornamekor"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5094,7 +5089,7 @@ func handleAPIAddTaskPublish(w http.ResponseWriter, r *http.Request) {
 	rcp.AuthorNameKor = r.FormValue("authornamekor")
 	if rcp.AuthorNameKor == "" {
 		// authornamekor 값이 비어있다면, 사용자의 아이디를 이용해서 DB에 등록된 이름을 가지고 온다.
-		user, err := getUser(session, rcp.UserID)
+		user, err := getUserV2(client, rcp.UserID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -5106,32 +5101,26 @@ func handleAPIAddTaskPublish(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
-	rcp.Project = project
-	name := r.FormValue("name")
-	if name == "" {
-		http.Error(w, "name을 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Name = name
+	rcp.ID = id
 	task := r.FormValue("task")
 	if task == "" {
-		http.Error(w, "task를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need task", http.StatusBadRequest)
 		return
 	}
 	rcp.Task = task
 	key := r.FormValue("key")
 	if key == "" {
-		http.Error(w, "key를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need key", http.StatusBadRequest)
 		return
 	}
 	rcp.Key = key
 	// key가 존재하는지 체크한다.
-	if !HasPublishKey(session, key) {
+	if !HasPublishKeyV2(client, key) {
 		http.Error(w, key+" key는 등록된 키가 아닙니다. 사용할 수 없습니다", http.StatusBadRequest)
 		return
 	}
@@ -5178,13 +5167,7 @@ func handleAPIAddTaskPublish(w http.ResponseWriter, r *http.Request) {
 		AuthorNameKor:  rcp.AuthorNameKor,
 		OutputDataPath: rcp.OutputDataPath,
 	}
-	err = addTaskPublish(session, project, name, task, key, p)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Publish: %s:%s\nmainver:%s subver:%s subject:%s\nProject: %s, Name: %s, Author: %s", rcp.Key, rcp.Path, rcp.MainVersion, rcp.SubVersion, rcp.Subject, rcp.Project, rcp.Name, rcp.UserID))
+	err = addTaskPublishV2(client, id, task, key, p)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -5202,25 +5185,20 @@ func handleAPIAddTaskPublish(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIRmTaskPublishKey 함수는 task의 publish key정보를 삭제하는 핸들러이다.
 func handleAPIRmTaskPublishKey(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project string `json:"project"`
-		ID      string `json:"id"`
-		Task    string `json:"task"`
-		Key     string `json:"key"`
-		UserID  string `json:"userid"`
+		ID     string `json:"id"`
+		Task   string `json:"task"`
+		Key    string `json:"key"`
+		UserID string `json:"userid"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5231,12 +5209,6 @@ func handleAPIRmTaskPublishKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
@@ -5245,27 +5217,22 @@ func handleAPIRmTaskPublishKey(w http.ResponseWriter, r *http.Request) {
 	rcp.ID = id
 	task := r.FormValue("task")
 	if task == "" {
-		http.Error(w, "task를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need task", http.StatusBadRequest)
 		return
 	}
 	rcp.Task = task
 	key := r.FormValue("key")
 	if key == "" {
-		http.Error(w, "key를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need key", http.StatusBadRequest)
 		return
 	}
 	rcp.Key = key
-	err = rmTaskPublishKey(session, project, id, task, key)
+	err = rmTaskPublishKeyV2(client, id, task, key)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("RmPublish: %s > %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Key, rcp.Project, rcp.ID, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	data, err := json.Marshal(rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -5278,12 +5245,7 @@ func handleAPIRmTaskPublishKey(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIRmTaskPublish 함수는 task의 publish 정보중 하나를 삭제한다.
 func handleAPIRmTaskPublish(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
-		Project    string `json:"project"`
 		ID         string `json:"id"`
 		Task       string `json:"task"`
 		Key        string `json:"key"`
@@ -5292,13 +5254,13 @@ func handleAPIRmTaskPublish(w http.ResponseWriter, r *http.Request) {
 		UserID     string `json:"userid"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -5309,12 +5271,6 @@ func handleAPIRmTaskPublish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
@@ -5323,44 +5279,31 @@ func handleAPIRmTaskPublish(w http.ResponseWriter, r *http.Request) {
 	rcp.ID = id
 	task := r.FormValue("task")
 	if task == "" {
-		http.Error(w, "task를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need task", http.StatusBadRequest)
 		return
 	}
 	rcp.Task = task
 	key := r.FormValue("key")
 	if key == "" {
-		http.Error(w, "key를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need key", http.StatusBadRequest)
 		return
 	}
 	rcp.Key = key
 	path := r.FormValue("path")
 	if path == "" {
-		http.Error(w, "path를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need path", http.StatusBadRequest)
 		return
 	}
 	rcp.Path = path
 	createtime := r.FormValue("createtime")
 	if createtime == "" {
-		http.Error(w, "createtime을 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need createtime", http.StatusBadRequest)
 		return
 	}
 	rcp.Createtime = createtime
 
-	// 에러 처리
-	// project가 존재하는지 체크
-	err = HasProject(session, project)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	// id가 존재하는지 체크
-	err = HasItem(session, project, id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
 	// Item 가져오기
-	item, err := getItem(session, id)
+	item, err := getItemV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -5410,17 +5353,12 @@ func handleAPIRmTaskPublish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// 에러처리가 끝나면 해당 publish를 지운다.
-	err = rmTaskPublish(session, project, id, task, key, createtime, path)
+	err = rmTaskPublishV2(client, id, task, key, createtime, path)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("RmPublish: %s > %s\nProject: %s, Name: %s, Author: %s", rcp.Task, rcp.Key, rcp.Project, rcp.ID, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	data, err := json.Marshal(rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

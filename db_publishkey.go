@@ -1,47 +1,21 @@
 package main
 
 import (
+	"context"
 	"errors"
+	"fmt"
+	"time"
 
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// SetPublishKey 함수는 PublishKey를 DB에 저장한다.
-func SetPublishKey(session *mgo.Session, key PublishKey) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("publishkey")
-	err := c.Update(bson.M{"id": key.ID}, key)
-	if err != nil {
-		if err == mgo.ErrNotFound {
-			err = c.Insert(key)
-			if err != nil {
-				return err
-			}
-			return nil
-		}
-		return err
-	}
-	return nil
-}
+func HasPublishKeyV2(client *mongo.Client, id string) bool {
+	collection := client.Database(*flagDBName).Collection("publishkey")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-// GetPublishKey 함수는 PublishKey를 DB에서 가지고 온다.
-func GetPublishKey(session *mgo.Session, id string) (PublishKey, error) {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("publishkey")
-	key := PublishKey{}
-	err := c.Find(bson.M{"id": id}).One(&key)
-	if err != nil {
-		return key, err
-	}
-	return key, nil
-}
-
-// HasPublishKey 함수는 PublishKey가 존재하는지 체크하는 함수이다.
-func HasPublishKey(session *mgo.Session, id string) bool {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("publishkey")
-	n, err := c.Find(bson.M{"id": id}).Count()
+	n, err := collection.CountDocuments(ctx, bson.M{"id": id})
 	if err != nil {
 		return false
 	}
@@ -51,43 +25,22 @@ func HasPublishKey(session *mgo.Session, id string) bool {
 	return true
 }
 
-// AddPublishKey 함수는 PublishKey를 DB에 추가한다.
-func AddPublishKey(session *mgo.Session, key PublishKey) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("publishkey")
-	n, err := c.Find(bson.M{"id": key.ID}).Count()
+func addTaskPublishV2(client *mongo.Client, id, task, key string, p Publish) error {
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := HasTaskV2(client, id, task)
 	if err != nil {
 		return err
 	}
-	if n > 0 {
-		return errors.New(key.ID + " PublishKey가 이미 존재합니다")
-	}
-	err = c.Insert(key)
+
+	result, err := collection.UpdateOne(ctx, bson.M{"id": id}, bson.M{"$push": bson.M{fmt.Sprintf("tasks.%s.publishes.%s", task, key): p}})
 	if err != nil {
 		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id" + id)
 	}
 	return nil
-}
-
-// RmPublishKey 함수는 PublishKey를 DB에서 삭제한다.
-func RmPublishKey(session *mgo.Session, id string) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("publishkey")
-	err := c.Remove(bson.M{"id": id})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// AllPublishKeys 함수는 모든 PublishKey 값을 DB에서 가지고 온다.
-func AllPublishKeys(session *mgo.Session) ([]PublishKey, error) {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("publishkey")
-	keys := []PublishKey{}
-	err := c.Find(bson.M{}).Sort("id").All(&keys)
-	if err != nil {
-		return nil, err
-	}
-	return keys, nil
 }

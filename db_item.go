@@ -1523,3 +1523,65 @@ func SearchAllV2(client *mongo.Client, project, sortkey string) ([]Item, error) 
 	}
 	return results, nil
 }
+
+func rmTaskPublishKeyV2(client *mongo.Client, id, taskname, key string) error {
+	item, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+	_, ok := item.Tasks[taskname].Publishes[key]
+	if ok {
+		delete(item.Tasks[taskname].Publishes, key)
+	} else {
+		return fmt.Errorf("no publish key: %s", key)
+	}
+
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": item.ID}
+	update := bson.D{{Key: "$set", Value: item}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id" + item.ID)
+	}
+
+	return nil
+}
+
+func rmTaskPublishV2(client *mongo.Client, id, taskname, key, createtime, path string) error {
+
+	item, err := getItemV2(client, id)
+	if err != nil {
+		return err
+	}
+	var keepList []Publish
+	pubList := item.Tasks[taskname].Publishes[key]
+	for _, p := range pubList {
+		if p.Createtime == createtime && p.Path == path {
+			continue // 삭제데이터의 조건이 맞다면 keepList에 넣지 않는다.
+		}
+		keepList = append(keepList, p)
+	}
+	item.Tasks[taskname].Publishes[key] = keepList // 퍼블리쉬 리스트를 교체한다.
+
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	item.Updatetime = time.Now().Format(time.RFC3339)
+
+	filter := bson.M{"id": item.ID}
+	update := bson.D{{Key: "$set", Value: item}}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no document found with id" + item.ID)
+	}
+	return nil
+}
