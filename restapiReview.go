@@ -152,6 +152,7 @@ func handleAPIAddReview(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(rcp.Review)
 	// 들어가는 데이터는 아래와 같다.
 	// {ObjectID("65d83153eba8ae8d3c0ba810") test SS_0010 comp 2024-02-23T14:46:59+09:00 2024-02-23T14:46:59+09:00 khw7096 김한웅 /Users/woong/OpenPipelineIO_data/review_upload/H264_1280x720_24fps.mov ready wait [] [] []  0  false 24  1 0 true clip .mp4 }
+	// _id: ObjectId('65bef397b85881ca53a6d7b3'),
 	err = addReviewV2(client, rcp.Review)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

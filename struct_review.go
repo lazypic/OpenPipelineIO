@@ -5,7 +5,7 @@ import "go.mongodb.org/mongo-driver/bson/primitive"
 // Review 는 리뷰데이터 자료구조 이다.
 type Review struct {
 	ID                 primitive.ObjectID `json:"id" bson:"_id,omitempty"` // ID
-	Project            string             `json:"project"`                 // 프로젝트
+	Project            string             `json:"project" bson:"project"`  // 프로젝트
 	Name               string             `json:"name"`                    // 샷네임, 에셋네임
 	Task               string             `json:"task"`                    // 태스크
 	Createtime         string             `json:"createtime"`              // 생성시간
