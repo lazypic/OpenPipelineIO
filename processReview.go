@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -159,17 +160,17 @@ func processingReviewClipItem(review Review) {
 }
 
 func processingReviewImageItem(review Review) {
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	reviewID := review.ID.Hex()
 	// 연산 상태를 queued 으로 바꾼다. 바꾸는 이유는 ffmpeg 연산이 10초이상 진행될 때 상태가 바뀌지 않아서 이전에 연산중인 데이터가 다시 연산될 수 있기 때문이다.
-	err = setReviewProcessStatus(session, reviewID, "processing")
+	err = setReviewProcessStatusV2(client, reviewID, "processing")
 	if err != nil {
-		err = setErrReview(session, reviewID, err.Error())
+		err = setErrReviewV2(client, reviewID, err.Error())
 		if err != nil {
 			log.Println(err)
 		}
@@ -177,7 +178,7 @@ func processingReviewImageItem(review Review) {
 	}
 	// ReviewDataPath가 존재하는지 경로를 체크한다.
 	if _, err := os.Stat(CachedAdminSetting.ReviewDataPath); os.IsNotExist(err) {
-		err = setErrReview(session, reviewID, "admin 셋팅에 ReviewDataPath가 존재하지 않습니다")
+		err = setErrReviewV2(client, reviewID, "admin 셋팅에 ReviewDataPath가 존재하지 않습니다")
 		if err != nil {
 			log.Println(err)
 		}
@@ -201,9 +202,9 @@ func processingReviewImageItem(review Review) {
 	}
 
 	// 이미지 연산된 경로가 review 자료구조의 Path값에 들어가야 한다. 업로드된 이미지 경로는 삭제될 수 있기 때문이다.
-	err = setReviewPath(session, reviewID, CachedAdminSetting.ReviewDataPath+"/"+reviewID+review.Ext)
+	err = setReviewPathV2(client, reviewID, CachedAdminSetting.ReviewDataPath+"/"+reviewID+review.Ext)
 	if err != nil {
-		err = setErrReview(session, reviewID, err.Error())
+		err = setErrReviewV2(client, reviewID, err.Error())
 		if err != nil {
 			log.Println(err)
 		}
@@ -214,7 +215,7 @@ func processingReviewImageItem(review Review) {
 	if review.RemoveAfterProcess {
 		err = os.Remove(review.Path)
 		if err != nil {
-			err = setErrReview(session, reviewID, err.Error())
+			err = setErrReviewV2(client, reviewID, err.Error())
 			if err != nil {
 				log.Println(err)
 			}
@@ -223,9 +224,9 @@ func processingReviewImageItem(review Review) {
 	}
 
 	// 연산 상태를 done 으로 바꾼다.
-	err = setReviewProcessStatus(session, reviewID, "done")
+	err = setReviewProcessStatusV2(client, reviewID, "done")
 	if err != nil {
-		err = setErrReview(session, reviewID, err.Error())
+		err = setErrReviewV2(client, reviewID, err.Error())
 		if err != nil {
 			log.Println(err)
 		}

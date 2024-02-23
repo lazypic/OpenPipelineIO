@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -12,8 +13,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"gopkg.in/mgo.v2"
 )
 
 func handleDailyReviewStatus(w http.ResponseWriter, r *http.Request) {
@@ -260,12 +259,12 @@ func handleReviewStatus(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	q := r.URL.Query()
 	type recipe struct {
 		User        User
@@ -292,28 +291,28 @@ func handleReviewStatus(w http.ResponseWriter, r *http.Request) {
 
 	rcp.Searchword = q.Get("searchword")
 	id := q.Get("id")
-	err = rcp.SearchOption.LoadCookie(session, r)
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	u, err := getUser(session, ssid.ID)
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.User = u
-	rcp.Projectlist, err = Projectlist(session)
+	rcp.Projectlist, err = ProjectlistV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.TasksettingNames, err = TasksettingNames(session)
+	rcp.TasksettingNames, err = TaskSettingNamesV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Status, err = AllStatus(session)
+	rcp.Status, err = AllStatusV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -322,20 +321,20 @@ func handleReviewStatus(w http.ResponseWriter, r *http.Request) {
 	rcp.Searchword = setSearchFilter(rcp.Searchword, "itemstatus", rcp.ItemStatus)
 	rcp.Searchword = setSearchFilter(rcp.Searchword, "task", rcp.Task)
 	rcp.Searchword = setSearchFilter(rcp.Searchword, "createtime", rcp.Createtime)
-	
-	rcp.Reviews, err = searchReview(session, rcp.Searchword)
+
+	rcp.Reviews, err = searchReviewV2(client, rcp.Searchword)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if id != "" {
-		review, err := getReview(session, id)
+		review, err := getReviewV2(client, id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		rcp.CurrentReview = review
-		rcp.ReviewGroup, err = searchReview(session, fmt.Sprintf("project:%s name:%s", review.Project, review.Name))
+		rcp.ReviewGroup, err = searchReviewV2(client, fmt.Sprintf("project:%s name:%s", review.Project, review.Name))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

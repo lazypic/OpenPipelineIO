@@ -97,7 +97,7 @@ func addReviewV2(client *mongo.Client, r Review) error {
 	}
 
 	if num != 0 {
-		return errors.New(r.ID.Hex() + " ID를 가진 사용자가 이미 DB에 존재합니다.")
+		return errors.New(r.ID.Hex() + " ID를 가진 문서가 이미 DB에 존재합니다.")
 	}
 	r.Createtime = time.Now().Format(time.RFC3339)
 	_, err = collection.InsertOne(ctx, r)
@@ -105,5 +105,86 @@ func addReviewV2(client *mongo.Client, r Review) error {
 		return err
 	}
 
+	return nil
+}
+
+func getReviewV2(client *mongo.Client, id string) (Review, error) {
+	collection := client.Database(*flagDBName).Collection("review")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	r := Review{}
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return r, err
+	}
+	err = collection.FindOne(ctx, bson.M{"_id": objID}).Decode(&r)
+	if err != nil {
+		return r, err
+	}
+	return r, nil
+}
+
+func setReviewProcessStatusV2(client *mongo.Client, id, status string) error {
+	collection := client.Database(*flagDBName).Collection("review")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	_, err = collection.UpdateByID(ctx, objID, bson.M{"$set": bson.M{"processstatus": status}})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func setErrReviewV2(client *mongo.Client, id, log string) error {
+	collection := client.Database(*flagDBName).Collection("review")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	_, err = collection.UpdateByID(ctx, objID, bson.M{"$set": bson.M{"processstatus": "error", "log": log}})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func setReviewPathV2(client *mongo.Client, id, path string) error {
+	collection := client.Database(*flagDBName).Collection("review")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	_, err = collection.UpdateByID(ctx, objID, bson.M{"$set": bson.M{"path": path}})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func setReviewItemV2(client *mongo.Client, r Review) error {
+	collection := client.Database(*flagDBName).Collection("review")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	update := bson.D{{Key: "$set", Value: r}}
+
+	_, err := collection.UpdateByID(ctx, r.ID, update)
+	if err != nil {
+		return err
+	}
 	return nil
 }

@@ -16,8 +16,8 @@ import (
 	"time"
 
 	"github.com/disintegration/imaging"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 )
 
 // handleAPIAddReviewStatusMode 함수는 review status mode에 review를 추가하는 핸들러이다.
@@ -100,7 +100,7 @@ func handleAPIAddReview(w http.ResponseWriter, r *http.Request) {
 	}
 	path := r.FormValue("path")
 	if path == "" {
-		http.Error(w, "path를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need path", http.StatusBadRequest)
 		return
 	}
 	if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -144,12 +144,14 @@ func handleAPIAddReview(w http.ResponseWriter, r *http.Request) {
 	} else {
 		rcp.SubVersion = subVer
 	}
-	rcp.Review.ID = bson.NewObjectId()
+	rcp.Review.ID = primitive.NewObjectID()
 	rcp.Review.ProcessStatus = "wait" // ffmpeg 연산을 기다리는 상태로 등록한다.
 
 	rcp.Review.RemoveAfterProcess = str2bool(r.FormValue("removeafterprocess"))
 	rcp.Review.OutputDataPath = r.FormValue("outputdatapath")
-
+	fmt.Println(rcp.Review)
+	// 들어가는 데이터는 아래와 같다.
+	// {ObjectID("65d83153eba8ae8d3c0ba810") test SS_0010 comp 2024-02-23T14:46:59+09:00 2024-02-23T14:46:59+09:00 khw7096 김한웅 /Users/woong/OpenPipelineIO_data/review_upload/H264_1280x720_24fps.mov ready wait [] [] []  0  false 24  1 0 true clip .mp4 }
 	err = addReviewV2(client, rcp.Review)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -213,23 +215,19 @@ func handleAPISearchReview(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIReview 함수는 id를 받아서 review 데이터를 반환하는 핸들러이다.
 func handleAPIReview(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	r.ParseForm()
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
-	review, err := getReview(session, id)
+	review, err := getReviewV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1419,13 +1417,13 @@ func handleAPIUploadReviewDrawing(w http.ResponseWriter, r *http.Request) {
 		UserID string `json:"userid"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -1441,12 +1439,16 @@ func handleAPIUploadReviewDrawing(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
-	rcp.Data.ID = bson.ObjectIdHex(id)
+	rcp.Data.ID, err = primitive.ObjectIDFromHex(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	sktch := Sketch{}
 	// 프레임 설정
 	frame := r.FormValue("frame")
 	if frame == "" {
-		http.Error(w, "frame을 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need frame", http.StatusBadRequest)
 		return
 	}
 	sktch.Frame, err = strconv.Atoi(frame)
@@ -1522,7 +1524,7 @@ func handleAPIUploadReviewDrawing(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	review, err := getReview(session, id)
+	review, err := getReviewV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -1539,7 +1541,7 @@ func handleAPIUploadReviewDrawing(w http.ResponseWriter, r *http.Request) {
 		sort.SliceStable(review.Sketches, func(i, j int) bool {
 			return review.Sketches[i].Frame < review.Sketches[j].Frame
 		})
-		err = setReviewItem(session, review)
+		err = setReviewItemV2(client, review)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

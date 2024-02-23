@@ -1393,7 +1393,7 @@ func GetIDV2(client *mongo.Client, project, name string) (string, error) {
 	defer cancel()
 
 	var items []Item
-	filter := bson.M{"$or": []bson.M{{"project": project, "name": name}, {"project": project, "name": name}, {"project": project, "name": name}}}
+	filter := bson.M{"$or": []bson.M{{"project": project, "name": name, "type": "org"}, {"project": project, "name": name, "type": "left"}, {"project": project, "name": name, "type": "asset"}}}
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
 		return "", err
