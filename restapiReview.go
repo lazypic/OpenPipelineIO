@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"image"
@@ -26,13 +27,13 @@ func handleAPIAddReview(w http.ResponseWriter, r *http.Request) {
 		Review
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -41,21 +42,21 @@ func handleAPIAddReview(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	project := r.FormValue("project")
 	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need project", http.StatusBadRequest)
 		return
 	}
 	rcp.Review.Project = project
 
 	name := r.FormValue("name")
 	if name == "" {
-		http.Error(w, "name을 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need name", http.StatusBadRequest)
 		return
 	}
 	rcp.Review.Name = strings.TrimSpace(name) // 앞뒤로 사용자가 빈문자열을 넣을 수 있다. 제거한다.
 
 	task := r.FormValue("task")
 	if task == "" {
-		http.Error(w, "task를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need task", http.StatusBadRequest)
 		return
 	}
 	rcp.Review.Task = task
@@ -70,12 +71,12 @@ func handleAPIAddReview(w http.ResponseWriter, r *http.Request) {
 		rcp.Review.Ext = ".mp4"
 	}
 	rcp.Review.Ext = ext
-	itemID, err := GetID(session, rcp.Review.Project, rcp.Review.Name)
+	itemID, err := GetIDV2(client, rcp.Review.Project, rcp.Review.Name)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	taskinfo, err := GetTask(session, itemID, rcp.Review.Task)
+	taskinfo, err := GetTaskV2(client, itemID, rcp.Review.Task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -90,7 +91,7 @@ func handleAPIAddReview(w http.ResponseWriter, r *http.Request) {
 	rcp.Review.AuthorNameKor = r.FormValue("authornamekor")
 	if rcp.Review.AuthorNameKor == "" {
 		// authornamekor 값이 비어있다면, 사용자의 아이디를 이용해서 DB에 등록된 이름을 가지고 온다.
-		user, err := getUser(session, author)
+		user, err := getUserV2(client, author)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -149,7 +150,7 @@ func handleAPIAddReview(w http.ResponseWriter, r *http.Request) {
 	rcp.Review.RemoveAfterProcess = str2bool(r.FormValue("removeafterprocess"))
 	rcp.Review.OutputDataPath = r.FormValue("outputdatapath")
 
-	err = addReview(session, rcp.Review)
+	err = addReviewV2(client, rcp.Review)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

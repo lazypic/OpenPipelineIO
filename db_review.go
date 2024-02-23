@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"time"
 
@@ -82,5 +83,27 @@ func RmProjectReviewV2(client *mongo.Client, project string) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func addReviewV2(client *mongo.Client, r Review) error {
+	collection := client.Database(*flagDBName).Collection("review")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	num, err := collection.CountDocuments(ctx, bson.M{"_id": r.ID})
+	if err != nil {
+		return err
+	}
+
+	if num != 0 {
+		return errors.New(r.ID.Hex() + " ID를 가진 사용자가 이미 DB에 존재합니다.")
+	}
+	r.Createtime = time.Now().Format(time.RFC3339)
+	_, err = collection.InsertOne(ctx, r)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
