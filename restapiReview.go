@@ -17,6 +17,7 @@ import (
 
 	"github.com/disintegration/imaging"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/mgo.v2"
 )
 
@@ -251,13 +252,13 @@ func handleAPISetReviewItemStatus(w http.ResponseWriter, r *http.Request) {
 		UserID     string `json:"userid"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -277,26 +278,26 @@ func handleAPISetReviewItemStatus(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp.ItemStatus = itemStatus
 	// Review 데이터를 가지고 온다. 해당정보를 이용해서 Task 정보를 수정할 수 있는 정보를 수집한다.
-	review, err := getReview(session, rcp.ID)
+	review, err := getReviewV2(client, rcp.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// 리뷰 ItemStatus를 설정한다.
-	err = setReviewItemStatus(session, rcp.ID, itemStatus)
+	err = setReviewItemStatusV2(client, rcp.ID, itemStatus)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// id를 구한다.
-	id, err := GetID(session, review.Project, review.Name)
+	id, err := GetIDV2(client, review.Project, review.Name)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = SetTaskStatusV2(session, id, review.Task, itemStatus)
+	err = SetTaskStatusV3(client, id, review.Task, itemStatus)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -420,11 +421,6 @@ func handleAPIAddReviewComment(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIAddReviewStatusModeComment 함수는 review status mode에서 comment를 설정하는 RestAPI 이다.
 func handleAPIAddReviewStatusModeComment(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
-
 	type Recipe struct {
 		UserID               string `json:"userid"`
 		ID                   string `json:"id"`
@@ -443,13 +439,13 @@ func handleAPIAddReviewStatusModeComment(w http.ResponseWriter, r *http.Request)
 	rcp := Recipe{}
 	rcp.Protocol = CachedAdminSetting.Protocol
 	rcp.ProductionStartFrame = CachedAdminSetting.ProductionStartFrame
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -461,7 +457,7 @@ func handleAPIAddReviewStatusModeComment(w http.ResponseWriter, r *http.Request)
 	}
 
 	// 사용자의 이름을 구한다.
-	u, err := getUser(session, rcp.UserID)
+	u, err := getUserV2(client, rcp.UserID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized) // 사용자가 존재하지 않으면 당연히 Comment를 작성하면 안된다.
 		return
@@ -481,17 +477,12 @@ func handleAPIAddReviewStatusModeComment(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	rcp.MediaTitle = r.FormValue("mediatitle")
-
-	review, err := getReview(session, rcp.ID)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	rcp.ItemStatus = r.FormValue("itemstatus")
+
 	// Status가 존재하는지 체크하기
-	_, err = GetStatus(session, rcp.ItemStatus)
+	_, err = GetStatusV2(client, rcp.ItemStatus)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if err == mongo.ErrNoDocuments {
 			http.Error(w, rcp.ItemStatus+" Status는 존재하지 않는 Status 입니다", http.StatusBadRequest)
 			return
 		} else {
@@ -521,14 +512,7 @@ func handleAPIAddReviewStatusModeComment(w http.ResponseWriter, r *http.Request)
 	cmt.ItemStatus = rcp.ItemStatus
 	cmt.Frame = rcp.Frame
 
-	err = addReviewComment(session, rcp.ID, cmt)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// slack log
-	err = slacklog(session, review.Project, fmt.Sprintf("Add Review Comment: %s, \nProject: %s, Name: %s, Author: %s", rcp.Text, review.Project, review.Name, rcp.UserID))
+	err = addReviewCommentV2(client, rcp.ID, cmt)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -188,3 +188,58 @@ func setReviewItemV2(client *mongo.Client, r Review) error {
 	}
 	return nil
 }
+
+func setReviewItemStatusV2(client *mongo.Client, id, itemstatus string) error {
+	collection := client.Database(*flagDBName).Collection("review")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	update := bson.M{"$set": bson.M{"itemstatus": itemstatus}}
+
+	_, err = collection.UpdateByID(ctx, objID, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func addReviewCommentV2(client *mongo.Client, id string, cmt Comment) error {
+	if cmt.Text == "" {
+		return errors.New("need comment")
+	}
+
+	collection := client.Database(*flagDBName).Collection("review")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	// 먼저 문서를 조회하여 'comments' 필드 상태 확인
+	var result bson.M
+	if err := collection.FindOne(ctx, bson.M{"_id": objID}).Decode(&result); err != nil {
+		return err
+	}
+
+	// 'comments' 필드가 null이라면 빈 배열로 초기화하는 업데이트 실행
+	if result["comments"] == nil {
+		update := bson.M{"$set": bson.M{"comments": []Comment{cmt}}}
+		if _, err := collection.UpdateByID(ctx, objID, update); err != nil {
+			return err
+		}
+	} else {
+		// 'comments' 필드가 null이 아니라면 댓글 추가
+		update := bson.M{"$push": bson.M{"comments": cmt}}
+		if _, err := collection.UpdateByID(ctx, objID, update); err != nil {
+			return err
+		}
+	}
+	return nil
+}

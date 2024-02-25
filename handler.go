@@ -568,7 +568,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/searchreview", handleAPISearchReview)
 	r.HandleFunc("/api/setreviewitemstatus", handleAPISetReviewItemStatus).Methods("POST")
 	r.HandleFunc("/api/addreviewcomment", handleAPIAddReviewComment)
-	r.HandleFunc("/api/addreviewstatusmodecomment", handleAPIAddReviewStatusModeComment)
+	r.HandleFunc("/api/addreviewstatusmodecomment", handleAPIAddReviewStatusModeComment).Methods("POST")
 	r.HandleFunc("/api/editreviewcomment", handleAPIEditReviewComment)
 	r.HandleFunc("/api/rmreviewcomment", handleAPIRmReviewComment)
 	r.HandleFunc("/api/rmreview", handleAPIRmReview)
