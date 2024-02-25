@@ -243,3 +243,46 @@ func addReviewCommentV2(client *mongo.Client, id string, cmt Comment) error {
 	}
 	return nil
 }
+
+func EditReviewCommentV2(client *mongo.Client, id, date, text, media string, frame int) error {
+
+	reviewItem, err := getReviewV2(client, id)
+	if err != nil {
+		return err
+	}
+	var newComments []Comment
+	for _, comment := range reviewItem.Comments {
+		if comment.Date == date {
+			comment.Text = text
+			comment.Media = media
+			comment.Frame = frame
+		}
+		newComments = append(newComments, comment)
+	}
+	reviewItem.Comments = newComments
+	err = setReviewItemV2(client, reviewItem)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func RmReviewCommentV2(client *mongo.Client, id, date string) error {
+	reviewItem, err := getReviewV2(client, id)
+	if err != nil {
+		return err
+	}
+	var newComments []Comment
+	for _, comment := range reviewItem.Comments {
+		if comment.Date == date {
+			continue
+		}
+		newComments = append(newComments, comment)
+	}
+	reviewItem.Comments = newComments
+	err = setReviewItemV2(client, reviewItem)
+	if err != nil {
+		return err
+	}
+	return nil
+}

@@ -4353,9 +4353,6 @@ function addReviewStatusMode() {
     });
 }
 
-function clickCommentButton() {
-    addReviewComment()
-}
 
 function clickReviewStatusModeCommentButton() {
     addReviewStatusModeComment()
@@ -4679,64 +4676,6 @@ function setReviewName() {
     });
 }
 
-
-function addReviewComment() {
-    $.ajax({
-        url: "/api/addreviewcomment",
-        type: "POST",
-        data: {
-            id: document.getElementById("current-review-id").value,
-            text: document.getElementById("review-comment").value,
-            media: document.getElementById("review-media").value,
-            frame: document.getElementById("currentframe").innerHTML,
-            framecomment: document.getElementById("review-framecomment").checked,
-        },
-        headers: {
-            "Authorization": "Basic "+ document.getElementById("token").value
-        },
-        dataType: "json",
-        success: function(data) {
-            // 데이터가 잘 들어가면 review-comments 에 들어간 데이터를 드로잉한다.
-            let body = data.text.replace(/(?:\r\n|\r|\n)/g, '<br>');
-            let newComment = `<div id="reviewcomment-${data.id}-${data.date}" class="p-1">
-            <span class="text-badge">${data.date} / <a href="/user?id=${data.author}" class="text-darkmode">${data.authorname}</a></span>
-            <span class="edit" data-toggle="modal" data-target="#modal-editreviewcomment" onclick="setEditReviewCommentModal('${data.id}', '${data.date}')">≡</span>
-            <span class="remove" data-toggle="modal" data-target="#modal-rmreviewcomment" onclick="setRmReviewCommentModal('${data.id}','${data.date}')">×</span>
-            <br>
-            `
-            if (data.framecomment) {
-                newComment += `<span class="badge badge-secondary m-1 finger" id="reviewcomment-${data.id}-${data.date}-frame" data-toggle="modal" data-target="#modal-gotoframe" onclick="setModalGotoFrame()">${data.frame}f / ${data.frame+data.productionstartframe-1}f</span>`
-            }
-            newComment += `<small class="text-white">${body}</small>`
-            if (data.media != "") {
-                if (data.media.includes("http")) {
-                    newComment += `<div class="row pl-3 pt-3 pb-1">
-                        <a href="${data.media}" onclick="copyClipboard('${data.media}')">
-                            <img src="/assets/img/link.svg" class="finger">
-                        </a>
-                        <span class="text-white pl-2 small">${data.mediatitle}</span>
-                    </div>`
-                } else {
-                    newComment += `<div class="row pl-3 pt-3 pb-1">
-                        <a href="${data.protocol}://${data.media}" onclick="copyClipboard('${data.media}')">
-                            <img src="/assets/img/link.svg" class="finger">
-                        </a>
-                        <span class="text-white pl-2 small">${data.mediatitle}</span>
-                    </div>`
-                }
-            }
-            newComment += `<hr class="my-1 p-0 m-0 divider"></hr></div>`
-            document.getElementById("review-comments").innerHTML = newComment + document.getElementById("review-comments").innerHTML;
-            // 입력한 값을 초기화 한다.
-            document.getElementById("review-comment").value = ""; 
-            document.getElementById("review-media").value = "";
-            document.getElementById("review-framecomment").checked = false;
-        },
-        error: function(request,status,error){
-            alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-        }
-    });
-}
 
 
 
