@@ -1,39 +1,34 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"strings"
+	"time"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
-func addReview(session *mgo.Session, r Review) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("review")
-	err := c.Insert(r)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // GetWaitProcessStatusReview 함수는 processstatus 가 wait 값인 아이템을 하나 반환하고 상태를 processing으로 바꾼다.
 func GetWaitProcessStatusReview() (Review, error) {
 	var review Review
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		return review, err
 	}
-	defer session.Close()
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("review")
-	err = c.Find(bson.M{"processstatus": "wait"}).One(&review)
+	defer client.Disconnect(context.Background())
+
+	collection := client.Database(*flagDBName).Collection("review")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err = collection.FindOne(ctx, bson.M{"processstatus": "wait"}).Decode(&review)
 	if err != nil {
 		return review, err
 	}
 	// 참고: 아래 부분은 추후 mgo가 아닌 mongo-driver로 바꾸면 한번에 처리할 수 있다.
-	err = setReviewProcessStatus(session, review.ID.Hex(), "queued")
+	err = setReviewProcessStatusV2(client, review.ID.Hex(), "queued")
 	if err != nil {
 		return review, err
 	}
