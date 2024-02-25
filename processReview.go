@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -13,7 +12,6 @@ import (
 	"github.com/alfg/mp4"
 	"github.com/amarburg/go-quicktime"
 	"go.mongodb.org/mongo-driver/mongo"
-	"gopkg.in/mgo.v2"
 )
 
 // ProcessReviewRender 함수는 OpenPipelineIO 가 실행되면서 처리될 프로세싱을 진행한다.
@@ -71,17 +69,17 @@ func queueingReviewItem(jobs chan<- Review) {
 }
 
 func processingReviewClipItem(review Review) {
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	reviewID := review.ID.Hex()
 	// 연산 상태를 queued 으로 바꾼다. 바꾸는 이유는 ffmpeg 연산이 10초이상 진행될 때 상태가 바뀌지 않아서 이전에 연산중인 데이터가 다시 연산될 수 있기 때문이다.
-	err = setReviewProcessStatus(session, reviewID, "processing")
+	err = setReviewProcessStatusV2(client, reviewID, "processing")
 	if err != nil {
-		err = setErrReview(session, reviewID, err.Error())
+		err = setErrReviewV2(client, reviewID, err.Error())
 		if err != nil {
 			log.Println(err)
 		}
@@ -89,7 +87,7 @@ func processingReviewClipItem(review Review) {
 	}
 	// ffmpeg 경로를 체크한다.
 	if _, err := os.Stat(CachedAdminSetting.FFmpeg); os.IsNotExist(err) {
-		err = setErrReview(session, reviewID, "ffmpeg가 존재하지 않습니다")
+		err = setErrReviewV2(client, reviewID, "ffmpeg가 존재하지 않습니다")
 		if err != nil {
 			log.Println(err)
 		}
@@ -97,7 +95,7 @@ func processingReviewClipItem(review Review) {
 	}
 	// ReviewDataPath가 존재하는지 경로를 체크한다.
 	if _, err := os.Stat(CachedAdminSetting.ReviewDataPath); os.IsNotExist(err) {
-		err = setErrReview(session, reviewID, "admin 셋팅에 ReviewDataPath가 존재하지 않습니다")
+		err = setErrReviewV2(client, reviewID, "admin 셋팅에 ReviewDataPath가 존재하지 않습니다")
 		if err != nil {
 			log.Println(err)
 		}
@@ -106,7 +104,7 @@ func processingReviewClipItem(review Review) {
 	// review데이터가 atom 구조를 같는지 체크한다.
 	err = checkQuicktimeFileStruct(review)
 	if err != nil {
-		err = setErrReview(session, reviewID, err.Error())
+		err = setErrReviewV2(client, reviewID, err.Error())
 		if err != nil {
 			log.Println(err)
 		}
@@ -115,7 +113,7 @@ func processingReviewClipItem(review Review) {
 	// mp4를 생성한다.
 	err = genMp4(review)
 	if err != nil {
-		err = setErrReview(session, reviewID, err.Error())
+		err = setErrReviewV2(client, reviewID, err.Error())
 		if err != nil {
 			log.Println(err)
 		}
@@ -124,7 +122,7 @@ func processingReviewClipItem(review Review) {
 	// 생성된 .mp4 파일이 mp4 자료구조를 같는지 체크한다.
 	err = checkMp4FileStruct(review)
 	if err != nil {
-		err = setErrReview(session, reviewID, err.Error())
+		err = setErrReviewV2(client, reviewID, err.Error())
 		if err != nil {
 			log.Println(err)
 		}
@@ -134,7 +132,7 @@ func processingReviewClipItem(review Review) {
 	if review.RemoveAfterProcess {
 		err = os.Remove(review.Path)
 		if err != nil {
-			err = setErrReview(session, reviewID, err.Error())
+			err = setErrReviewV2(client, reviewID, err.Error())
 			if err != nil {
 				log.Println(err)
 			}
@@ -142,16 +140,16 @@ func processingReviewClipItem(review Review) {
 		}
 	}
 	// 연산 상태를 done 으로 바꾼다.
-	err = setReviewProcessStatus(session, reviewID, "done")
+	err = setReviewProcessStatusV2(client, reviewID, "done")
 
 	// 리뷰 데이터를 추가하고 나서 "앗, 리뷰 잘못올렸네~ 취소해야지~하면서.." 서버에서 연산중인 리뷰데이터를 바로 삭제하는 아티스트가 있다.
 	// 이러한 상황에서는 삭제가 일어나면 상태를 바꿀 review 아이템이 DB에 없게 된다.
 	// 만약 상태를 바꾸어야 할 때 해당 리뷰아이템이 없다면 바로 return 하도록 하였다.
-	if err == mgo.ErrNotFound {
+	if err == mongo.ErrNoDocuments {
 		return
 	}
 	if err != nil {
-		err = setErrReview(session, reviewID, err.Error())
+		err = setErrReviewV2(client, reviewID, err.Error())
 		if err != nil {
 			log.Println(err)
 		}
@@ -185,7 +183,7 @@ func processingReviewImageItem(review Review) {
 		return
 	}
 	// image를 리뷰폴더에 복사한다.
-	input, err := ioutil.ReadFile(review.Path)
+	input, err := os.ReadFile(review.Path)
 	if err != nil {
 		log.Println(err)
 		return
@@ -195,7 +193,7 @@ func processingReviewImageItem(review Review) {
 		log.Println(err)
 		return
 	}
-	err = ioutil.WriteFile(CachedAdminSetting.ReviewDataPath+"/"+reviewID+review.Ext, input, os.FileMode(per))
+	err = os.WriteFile(CachedAdminSetting.ReviewDataPath+"/"+reviewID+review.Ext, input, os.FileMode(per))
 	if err != nil {
 		log.Println(err)
 		return

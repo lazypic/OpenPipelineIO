@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -170,7 +170,7 @@ func handleUploadReviewFile(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "허용하지 않는 파일 포맷입니다", http.StatusBadRequest)
 				return
 			}
-			data, err := ioutil.ReadAll(file)
+			data, err := io.ReadAll(file)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -186,7 +186,7 @@ func handleUploadReviewFile(w http.ResponseWriter, r *http.Request) {
 			}
 			var path string
 			if CachedAdminSetting.ReviewUploadPath == "" {
-				path, err = ioutil.TempDir("", "")
+				path, err = os.MkdirTemp("", "")
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
@@ -229,7 +229,7 @@ func handleUploadReviewFile(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 			}
-			err = ioutil.WriteFile(path+"/"+f.Filename, data, os.FileMode(filePerm))
+			err = os.WriteFile(path+"/"+f.Filename, data, os.FileMode(filePerm))
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
