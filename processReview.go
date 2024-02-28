@@ -54,9 +54,6 @@ func queueingReviewItem(jobs chan<- Review) {
 		if err != nil {
 			// 가지고 올 문서가 없다면 기다렸다가 continue.
 			if err == mongo.ErrNoDocuments {
-				if *flagDebug {
-					log.Println(err)
-				}
 				continue
 			}
 			continue

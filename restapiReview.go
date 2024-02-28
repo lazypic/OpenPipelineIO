@@ -172,22 +172,18 @@ func handleAPIAddReview(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISearchReview 함수는 review를 검색하는 핸들러이다.
 func handleAPISearchReview(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
 		UserID  string   `json:"userid"`
 		Reviews []Review `json:"review"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -196,10 +192,10 @@ func handleAPISearchReview(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	searchword := r.FormValue("searchword")
 	if searchword == "" {
-		http.Error(w, "searchword를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need searchword", http.StatusBadRequest)
 		return
 	}
-	reviews, err := searchReview(session, searchword)
+	reviews, err := searchReviewV2(client, searchword)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
