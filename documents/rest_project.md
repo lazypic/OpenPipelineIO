@@ -15,7 +15,6 @@ Python, Go, Java, C++, node.JS 언어를 이용해서 restAPI를 사용할 수 �
 | URI | Description | Attributes | Curl Example |
 | --- | --- | --- | --- |
 | /api/project | 프로젝트 정보를 가지고 옵니다. | project | `$ curl -H "Authorization: Basic <Token>" "https://openpipeline.io/api/project?id=TEMP"` |
-| /api/projects | 프로젝트 상태를 입력하고 프로젝트 정보를 가지고 옵니다. | status | `$ curl -H "Authorization: Basic <Token>" "https://openpipeline.io/api/projects?status=post"` |
 | /api2/projects | 프로젝트의 모든 정보를 가지고 옵니다. | . | `$ curl -H "Authorization: Basic <Token>" "https://openpipeline.io/api2/projects"` |
 | /api/projecttags | 프로젝트에 사용중인 tags 가지고 옵니다. | project | `$ curl -H "Authorization: Basic <Token>" "https://openpipeline.io/api/projecttags?project=TEMP"` |
 | /api/projectassettags | 프로젝트에 사용중인 asssettags 가지고 옵니다. | project | `$ curl -H "Authorization: Basic <Token>" "https://openpipeline.io/api/projectassettags?project=TEMP"` |
@@ -35,9 +34,7 @@ Python, Go, Java, C++, node.JS 언어를 이용해서 restAPI를 사용할 수 �
 import urllib2
 import json
 
-endPoint = "http://10.0.90.251/api/projects" # 기본적으로 현재 작업중인 프로젝트를 가지고옵니다.(pre + post + backup상태)
-# 특정상태의 프로젝트만 가지고 오고 싶다면 status 인수를 사용해주세요.
-# endPoint = "http://10.0.90.251/api/projects?status=pre" # Preproduction 상태를 가진 프로젝트를 가지고 옵니다.
+endPoint = "http://10.0.90.251/api2/projects" # 기본적으로 현재 작업중인 프로젝트를 가지고옵니다.(pre + post + backup상태)
 request = urllib2.Request(endPoint)
 request.add_header("Authorization", "Basic <Token>")
 result = urllib2.urlopen(request)

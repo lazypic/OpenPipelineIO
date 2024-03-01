@@ -509,9 +509,6 @@ func timecodeDpx(path string) (string, error) {
 	}
 	defer f.Close()
 	buffer := bufio.NewReader(f)
-	if err != nil {
-		return "", err
-	}
 	// dpx파일의 최초 4바이트를 읽어온다.
 	c := make([]byte, 4) // 4자리의 바이트설정.
 	_, err = buffer.Read(c)

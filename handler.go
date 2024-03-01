@@ -83,7 +83,7 @@ var funcMap = template.FuncMap{
 	"floatToString":                floatToString,
 }
 
-func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
+func errorHandler(w http.ResponseWriter, status int) {
 	w.WriteHeader(status)
 	if status == http.StatusNotFound {
 		fmt.Fprint(w, "NotFound 404")
@@ -430,7 +430,6 @@ func webserver(port string) {
 
 	// restAPI Project
 	r.HandleFunc("/api/project", handleAPIProject)
-	r.HandleFunc("/api/projects", handleAPIProjects) // legacy
 	r.HandleFunc("/api2/projects", handleAPI2Projects).Methods("GET")
 	r.HandleFunc("/api/addproject", handleAPIAddproject)
 	r.HandleFunc("/api/projecttags", handleAPIProjectTags)
@@ -666,7 +665,7 @@ func webserver(port string) {
 	r.Use(mux.CORSMethodMiddleware(r))
 	http.Handle("/", r)
 
-	if port == ":443" || port == ":8443" { // https ports
+	if port == ":443" { // https ports
 		err := http.ListenAndServeTLS(port, *flagCertFullchanin, *flagCertPrivkey, r)
 		if err != nil {
 			log.Fatal(err)

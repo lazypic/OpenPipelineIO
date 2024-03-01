@@ -176,7 +176,7 @@ func handleItemDetail(w http.ResponseWriter, r *http.Request) {
 // handleIndex 함수는 index 페이지이다.
 func handleIndex(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" { // 등록되지 않은 URL은 NotFound 처리한다.
-		errorHandler(w, r, http.StatusNotFound)
+		errorHandler(w, http.StatusNotFound)
 		return
 	}
 

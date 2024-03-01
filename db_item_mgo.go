@@ -194,16 +194,6 @@ func rmItem(session *mgo.Session, project, name, usertyp string) error {
 	return nil
 }
 
-func rmItemID(session *mgo.Session, project, id string) error {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("items")
-	err := c.Remove(bson.M{"id": id})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // Distinct 함수는 프로젝트, dict key를 받아서 key에 사용되는 모든 문자열을 반환한다. 예) 태그
 func Distinct(session *mgo.Session, project string, key string) ([]string, error) {
 	var result []string

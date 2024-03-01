@@ -165,22 +165,6 @@ def SetThummov(project, name, movpath):
 		err = "restAPI에 접근할 수 없습니다."
 	return err
 
-def Projects(status=None):
-	"""
-	프로젝트 리스트 정보를 가지고 오는 함수.
-	(리스트, err) 값을 반환한다.
-	"""
-	restURL = "https://openpipeline.io/api/projects"
-	if status:
-		restURL += "?status=%s" % status
-	try:
-		projects = json.load(urllib2.urlopen(restURL))
-	except:
-		return [], "RestAPI에 연결할 수 없습니다."
-	if projects["error"]:
-		return [], projects["error"]
-	return projects["data"], None
-
 def Seqs(project):
 	"""
 	프로젝트의 시퀀스 리스트 정보를 가지고 오는 함수.
