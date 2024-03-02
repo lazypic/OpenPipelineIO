@@ -11,7 +11,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -318,30 +317,6 @@ func handleEditUserSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 사용자 수정이후 처리할 스크립트가 admin setting에 선언되어 있다면, 실행합니다.
-	setting, err := GetAdminSettingV2(client)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if setting.RunScriptAfterEditUserProfile != "" {
-		for _, line := range strings.Split(setting.RunScriptAfterEditUserProfile, "\r\n") {
-			cmds := strings.Split(line, " ")
-			// 해당 코드가 연산이 오래걸리면 페이지로 리다이렉션시 오래걸린다.
-			if len(cmds) < 2 {
-				err := exec.Command(line).Run()
-				if err != nil {
-					log.Println(err)
-				}
-			} else {
-				err := exec.Command(cmds[0], cmds[1:]...).Run()
-				if err != nil {
-					log.Println(err)
-				}
-			}
-		}
-	}
 	// 리다이렉션
 	if id != ssid.ID {
 		// 관리자가 일반유저를 수정하는 경우 리다이렉션 URL
@@ -531,22 +506,6 @@ func handleSignupSubmit(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-	}
-	if setting.RunScriptAfterSignup != "" {
-		for _, line := range strings.Split(setting.RunScriptAfterSignup, "\r\n") {
-			cmds := strings.Split(line, " ")
-			if len(cmds) < 2 {
-				err := exec.Command(line).Run()
-				if err != nil {
-					log.Println(err)
-				}
-			} else {
-				err := exec.Command(cmds[0], cmds[1:]...).Run()
-				if err != nil {
-					log.Println(err)
-				}
-			}
-		}
 	}
 
 	type recipe struct {

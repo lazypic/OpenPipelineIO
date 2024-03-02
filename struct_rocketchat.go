@@ -27,16 +27,16 @@ type HookResponse struct {
 	Success bool `json:"success"`
 }
 
-func (msg *HookMessage) SendRocketChat() (*HookResponse, error) {
+func (msg *HookMessage) SendRocketChat(webhookURL, token string) (*HookResponse, error) {
 
 	// Check URL Validate
-	_, err := url.ParseRequestURI(CachedAdminSetting.RocketChatWebHookURL)
+	_, err := url.ParseRequestURI(webhookURL)
 	if err != nil {
 		return nil, err
 	}
 
 	// Check Token Validate
-	if !regexpRocketChatToken.MatchString(CachedAdminSetting.RocketChatToken) {
+	if !regexpRocketChatToken.MatchString(token) {
 		return nil, errors.New("check rocketchat token string")
 	}
 
@@ -44,7 +44,7 @@ func (msg *HookMessage) SendRocketChat() (*HookResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	url := fmt.Sprintf("%s/hooks/%s", CachedAdminSetting.RocketChatWebHookURL, CachedAdminSetting.RocketChatToken)
+	url := fmt.Sprintf("%s/hooks/%s", webhookURL, token)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(opt))
 	if err != nil {
