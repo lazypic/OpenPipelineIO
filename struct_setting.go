@@ -6,8 +6,6 @@ type Setting struct {
 	AppName                        string `json:"appname"`                        // App 이름
 	Copyright                      string `json:"copyright"`                      // Copyright Information
 	EmailDNS                       string `json:"emaildns"`                       // Email DNS 서버이름
-	RunScriptAfterSignup           string `json:"runscriptaftersignup"`           // 사용자 가입이후 실행될 쉘스크립트
-	RunScriptAfterEditUserProfile  string `json:"runscriptafteredituserprofile"`  // 사용자 정보 수정후 실행될 쉘스크립트
 	OCIOConfig                     string `json:"ocioconfig"`                     // OpenColorIO Config Path 설정
 	FFmpeg                         string `json:"ffmpeg"`                         // FFmpeg 경로 셋팅
 	FFprobe                        string `json:"ffprobe"`                        // FFprobe 경로 셋팅
@@ -83,9 +81,6 @@ type Setting struct {
 	NetflixVendorID                      string  `json:"netflixvendorid"`                      // 넷플릭스 벤더ID
 	ZimbraWebmailEndpoint                string  `json:"zimbrawebmailendpoint"`                // Zimbra Webmail Endpoint
 	MongodumpPath                        string  `json:"mongodumppath"`                        // mongodump 경로
-	RocketChatWebHookURL                 string  `json:"rocketchatwebhookurl"`                 // 로켓쳇 웹훅 URL
-	RocketChatToken                      string  `json:"rocketchattoken"`                      // 로켓쳇 토큰
-	EnableRocketChat                     bool    `json:"enablerocketchat"`                     // 로켓쳇 활성화
 	EnableEndpoint                       bool    `json:"enableendpoint"`                       // Endpoint 활성화
 	FullcalendarSchedulerLicenseKey      string  `json:"fullcalendarschedulerlicensekey"`      // Fullcalendar License Key
 	SlateFontPath                        string  `json:"slatefontpath"`                        // Slate에 사용되는 폰트 경로
