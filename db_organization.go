@@ -222,3 +222,63 @@ func getPositionV2(client *mongo.Client, id string) (Position, error) {
 	}
 	return p, nil
 }
+
+func rmDivisionV2(client *mongo.Client, id string) error {
+	collection := client.Database(*flagDBName).Collection("divisions")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	filter := bson.M{"id": id}
+	_, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func rmDepartmentV2(client *mongo.Client, id string) error {
+	collection := client.Database(*flagDBName).Collection("departments")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	filter := bson.M{"id": id}
+	_, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func rmTeamV2(client *mongo.Client, id string) error {
+	collection := client.Database(*flagDBName).Collection("teams")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	filter := bson.M{"id": id}
+	_, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func rmRoleV2(client *mongo.Client, id string) error {
+	collection := client.Database(*flagDBName).Collection("roles")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	filter := bson.M{"id": id}
+	_, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func rmPositionV2(client *mongo.Client, id string) error {
+	collection := client.Database(*flagDBName).Collection("positions")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	filter := bson.M{"id": id}
+	_, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+	return nil
+}
