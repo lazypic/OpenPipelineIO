@@ -166,44 +166,6 @@ func handleAPIRmItemID(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-// handleAPISearchname 함수는 입력 문자열을 포함하는 샷,에셋 정보를 검색한다.
-func handleAPISearchname(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	session, err := mgo.Dial(*flagDBIP)
-	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-		return
-	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
-	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-		return
-	}
-	q := r.URL.Query()
-	project := q.Get("project")
-	name := q.Get("name")
-	items, err := SearchName(session, project, name)
-	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-		return
-	}
-	type recipe struct {
-		Data []Item `json:"data"`
-	}
-	rcp := recipe{}
-	rcp.Data = items
-	err = json.NewEncoder(w).Encode(rcp)
-	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-		return
-	}
-}
-
 // handleAPI3Items 함수는 아이템을 검색한다.
 func handleAPI3Items(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {

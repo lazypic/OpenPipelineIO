@@ -215,20 +215,6 @@ endpoint = "https://openpipeline.io/api3/items?project=TEMP&searchword=comp+배�
 ```
 
 
-#### 샷,에셋에 대한 이름(Name) 검색하기
-- 샷, 에셋에 대하여 문자열이 포함된 이름(Name)으로 검색할 수 있다.
-- adventure 프로젝트의 "R0VFX" 이름을 가진 샷, 에셋 정보를  검색하는 예제이다.
-
-```python
-#coding:utf8
-import json
-import urllib2
-
-endpoint = "https://openpipeline.io/api/searchname?project=adventure&name=R0VFX"
-data = json.load(urllib2.urlopen(endpoint))
-print(data)
-```
-
 #### 시퀀스 리스트 검색하기
 - 프로젝트에 대한 시퀀스 리스트를 검색할 수 있다.
 - 'mkk3' 프로젝트의 시퀀스 리스트를 검색하는 예제이다.

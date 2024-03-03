@@ -444,7 +444,6 @@ func webserver(port string) {
 	r.HandleFunc("/api2/item", handleAPI2GetItem).Methods("GET")
 	r.HandleFunc("/api/rmitemid", handleAPIRmItemID).Methods("POST")
 	r.HandleFunc("/api3/items", handleAPI3Items)
-	r.HandleFunc("/api/searchname", handleAPISearchname)
 	r.HandleFunc("/api/seqs", handleAPISeqs)
 	r.HandleFunc("/api/allshots", handleAPIAllShots)
 	r.HandleFunc("/api2/shots", handleAPI2Shots)
