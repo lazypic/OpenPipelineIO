@@ -24,24 +24,6 @@ func Projectlist(session *mgo.Session) ([]string, error) {
 	return results, nil
 }
 
-// OnProjectlist 함수는 준비중, 진행중, 백업중인 상태의 프로젝트 리스트만 출력하는 함수입니다.
-func OnProjectlist(session *mgo.Session) ([]string, error) {
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(*flagDBName).C("project")
-	projects := []Project{}
-	err := c.Find(bson.M{}).Sort("id").All(&projects)
-	if err != nil {
-		return nil, err
-	}
-	var results []string
-	for _, p := range projects {
-		if p.Status == TestProjectStatus || p.Status == PreProjectStatus || p.Status == PostProjectStatus || p.Status == BackupProjectStatus {
-			results = append(results, p.ID)
-		}
-	}
-	return results, nil
-}
-
 // 프로젝트를 추가하는 함수입니다.
 func addProject(session *mgo.Session, p Project) error {
 	if p.ID == "" {

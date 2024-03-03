@@ -26,43 +26,6 @@ type SearchOption struct {
 	Page       int      `json:"page"`
 }
 
-// SearchOption과 관련된 메소드
-
-func (op *SearchOption) setStatusAll() error {
-	session, err := mgo.Dial(*flagDBIP)
-	if err != nil {
-		return err
-	}
-	defer session.Close()
-	status, err := AllStatus(session)
-	if err != nil {
-		return err
-	}
-	for _, s := range status {
-		op.TrueStatus = append(op.TrueStatus, s.ID)
-	}
-	return nil
-}
-
-func (op *SearchOption) setStatusDefaultV1() error {
-	session, err := mgo.Dial(*flagDBIP)
-	if err != nil {
-		return err
-	}
-	defer session.Close()
-	status, err := AllStatus(session)
-	if err != nil {
-		return err
-	}
-	for _, s := range status {
-		if !s.DefaultOn {
-			continue
-		}
-		op.TrueStatus = append(op.TrueStatus, s.ID)
-	}
-	return nil
-}
-
 func (op *SearchOption) setStatusDefaultV2() error {
 	client, err := initMongoClient()
 	if err != nil {

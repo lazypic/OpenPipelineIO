@@ -464,10 +464,6 @@ func handleReportExcel(w http.ResponseWriter, r *http.Request) {
 
 // handleReportJSON 함수는 json 파일을 체크하고 분석 보고서로 Redirection 한다.
 func handleReportJSON(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
 	ssid, err := GetSessionID(r)
 	if err != nil {
 		http.Redirect(w, r, "/signin", http.StatusSeeOther)
@@ -479,12 +475,12 @@ func handleReportJSON(w http.ResponseWriter, r *http.Request) {
 	}
 	q := r.URL.Query()
 	project := q.Get("project")
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	// 파일네임을 구한다.
 	tmppath, err := userTemppath(ssid.ID)
 	if err != nil {
@@ -501,7 +497,7 @@ func handleReportJSON(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/importjson", http.StatusSeeOther)
 		return
 	}
-	jsonFile, err := ioutil.ReadFile(jsons[0])
+	jsonFile, err := os.ReadFile(jsons[0])
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -523,12 +519,12 @@ func handleReportJSON(w http.ResponseWriter, r *http.Request) {
 	rcp.Project = project
 	rcp.SessionID = ssid.ID
 	rcp.SearchOption = handleRequestToSearchOption(r)
-	rcp.User, err = getUser(session, ssid.ID)
+	rcp.User, err = getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	rcp.Projectlist, err = OnProjectlist(session)
+	rcp.Projectlist, err = OnProjectlistV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
