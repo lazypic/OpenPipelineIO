@@ -18,30 +18,30 @@ OpenPipelineIO는 영화, 드라마, 전시영상, 애니메이션, 게임 등 �
 - [Google Site](https://sites.google.com/view/lazypic/openpipelineio)
 - [Collaborate with other open sources](https://landscape.aswf.io/?category=aswf-member-company&grouping=category&fullscreen=yes)
 
+## 설치 및 실행
+
+데이터베이스, 파이프라인툴, 방화벽 순서대로 설정합니다.
+
 ### 데이터베이스(mongoDB) 설치 및 서비스 실행
 
-- [CentOS7에서 mongoDB 설정](https://github.com/cgiseminar/curriculum/blob/master/docs/install_mongodb.md)
-- [데비안 리눅스에서 설지하기](documents/install_debian.md)
+- [RockyLinux, CentOS 에서 mongoDB 설정](https://github.com/lazypic/tdcourse/blob/master/docs/install_mongodb.md)
+- [데비안 리눅스에서 설치하기](documents/install_debian.md)
 - [macOS에서 설치하기](documents/install_macOS.md)
 - [AWS EC2에 설치하기](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-amazon/)
 
 
-### 간단하게 실행하기
+### OpenPipelineIO 설치 및 실행
+
+https://github.com/lazypic/OpenPipelineIO/releases 에서 최신 버전을 다운받아 압축을 풀어주세요.
 
 ```bash
 openpipelineio -http :80 # 웹서버를 실행합니다.
 openpipelineio -http :80 -reviewrender # 웹서버 및 FFmpeg를 이용하여 리뷰를 렌더링하는 서버
 ```
 
-> 여러분이 macOS를 사용한다면 기본적으로 80포트는 아파치 서버가 사용중일 수 있습니다. 80포트에 실행되는 아파치 서버를 종료하기 위해서 `$ sudo apachectl stop` 를 터미널에 입력해주세요.
+> 여러분이 macOS 또는 리눅스에서 기본 웹서버가 켜진 사용한다면 기본적으로 80포트는 웹서버가 사용중일 수 있습니다. 80포트에 실행되는 아파치 서버를 종료하기 위해서 `$ sudo apachectl stop` 를 터미널에 입력해주세요.
 
-OpenPipelineIO는 [wfs-웹파일시스템](https://github.com/digital-idea/wfs), [웹프로토콜](https://github.com/lazypic/opio)과 같이 연동됩니다. 아래 서비스 실행 및 프로토콜 설치도 같이 진행하면 더욱 편리한 OpenPipelineIO를 활용할 수 있습니다.
-
-```bash
-wfs -http :8081
-```
-
-### CentOS 방화벽 설정
+### 방화벽 설정
 
 다른 컴퓨터에서 접근하기 위해서는 해당 포트를 방화벽 해제합니다.
 
@@ -49,6 +49,14 @@ wfs -http :8081
 sudo firewall-cmd --zone=public --add-port=80/tcp --permanent
 success
 sudo firewall-cmd --reload
+```
+
+### 기타툴의 연동
+
+OpenPipelineIO는 [wfs-웹파일시스템](https://github.com/digital-idea/wfs), [웹프로토콜](https://github.com/lazypic/opio)과 같이 연동됩니다. 아래 서비스 실행 및 프로토콜 설치도 같이 진행하면 더욱 편리한 OpenPipelineIO를 활용할 수 있습니다.
+
+```bash
+wfs -http :8081
 ```
 
 ### CommandLine
