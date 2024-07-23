@@ -27,6 +27,7 @@ OpenPipelineIO는 영화, 드라마, 전시영상, 애니메이션, 게임 등 �
 - [RockyLinux, CentOS 에서 mongoDB 설정](https://github.com/lazypic/tdcourse/blob/master/docs/install_mongodb.md)
 - [데비안 리눅스에서 설치하기](documents/install_debian.md)
 - [macOS에서 설치하기](documents/install_macOS.md)
+- [freeBSD에서 설치하기](documents/install_freebsd.md)
 - [AWS EC2에 설치하기](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-amazon/)
 
 
