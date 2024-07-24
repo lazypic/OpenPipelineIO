@@ -35,6 +35,16 @@ OpenPipelineIO는 영화, 드라마, 전시영상, 애니메이션, 게임 등 �
 
 https://github.com/lazypic/OpenPipelineIO/releases 에서 최신 버전을 다운받아 압축을 풀어주세요.
 
+#### FreeBSD 다운로드 예시
+
+```bash
+wget https://github.com/lazypic/OpenPipelineIO/releases/download/v3.13.19/OpenPipelineIO_freebsd_amd64.tgz
+tar -xzvf ./OpenPipelineIO_freebsd_amd64.tgz
+
+```
+
+#### 실행
+
 ```bash
 openpipelineio -http :80 # 웹서버를 실행합니다.
 openpipelineio -http :80 -reviewrender # 웹서버 및 FFmpeg를 이용하여 리뷰를 렌더링하는 서버
