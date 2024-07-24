@@ -57,6 +57,10 @@ OpenPipelineIO -http :80 -reviewrender # 웹서버 및 FFmpeg를 이용하여 �
 ./OpenPipelineIO -accesslevel 11 -id `최초가입ID명`
 ```
 
+1. OpenPipelineIO 서비스를 다시 실행합니다.
+1. 웹주소에 /adminsetting 값을 붙혀서 최초 admin 설정을 해줍니다.
+1. 서비스를 다시 재시작해줍니다.
+
 > 여러분이 macOS 또는 리눅스에서 기본 웹서버가 켜진 사용한다면 기본적으로 80포트는 웹서버가 사용중일 수 있습니다. 80포트에 실행되는 아파치 서버를 종료하기 위해서 `$ sudo apachectl stop` 를 터미널에 입력해주세요.
 
 ### 방화벽 설정
