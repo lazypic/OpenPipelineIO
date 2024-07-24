@@ -40,14 +40,21 @@ https://github.com/lazypic/OpenPipelineIO/releases 에서 최신 버전을 다�
 ```bash
 wget https://github.com/lazypic/OpenPipelineIO/releases/download/v3.13.19/OpenPipelineIO_freebsd_amd64.tgz
 tar -xzvf ./OpenPipelineIO_freebsd_amd64.tgz
-
 ```
 
 #### 실행
 
 ```bash
-openpipelineio -http :80 # 웹서버를 실행합니다.
-openpipelineio -http :80 -reviewrender # 웹서버 및 FFmpeg를 이용하여 리뷰를 렌더링하는 서버
+OpenPipelineIO -http :80 # 웹서버를 실행합니다.
+OpenPipelineIO -http :80 -reviewrender # 웹서버 및 FFmpeg를 이용하여 리뷰를 렌더링하는 서버
+```
+
+1. 최초에 하단 Sign-up을 눌러서 관리자로 가입합니다.
+1. Ctrl + C를 눌러서 웹서비스를 종료합니다.
+1. 관리자 권한(sudo, su)을 이용해서 가입된 ID에 admin 권한을 줍니다.
+
+```bash
+./OpenPipelineIO -accesslevel 11 -id `최초가입ID명`
 ```
 
 > 여러분이 macOS 또는 리눅스에서 기본 웹서버가 켜진 사용한다면 기본적으로 80포트는 웹서버가 사용중일 수 있습니다. 80포트에 실행되는 아파치 서버를 종료하기 위해서 `$ sudo apachectl stop` 를 터미널에 입력해주세요.
