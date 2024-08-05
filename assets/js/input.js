@@ -4204,12 +4204,8 @@ function mailInfo(project, id) {
             if (/Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)) {
                 document.getElementById("web-mail-link").href = unescape(mailString)
                 document.getElementById("web-mail-link").target = "_blank"
-                document.getElementById("zimbra-mail-link").href = data.zimbrawebmailendpoint + unescape(mailString)
-                document.getElementById("zimbra-mail-link").target = "_blank"
             } else {
                 document.getElementById("web-mail-link").href = unescape(mailString)
-                document.getElementById("zimbra-mail-link").href = data.zimbrawebmailendpoint + unescape(mailString)
-                document.getElementById("zimbra-mail-link").target = "_blank"
             }
         },
         error: function(request,status,error){

@@ -4610,18 +4610,16 @@ func handleAPIShottype(w http.ResponseWriter, r *http.Request) {
 // handleAPIMailInfo 함수는 Email을 전송할 때 필요한 정보를 가지고온다.
 func handleAPIMailInfo(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
-		Project               string   `json:"project"`
-		ID                    string   `json:"id"` // SS_0010_org 형태
-		Title                 string   `json:"title"`
-		Header                string   `json:"header"`
-		Mails                 []string `json:"mails"`
-		Cc                    []string `json:"cc"`
-		UserID                string   `json:"userid"`
-		Lang                  string   `json:"lang"`
-		ZimbraWebmailEndpoint string   `json:"zimbrawebmailendpoint"`
+		Project string   `json:"project"`
+		ID      string   `json:"id"` // SS_0010_org 형태
+		Title   string   `json:"title"`
+		Header  string   `json:"header"`
+		Mails   []string `json:"mails"`
+		Cc      []string `json:"cc"`
+		UserID  string   `json:"userid"`
+		Lang    string   `json:"lang"`
 	}
 	rcp := Recipe{}
-	rcp.ZimbraWebmailEndpoint = CachedAdminSetting.ZimbraWebmailEndpoint
 	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
