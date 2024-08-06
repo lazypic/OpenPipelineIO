@@ -143,7 +143,7 @@ func main() {
 		}
 		defer client.Disconnect(context.Background())
 
-		admin, err := GetAdminSettingV2(client) // **V2 로 변경하기**
+		admin, err := GetAdminSettingV2(client)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -155,25 +155,25 @@ func main() {
 			log.Println("admin 설정창의 thumbnail 경로지정이 필요합니다.")
 		}
 
-		plist, err := ProjectlistV2(client) // **V2 로 변경하기**
+		plist, err := ProjectlistV2(client)
 		if err != nil {
 			log.Fatal(err)
 		}
 		// 프로젝트가 존재하지 않는다면 test 프로젝트를 추가한다.
 		if len(plist) == 0 {
 			p := *NewProject("test")
-			err = addProjectV2(client, p) // **V2 로 변경하기**
+			err = addProjectV2(client, p)
 			if err != nil {
 				log.Fatal(err)
 			}
 		}
 
 		if *flagHTTPPort == ":80" {
-			fmt.Printf("Service start: http://%s\n", ip)
+			fmt.Printf("Service running: http://%s\n", ip)
 		} else if *flagHTTPPort == ":443" {
-			fmt.Printf("Service start: https://%s\n", ip)
+			fmt.Printf("Service running: https://%s\n", ip)
 		} else {
-			fmt.Printf("Service start: http://%s%s\n", ip, *flagHTTPPort)
+			fmt.Printf("Service running: http://%s%s\n", ip, *flagHTTPPort)
 		}
 		vfsTempates, err := LoadTemplates()
 		if err != nil {
@@ -181,10 +181,10 @@ func main() {
 		}
 		TEMPLATES = vfsTempates
 		if *flagReviewRender {
-			go ProcessReviewRender() // 연산(Review데이터 등등)이 필요한 것들이 있다면 연산을 시작한다.
+			go ProcessReviewRender() // If review data is available, start processing.
 		}
 		if *flagScanPlateRender {
-			go ProcessScanPlateRender() // 연산(Review데이터 등등)이 필요한 것들이 있다면 연산을 시작한다.
+			go ProcessScanPlateRender() // If scan data is available, start processing.
 		}
 		webserver(*flagHTTPPort)
 
