@@ -14,7 +14,7 @@ import (
 
 func addPartner(client *mongo.Client, s Partner) error {
 	if s.Name == "" {
-		return errors.New("nead name")
+		return errors.New("need name")
 	}
 	collection := client.Database(*flagDBName).Collection("partner")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -25,7 +25,7 @@ func addPartner(client *mongo.Client, s Partner) error {
 		return err
 	}
 	if num != 0 {
-		return errors.New("같은 이름을 가진 데이터가 있습니다")
+		return errors.New("A name with the same name already exists, so it cannot be created")
 	}
 	_, err = collection.InsertOne(ctx, s)
 	if err != nil {

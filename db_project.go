@@ -28,10 +28,10 @@ func ProjectlistV2(client *mongo.Client) ([]string, error) {
 // 프로젝트를 추가하는 함수입니다.
 func addProjectV2(client *mongo.Client, p Project) error {
 	if p.ID == "" {
-		return errors.New("빈 문자열입니다. 프로젝트를 생성할 수 없습니다")
+		return errors.New("The string is empty. Unable to create the project")
 	}
 	if p.ID == "user" {
-		return errors.New("user 이름으로 프로젝트를 생성할 수 없습니다")
+		return errors.New("Unable to create a project with the name 'user'")
 	}
 	collection := client.Database(*flagDBName).Collection("project")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -41,7 +41,7 @@ func addProjectV2(client *mongo.Client, p Project) error {
 		return err
 	}
 	if num != 0 {
-		return errors.New("같은 프로젝트가 존재해서 프로젝트를 생성할 수 없습니다")
+		return errors.New("A project with the same name already exists, so it cannot be created")
 	}
 	_, err = collection.InsertOne(ctx, p)
 	if err != nil {
