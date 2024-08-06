@@ -92,7 +92,7 @@ func initMongoClient() (*mongo.Client, error) {
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	log.SetPrefix("OpenPipelineIO: ")
+	log.SetPrefix("OPIO: ")
 	flag.Usage = usage
 	flag.Parse()
 	if *flagVersion {
