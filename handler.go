@@ -638,13 +638,6 @@ func webserver(port string) {
 	r.HandleFunc("/api/moneytype/{id}", putMoneytypeHandler).Methods("PUT")
 	r.HandleFunc("/api/moneytype/{id}", deleteMoneytypeHandler).Methods("DELETE")
 
-	// REST API R&R
-	r.HandleFunc("/api/step", helpMethodOptionsHandler).Methods(http.MethodGet, http.MethodPut, http.MethodDelete, http.MethodOptions)
-	r.HandleFunc("/api/step", postStepHandler).Methods("POST")
-	r.HandleFunc("/api/step/{id}", getStepHandler).Methods("GET")
-	r.HandleFunc("/api/step/{id}", putStepHandler).Methods("PUT")
-	r.HandleFunc("/api/step/{id}", deleteStepHandler).Methods("DELETE")
-
 	// REST API FullCalendar Event
 	r.HandleFunc("/api/fcevent", helpMethodOptionsHandler).Methods(http.MethodGet, http.MethodPut, http.MethodDelete, http.MethodOptions)
 	r.HandleFunc("/api/fcevent", postFCEventHandler).Methods("POST")
