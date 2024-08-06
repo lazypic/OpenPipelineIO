@@ -58,7 +58,7 @@ func DistinctDdlineV2(client *mongo.Client, project string, key string) ([]strin
 	sort.Strings(results)
 
 	if *flagDebug {
-		fmt.Println("DB에서 가지고온 마감일 리스트")
+		fmt.Println("Deadline list from DB")
 		fmt.Println(results)
 		fmt.Println()
 	}
