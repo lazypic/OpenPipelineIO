@@ -15,3 +15,9 @@ $ npx mongosh
 
 >> show dbs
 ```
+
+## Install mongodb50-5.0.29
+
+```
+pkg install mongodb50
+```
