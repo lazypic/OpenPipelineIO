@@ -2,7 +2,7 @@
 
 ```bash
 pkg install mongodb70
-pkg isntall node
+pkg install node
 pkg install npm
 pkg install mongodb-tools
 ```
