@@ -862,10 +862,6 @@ span.player-trash {
 	vertical-align: top;
 }
 
-.netflix-red {
-	color: #E40813;
-}
-
 .form-check-input:checked {
     background-color: rgb(255, 198, 83) !important;
     border-color: rgb(115, 115, 115) !important;

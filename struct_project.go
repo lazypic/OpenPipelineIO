@@ -41,7 +41,6 @@ type Mov struct {
 // Project 정보를 담는 자료구조
 type Project struct {
 	ID                       string        `json:"id"`                       // 프로젝트 ID
-	NetflixShowID            string        `json:"netflixshowid"`            // 넷플릭스 Show ID
 	Name                     string        `json:"name"`                     // 프로젝트 한글이름
 	ProjectType              string        `json:"projecttype"`              // 프로젝트 타입, 타입설정, "A","B","C"
 	MailHead                 string        `json:"mailhead"`                 // 이메일헤드 "[부산행]"

@@ -159,8 +159,6 @@ func GenQueryV2(client *mongo.Client, op SearchOption) (SearchOption, bson.M) {
 			query = append(query, bson.M{"episode": &primitive.Regex{Pattern: strings.TrimPrefix(word, "episode:"), Options: "i"}})
 		} else if strings.HasPrefix(word, "season:") {
 			query = append(query, bson.M{"season": &primitive.Regex{Pattern: strings.TrimPrefix(word, "season:"), Options: "i"}})
-		} else if strings.HasPrefix(word, "netflixid:") {
-			query = append(query, bson.M{"netflixid": &primitive.Regex{Pattern: strings.TrimPrefix(word, "netflixid:"), Options: "i"}})
 		} else if strings.HasPrefix(word, "status:") {
 			status := strings.TrimPrefix(word, "status:")
 			// 검색바에서 task를 선택했다면,

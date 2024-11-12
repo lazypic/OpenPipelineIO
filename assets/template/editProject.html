@@ -51,7 +51,7 @@
 								<option value="영화" {{if eq .Project.Style "영화" }}selected{{end}}>영화</option>
 								<option value="드라마" {{if eq .Project.Style "드라마" }}selected{{end}}>드라마</option>
 								<option value="애니메이션" {{if eq .Project.Style "애니메이션" }}selected{{end}}>애니메이션</option>
-								<option value="netflix" {{if eq .Project.Style "netflix" }}selected{{end}}>Netflix</option>
+								<option value="ott" {{if eq .Project.Style "ott" }}selected{{end}}>OTT</option>
 								<option value="youtube" {{if eq .Project.Style "youtube" }}selected{{end}}>Youtube</option>
 								<option value="cinematic" {{if eq .Project.Style "cinematic" }}selected{{end}}>Cinematic</option>
 								<option value="mediafacade" {{if eq .Project.Style "mediafacade" }}selected{{end}}>Media Fasade</option>
@@ -77,10 +77,6 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col">
-							<small class="form-text text-muted">넷플릭스 Show ID</small>
-							<input type="text" name="NetflixShowID" class="form-control" placeholder="넷플릭스 Show ID" value="{{.Project.NetflixShowID}}">
-						</div>
 						<div class="col">
 							<div class="form-group">
 								<small class="form-text text-muted">ProjectType</small>
