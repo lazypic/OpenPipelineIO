@@ -150,7 +150,12 @@ func GenQueryV2(client *mongo.Client, op SearchOption) (SearchOption, bson.M) {
 		} else if strings.HasPrefix(word, "shottype:") {
 			query = append(query, bson.M{"shottype": &primitive.Regex{Pattern: strings.TrimPrefix(word, "shottype:"), Options: "i"}})
 		} else if strings.HasPrefix(word, "type:shot") {
-			query = append(query, bson.M{"$or": []bson.M{{"type": "org"}, {"type": "left"}}})
+			query = append(query, bson.M{"$or": []bson.M{
+				{"type": "org"},
+				{"type": "main"},
+				{"type": "mp"},
+				{"type": "left"},
+			}})
 		} else if strings.HasPrefix(word, "type:asset") {
 			query = append(query, bson.M{"type": "asset"})
 		} else if strings.HasPrefix(word, "name:") {
@@ -218,6 +223,8 @@ func GenQueryV2(client *mongo.Client, op SearchOption) (SearchOption, bson.M) {
 				query = append(query, bson.M{})
 			case "shot", "샷", "전샷", "전체샷":
 				query = append(query, bson.M{"type": "org"})
+				query = append(query, bson.M{"type": "main"})
+				query = append(query, bson.M{"type": "mp"})
 				query = append(query, bson.M{"type": "left"})
 			case "asset", "assets", "에셋":
 				query = append(query, bson.M{"type": "asset"})

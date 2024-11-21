@@ -432,7 +432,7 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 		i.Platepath = platePath.String()
 		i.Scantime = now
 		i.Updatetime = now
-		if i.Type == "org" || i.Type == "left" {
+		if i.Type == "org" || i.Type == "main" || i.Type == "mp" || i.Type == "left" {
 			i.StatusV2 = initStatus
 			if setRendersize {
 				width := int(float64(pinfo.PlateWidth) * admin.DefaultScaleRatioOfUndistortionPlate)
@@ -446,7 +446,7 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 		}
 		if genTask {
 			// 기본적으로 생성해야할 Task를 추가한다.
-			if i.Type == "org" || i.Type == "left" {
+			if i.Type == "org" || i.Type == "main" || i.Type == "mp" || i.Type == "left" {
 				i.Tasks = make(map[string]Task)
 				for _, task := range tasks {
 					if !task.InitGenerate {

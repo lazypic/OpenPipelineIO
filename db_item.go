@@ -143,7 +143,12 @@ func TotalnumV2(client *mongo.Client, project string) (Infobarnum, error) {
 
 	var results Infobarnum
 
-	filter := bson.M{"$or": []bson.M{{"project": project, "type": "org"}, {"project": project, "type": "left"}}}
+	filter := bson.M{"$or": []bson.M{
+		{"project": project, "type": "org"},
+		{"project": project, "type": "main"},
+		{"project": project, "type": "mp"},
+		{"project": project, "type": "left"},
+	}}
 	num, err := collection.CountDocuments(ctx, filter)
 	if err != nil {
 		return Infobarnum{}, err
@@ -1369,7 +1374,13 @@ func TypeV2(client *mongo.Client, project, name string) (string, error) {
 	defer cancel()
 
 	var items []Item
-	filter := bson.M{"$or": []bson.M{{"project": project, "name": name, "type": "org"}, {"project": project, "name": name, "type": "left"}, {"project": project, "name": name, "type": "asset"}}}
+	filter := bson.M{"$or": []bson.M{
+		{"project": project, "name": name, "type": "org"},
+		{"project": project, "name": name, "type": "main"},
+		{"project": project, "name": name, "type": "mp"},
+		{"project": project, "name": name, "type": "left"},
+		{"project": project, "name": name, "type": "asset"},
+	}}
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
 		return "", err
@@ -1393,7 +1404,13 @@ func GetIDV2(client *mongo.Client, project, name string) (string, error) {
 	defer cancel()
 
 	var items []Item
-	filter := bson.M{"$or": []bson.M{{"project": project, "name": name, "type": "org"}, {"project": project, "name": name, "type": "left"}, {"project": project, "name": name, "type": "asset"}}}
+	filter := bson.M{"$or": []bson.M{
+		{"project": project, "name": name, "type": "org"},
+		{"project": project, "name": name, "type": "main"},
+		{"project": project, "name": name, "type": "mp"},
+		{"project": project, "name": name, "type": "left"},
+		{"project": project, "name": name, "type": "asset"},
+	}}
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
 		return "", err
@@ -1453,6 +1470,8 @@ func SearchAllShotV2(client *mongo.Client, project, sortkey string) ([]Item, err
 	results := []Item{}
 	queries := []bson.M{}
 	queries = append(queries, bson.M{"project": project, "type": "org"})
+	queries = append(queries, bson.M{"project": project, "type": "main"})
+	queries = append(queries, bson.M{"project": project, "type": "mp"})
 	queries = append(queries, bson.M{"project": project, "type": "left"})
 	filter := bson.M{"$or": queries}
 
@@ -1509,6 +1528,8 @@ func SearchAllV2(client *mongo.Client, project, sortkey string) ([]Item, error) 
 
 	queries := []bson.M{}
 	queries = append(queries, bson.M{"project": project, "type": "org"})
+	queries = append(queries, bson.M{"project": project, "type": "main"})
+	queries = append(queries, bson.M{"project": project, "type": "mp"})
 	queries = append(queries, bson.M{"project": project, "type": "left"})
 	queries = append(queries, bson.M{"project": project, "type": "asset"})
 	filter := bson.M{"$or": queries}

@@ -331,7 +331,7 @@ func handleAPISearchFootages(w http.ResponseWriter, r *http.Request) {
 	}
 	typ := r.FormValue("type")
 	if typ == "" {
-		typ = "org"
+		typ = "main"
 	}
 	method := r.FormValue("method")
 	incolorspace := r.FormValue("incolorspace")
