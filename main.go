@@ -17,7 +17,8 @@ import (
 )
 
 func init() {
-	// unidoc 라이센스키 발급: https://cloud.unidoc.io
+	// add unidoc license : https://cloud.unidoc.io
+	// unidoc : go library for read pdf file
 	err := license.SetMeteredKey(os.Getenv(`UNIDOC_LICENSE_API_KEY`))
 	if *flagDebug {
 		if err != nil {
@@ -37,8 +38,7 @@ var (
 	DNS = "openpipeline.io"
 	// TEMPLATES 값은 웹서버 실행전 사용할 템플릿이다.
 	TEMPLATES = template.New("")
-	// SHA1VER  은 Git SHA1 값이다.
-	SHA1VER = "26b300a004abae553650c924514dc550e7385c9e" // First commit SHA1
+	SHA1VER = "26b300a004abae553650c924514dc550e7385c9e" // First OpenPipelineIO git commit SHA1
 	// BUILDTIME 은 빌드타임 시간이다.
 	BUILDTIME = "2012-11-08T10:00:00" // First commit time
 	// CachedAdminSetting 은 서비스 시작전 어드민 셋팅값을 메모리에 넣어서 사용되는 변수이다.
