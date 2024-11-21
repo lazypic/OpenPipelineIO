@@ -21,6 +21,7 @@ build() {
 # OS 및 아키텍처별 빌드
 build windows amd64
 build linux amd64
+build linux riscv64
 build freebsd amd64
 build darwin amd64
 build darwin arm64 # Apple Silicon 지원
@@ -28,6 +29,7 @@ build darwin arm64 # Apple Silicon 지원
 # 디렉토리 삭제
 rm -rf ./bin/windows_amd64
 rm -rf ./bin/linux_amd64
+rm -rf ./bin/linux_riscv64
 rm -rf ./bin/freebsd_amd64
 rm -rf ./bin/darwin_amd64
 rm -rf ./bin/darwin_arm64
