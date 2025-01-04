@@ -170,7 +170,7 @@
                {{.User.ID}}
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item text-muted" href="/inbox">InBox(Sendbox)</a>
+		    <!--<a class="dropdown-item text-muted" href="/inbox">InBox(Sendbox)</a>-->
               <a class="dropdown-item" href="/user?id={{.User.ID}}">Profile</a>
               <a class="dropdown-item" href="/edituser?id={{.User.ID}}">Edit</a>
               {{if eq .User.ID "guest" "demo" }}
