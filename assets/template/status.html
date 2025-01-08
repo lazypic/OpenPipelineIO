@@ -6,9 +6,10 @@
 <div class="p-2">
 	<div class="text-center mt-5 mb-3">
 		<span class="text-darkmode">
-			프로젝트 진행에 사용되는 상태(Status) 목록입니다.<br>
-			<a href="/addstatus" class="add text-decoration-none ml-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Status 추가">＋</a> 버튼을 눌러 상태(Status)를 추가할 수 있습니다.<br>
-			none status 는 필수로 생성하셔야 합니다.
+			List of statuses for project progress.<br>
+			Click
+			<a href="/addstatus" class="add text-decoration-none ml-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="add status">＋</a> to add a status.<br>
+			The 'none' status is mandatory.
 		</span>
 	</div>
 	{{if .Status}}
@@ -21,9 +22,9 @@
 								<svg class="bi flex-shrink-0 me-2" style="color: {{.TextColor}};" width="20" height="20" role="img" aria-label=""><use xlink:href="#check-box"/></svg>
 							{{end}}
 							{{.ID}}
-							<span class="badge rounded-pill bg-light text-dark">{{.Order}}</span>
+							<span class="badge rounded-pill bg-light text-dark ps-2">{{.Order}}</span>
 							{{if .InitStatus}}
-								<span class="badge bg-danger">초기 상태값 / Default Status</span>
+								<span class="badge bg-danger">Init Status</span>
 							{{end}}
 						</a>
 					</div>
@@ -33,7 +34,7 @@
 	{{else}}
 		<div class="col-lg-4 col-md-6 col-sm-12 mx-auto">
 			<div class="text-center mt-5">
-				<span class="text-darkmode">Status가 존재하지 않습니다. Status를 생성해주세요.</span>
+				<span class="text-darkmode">Status is nothing. need status.</span>
 			</div>
 			<div class="text-center">
 				{{if eq $.User.AccessLevel 4 5 6 7 8 9 10}}
