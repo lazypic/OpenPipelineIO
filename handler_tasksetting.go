@@ -284,7 +284,6 @@ func handleEditTasksettingSubmit(w http.ResponseWriter, r *http.Request) {
 	wfsPath := r.FormValue("wfspath")
 	order := r.FormValue("order")
 	excelorder := r.FormValue("excelorder")
-	pipelinestep := r.FormValue("pipelinestep")
 	initGenerate := str2bool(r.FormValue("initgenerate"))
 	t, err := getTaskSettingV2(client, id)
 	if err != nil {
@@ -307,7 +306,6 @@ func handleEditTasksettingSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	t.ExcelOrder = floatExcelOrder
-	t.Pipelinestep = pipelinestep
 	t.InitGenerate = initGenerate
 	err = SetTaskSettingV2(client, t)
 	if err != nil {

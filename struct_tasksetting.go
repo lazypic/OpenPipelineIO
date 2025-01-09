@@ -13,5 +13,4 @@ type Tasksetting struct {
 	Order        float64           `json:"order"`        // Task 순서. 드로잉시 정렬되는 순서이다. 낮을수록 위쪽
 	ExcelOrder   float64           `json:"excelorder"`   // Excel 문서에서 Task 순서. 낮을수록 앞쪽
 	InitGenerate bool              `json:"initgenerate"` // Item이 만들어질 때 해당 테스크 생성여부
-	Pipelinestep string            `json:"pipelinestep"` // 파이프라인스탭 이름
 }

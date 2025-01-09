@@ -48,15 +48,6 @@
         </div>
         
         
-        <div class="form-group">
-            <label>Default Pipelinestep</label>
-            <select class="form-control" id="pipelinestep" name="pipelinestep">
-                {{if .Tasksetting.Pipelinestep}}
-                    <option value="{{.Tasksetting.Pipelinestep}}" selected>{{.Tasksetting.Pipelinestep}}</option>
-                {{end}}
-            </select>
-            <small class="form-text text-muted">기본 Pipelinestep을 설정합니다.</small>
-        </div>
         <div class="form-check">
             <input type="checkbox" id="initgenerate" name="initgenerate" class="form-check-input" value="true"{{if .Tasksetting.InitGenerate}} checked{{end}}>
             <label class="form-check-label" for="initgenerate">Item 생성시 이 Task를 자동생성 합니다.</label>
