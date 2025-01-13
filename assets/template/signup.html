@@ -1,6 +1,6 @@
 {{define "signup" }}
-{{template "headBootstrap"}}
-<body>
+{{template "headBootstrap5"}}
+<body data-bs-theme="dark">
 
 <div class="container p-5">
     <form action="/signup_submit" method="POST">
@@ -12,34 +12,29 @@
             <div class="form-group">
                 <label>ID <span class="text-danger">*</span></label>
                 <input type="text" name="ID" id="ID" class="form-control" placeholder="ID">
-                <small class="form-text text-muted">아이디를 입력해주세요.</small>
-            </div>
-            <div class="form-group">
-                <label>EmployeeNumber / 사번</label>
-                <input type="text" name="EmployeeNumber" id="EmployeeNumber" class="form-control" placeholder="사번">
-                <small class="form-text text-muted">사번이 있다면 사번을 입력해주세요.</small>
+                <small class="form-text text-muted">Please enter your ID.</small>
             </div>
             <div class="form-group">
                 <label>Password <span class="text-danger">*</span></label>
                 <input type="password" name="Password" id="Password" class="form-control" placeholder="Password">
-                <small class="form-text text-muted">대소문자,숫자,특수문자 포함,8자리 이상을 권장합니다.</small>
+                <small class="form-text text-muted">Use at least 8 characters with uppercase, lowercase, numbers, and special symbols.</small>
             </div>
             <div class="form-group">
                 <label>Confirm Password <span class="text-danger">*</span></label>
                 <input type="password" name="ConfirmPassword" id="ConfirmPassword" class="form-control" placeholder="Confirm Password">
-                <small class="form-text text-muted">다시한번 패스워드를 입력해주세요.</small>
+                <small class="form-text text-muted">Please re-enter your password to confirm.</small>
             </div>
-            <label>Name / 이름</label>
-            <div class="form-row">
+            <label>Name</label>
+            <div class="input-group">
                 <div class="col-4">
-                    <input type="text" name="LastNameKor" id="LastNameKor" class="form-control" placeholder="성">
+                    <input type="text" name="LastNameKor" id="LastNameKor" class="form-control" placeholder="">
                 </div>
                 <div class="col-8">
-                    <input type="text" name="FirstNameKor" id="FirstNameKor" class="form-control" placeholder="이름">
+                    <input type="text" name="FirstNameKor" id="FirstNameKor" class="form-control" placeholder="">
                 </div>
             </div>
-            <small class="form-text text-muted pb-3">한글이름</small>
-            <div class="form-row">
+            <small class="form-text text-muted pb-3">Localization Name</small>
+            <div class="input-group pt-3">
                 <div class="col-8">
                     <input type="text" name="FirstNameEng" id="FirstNameEng" class="form-control" placeholder="First">
                 </div>
@@ -47,39 +42,44 @@
                     <input type="text" name="LastNameEng" id="LastNameEng" class="form-control" placeholder="Last">
                 </div>
             </div>
-            <small class="form-text text-muted pb-3">영문이름. 외국인은 이름이 길기 때문에 FirstName을 닉네임으로 사용합니다.</small>
-            <div class="form-row">
+            <small class="form-text text-muted pb-3">English Name</small>
+            <div class="input-group pt-3">
                 <div class="col-4">
-                    <input type="text" name="LastNameChn" id="LastNameChn" class="form-control" placeholder="성(한자)">
+                    <input type="text" name="LastNameChn" id="LastNameChn" class="form-control" placeholder="">
                 </div>
                 <div class="col-8">
-                    <input type="text" name="FirstNameChn" id="FirstNameChn" class="form-control" placeholder="이름(한자)">
+                    <input type="text" name="FirstNameChn" id="FirstNameChn" class="form-control" placeholder="">
                 </div>
             </div>
-            <small class="form-text text-muted pb-3">중국콘텐츠 크레딧 제작시 한자이름을 요구하는 경우가 있습니다.</small>
+            <small class="form-text text-muted pb-3">If you have a Chinese name, please enter it. A Chinese name in characters may be required for Chinese content credits.</small>
 
             <div class="form-group">
-                <label>E-mail / 사내 이메일</label>
-                <input type="email" name="Email" id="Email" class="form-control" placeholder="사번@{{.Setting.EmailDNS}}">
-                <small class="form-text text-muted">회사 내부에서 사용하는 이메일을 적어주세요.</small>
+                <label>Company E-mail</label>
+                <input type="email" name="Email" id="Email" class="form-control" placeholder="id@{{.Setting.EmailDNS}}">
+                <small class="form-text text-muted">Please enter the email address you use for work.</small>
             </div>
 
             <div class="form-group">
-                <label >E-mail / 외부 이메일</label>
+                <label >Personal E-mail</label>
                 <input type="email" name="EmailExternal" id="EmailExternal" class="form-control" placeholder="E-mail">
-                <small class="form-text text-muted">회사 외부에서 사용하는 이메일을 적어주세요.</small>
+                <small class="form-text text-muted">Please enter the peronal email address.</small>
             </div>
 
             <div class="form-group">
-                <label>Phone / 휴대폰 번호</label>
+                <label>Phone Number</label>
                 <input type="tel" name="Phone" id="Phone" class="form-control" placeholder="Phone number">
-                <small class="form-text text-muted">휴대폰 번호를 입력해주세요.</small>
             </div>
 
             <div class="form-group">
-                <label>Hotline / 사내 전화번호</label>
+                <label>Hotline Number</label>
                 <input type="tel" name="Hotline" id="Hotline" class="form-control" placeholder="Hotline number">
-                <small class="form-text text-muted">사내 전화번호를 입력해주세요.</small>
+                <small class="form-text text-muted">If there is an internal phone network, please enter your internal phone number.</small>
+            </div>
+
+            <div class="form-group">
+                <label>Employee Number</label>
+                <input type="text" name="EmployeeNumber" id="EmployeeNumber" class="form-control" placeholder="">
+                <small class="form-text text-muted">If there is an employee number, please enter your employee number.</small>
             </div>
         </div>
 
@@ -87,14 +87,14 @@
         <div class="col-sm">
 
             <div class="form-group">
-                <label class="mb-0">조직정보</label>
+                <label class="mb-0">Organization</label>
             </div>
             
             <div class="row">
                 <div class="col-4 form-group">
-                    <small class="form-text text-muted">Division / 본부</small>    
+                    <small class="form-text text-muted">Division</small>    
                     <select class="form-control" name="Division" id="Division">
-                        <option value="unknown">해당없음</option>
+                        <option value="unknown">none</option>
                         {{range .Divisions}}
                             <option value="{{.ID}}">{{if .Name}}{{.Name}}{{else}}{{.ID}}{{end}}</option>
                         {{end}}
@@ -102,9 +102,9 @@
                 </div>
 
                 <div class="col-4 form-group">
-                    <small class="form-text text-muted">Dept / 부서</small>    
+                    <small class="form-text text-muted">Dept</small>    
                     <select class="form-control" name="Department" id="Department">
-                        <option value="unknown">해당없음</option>
+                        <option value="unknown">none</option>
                         {{range .Departments}}
                             <option value="{{.ID}}">{{if .Name}}{{.Name}}{{else}}{{.ID}}{{end}}</option>
                         {{end}}
@@ -112,9 +112,9 @@
                 </div>
 
                 <div class="col-4 form-group">
-                    <small class="form-text text-muted">Team / 팀</small>
+                    <small class="form-text text-muted">Team</small>
                     <select class="form-control" name="Team" id="Team">
-                        <option value="unknown">해당없음</option>
+                        <option value="unknown">none</option>
                         {{range .Teams}}
                             <option value="{{.ID}}">{{if .Name}}{{.Name}}{{else}}{{.ID}}{{end}}</option>
                         {{end}}
@@ -124,9 +124,9 @@
             
             <div class="row">
                 <div class="col-4 form-group">
-                    <small class="form-text text-muted">Role / 직책</small>
+                    <small class="form-text text-muted">Role</small>
                     <select class="form-control" name="Role" id="Role">
-                        <option value="unknown">해당없음</option>
+                        <option value="unknown">none</option>
                         {{range .Roles}}
                             <option value="{{.ID}}">{{if .Name}}{{.Name}}{{else}}{{.ID}}{{end}}</option>
                         {{end}}
@@ -134,9 +134,9 @@
                 </div>
     
                 <div class="col-4 form-group">
-                    <small class="form-text text-muted">Position / 직급</small>
+                    <small class="form-text text-muted">Position</small>
                     <select class="form-control" name="Position" id="Position">
-                        <option value="unknown">해당없음</option>
+                        <option value="unknown">none</option>
                         {{range .Positions}}
                             <option value="{{.ID}}">{{if .Name}}{{.Name}}{{else}}{{.ID}}{{end}}</option>
                         {{end}}
@@ -144,54 +144,53 @@
                 </div>
                 <div class="col-4 form-check mt-4">
                     <input type="checkbox" id="Primary" name="Primary" class="form-check-input ml-0" value="true">
-                    <label class="form-check-label small ml-4" for="Primary">Primary<br>주 직책</label>
+                    <label class="form-check-label small ml-4" for="Primary">Primary Role</label>
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row pt-3">
                 <div class="col-12">
-                    <span class="btn btn-darkmode w-100" id="addOrganization">조직정보 추가하기</span>
+                    <span class="btn btn-darkmode w-100" id="addOrganization">ADD Org Info</span>
                 </div>
             </div>
             
             <div class="form-group py-1">
-                <small id="Warning" class="form-text text-warning">조직정보를 설정해주세요.</small>
+                <small id="Warning" class="form-text text-warning">Please set up the organization information.</small>
                 <div id="Organizations"></div>
             </div>
 
             <div class="form-group pt-3">
-                <label>Tags / 태그</label>
+                <label>Tags</label>
                 <input type="hidden" name="OrganizationsForm" id="OrganizationsForm" class="form-control">
-                <input type="text" name="Tags" id="Tags" class="form-control" placeholder="추가 Tags">
-                <small class="form-text text-muted">위에서 선택할 수 없는 정보를 추가적으로 작성합니다.</small>
-                <small class="form-text text-muted">조직은 자주 변화되기 때문에 필요시 Tag를 추가해주세요.</small>
+                <input type="text" name="Tags" id="Tags" class="form-control" placeholder="tag1,tag2">
+                <small class="form-text text-muted">Please enter the tag information.</small>
             </div>
 
             <div class="form-group">
-                <label>Location / 사내 위치정보</label>
-                <input type="text" name="Location" id="Location" class="form-control" placeholder="8층">
-                <small class="form-text text-muted">층수를 입력해주세요.</small>
+                <label>Location Info</label>
+                <input type="text" name="Location" id="Location" class="form-control" placeholder="3F,8F">
+                <small class="form-text text-muted">Please enter additional details about your workplace.</small>
             </div>
 
             <div class="form-group">
-                <label>Timezone / 시간대</label>
+                <label>Timezone</label>
                 <!--$GOROOT/lib/time/zoneinfo.zip-->
                 <select name="Timezone" id="Timezone" class="form-control">
-                    <option value="Asia/Seoul" selected>한국 Asia/Seoul</option>
-                    <option value="Asia/Beijing">중국 Asia/Beijing</option>
-                    <option value="US/Eastern">미국 US/Eastern</option>
-                    <option value="Asia/Tokyo">일본 Asia/Japan</option>
-                    <option value="Asia/Ho_Chi_Minh">베트남 Asia/Vietnam</option>
-                    <option value="Canada/Atlantic">캐나다 Canada/Atlantic</option>
-                    <option value="Canada/Central">캐나다 Canada/Central</option>
-                    <option value="Canada/Eastern">캐나다 Canada/Eastern</option>
-                    <option value="Canada/Mountain">캐나다 Canada/Mountain</option>
-                    <option value="Canada/Newfoundland">캐나다 Canada/Newfoundland</option>
-                    <option value="Canada/Pacific">캐나다 Canada/Pacific</option>
-                    <option value="Canada/Saskatchewan">캐나다 Canada/Saskatchewan</option>
-                    <option value="Canada/Yukon">캐나다 Canada/Yukon</option>
+                    <option value="Asia/Seoul" selected>Asia/Seoul</option>
+                    <option value="Asia/Beijing">Asia/Beijing</option>
+                    <option value="US/Eastern">US/Eastern</option>
+                    <option value="Asia/Tokyo">Asia/Japan</option>
+                    <option value="Asia/Ho_Chi_Minh">Asia/Vietnam</option>
+                    <option value="Canada/Atlantic">Canada/Atlantic</option>
+                    <option value="Canada/Central">Canada/Central</option>
+                    <option value="Canada/Eastern">Canada/Eastern</option>
+                    <option value="Canada/Mountain">Canada/Mountain</option>
+                    <option value="Canada/Newfoundland">Canada/Newfoundland</option>
+                    <option value="Canada/Pacific">Canada/Pacific</option>
+                    <option value="Canada/Saskatchewan">Canada/Saskatchewan</option>
+                    <option value="Canada/Yukon">Canada/Yukon</option>
                 </select>
-                <small class="form-text text-muted">회사 확장을 대비하여 시간대를 선택합니다.</small>
+                <small class="form-text text-muted">select timezone</small>
             </div>
 
             <div class="form-group pt-4">
@@ -201,12 +200,12 @@
                 </div>
                 <input type=hidden name="CaptchaID" id="CaptchaID" value="{{.CaptchaID}}">
                 <input type="text" name="CaptchaNum" id="CaptchaNum" class="form-control" placeholder="">
-                <small class="form-text text-muted">위 이미지에 보이는 숫자를 입력해주세요.</small>
+                <small class="form-text text-muted">Please enter the numbers shown in the image above.</small>
             </div>
         </div>
     </div>     
     <div class="text-center">
-        <button type="submit" class="btn btn-darkmode mt-5" id="SignUp">SIGN UP / 가입하기</button>
+        <button type="submit" class="btn btn-darkmode mt-5" id="SignUp">SIGN UP</button>
     </div>
     </form>
 </div>
@@ -215,8 +214,7 @@
 
 {{template "footerBootstrap" .}}
 </body>
-<script src="/assets/js/jquery-3.1.1.min.js"></script>
-<script src="/assets/bootstrap-4/js/bootstrap.min.js"></script>
+<script src="/assets/bootstrap-5.0.2/js/bootstrap.min.js"></script>
 <script src="/assets/js/signup.js"></script>
 </html>
 {{end}}
