@@ -53,16 +53,8 @@
             <label class="form-check-label" for="initgenerate">Item 생성시 이 Task를 자동생성 합니다.</label>
         </div>
 
-        <div class="form-group pt-5">
-            <label>경로 설정에 사용할 수 있는 변수</label><br>
-            <small class="form-text text-muted">&#123;&#123;.Project&#125;&#125;: 프로젝트 코드</small><br>
-            <small class="form-text text-muted">&#123;&#123;.Task&#125;&#125;: 태스크</small><br>
-            <small class="form-text text-muted">&#123;&#123;.Name&#125;&#125;: 샷이름(SS_0010), 에셋이름</small><br>
-            <small class="form-text text-muted">&#123;&#123;.Seq&#125;&#125;: 시퀀스 SS</small><br>
-            <small class="form-text text-muted">&#123;&#123;.Cut&#125;&#125;: 컷 0010</small><br>
-            <small class="form-text text-muted">&#123;&#123;.Type&#125;&#125;: 타입: shot, asset</small><br>
-            <small class="form-text text-muted">&#123;&#123;.Assettype&#125;&#125;: 에셋타입</small><br>
-        </div>
+        {{template "regexpathop"}}
+
         <div class="text-center">
             <button type="submit" class="btn btn-outline-warning mt-5">Update Task</button>
         </div>
