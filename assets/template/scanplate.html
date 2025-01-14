@@ -1,6 +1,6 @@
 {{define "scanplate" }}
 {{template "headBootstrap5"}}
-<body>
+<body data-bs-theme="dark">
 {{template "navbar-bootstrap5" .}}
 {{template "modal-bootstrap5" .}}
 
@@ -36,9 +36,9 @@
         </div>
 
         <div class="row pt-2">
-            <div class="col">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="row">
-                    <div class="col">
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
                         <div class="form-group pt-2">
                             <label class="text-muted">Method</label>
                             <select id="method" name="method" class="form-control">
@@ -48,15 +48,29 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col">
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
                         <div class="form-group pt-2">
                             <label class="text-muted">Type</label>
-                            <input type="text" id="scanplate-type" class="form-control" placeholder="org" value="org">
+                            <input type="text" list="typelist" id="scanplate-type" class="form-control" placeholder="org" value="">
+			    <datalist id="typelist">
+				    <option value="org">
+				    <option value="main">
+				    <option value="mp">
+				    <option value="src">
+				    <option value="ref">
+				    <option value="left">
+			    </datalist>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="form-group pt-2">
+                            <label class="text-muted">Episode</label>
+                            <input type="text" id="scanplate-episode" class="form-control" placeholder="EP01" value="">
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="form-group pt-2">
                     <label class="text-muted">Name Regular Expression</label>
                     <span class="preset-button float-end" data-bs-toggle="modal" data-bs-target="#modal-preset-scanplatenameregex">Preset</span>
@@ -66,7 +80,7 @@
         </div>
 
         <div class="row pt-2">
-            <div class="col-6">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="form-group">
                     <label class="text-muted">Colorspace</label>
                     <span class="preset-button float-end" data-bs-toggle="modal" data-bs-target="#modal-preset-colorspace">Preset</span>
@@ -86,7 +100,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="form-group">
                     <label class="text-muted">Lookup Table Path</label>
                     <input type="text" id="lutpath" class="form-control" placeholder="/path/name.cube">
@@ -122,12 +136,12 @@
         <div class="row">
             <div class="col-sm">
                 <div class="w-100 btn-group btn-group-sm rounded-bottom" role="group" aria-label="Basic example">
-                    <button type="button" class="btn btn-outline-darkmode" id="download-pdf">Download PDF</button>
-                    <button type="button" class="btn btn-outline-darkmode" id="download-xlsx">Download XLSX</button>
-                    <button type="button" class="btn btn-outline-darkmode" id="download-csv">Download CSV</button>
-                    <button type="button" class="btn btn-outline-darkmode" id="download-json">Download JSON</button>
-                    <button type="button" class="btn btn-outline-darkmode" id="download-html">Download HTML</button>
-                    <button type="button" class="btn btn-outline-darkmode" id="print-table">Print Table</button>
+                    <button type="button" class="btn btn-outline-darkmode" id="download-pdf">PDF</button>
+                    <button type="button" class="btn btn-outline-darkmode" id="download-xlsx">XLSX</button>
+                    <button type="button" class="btn btn-outline-darkmode" id="download-csv">CSV</button>
+                    <button type="button" class="btn btn-outline-darkmode" id="download-json">JSON</button>
+                    <button type="button" class="btn btn-outline-darkmode" id="download-html">HTML</button>
+                    <button type="button" class="btn btn-outline-darkmode" id="print-table">Print</button>
                 </div>
             </div>
             <small class="form-text text-warning">
@@ -152,7 +166,7 @@
             </div>
         </div>
         <div class="row pt-2">
-            <div class="col">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="row">
                     <div class="col">
                         <div class="form-group">
@@ -178,7 +192,7 @@
                 </div>
             </div>
             
-            <div class="col">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="form-group">
                     <label class="text-muted">Token</label>
                     <input type="text" id="scanplatetoken" class="form-control" placeholder="">
@@ -307,8 +321,8 @@
     }
     //define some sample data
     var sources = [
-        {id:1,dir:"/scan/path",base:"SS_0010_org_v001.%04d.exr",ext:".exr",framein:"1001",frameout:"1150",length:150,name:"SS_0010",type:"org",incolorspace:"ACES - ACES2065-1",outcolorspace:"Output - Rec.709",width:"4096",height:"2304",timecodein:"10:11:12:03",timecodeout:"10:11:12:08"},
-        {id:2,dir:"/scan/path",base:"SS_0020_org_v001.%04d.exr",ext:".exr",framein:"1001",frameout:"1050",length:1050,name:"SS_0020",type:"org1",incolorspace:"ACES - ACES2065-1",outcolorspace:"Output - Rec.709",width:"4096",height:"2304",timecodein:"10:11:12:09",timecodeout:"10:11:12:13"},
+        {id:1,dir:"/scan/path",base:"SS_0010_org_v001.%04d.exr",ext:".exr",framein:"1001",frameout:"1150",length:150,name:"SS_0010",type:"org",incolorspace:"ACES - ACES2065-1",outcolorspace:"Output - Rec.709",width:"4096",height:"2304",timecodein:"10:11:12:03",timecodeout:"10:11:12:08",episode:"EP01"},
+        {id:2,dir:"/scan/path",base:"SS_0020_org_v001.%04d.exr",ext:".exr",framein:"1001",frameout:"1050",length:1050,name:"SS_0020",type:"org1",incolorspace:"ACES - ACES2065-1",outcolorspace:"Output - Rec.709",width:"4096",height:"2304",timecodein:"10:11:12:09",timecodeout:"10:11:12:13",episode:"EP01"},
     ];
     
     // Colorspace를 가지고 옵니다.
@@ -356,6 +370,7 @@
             {title:"dir", field:"dir", hozAlign: "left", headerHozAlign:"center", headerSort:false},
             {title:"base", field:"base", hozAlign:"left", headerHozAlign:"center", headerSort:false, cellDblClick:function(e, cell){cell.getRow().delete();}},
             {title:"ext", field:"ext", hozAlign:"center", headerHozAlign:"center", width:50, headerSort:false},
+            {title:"ep", field:"episode", hozAlign:"center", headerHozAlign:"center", width: 60, headerSort:false, editor:"input",},
             {title:"name", field:"name", hozAlign:"center", headerHozAlign:"center", headerSort:false, editor:"input",},
             {title:"type", field:"type", hozAlign:"center", headerHozAlign:"center", width:50, headerSort:false, editor:"input",},
             {title:"in", field:"framein", hozAlign:"center", headerHozAlign:"center", width:50, headerSort:false, editor:"input",},
@@ -504,6 +519,7 @@
             body: new URLSearchParams({
                 "path": document.getElementById("searchpath").value,
                 "type": document.getElementById("scanplate-type").value,
+                "episode": document.getElementById("scanplate-episode").value,
                 "incolorspace": document.getElementById("incolorspace").value,
                 "outcolorspace": document.getElementById("outcolorspace").value,
                 "regex": document.getElementById("regex").value,

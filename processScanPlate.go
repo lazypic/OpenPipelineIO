@@ -130,6 +130,7 @@ func processingScanPlateImageItem(scan ScanPlate) {
 	// ScanPlate 자료구조로 Item 자료구조를 만든다.
 	item := Item{}
 	item.Name = scan.Name
+	item.Episode = scan.Episode
 	item.Type = scan.Type
 	item.UseType = scan.Type
 	item.Project = scan.Project
