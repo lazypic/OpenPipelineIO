@@ -610,27 +610,44 @@ func movSizeFromFFprobe(path string) (int, int, error) {
 	return width, height, nil
 }
 
+type FFProbeOutput struct {
+	Streams []struct {
+		Index    int    `json:"index"`
+		Codec    string `json:"codec_name"`
+		Metadata struct {
+			Timecode string `json:"timecode"`
+		} `json:"tags"`
+	} `json:"streams"`
+}
+
 func movTimecodeInFromFFprobe(path string) (string, error) {
+	timecode := "00:00:00:00"
 	_, err := os.Stat(CachedAdminSetting.FFprobe)
 	if err != nil {
 		return "", err
 	}
-	cmd := exec.Command(CachedAdminSetting.FFprobe, path)
-	var stderr bytes.Buffer
-	cmd.Stderr = &stderr
-	err = cmd.Run()
+	cmd := exec.Command(CachedAdminSetting.FFprobe, "-v", "quiet", "-print_format", "json", "-show_streams", "-show_format", path)
+
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
 	if err != nil {
 		return "", err
 	}
-	re, err := regexp.Compile(`<StartTimecode>(\d{2}:\d{2}:\d{2}:\d{2})</StartTimecode>`)
+
+	// JSON 출력 파싱
+	var result FFProbeOutput
+	err = json.Unmarshal(out.Bytes(), &result)
 	if err != nil {
-		return "", errors.New("the regular expression is invalid")
+		return "", err
 	}
-	results := re.FindStringSubmatch(stderr.String())
-	if results == nil {
-		return "", errors.New("there were no results matching the regular expression condition")
+
+	// timecode 추출
+	for _, stream := range result.Streams {
+		if stream.Metadata.Timecode != "" {
+			timecode = stream.Metadata.Timecode
+		}
 	}
-	timecode := results[1]
 	return timecode, nil
 }
 
