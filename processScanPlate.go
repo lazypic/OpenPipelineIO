@@ -255,7 +255,7 @@ func processingScanPlateImageItem(scan ScanPlate) {
 		return
 	}
 
-	// 썸네일처리
+	// 썸네일처리를 위한 권한을 불러옵니다.
 	uid, err := strconv.Atoi(CachedAdminSetting.ThumbnailImagePathUID)
 	if err != nil {
 		err = SetScanPlateErrStatus(client, scanID, err.Error())
@@ -281,7 +281,7 @@ func processingScanPlateImageItem(scan ScanPlate) {
 		return
 	}
 
-	// 썸네일 경로를 생성한다.
+	// 로드한 권한으로 썸네일 경로를 생성한다.
 	path, _ := path.Split(thumbnailImagePath.String())
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		// 폴더를 생성한다.
