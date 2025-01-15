@@ -617,6 +617,7 @@ type FFProbeOutput struct {
 		Metadata struct {
 			Timecode string `json:"timecode"`
 		} `json:"tags"`
+		NbFrames string `json:"nb_frames"`
 	} `json:"streams"`
 }
 
