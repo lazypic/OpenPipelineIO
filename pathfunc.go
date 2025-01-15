@@ -629,7 +629,6 @@ func movTimecodeInFromFFprobe(path string) (string, error) {
 		return "", err
 	}
 	cmd := exec.Command(CachedAdminSetting.FFprobe, "-v", "quiet", "-print_format", "json", "-show_streams", "-show_format", path)
-
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err = cmd.Run()
@@ -644,38 +643,44 @@ func movTimecodeInFromFFprobe(path string) (string, error) {
 		return "", err
 	}
 
-	// timecode 추출
+	// get timecode
 	for _, stream := range result.Streams {
 		if stream.Metadata.Timecode != "" {
 			timecode = stream.Metadata.Timecode
+			break
 		}
 	}
 	return timecode, nil
 }
 
 func movDurationFromFFprobe(path string) (int, error) {
+	duration := 0
 	_, err := os.Stat(CachedAdminSetting.FFprobe)
 	if err != nil {
 		return 0, err
 	}
-	cmd := exec.Command(CachedAdminSetting.FFprobe, path)
-	var stderr bytes.Buffer
-	cmd.Stderr = &stderr
+	cmd := exec.Command(CachedAdminSetting.FFprobe, "-v", "quiet", "-print_format", "json", "-show_streams", "-show_format", path)
+	var out bytes.Buffer
+	cmd.Stdout = &out
 	err = cmd.Run()
 	if err != nil {
-		return 0, err
+		return duration, err
 	}
-	re, err := regexp.Compile(`<Duration>(\d+)</Duration>`)
+	// parsing JSON
+	var result FFProbeOutput
+	err = json.Unmarshal(out.Bytes(), &result)
 	if err != nil {
-		return 0, errors.New("the regular expression is invalid")
+		return duration, err
 	}
-	results := re.FindStringSubmatch(stderr.String())
-	if results == nil {
-		return 0, errors.New("there were no results matching the regular expression condition")
-	}
-	duration, err := strconv.Atoi(results[1])
-	if err != nil {
-		return 0, err
+	// get nb_frames in stream
+	for _, stream := range result.Streams {
+		if stream.NbFrames != "" {
+			duration, err = strconv.Atoi(stream.NbFrames)
+			if err != nil {
+				return duration, err
+			}
+			break
+		}
 	}
 	return duration, nil
 }
