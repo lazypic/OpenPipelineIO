@@ -452,7 +452,7 @@ func processingScanPlateImageItem(scan ScanPlate) {
 	// mov 플레이트를 복사합니다.
 	if scan.CopyPlate && scan.Ext == ".mov" {
 		src := fmt.Sprintf("%s/%s", scan.Dir, scan.Base)
-		dst := fmt.Sprintf("%s/%s", item.Platepath, scan.Base)
+		dst := fmt.Sprintf("%s/mov/%s", item.Platepath, scan.Base)
 		err = CopyPlate(src, dst)
 		if err != nil {
 			err = SetScanPlateErrStatus(client, scanID, err.Error())
@@ -635,7 +635,7 @@ func processingScanPlateImageItem(scan ScanPlate) {
 
 	// mov Plate이용해서 mov를 만든다.
 	if scan.GenMov && scan.Ext == ".mov" {
-		src := fmt.Sprintf("%s/%s", item.Platepath, scan.Base)
+		src := fmt.Sprintf("%s/mov/%s", item.Platepath, scan.Base)
 		args := []string{
 			"-i",
 			src,
