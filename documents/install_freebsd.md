@@ -16,6 +16,18 @@ $ npx mongosh
 >> show dbs
 ```
 
+## Install Font
+
+```bash
+sudo pkg install -y freefont-ttf
+```
+
+FreeMono Path
+
+```
+/usr/local/share/fonts/freefont-ttf/FreeMono.ttf
+```
+
 ## Install mongodb50-5.0.29
 
 ```
