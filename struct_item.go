@@ -194,10 +194,12 @@ func (item *Item) SetSeq() {
 	if item.Name != "" {
 		// _, - 문자가 포함되어있는지 체크한다.
 		if strings.Contains(item.Name, "_") {
-			item.Seq = strings.Split(item.Name, "_")[0]
+			lastIndex := strings.LastIndex(item.Name, "_")
+			item.Seq = item.Name[:lastIndex]
 			return
 		} else if strings.Contains(item.Name, "-") {
-			item.Seq = strings.Split(item.Name, "-")[0]
+			lastIndex := strings.LastIndex(item.Name, "-")
+			item.Seq = item.Name[:lastIndex]
 			return
 		}
 	}

@@ -6,7 +6,7 @@
 
 <div class="container py-5 px-2">
     <div class="col-lg-12 col-md-12 col-sm-12 mx-auto">
-        <div class="pt-3 pb-3">
+        <div class="pt-1 pb-3">
             <h2 class="text-muted">Scan Plate</h2>
         </div>
 
@@ -15,7 +15,7 @@
                 <div class="from-group">
                     <div class="form-check form-switch">
                         <input class="form-check-input finger" type="checkbox" id="uploadmethod" onclick="checkUploadMethod()">
-                        <label class="form-check-label finger unselectable text-muted" for="uploadmethod">Upload Method</label>
+                        <label class="form-check-label finger unselectable text-muted" for="uploadmethod">Enable Direct Upload</label>
                     </div>
                 </div>
             </div>
@@ -32,10 +32,13 @@
                     Drag & drop the file you want to upload.(Allowed file format: .jpg .png .exr .mov .dpx)
                      <span class="badge bg-danger finger" id="clear-dropzone" onclick="DeleteScanPlateTemp()">Delete Uploaded files</span></small>
             </div>
-            
         </div>
 
-        <div class="row pt-2">
+        <div class="pt-5 pb-1">
+            <h4 class="text-muted">1. Preset</h4>
+        </div>
+
+        <div class="row">
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="row">
                     <div class="col-12 col-sm-12 col-md-4 col-lg-4">
@@ -51,7 +54,7 @@
                     <div class="col-12 col-sm-12 col-md-4 col-lg-4">
                         <div class="form-group pt-2">
                             <label class="text-muted">Type</label>
-                            <input type="text" list="typelist" id="scanplate-type" class="form-control" placeholder="org" value="">
+                            <input type="text" list="typelist" id="scanplate-type" class="form-control" placeholder="org" value="" required>
 			    <datalist id="typelist">
 				    <option value="org">
 				    <option value="main">
@@ -109,9 +112,10 @@
             </div>
         </div>
 
-        
-
-        <div class="row pt-2">
+        <div class="pt-5 pb-1">
+            <h4 class="text-muted">2. Data Analysis</h4>
+        </div>
+        <div class="row">
             <div class="col-sm">
                 <div class="form-group">
                     <label class="text-muted">Scan Plate Path</label>
@@ -149,8 +153,11 @@
             </small>
         </div>
 
-        <div class="row pt-2">
-            <div class="col-sm">
+        <div class="pt-5 pb-1">
+            <h4 class="text-muted">3. Set target project & other OpenPipelineIO</h4>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-4 col-lg-4">
                 <div class="form-group">
                     <label class="text-muted">Project</label>
                     <select id="scanplate-project" class="form-control">
@@ -158,17 +165,25 @@
                     </select>
                 </div>
             </div>
-            <div class="col-sm">
+            <div class="col-12 col-sm-12 col-md-4 col-lg-4">
                 <div class="form-group">
-                    <label class="text-muted">OpenPipelineIO DNS</label>
-                    <input type="text" id="dns" class="form-control" placeholder="https://openpipeline.io">
+                    <label class="text-muted">DNS to sync with other OpenPipelineIO</label>
+                    <input type="text" id="dns" class="form-control" placeholder="https://other.openpipeline.io">
+                </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                <div class="form-group">
+                    <label class="text-muted">Token</label>
+                    <input type="text" id="scanplatetoken" class="form-control" placeholder="">
                 </div>
             </div>
         </div>
-        <div class="row pt-2">
-            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-                <div class="row">
-                    <div class="col">
+
+        <div class="pt-5 pb-1">
+            <h4 class="text-muted">4. Process Options & Submit</h4>
+        </div>
+        <div class="row">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                         <div class="form-group">
                             <label class="text-muted">Mov Fps</label>
                             <select id="fps" class="form-control">
@@ -183,21 +198,13 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                         <div class="form-group">
-                            <label class="text-muted">Undistortion Rate</label>
+                            <label class="text-muted">Default Scale Ratio of Undistortion Plate</label>
                             <input type="text" id="undistortionrate" class="form-control" placeholder="{{.Setting.DefaultScaleRatioOfUndistortionPlate}}" value="{{.Setting.DefaultScaleRatioOfUndistortionPlate}}">
                         </div>
                     </div>
-                </div>
-            </div>
             
-            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-                <div class="form-group">
-                    <label class="text-muted">Token</label>
-                    <input type="text" id="scanplatetoken" class="form-control" placeholder="">
-                </div>
-            </div>
         </div>
             
         

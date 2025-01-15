@@ -3,16 +3,15 @@
 <input type="hidden" id="userid" value="{{$.User.ID}}">
 <input type="hidden" id="protocol" value="{{$.Setting.Protocol}}">
 
-<nav class="navbar navbar-expand-lg navbar-darkmode">
+<nav class="navbar navbar-expand-lg navbar-darkmode" data-bs-theme="dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="/">
       <img src="/assets/img/openpipelineio_white.png" alt="Logo" width="26" height="26" class="d-inline-block align-text-top">
       <span id="appname">{{.Setting.AppName}}</span>
     </a>
-    
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
-    </button>
+    </button> 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-lg-0  container-fluid justify-content-start">
         {{if eq .User.AccessLevel 3 4 5 6 7 8 9 10 11}}
