@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"time"
+	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -277,6 +278,29 @@ func rmPositionV2(client *mongo.Client, id string) error {
 	defer cancel()
 	filter := bson.M{"id": id}
 	_, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+
+func addDivisionV2(client *mongo.Client, d Division) error {
+	if d.ID == "" {
+		return errors.New("ID is an empty string. Unable to create the Division")
+	}
+	collection := client.Database(*flagDBName).Collection("divisions")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	
+	num, err := collection.CountDocuments(ctx, bson.M{"id": d.ID})
+	if err != nil {
+		return err
+	}
+	if num != 0 {
+		return errors.New(d.ID + " Division with the given ID already exists in the database")
+	}
+	_, err = collection.InsertOne(ctx, d)
 	if err != nil {
 		return err
 	}
