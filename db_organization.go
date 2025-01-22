@@ -306,3 +306,91 @@ func addDivisionV2(client *mongo.Client, d Division) error {
 	}
 	return nil
 }
+
+func addDepartmentV2(client *mongo.Client, d Department) error {
+	if d.ID == "" {
+		return errors.New("ID is an empty string. Unable to create the Department")
+	}
+	collection := client.Database(*flagDBName).Collection("departments")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	
+	num, err := collection.CountDocuments(ctx, bson.M{"id": d.ID})
+	if err != nil {
+		return err
+	}
+	if num != 0 {
+		return errors.New(d.ID + " Department with the given ID already exists in the database")
+	}
+	_, err = collection.InsertOne(ctx, d)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func addTeamV2(client *mongo.Client, t Team) error {
+	if t.ID == "" {
+		return errors.New("ID is an empty string. Unable to create the Team")
+	}
+	collection := client.Database(*flagDBName).Collection("teams")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	
+	num, err := collection.CountDocuments(ctx, bson.M{"id": t.ID})
+	if err != nil {
+		return err
+	}
+	if num != 0 {
+		return errors.New(t.ID + " Team with the given ID already exists in the database")
+	}
+	_, err = collection.InsertOne(ctx, t)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func addRoleV2(client *mongo.Client, r Role) error {
+	if r.ID == "" {
+		return errors.New("ID is an empty string. Unable to create the Role")
+	}
+	collection := client.Database(*flagDBName).Collection("roles")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	
+	num, err := collection.CountDocuments(ctx, bson.M{"id": r.ID})
+	if err != nil {
+		return err
+	}
+	if num != 0 {
+		return errors.New(r.ID + " Role with the given ID already exists in the database")
+	}
+	_, err = collection.InsertOne(ctx, r)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func addPositionV2(client *mongo.Client, p Position) error {
+	if p.ID == "" {
+		return errors.New("ID is an empty string. Unable to create the Position")
+	}
+	collection := client.Database(*flagDBName).Collection("positions")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	
+	num, err := collection.CountDocuments(ctx, bson.M{"id": p.ID})
+	if err != nil {
+		return err
+	}
+	if num != 0 {
+		return errors.New(p.ID + " Position with the given ID already exists in the database")
+	}
+	_, err = collection.InsertOne(ctx, p)
+	if err != nil {
+		return err
+	}
+	return nil
+}
