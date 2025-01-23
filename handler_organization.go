@@ -368,12 +368,13 @@ func handleAddDivisionSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
+	
 	id := r.FormValue("ID")
 	if !regexpID.MatchString(id) {
 		http.Error(w, "id는 소문자와 숫자로만 이루어져야 합니다", http.StatusInternalServerError)
@@ -384,7 +385,7 @@ func handleAddDivisionSubmit(w http.ResponseWriter, r *http.Request) {
 		ID:   id,
 		Name: name,
 	}
-	err = addDivision(session, d)
+	err = addDivisionV2(client, d)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -403,12 +404,13 @@ func handleAddDepartmentSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
+
 	id := r.FormValue("ID")
 	if !regexpID.MatchString(id) {
 		http.Error(w, "id는 소문자와 숫자로만 이루어져야 합니다", http.StatusInternalServerError)
@@ -419,7 +421,7 @@ func handleAddDepartmentSubmit(w http.ResponseWriter, r *http.Request) {
 		ID:   id,
 		Name: name,
 	}
-	err = addDepartment(session, d)
+	err = addDepartmentV2(client, d)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -438,12 +440,14 @@ func handleAddTeamSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
+	
 	// add team
 	id := r.FormValue("ID")
 	if !regexpID.MatchString(id) {
@@ -455,7 +459,7 @@ func handleAddTeamSubmit(w http.ResponseWriter, r *http.Request) {
 		ID:   id,
 		Name: name,
 	}
-	err = addTeam(session, t)
+	err = addTeamV2(client, t)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -474,12 +478,14 @@ func handleAddRoleSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
+	
 	id := r.FormValue("ID")
 	if !regexpID.MatchString(id) {
 		http.Error(w, "id는 소문자와 숫자로만 이루어져야 합니다", http.StatusInternalServerError)
@@ -490,7 +496,7 @@ func handleAddRoleSubmit(w http.ResponseWriter, r *http.Request) {
 		ID:   id,
 		Name: name,
 	}
-	err = addRole(session, role)
+	err = addRoleV2(client, role)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -509,12 +515,14 @@ func handleAddPositionSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
+	
 	id := r.FormValue("ID")
 	if !regexpID.MatchString(id) {
 		http.Error(w, "id는 소문자와 숫자로만 이루어져야 합니다", http.StatusInternalServerError)
@@ -525,7 +533,7 @@ func handleAddPositionSubmit(w http.ResponseWriter, r *http.Request) {
 		ID:   id,
 		Name: name,
 	}
-	err = addPosition(session, p)
+	err = addPositionV2(client, p)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
