@@ -1,5 +1,5 @@
 {{define "error-captcha"}}
-{{template "headBootstrap"}}
+{{template "headBootstrap5"}}
 <body>
 <div class="container p-5">
     <div class="col-lg-6 col-md-6 col-sm-12 mx-auto">
@@ -8,23 +8,18 @@
         </div>
         <div>
             <h5 class="text-center text-muted">
-                입력하신 Captcha 코드가 잘못되었습니다.<br>
-                Captcha는 가입하는 순간마다 고유하게 생성되기 때문에<br>
-                오류가 발생하면 다시 가입해야 합니다.<br>
-                주의하여 입력 부탁드립니다.<br>
+                Your captcha code was wrong number.<br>
             </h5>
         </div>
         <div class="text-center">
-            <a href="/signup" class="btn btn-outline-danger mt-5">다시 가입하기</a>
+            <a href="/signup" class="btn btn-outline-danger mt-5">Re-SignUp</a>
         </div>
     </div>
 </div>
 {{template "footerBootstrap" .}}
 </body>
 <!--add javascript-->
-<script src="/assets/js/jquery-3.1.1.min.js"></script>
-<script src="/assets/bootstrap-4/js/bootstrap.min.js"></script>
+<script src="/assets/bootstrap-5.0.2/js/bootstrap.min.js"></script>
 <script src="/assets/js/dropzone.js"></script>
-<script src="/assets/js/dotori.js"></script>
 </html>
 {{end}}

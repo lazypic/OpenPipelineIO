@@ -1,5 +1,5 @@
 {{define "signup_success" }}
-{{template "headBootstrap"}}
+{{template "headBootstrap-5"}}
 <body>
 
 <div class="container p-5">
@@ -8,8 +8,8 @@
     </div>
     <div class="row">
         <div class="col-sm text-center text-darkmode">
-            {{.User.ID}} 로 가입이 완료되었습니다.<br>
-            <small class="text-muted">접속정보: {{.User.LastIP}}:{{.User.LastPort}}</small>
+            ID: {{.User.ID}}<br>
+            <small class="text-muted">IP/Port Info: {{.User.LastIP}}:{{.User.LastPort}}</small>
         </div>
     </div>     
     <div class="text-center">

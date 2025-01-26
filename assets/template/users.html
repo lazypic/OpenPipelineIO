@@ -1,6 +1,6 @@
 {{define "users" }}
-{{template "headBootstrap"}}
-{{template "navbar" .}}
+{{template "headBootstrap5"}}
+{{template "navbar-bootstrap5" .}}
 {{template "modal-user" .}}
 <body>
 
@@ -13,11 +13,11 @@
                 <div class="input-group-append">
                     <select class="form-control" name="isleave" id="isleave" >
                         {{if .IsLeave}}
-                            <option value="false">퇴사자 제외</option>
-                            <option value="true" selected>퇴사자 검색</option>
+                            <option value="false">exclude retirement</option>
+                            <option value="true" selected>include retirement</option>
                         {{else}}
-                            <option value="false" selected>퇴사자 제외</option>
-                            <option value="true">퇴사자 검색</option>
+                            <option value="false" selected>exclude retirement</option>
+                            <option value="true">include retirement</option>
                         {{end}}
                     </select>
                 </div>
@@ -39,10 +39,10 @@
     <a href="/users?search=tag:{{.}}" class="btn btn-outline-darkmode btn-sm p-1 mt-1">{{.}}</a>
 {{end}}
 {{if eq .User.AccessLevel 4 5 6 7 8 9 10 11}}
-    <a href="/replacetag" class="btn btn-outline-warning btn-sm p-1 mt-1">태그이름변경</a>
+    <a href="/replacetag" class="btn btn-outline-warning btn-sm p-1 mt-1">Rename tag</a>
 {{end}}
 {{if eq .User.AccessLevel 9 10 11}}
-    <span class="btn btn-outline-danger btn-sm p-1 mt-1" onclick="initPasswordUsers()">패스워드 초기화</span>
+    <span class="btn btn-outline-danger btn-sm p-1 mt-1" onclick="initPasswordUsers()">reset password</span>
 {{end}}
 </div>
 
@@ -85,8 +85,7 @@
 
 {{template "footerBootstrap" .}}
 </body>
-<script src="/assets/js/jquery-3.1.1.min.js"></script>
-<script src="/assets/bootstrap-4/js/bootstrap.min.js"></script>
+<script src="/assets/bootstrap-5.0.2/js/bootstrap.min.js"></script>
 <script src="/assets/js/input.js"></script>
 </html>
 {{end}}
