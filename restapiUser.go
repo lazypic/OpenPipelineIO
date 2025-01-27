@@ -261,36 +261,45 @@ func handleAPIAutoCompliteUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleAPIInitPassword 함수는 User의 패스워드를 Adminsetting에 설정된 패스워드를 이용해서 패스워드를 리셋한다.
-func handleAPIInitPassword(w http.ResponseWriter, r *http.Request) {
+func handleAPIInitPassword(w http.ResponseWriter, r *http.Request) {	
 	type Recipe struct {
 		ID          string      `json:"id"`
 		AccessLevel AccessLevel `json:"accesslevel"`
 		UserID      string      `json:"userid"`
 	}
 	rcp := Recipe{}
+
+	if err := json.NewDecoder(r.Body).Decode(&rcp); err != nil {
+		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
+		return
+	}
+
 	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer client.Disconnect(context.Background())
+
 	rcp.UserID, rcp.AccessLevel, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
+	
 	// 관리자만 이 API를 사용할 수 있도록 제한합니다.
 	if rcp.AccessLevel != AdminAccessLevel {
-		http.Error(w, "사용자의 패스워드를 초기화 하기 위해서 관리자 권한이 필요합니다", http.StatusUnauthorized)
+		http.Error(w, "Administrator privileges are required to reset the user's password.", http.StatusUnauthorized)
 		return
 	}
-	r.ParseForm()
-	id := r.FormValue("id")
+	id := rcp.ID
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
+		fmt.Println("e" + id)
 		return
 	}
 	rcp.ID = id
+
 	// 사용자의 패스워드를 초기화 합니다.
 	err = initPassUser(client, rcp.ID, CachedAdminSetting.InitPassword)
 	if err != nil {

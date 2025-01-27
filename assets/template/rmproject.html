@@ -16,13 +16,13 @@
                 <option value="{{.}}" {{if eq $.SearchOption.Project .}}selected{{end}}>{{.}}</option>
               {{end}}
             </select>
-            <small class="form-text text-danger">제거할 프로젝트를 선택해주세요.</small>
+            <small class="form-text text-danger">Select project</small>
         </div>
         <div class="row">
             <div class="col-sm">
                 <div class="form-check pt-2">
                     <input type="checkbox" id="rmreviews" name="rmreviews" class="form-check-input" value="true" checked>
-                    <label class="form-check-label" for="rmreviews">프로젝트 삭제시 해당 프로젝트의 Reivew 데이터도 함께 삭제합니다.</label>
+                    <label class="form-check-label" for="rmreviews">Delete the review data used in the project as well.</label>
                 </div>
             </div>
         </div>

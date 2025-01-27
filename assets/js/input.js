@@ -5516,29 +5516,41 @@ function initPasswordUsers() {
         alert(`패스워드를 초기화할 사용자를 선택해주세요.`);
         return;
     }
+    console.log(users);
     // 선택된 각각의 유저를 초기화 한다.
     for (let i = 0; i < users.length; i++) {
-        $.ajax({
-            url: "/api/initpassword",
-            type: "POST",
-            data: {
-                id: users[i],
-            },
+        const id = users[i];
+        const token = document.getElementById("token").value;
+    
+        fetch("/api/initpassword", {
+            method: "POST",
             headers: {
-                "Authorization": "Basic "+ document.getElementById("token").value
+                "Content-Type": "application/json",
+                "Authorization": "Basic " + token
             },
-            dataType: "json",
-            success: function(data) {
-                // 성공하면 원래 색상으로 돌린다.
-                document.getElementById(data.id).style.borderColor = NON_SELECT_COLOR;
-                document.getElementById(data.id).style.backgroundColor = "rgba(0,0,0,0)";
-                alert(`${data.id} 사용자의 패스워드가 초기화 되었습니다.`);
-            },
-            error: function(request,status,error){
-                alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
+            body: JSON.stringify({ id: id })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            // 성공하면 원래 색상으로 돌린다.
+            const userElement = document.getElementById(data.id);
+            if (userElement) {
+                userElement.style.borderColor = NON_SELECT_COLOR;
+                userElement.style.backgroundColor = "rgba(0,0,0,0)";
+            }
+            alert(`${data.id}'s password has been reset.`);
+        })
+        .catch(error => {
+            alert(`Error: ${error.message}`);
         });
     }
+    
 }
 
 function setReviewAgainForWaitStatusToday() {

@@ -11,13 +11,13 @@
             <div class="input-group">
                 <input class="form-control" id="search" placeholder="Search word.." type="text" maxlength="50" size=50 name="searchword" autofocus="autofocus" value="{{.Searchword}}">
                 <div class="input-group-append">
-                    <select class="form-control" name="isleave" id="isleave" >
+                    <select class="form-control" name="isleave" id="isleave">
                         {{if .IsLeave}}
-                            <option value="false">exclude retirement</option>
-                            <option value="true" selected>include retirement</option>
+                            <option value="false">Exclude Former employee</option>
+                            <option value="true" selected>Include Former employee</option>
                         {{else}}
-                            <option value="false" selected>exclude retirement</option>
-                            <option value="true">include retirement</option>
+                            <option value="false" selected>Exclude Former employee</option>
+                            <option value="true">Include Former employee</option>
                         {{end}}
                     </select>
                 </div>
@@ -50,7 +50,7 @@
     <div class="row">
         {{range .Users}}
             {{if eq .IsLeave $.IsLeave}}
-                <div class="usercard card w-10 mx-auto m-3 {{if eq .AccessLevel 0}}bg-danger{{else}}bg-darkmode{{end}}" id={{.ID}}>
+                <div class="usercard card w-10 mx-auto m-3 {{if eq .AccessLevel 0}}bg-danger{{else}}bg-darkmode{{end}}" id={{.ID}} style="width: 14rem;">
                     <img class="card-img-top" src="{{if .Thumbnail}}/thumbnail/user/{{.ID}}.jpg{{else}}/assets/img/nophoto.svg{{end}}" alt="{{.ID}}" width="200" height="280" onclick="selectUserID('{{.ID}}')">
                     <div class="card-body text-center">
                         <h4 class="card-title finger" onclick="window.location='/user?id={{.ID}}'">{{.LastNameKor}}{{.FirstNameKor}}{{if .FirstNameChn}}({{.LastNameChn}}{{.FirstNameChn}}){{end}}</h4>
