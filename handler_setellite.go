@@ -9,6 +9,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"log"
+	"context"
 
 	"gopkg.in/mgo.v2"
 )
@@ -118,12 +120,14 @@ func handleUploadSetellite(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
+	
 	type recipe struct {
 		Projectlist []string
 		Message     string
@@ -134,18 +138,18 @@ func handleUploadSetellite(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	err = rcp.SearchOption.LoadCookie(session, r)
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	u, err := getUser(session, ssid.ID)
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.User = u
-	rcp.Projectlist, err = Projectlist(session)
+	rcp.Projectlist, err = ProjectlistV2(client)
 	if err != nil {
 		rcp.Message = err.Error()
 		err = TEMPLATES.ExecuteTemplate(w, "uploadSetellite", rcp)
@@ -220,7 +224,7 @@ func handleUploadSetellite(w http.ResponseWriter, r *http.Request) {
 		io.Copy(f, io.LimitReader(file, MaxFileSize))
 		items := csv2SetelliteList(f.Name())
 		for num, item := range items {
-			err = addSetellite(session, project, item, true)
+			err = addSetelliteV2(client, project, item, true)
 			if err != nil {
 				rcp.Errors = append(rcp.Errors, fmt.Sprintf("%d줄 : %s", num+1, err.Error()))
 			}

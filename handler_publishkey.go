@@ -2,8 +2,7 @@ package main
 
 import (
 	"net/http"
-
-	"gopkg.in/mgo.v2"
+	"context"
 )
 
 // handleAddPublishKey 함수는 PublishKey를 추가하는 페이지이다.
@@ -17,13 +16,14 @@ func handleAddPublishKey(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
+	
 	type recipe struct {
 		User User
 		SearchOption
@@ -31,17 +31,18 @@ func handleAddPublishKey(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	err = rcp.SearchOption.LoadCookie(session, r)
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	u, err := getUser(session, ssid.ID)
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.User = u
+	w.Header().Set("Content-Type", "text/html")
 	err = TEMPLATES.ExecuteTemplate(w, "addpublishkey", rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -60,13 +61,13 @@ func handleAddPublishKeySubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-
+	defer client.Disconnect(context.Background())
+	
 	key := PublishKey{
 		ID:          r.FormValue("id"),
 		Description: r.FormValue("description"),
@@ -76,7 +77,7 @@ func handleAddPublishKeySubmit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = AddPublishKey(session, key)
+	err = AddPublishKeyV2(client, key)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -96,12 +97,13 @@ func handlePublishKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
+	
 	type recipe struct {
 		User        User
 		PublishKeys []PublishKey
@@ -109,12 +111,12 @@ func handlePublishKey(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	rcp.PublishKeys, err = AllPublishKeys(session)
+	rcp.PublishKeys, err = AllPublishKeysV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	u, err := getUser(session, ssid.ID)
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -139,13 +141,14 @@ func handleRmPublishKey(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	w.Header().Set("Content-Type", "text/html")
-	session, err := mgo.Dial(*flagDBIP)
+	
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
+	
 	type recipe struct {
 		User User
 		SearchOption
@@ -153,17 +156,18 @@ func handleRmPublishKey(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	err = rcp.SearchOption.LoadCookie(session, r)
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	u, err := getUser(session, ssid.ID)
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rcp.User = u
+	w.Header().Set("Content-Type", "text/html")
 	err = TEMPLATES.ExecuteTemplate(w, "rmpublishkey", rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -182,15 +186,16 @@ func handleRmPublishKeySubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-
+	defer client.Disconnect(context.Background())
+	
 	id := r.FormValue("id")
-	err = RmPublishKey(session, id)
+	err = RmPublishKeyV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -209,12 +214,13 @@ func handleEditPublishKey(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
+	
 	type recipe struct {
 		User User
 		SearchOption
@@ -223,12 +229,12 @@ func handleEditPublishKey(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	err = rcp.SearchOption.LoadCookie(session, r)
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	u, err := getUser(session, ssid.ID)
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -236,7 +242,7 @@ func handleEditPublishKey(w http.ResponseWriter, r *http.Request) {
 	rcp.User = u
 	q := r.URL.Query()
 	id := q.Get("id")
-	rcp.PublishKey, err = GetPublishKey(session, id)
+	rcp.PublishKey, err = GetPublishKeyV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -260,13 +266,13 @@ func handleEditPublishKeySubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-
+	defer client.Disconnect(context.Background())
+	
 	key := PublishKey{
 		ID:          r.FormValue("id"),
 		Description: r.FormValue("description"),
@@ -276,7 +282,7 @@ func handleEditPublishKeySubmit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = SetPublishKey(session, key)
+	err = SetPublishKeyV2(client, key)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

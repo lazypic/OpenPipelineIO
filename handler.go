@@ -535,11 +535,11 @@ func webserver(port string) {
 
 	// restAPI USER
 	r.HandleFunc("/api2/user", handleAPI2User)
-	r.HandleFunc("/api/users", handleAPISearchUser)
-	r.HandleFunc("/api/setleaveuser", handleAPISetLeaveUser)
+	r.HandleFunc("/api/users", handleAPISearchUser).Methods("GET")
+	r.HandleFunc("/api/setleaveuser", handleAPISetLeaveUser).Methods("POST")
 	r.HandleFunc("/api/autocompliteusers", handleAPIAutoCompliteUsers).Methods("GET")
 	r.HandleFunc("/api/initpassword", handleAPIInitPassword).Methods("POST")
-	r.HandleFunc("/api/ansiblehosts", handleAPIAnsibleHosts)
+	r.HandleFunc("/api/ansiblehosts", handleAPIAnsibleHosts).Methods("GET")
 
 	// restAPI Organization
 	r.HandleFunc("/api/teams", handleAPIAllTeams).Methods("GET")

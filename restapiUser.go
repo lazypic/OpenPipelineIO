@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-
-	"gopkg.in/mgo.v2"
 )
 
 // handleAPI2User 함수는 사용자관련 REST API이다. GET, DELETE를 지원한다.
@@ -101,27 +99,23 @@ func handleAPI2User(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISearchUser 함수는 단어를 받아서 조건에 맞는 사용자 정보를 반환한다.
 func handleAPISearchUser(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
+	client, err := initMongoClient()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	session, err := mgo.Dial(*flagDBIP)
+	defer client.Disconnect(context.Background())
+
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-		return
-	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
-	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
+		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	q := r.URL.Query()
 	searchword := q.Get("searchword")
-	users, err := searchUsers(session, strings.Split(searchword, ","))
+	users, err := searchUsersV2(client, strings.Split(searchword, ","))
 	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	type recipe struct {
@@ -137,30 +131,26 @@ func handleAPISearchUser(w http.ResponseWriter, r *http.Request) {
 		user.Token = ""
 		rcp.Data = append(rcp.Data, user)
 	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	err = json.NewEncoder(w).Encode(rcp)
 	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
 
 // handleAPISetLeaveUser 함수는 사용자의 퇴사여부를 셋팅하는 핸들러 입니다.
 func handleAPISetLeaveUser(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
+	client, err := initMongoClient()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	session, err := mgo.Dial(*flagDBIP)
+	defer client.Disconnect(context.Background())
+
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
-		return
-	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
-	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
+		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	r.ParseForm() // 받은 문자를 파싱합니다. 파싱되면 map이 됩니다.
@@ -185,11 +175,13 @@ func handleAPISetLeaveUser(w http.ResponseWriter, r *http.Request) {
 			leave = v
 		}
 	}
-	err = setLeaveUser(session, id, str2bool(leave))
+	err = setLeaveUserV2(client, id, str2bool(leave))
 	if err != nil {
-		fmt.Fprintf(w, "{\"error\":\"%v\"}\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "{\"error\":\"\"}\n")
 }
 
@@ -335,22 +327,19 @@ func handleAPIInitPassword(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIAnsibleHosts 함수는 ansible에서 사용하는 hosts 파일을 생성한다.
 func handleAPIAnsibleHosts(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	users, err := allUsers(session)
+	users, err := allUsersV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

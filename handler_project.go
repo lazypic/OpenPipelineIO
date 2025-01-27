@@ -9,7 +9,7 @@ import (
 	"strconv"
 
 	"github.com/digital-idea/ditime"
-	"gopkg.in/mgo.v2"
+
 )
 
 // handleAddProject 함수는 프로젝트를 추가하는 페이지이다.
@@ -615,13 +615,14 @@ func handleNoOnProject(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+
+	client, err := initMongoClient()
 	if err != nil {
-		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
+
 	type recipe struct {
 		User User
 		SearchOption
@@ -629,12 +630,12 @@ func handleNoOnProject(w http.ResponseWriter, r *http.Request) {
 	}
 	rcp := recipe{}
 	rcp.Setting = CachedAdminSetting
-	err = rcp.SearchOption.LoadCookie(session, r)
+	err = rcp.SearchOption.LoadCookieV2(client, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	u, err := getUser(session, ssid.ID)
+	u, err := getUserV2(client, ssid.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
