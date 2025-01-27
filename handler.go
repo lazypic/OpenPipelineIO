@@ -542,7 +542,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/ansiblehosts", handleAPIAnsibleHosts)
 
 	// restAPI Organization
-	r.HandleFunc("/api/teams", handleAPIAllTeams)
+	r.HandleFunc("/api/teams", handleAPIAllTeams).Methods("GET")
 
 	// restAPI Tasksetting
 	r.HandleFunc("/api/tasksetting", handleAPITasksetting)
