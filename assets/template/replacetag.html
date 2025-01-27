@@ -1,24 +1,24 @@
 
 {{define "replacetag" }}
-{{template "headBootstrap"}}
+{{template "headBootstrap5"}}
 <body>
 
 <div class="container p-5">
     <form method="post" action="/replacetag_submit">
     <div class="pt-3 pb-5">
-        <h2 class="section-heading">Replace tag name</h2>
+        <h2 class="section-heading">Replace Tag</h2>
     </div>
     <div class="row">
         <div class="col-sm">
             <div class="form-group">
-                <label>Old tag name</label>
-                <input type="text" name="src" class="form-control" placeholder="기존 태그명">
-                <small class="form-text text-muted">이름을 바꿀 태그명을 입력해주세요.</small>
+                <label>Used Tag</label>
+                <input type="text" name="src" class="form-control" placeholder="tag">
+                <small class="form-text text-muted">Please enter the name of the tag you want to rename.</small>
             </div>
             <div class="form-group">
-                <label>New tag name</label>
-                <input type="text" name="dst" class="form-control" placeholder="바뀔 태그명">
-                <small class="form-text text-muted">앞으로 사용할 새로운 태그명을 입력해주세요.</small>
+                <label>Renewal Tag</label>
+                <input type="text" name="dst" class="form-control" placeholder="tag">
+                <small class="form-text text-muted">Please enter the new tag name to be used going forward.</small>
             </div>
             
         </div>
@@ -32,6 +32,7 @@
 
 
 {{template "footerBootstrap" .}}
+<script src="/assets/bootstrap-5.0.2/js/bootstrap.min.js"></script>
 </body>
 </html>
 {{end}}

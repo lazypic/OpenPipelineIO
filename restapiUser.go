@@ -295,7 +295,6 @@ func handleAPIInitPassword(w http.ResponseWriter, r *http.Request) {
 	id := rcp.ID
 	if id == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
-		fmt.Println("e" + id)
 		return
 	}
 	rcp.ID = id
