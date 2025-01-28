@@ -1,30 +1,30 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 
 	"gopkg.in/mgo.v2"
 )
 
+
+
 // handleAPIPulishKey 함수는 모든 PublishKey 항목을 반환하는 restAPI 이다.
 func handleAPIPublishKeys(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	keys, err := AllPublishKeys(session)
+	keys, err := AllPublishKeysV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -4981,21 +4981,24 @@ func handleAPIAddTaskPublish(w http.ResponseWriter, r *http.Request) {
 		AuthorNameKor  string `json:"authornamekor"`
 	}
 	rcp := Recipe{}
+	if err := json.NewDecoder(r.Body).Decode(&rcp); err != nil {
+		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
+		return
+	}
+	
 	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer client.Disconnect(context.Background())
+
 	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	r.ParseForm()
-	rcp.AuthorNameKor = r.FormValue("authornamekor")
 	if rcp.AuthorNameKor == "" {
-		// authornamekor 값이 비어있다면, 사용자의 아이디를 이용해서 DB에 등록된 이름을 가지고 온다.
 		user, err := getUserV2(client, rcp.UserID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -5008,57 +5011,37 @@ func handleAPIAddTaskPublish(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	id := r.FormValue("id")
-	if id == "" {
+	if rcp.ID == "" {
 		http.Error(w, "need id", http.StatusBadRequest)
 		return
 	}
-	rcp.ID = id
-	task := r.FormValue("task")
-	if task == "" {
+	if rcp.Task == "" {
 		http.Error(w, "need task", http.StatusBadRequest)
 		return
 	}
-	rcp.Task = task
-	key := r.FormValue("key")
-	if key == "" {
+	if rcp.Key == "" {
 		http.Error(w, "need key", http.StatusBadRequest)
 		return
 	}
-	rcp.Key = key
-	// key가 존재하는지 체크한다.
-	if !HasPublishKeyV2(client, key) {
-		http.Error(w, key+" key는 등록된 키가 아닙니다. 사용할 수 없습니다", http.StatusBadRequest)
+	
+	if !HasPublishKeyV2(client, rcp.Key) {
+		http.Error(w, rcp.Key+" key는 등록된 키가 아닙니다. 사용할 수 없습니다", http.StatusBadRequest)
 		return
 	}
-	rcp.SecondaryKey = r.FormValue("secondarykey")
-	path := r.FormValue("path")
-	if path == "" {
-		http.Error(w, "path를 설정해주세요", http.StatusBadRequest)
+	if rcp.Path == "" {
+		http.Error(w, "need path", http.StatusBadRequest)
 		return
 	}
-	rcp.Path = path
-	rcp.MainVersion = r.FormValue("mainversion")
-	rcp.SubVersion = r.FormValue("subversion")
-	rcp.Subject = r.FormValue("subject")
-	rcp.FileType = r.FormValue("filetype")
-	rcp.KindOfUSD = r.FormValue("kindofusd")
-	status := r.FormValue("status")
-	if !(status == "usethis" || status == "notuse" || status == "working") {
+	if !(rcp.Status == "usethis" || rcp.Status == "notuse" || rcp.Status == "working") {
 		http.Error(w, "status는 usethis, notuse, working 문자열만 사용할 수 있습니다", http.StatusBadRequest)
 		return
 	}
-	rcp.Status = status
 	// 사용자가 설정한 시간이 있다면 해당시간으로 설정한다.
-	rcp.Createtime = r.FormValue("createtime")
 	_, err = time.Parse(time.RFC3339, rcp.Createtime)
 	if err != nil {
 		// 시간포멧이 다르다면 현재시간을 입력한다.
 		rcp.Createtime = time.Now().Format(time.RFC3339)
 	}
-	rcp.TaskToUse = r.FormValue("tasktouse")
-	rcp.IsOutput = str2bool(r.FormValue("isoutput"))
-	rcp.OutputDataPath = r.FormValue("outputdatapath")
 	p := Publish{
 		SecondaryKey:   rcp.SecondaryKey,
 		MainVersion:    rcp.MainVersion,
@@ -5074,12 +5057,13 @@ func handleAPIAddTaskPublish(w http.ResponseWriter, r *http.Request) {
 		AuthorNameKor:  rcp.AuthorNameKor,
 		OutputDataPath: rcp.OutputDataPath,
 	}
-	err = addTaskPublishV2(client, id, task, key, p)
+	fmt.Println(rcp)
+	err = addTaskPublishV2(client, rcp.ID, rcp.Task, rcp.Key, p)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	fmt.Println("ep")
 	data, err := json.Marshal(rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

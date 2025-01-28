@@ -77,12 +77,28 @@ func addTaskPublishV2(client *mongo.Client, id, task, key string, p Publish) err
 		return err
 	}
 
-	result, err := collection.UpdateOne(ctx, bson.M{"id": id}, bson.M{"$push": bson.M{fmt.Sprintf("tasks.%s.publishes.%s", task, key): p}})
+	// Ensure the task structure exists
+	initUpdate := bson.M{
+		"$set": bson.M{
+			fmt.Sprintf("tasks.%s.publishes", task): bson.M{},
+		},
+	}
+	_, err = collection.UpdateOne(ctx, bson.M{"id": id}, initUpdate)
+	if err != nil {
+		return err
+	}
+
+	// Add the publish key
+	result, err := collection.UpdateOne(
+		ctx,
+		bson.M{"id": id},
+		bson.M{"$push": bson.M{fmt.Sprintf("tasks.%s.publishes.%s", task, key): p}},
+	)
 	if err != nil {
 		return err
 	}
 	if result.MatchedCount == 0 {
-		return errors.New("no document found with id" + id)
+		return errors.New("no document found with id " + id)
 	}
 	return nil
 }

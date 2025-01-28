@@ -555,7 +555,7 @@ func webserver(port string) {
 	r.HandleFunc("/api/addstatus", handleAPIAddStatus)
 
 	// restAPI PublishKey
-	r.HandleFunc("/api/publishkeys", handleAPIPublishKeys)
+	r.HandleFunc("/api/publishkeys", handleAPIPublishKeys).Methods("GET")
 	r.HandleFunc("/api/getpublish", handleAPIGetPublish)
 
 	// restAPI Review

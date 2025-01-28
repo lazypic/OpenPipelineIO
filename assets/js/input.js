@@ -1056,7 +1056,7 @@ function setAddPublishModal(project, name, task) {
     })
     .then((datas) => {
         if (datas.length == 0) {
-            alert("PublishKey 등록이 필요합니다.");
+            alert("PublishKey registration is required.");
             document.getElementById('modal-addpublish-addbutton').disabled = true;
             return
         }
@@ -1089,7 +1089,7 @@ function setEditPublishModal(project, id, task, tasktouse, key, createtime, path
     })
     .then((datas) => {
         if (datas.length == 0) {
-            alert("PublishKey 등록이 필요합니다.");
+            alert("PublishKey registration is required.");
             document.getElementById('modal-editpublish-editbutton').disabled = true;
             return
         }
@@ -4281,11 +4281,11 @@ function addPublish() {
     fetch('/api/addpublish', {
         method: 'POST',
         headers: {
+            "Content-Type": "application/json",
             "Authorization": "Basic "+ document.getElementById("token").value,
         },
-        body: new URLSearchParams({
-            project: document.getElementById('modal-addpublish-project').value,
-            name: document.getElementById('modal-addpublish-name').value,
+        body: JSON.stringify({
+            id: document.getElementById('itemid').value,
             task: document.getElementById('modal-addpublish-task').value,
             key: document.getElementById('modal-addpublish-key').value,
             secondarykey: document.getElementById('modal-addpublish-secondarykey').value,
@@ -4303,14 +4303,19 @@ function addPublish() {
         })
     })
     .then((response) => {
-        return response.json()
+        if (!response.ok) {
+            return response.text().then((errorText) => {
+                throw new Error(errorText || `HTTP error! status: ${response.status}`);
+            });
+        }
+        return response.json();
     })
     .then((data) => {
         location.reload()
         return
     })
     .catch((error) => {
-        alert(error)
+        alert(`Error: ${error.message}`);
     });
 }
 
@@ -5516,7 +5521,6 @@ function initPasswordUsers() {
         alert(`패스워드를 초기화할 사용자를 선택해주세요.`);
         return;
     }
-    console.log(users);
     // 선택된 각각의 유저를 초기화 한다.
     for (let i = 0; i < users.length; i++) {
         const id = users[i];
@@ -5537,7 +5541,6 @@ function initPasswordUsers() {
             return response.json();
         })
         .then(data => {
-            console.log(data);
             // 성공하면 원래 색상으로 돌린다.
             const userElement = document.getElementById(data.id);
             if (userElement) {
