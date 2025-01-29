@@ -13,44 +13,48 @@
         <div class="form-group">
             <label>Linux Path</label>
             <input type="text" name="linuxpath" class="form-control" placeholder="/show/&#123;&#123;.Project&#125;&#125;/seq/&#123;&#123;.Seq&#125;&#125;/&#123;&#123;.Seq&#125;&#125;_&#123;&#123;.Cut&#125;&#125;" value="{{.Tasksetting.LinuxPath}}">
-            <small class="form-text text-muted">프로토콜을 통해 열리는 경로.</small>
+            <small class="form-text text-muted">Path opened via protocol.</small>
         </div>
         <div class="form-group">
             <label>macOS Path</label>
             <input type="text" name="macospath" class="form-control" placeholder="/show/&#123;&#123;.Project&#125;&#125;/seq/&#123;&#123;.Seq&#125;&#125;/&#123;&#123;.Seq&#125;&#125;_&#123;&#123;.Cut&#125;&#125;" value="{{.Tasksetting.MacOSPath}}">
-            <small class="form-text text-muted">프로토콜을 통해 열리는 경로.</small>
+            <small class="form-text text-muted">Path opened via protocol.</small>
         </div>
         <div class="form-group">
             <label>Window Path</label>
             <input type="text" name="windowpath" class="form-control" placeholder="//10.0.1.2/show/&#123;&#123;.Project&#125;&#125;/seq/&#123;&#123;.Seq&#125;&#125;/&#123;&#123;.Seq&#125;&#125;_&#123;&#123;.Cut&#125;&#125;" value="{{.Tasksetting.WindowPath}}">
-            <small class="form-text text-muted">프로토콜을 통해 열리는 경로.</small>
+            <small class="form-text text-muted">Path opened via protocol.</small>
         </div>
         <div class="form-group">
             <label>WFS Path</label>
             <input type="text" name="wfspath" class="form-control" placeholder="//10.0.1.2/show/&#123;&#123;.Project&#125;&#125;/seq/&#123;&#123;.Seq&#125;&#125;/&#123;&#123;.Seq&#125;&#125;_&#123;&#123;.Cut&#125;&#125;" value="{{.Tasksetting.WFSPath}}">
-            <small class="form-text text-muted">wfs 클릭시 열리는 경로.</small>
+            <small class="form-text text-muted">Path opened via Web File System.</small>
         </div>
         <div class="row">
             <div class="col">
                 <div class="form-group">
                     <label>Task Order</label>
                     <input type="number" name="order" step="0.01" class="form-control" placeholder="0.1" value="{{.Tasksetting.Order}}">
-                    <small class="form-text text-muted">Task 정렬시 사용되는 값. 낮을수록 위쪽</small>
+		    <small class="form-text text-muted">
+			    Value used for task sorting<br>
+			    Lower values appear higher.</small>
                 </div>
             </div>
             <div class="col">
                 <div class="form-group">
                     <label>Excel Order</label>
                     <input type="number" name="excelorder" step="0.01" class="form-control" placeholder="0.1" value="{{.Tasksetting.ExcelOrder}}">
-                    <small class="form-text text-muted">Excel 출력시 Task 정렬 값. 낮을수록 앞쪽</small>
+                    <small class="form-text text-muted">
+			    Value used for Excel exporting<br>
+			    Lower values appear first.</small>
                 </div>
             </div>
         </div>
         
         
-        <div class="form-check">
+        <div class="form-check pt-3">
             <input type="checkbox" id="initgenerate" name="initgenerate" class="form-check-input" value="true"{{if .Tasksetting.InitGenerate}} checked{{end}}>
-            <label class="form-check-label" for="initgenerate">Item 생성시 이 Task를 자동생성 합니다.</label>
+            <label class="form-check-label" for="initgenerate">Set as default for item creation.</label>
         </div>
 
         {{template "regexpathop"}}
