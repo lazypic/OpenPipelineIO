@@ -4,7 +4,6 @@ package main
 type Setting struct {
 	ID                             string `json:"id"`                             // 셋팅ID
 	AppName                        string `json:"appname"`                        // App 이름
-	Copyright                      string `json:"copyright"`                      // Copyright Information
 	EmailDNS                       string `json:"emaildns"`                       // Email DNS 서버이름
 	OCIOConfig                     string `json:"ocioconfig"`                     // OpenColorIO Config Path 설정
 	FFmpeg                         string `json:"ffmpeg"`                         // FFmpeg 경로 셋팅
