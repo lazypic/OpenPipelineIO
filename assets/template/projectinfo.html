@@ -1,18 +1,18 @@
 {{define "projectinfo" }}
-{{template "headBootstrap"}}
-{{template "navbar" .}}
+{{template "headBootstrap5"}}
+{{template "navbar-bootstrap5" .}}
 
 <body>
 		
 <div class="p-4">
-	<div class="row">
-		<a href="/projectinfo" class="btn btn-outline-darkmode btn-sm m-1">전체</a>
-		<a href="/projectinfo?status=archive" class="btn btn-outline-darkmode btn-sm m-1">종료</a>
-		<a href="/projectinfo?status=test" class="btn btn-darkmode btn-sm m-1">테스트</a>
-		<a href="/projectinfo?status=pre" class="btn btn-info btn-sm m-1">준비</a>
-		<a href="/projectinfo?status=post" class="btn btn-success btn-sm m-1">진행</a>
-		<a href="/projectinfo?status=layover" class="btn btn-warning btn-sm m-1">중단</a>
-		<a href="/projectinfo?status=backup" class="btn btn-danger btn-sm m-1">백업</a>
+	<div class="">
+		<a href="/projectinfo" class="btn btn-outline-darkmode btn-sm m-1">ALL</a>
+		<a href="/projectinfo?status=archive" class="btn btn-outline-darkmode btn-sm m-1">Archive</a>
+		<a href="/projectinfo?status=test" class="btn btn-darkmode btn-sm m-1">Test</a>
+		<a href="/projectinfo?status=pre" class="btn btn-info btn-sm m-1">PreProduction</a>
+		<a href="/projectinfo?status=post" class="btn btn-success btn-sm m-1">PostProduction</a>
+		<a href="/projectinfo?status=layover" class="btn btn-warning btn-sm m-1">Hold</a>
+		<a href="/projectinfo?status=backup" class="btn btn-danger btn-sm m-1">Need Backup</a>
 	</div>
 </div>
 
@@ -103,7 +103,6 @@
 
 {{template "footerBootstrap" .}}
 </body>
-<script src="/assets/js/jquery-3.1.1.min.js"></script>
-<script src="/assets/bootstrap-4/js/bootstrap.min.js"></script>
+<script src="/assets/bootstrap-5.0.2/js/bootstrap.min.js"></script>
 </html>
 {{end}}
