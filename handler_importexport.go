@@ -11,7 +11,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -2053,63 +2052,3 @@ func handleDownloadExcelTemplate(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, tempDir+"/"+filename)
 }
 
-// handleExportDumpProject 함수는 전송된 값을 이용해서 export json을 처리한다.
-func handleExportDumpProject(w http.ResponseWriter, r *http.Request) {
-	client, err := initMongoClient()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer client.Disconnect(context.Background())
-	_, accessLevel, err := TokenHandlerV2(r, client)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
-	if accessLevel < IoAccessLevel {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
-
-	// Temp 경로를 만든다.
-	tempDir, err := ioutil.TempDir("", "")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer os.RemoveAll(tempDir)
-	dbName := "project"
-	// Temp경로에 DB를 dump한다.
-	args := []string{
-		"-d",
-		dbName,
-		"-h",
-		*flagDBIP,
-		"--quiet",
-		"--out",
-		tempDir,
-	}
-	err = exec.Command(CachedAdminSetting.MongodumpPath, args...).Run()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// 압축 Tempfile을 생성한다.
-	filename := "openpipelineio-dbdump.zip"
-	zipDumpfile, err := ioutil.TempFile("", "")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	defer os.Remove(zipDumpfile.Name())
-	// Temp 경로를 압축한다.
-	err = ZipWriter(tempDir+"/"+dbName, zipDumpfile.Name())
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// 저장된 Json 파일을 다운로드 시킨다.
-	w.Header().Add("Content-Disposition", fmt.Sprintf("Attachment; filename=%s", filename))
-	http.ServeFile(w, r, zipDumpfile.Name())
-}

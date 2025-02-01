@@ -1,4 +1,4 @@
-{{define "adminsetting" }}
+{{define "adminsetting"}}
 {{template "headBootstrap5"}}
 <body>
 {{template "navbar-bootstrap5" .}}
@@ -389,20 +389,11 @@
                         <input type="text" class="form-control" id="WFS" name="WFS" placeholder="" value="{{.Setting.WFS}}">
                         <small class="form-text text-muted">Web file system url</small>
                     </div>
-                    <div class="col form-group">
-                        <label for="LogServer">Log Server URL</label>
-                        <input type="text" class="form-control" id="LogServer" name="LogServer" placeholder="" value="{{.Setting.LogServer}}">
-                        <small class="form-text text-muted">Log Server URL</small>
-                    </div>
                     
                 </div>
                 <div class="row">
                     <div class="col form-group">
-                        <label for="MongodumpPath">Mongodump Path</label>
-                        <input type="text" class="form-control" id="MongodumpPath" name="MongodumpPath" placeholder="/usr/bin/mongodump" value="{{.Setting.MongodumpPath}}">
-                    </div>
-                    <div class="col form-group">
-                        <label for="OCIOConfig">OpenColorIO Configs Path</label>
+                        <label for="OCIOConfig">OCIO Configs Path</label>
                         <input type="text" class="form-control" id="OCIOConfig" name="OCIOConfig" placeholder="/path/OpenColorIO-Configs/aces_1.0.3/config.ocio" value="{{.Setting.OCIOConfig}}">
                     </div>
                     <div class="col form-group">

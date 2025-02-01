@@ -367,7 +367,6 @@ func webserver(port string) {
 	r.HandleFunc("/download-excel-file", handleDownloadExcelFile).Methods("GET")
 	r.HandleFunc("/download-json-file", handleDownloadJSONFile).Methods("GET")
 	r.HandleFunc("/download-csv-file", handleDownloadCsvFile).Methods("GET")
-	r.HandleFunc("/export-dump-project", handleExportDumpProject).Methods("GET")
 
 	// Task
 	r.HandleFunc("/tasksettings", handleTasksettings)
