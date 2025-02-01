@@ -426,11 +426,11 @@ func webserver(port string) {
 	r.HandleFunc("/api2/statistics/user", handleAPI2StatisticsUser).Methods(http.MethodGet, http.MethodOptions)
 
 	// restAPI Project
-	r.HandleFunc("/api/project", handleAPIProject)
+	r.HandleFunc("/api/project", handleAPIProject).Methods("GET")
 	r.HandleFunc("/api2/projects", handleAPI2Projects).Methods("GET")
-	r.HandleFunc("/api/addproject", handleAPIAddproject)
-	r.HandleFunc("/api/projecttags", handleAPIProjectTags)
-	r.HandleFunc("/api/projectassettags", handleAPIProjectAssetTags)
+	r.HandleFunc("/api/addproject", handleAPIAddproject).Methods("POST")
+	r.HandleFunc("/api/projecttags", handleAPIProjectTags).Methods("GET")
+	r.HandleFunc("/api/projectassettags", handleAPIProjectAssetTags).Methods("GET")
 
 	// restAPI Onset(Setellite)
 	r.HandleFunc("/api/setellite", handleAPISetelliteItems)

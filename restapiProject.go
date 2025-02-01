@@ -1,37 +1,32 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
-
-	"gopkg.in/mgo.v2"
 )
 
 // handleAPIAddproject 함수는 프로젝트를 추가한다.
 func handleAPIAddproject(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	id := r.FormValue("id")
 	p := *NewProject(id)
-	err = addProject(session, p)
+	err = addProjectV2(client, p)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	project, err := getProject(session, id)
+	project, err := getProjectV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -48,24 +43,20 @@ func handleAPIAddproject(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIProject 함수는 프로젝트 정보를 불러온다.
 func handleAPIProject(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	q := r.URL.Query()
 	id := q.Get("id")
-	project, err := getProject(session, id)
+	project, err := getProjectV2(client, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -82,29 +73,25 @@ func handleAPIProject(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIProjectTags 함수는 프로젝트에 사용되는 태그리스트를 불러온다.
 func handleAPIProjectTags(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	q := r.URL.Query()
 	project := q.Get("project")
-	_, err = getProject(session, project)
+	_, err = getProjectV2(client, project)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
-	tags, err := Distinct(session, project, "tag")
+	tags, err := DistinctV2(client, project, "tag")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -129,29 +116,25 @@ func handleAPIProjectTags(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIProjectAssetTags 함수는 프로젝트에 사용되는 에셋 태그리스트를 불러온다.
 func handleAPIProjectAssetTags(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	q := r.URL.Query()
 	project := q.Get("project")
-	_, err = getProject(session, project)
+	_, err = getProjectV2(client, project)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
-	assettags, err := Distinct(session, project, "assettags")
+	assettags, err := DistinctV2(client, project, "assettags")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -176,22 +159,18 @@ func handleAPIProjectAssetTags(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIProjects 함수는 프로젝트 리스트를 반환한다.
 func handleAPI2Projects(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
-		return
-	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	_, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	projects, err := getProjects(session)
+	projects, err := getProjectsV2(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
