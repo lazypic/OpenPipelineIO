@@ -17,8 +17,10 @@ import (
 )
 
 func init() {
-	// add unidoc license : https://cloud.unidoc.io
-	// unidoc : go library for read pdf file
+	// If you want unidoc license
+	// Please set unidoc license use env.
+	// info https://cloud.unidoc.io
+	// unidoc is Go library for read pdf file
 	err := license.SetMeteredKey(os.Getenv(`UNIDOC_LICENSE_API_KEY`))
 	if *flagDebug {
 		if err != nil {
@@ -28,21 +30,14 @@ func init() {
 }
 
 var (
-	// DBIP 값은 컴파일 단계에서 회사에 따라 값이 바뀐다.
 	DBIP = "127.0.0.1"
-	// DBPORT mongoDB 기본포트.
 	DBPORT = ":27017"
-	// DBNAME 값은 데이터베이스 이름이다.
 	DBNAME = "OpenPipelineIO"
-	// DNS 값은 서비스 DNS 값입니다.
 	DNS = "openpipeline.io"
-	// TEMPLATES 값은 웹서버 실행전 사용할 템플릿이다.
-	TEMPLATES = template.New("")
-	SHA1VER = "26b300a004abae553650c924514dc550e7385c9e" // First OpenPipelineIO git commit SHA1
-	// BUILDTIME 은 빌드타임 시간이다.
-	BUILDTIME = "2012-11-08T10:00:00" // First commit time
-	// CachedAdminSetting 은 서비스 시작전 어드민 셋팅값을 메모리에 넣어서 사용되는 변수이다.
-	CachedAdminSetting = Setting{}
+	TEMPLATES = template.New("") // init template
+	SHA1VER = "26b300a004abae553650c924514dc550e7385c9e" // first git commit SHA1
+	BUILDTIME = "2012-11-08T10:00:00" // first commit time
+	CachedAdminSetting = Setting{} // init adminsetting for cache
 
 	// 주요서비스 인수
 	flagDBIP           = flag.String("dbip", DBIP+DBPORT, "mongodb ip and port")                                                            // mgo용 mongoDB 주소
@@ -143,23 +138,22 @@ func main() {
 		}
 		defer client.Disconnect(context.Background())
 
+		// load admin setting from DB
+		// and send to Cach
 		admin, err := GetAdminSettingV2(client)
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		// 어드민설정을 저장한다. CachedAdminSetting값은 매번 DB 호출하지 않는 처리에 사용된다.
 		CachedAdminSetting = admin
-		// 만약 Admin 설정에 ThumbnailRootPath가 잡혀있다면 그 값을 이용한다.
 		if admin.ThumbnailRootPath == "" {
-			log.Println("admin 설정창의 thumbnail 경로지정이 필요합니다.")
+			log.Println("warning. need admin setup for thumbnail path")
 		}
 
 		plist, err := ProjectlistV2(client)
 		if err != nil {
 			log.Fatal(err)
 		}
-		// 프로젝트가 존재하지 않는다면 test 프로젝트를 추가한다.
+		// Create "test" project when no project in DB.
 		if len(plist) == 0 {
 			p := *NewProject("test")
 			err = addProjectV2(client, p)
@@ -180,11 +174,13 @@ func main() {
 			log.Fatal(err)
 		}
 		TEMPLATES = vfsTempates
-		if *flagReviewRender {
-			go ProcessReviewRender() // If review data is available, start processing.
-		}
 		if *flagScanPlateRender {
-			go ProcessScanPlateRender() // If scan data is available, start processing.
+			// If scan data is available, start processing.
+			go ProcessScanPlateRender()
+		}
+		if *flagReviewRender {
+			// If review data is available, start processing.
+			go ProcessReviewRender()
 		}
 		webserver(*flagHTTPPort)
 
