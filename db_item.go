@@ -1393,7 +1393,7 @@ func TypeV2(client *mongo.Client, project, name string) (string, error) {
 		return "", errors.New(name + "no item")
 	}
 	if len(items) != 1 {
-		return "", errors.New(name + "값이 DB에서 고유하지 않습니다.")
+		return "", errors.New(name + "There are no items with the specified type(org,mp,main,left,asset).")
 	}
 	return items[0].Type, nil
 }

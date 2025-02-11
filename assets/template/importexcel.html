@@ -15,10 +15,10 @@
                         <input name="file" type="file" />
                     </div>
                 </form>
-                <small class="form-text text-mute">업로드할 .xlsx 파일을 Drag & Drop 해주세요.</small>
-                <small class="form-text text-mute">Apple Numbers에서 작성된 멀티라인은 인식되지 않습니다.</small>
+                <small class="form-text text-mute">Please drag and drop the .xlsx file to upload.</small>
+                <small class="form-text text-mute">Excel files edited with Apple Numbers do not support newline characters within cells.</small>
                 <small class="form-text text-mute">
-                    <a href="/download-excel-template" class="text-warning" download>.xlsx Template 다운로드</a>
+                    <a href="/download-excel-template" class="text-warning" download>Download .xlsx Template</a>
                 </small>
                 <div class="form-group pt-5">
                     <label>Project</label>
@@ -27,7 +27,7 @@
                             <option value="{{.}}">{{.}}</option>
                         {{end}}
                     </select>
-                    <small class="form-text text-muted">import 대상 프로젝트를 선택해주세요.</small>
+                    <small class="form-text text-muted">Select target project.</small>
                 </div>
             </div>
         </div>
