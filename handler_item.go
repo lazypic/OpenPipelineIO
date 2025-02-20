@@ -26,14 +26,16 @@ func handleSearchSubmit(w http.ResponseWriter, r *http.Request) {
 	project := r.FormValue("Project")
 	searchword := r.FormValue("Searchword")
 	sortkey := r.FormValue("Sortkey")
+	sortorder := r.FormValue("Sortorder")
 	task := r.FormValue("Task")
 	truestatus := r.FormValue("truestatus")
 	// 아래 코드는 임시로 사용한다.
 
-	redirectURL := fmt.Sprintf(`/inputmode?project=%s&searchword=%s&sortkey=%s&task=%s&truestatus=%s`,
+	redirectURL := fmt.Sprintf(`/inputmode?project=%s&searchword=%s&sortkey=%s&sortorder=%s&task=%s&truestatus=%s`,
 		project,
 		searchword,
 		sortkey,
+		sortorder,
 		task,
 		truestatus,
 	)
@@ -54,6 +56,7 @@ func handleSearchSubmitV2(w http.ResponseWriter, r *http.Request) {
 	project := r.FormValue("Project")
 	searchword := r.FormValue("Searchword")
 	sortkey := r.FormValue("Sortkey")
+	sortorder := r.FormValue("Sortorder")
 	task := r.FormValue("Task")
 	// status를 체크할 때 마다 truestatus form에 값이 추가되어야 한다.
 	client, err := initMongoClient()
@@ -73,10 +76,11 @@ func handleSearchSubmitV2(w http.ResponseWriter, r *http.Request) {
 			truestatus = append(truestatus, status.ID)
 		}
 	}
-	redirectURL := fmt.Sprintf(`/inputmode?project=%s&searchword=%s&sortkey=%s&task=%s&truestatus=%s`,
+	redirectURL := fmt.Sprintf(`/inputmode?project=%s&searchword=%s&sortkey=%s&sortorder=%s&task=%s&truestatus=%s`,
 		project,
 		searchword,
 		sortkey,
+		sortorder,
 		task,
 		strings.Join(truestatus, ","),
 	)
@@ -242,9 +246,10 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 리다이렉션 한다.
-	url := fmt.Sprintf("/inputmode?project=%s&sortkey=%s&template=index&task=%s&searchword=%s&truestatus=%s&page=%d",
+	url := fmt.Sprintf("/inputmode?project=%s&sortkey=%s&sortorder=%d&template=index&task=%s&searchword=%s&truestatus=%s&page=%d",
 		rcp.SearchOption.Project,
 		rcp.SearchOption.Sortkey,
+		rcp.SearchOption.Sortorder,
 		rcp.SearchOption.Task,
 		rcp.SearchOption.Searchword,
 		strings.Join(rcp.SearchOption.TrueStatus, ","),

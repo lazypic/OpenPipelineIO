@@ -28,8 +28,13 @@
 						<option value="ddline2d" {{if eq $.SearchOption.Sortkey "ddline2d" }}selected{{end}}>Sort: Deadline 2D</option>
 						<option value="scanframe" {{if eq $.SearchOption.Sortkey "scanframe" }}selected{{end}}>Sort: Scan Length</option>
 						<option value="scantime" {{if eq $.SearchOption.Sortkey "scantime" }}selected{{end}}>Sort: Scan Date</option>
-						<option value="taskpredate" {{if eq $.SearchOption.Sortkey "taskpredate" }}selected{{end}}>Sort: Task Deadline 1st</option>
-						<option value="taskdate" {{if eq $.SearchOption.Sortkey "taskdate" }}selected{{end}}>Sort: Task Deadline 2nd</option>
+						<option value="taskdate" {{if eq $.SearchOption.Sortkey "taskdate" }}selected{{end}}>Sort: Task Deadline</option>
+					</select>
+				</div>
+				<div class="input-group-append">
+					<select id="searchbox-sortorder" name="Sortorder" class="custom-select">
+						<option value="1" {{if eq $.SearchOption.Sortorder 1 }}selected{{end}}>Sort</option>
+						<option value="-1" {{if eq $.SearchOption.Sortorder -1 }}selected{{end}}>Reverse Sort</option>
 					</select>
 				</div>
 				<div class="input-group-append">
