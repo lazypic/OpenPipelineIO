@@ -343,7 +343,7 @@ func SearchV2(client *mongo.Client, op SearchOption) ([]Item, error) {
 	o, q := GenQueryV2(client, op)
 
 	findOptions := options.Find()
-	findOptions.SetSort(bson.D{{Key: o.Sortkey, Value: -1}})
+	findOptions.SetSort(bson.D{{Key: o.Sortkey, Value: 1}})
 	//findOptions.SetSkip(int64(CachedAdminSetting.ItemNumberOfPage * (op.Page - 1)))
 	//findOptions.SetLimit(int64(CachedAdminSetting.ItemNumberOfPage))
 
@@ -388,7 +388,7 @@ func SearchPageV2(client *mongo.Client, op SearchOption) ([]Item, int, error) {
 
 	findOptions := options.Find()
 
-	findOptions.SetSort(bson.D{{Key: o.Sortkey, Value: -1}})
+	findOptions.SetSort(bson.D{{Key: o.Sortkey, Value: 1}})
 	findOptions.SetSkip(int64(CachedAdminSetting.ItemNumberOfPage * (op.Page - 1)))
 	findOptions.SetLimit(int64(CachedAdminSetting.ItemNumberOfPage))
 
