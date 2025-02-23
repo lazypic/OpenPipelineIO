@@ -330,9 +330,6 @@ func handleAPISearchFootages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	typ := r.FormValue("type")
-	if typ == "" {
-		typ = "main"
-	}
 	episode := r.FormValue("episode")
 
 	method := r.FormValue("method")
@@ -372,7 +369,6 @@ func handleAPISearchFootages(w http.ResponseWriter, r *http.Request) {
 		items[n].Type = typ
 		items[n].InColorspace = incolorspace
 		items[n].OutColorspace = outcolorspace
-
 		regGroup := regexp.SubexpNames()
 		regValue := regexp.FindStringSubmatch(items[n].Base)
 		// 사용자에게 받은 Regex값을 이용해서 Name값을 추출한다.
@@ -382,7 +378,11 @@ func handleAPISearchFootages(w http.ResponseWriter, r *http.Request) {
 				case "name", "Name":
 					items[n].Name = regValue[order]
 				case "type", "Type":
-					items[n].Type = regValue[order]
+					if typ != "" {
+						items[n].Type = typ
+					} else {
+						items[n].Type = regValue[order]
+					}
 				}
 			}
 		}
