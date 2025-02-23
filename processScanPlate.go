@@ -36,7 +36,7 @@ func ProcessScanPlateRender() {
 	select {}
 }
 
-// workerScanPlate 합수는 ScanPlate 데이터를 jobs로 보낸다.
+// workerScanPlate 함수는 ScanPlate 데이터를 jobs로 보낸다.
 func workerScanPlate(jobs <-chan ScanPlate) {
 	for job := range jobs {
 		// job은 리뷰타입이다.

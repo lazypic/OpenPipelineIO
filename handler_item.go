@@ -245,6 +245,9 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 		rcp.SearchOption.Page = 1
 	}
 
+	// sortorder must be: -1,1
+	rcp.SearchOption.Sortorder = 1
+
 	// 리다이렉션 한다.
 	url := fmt.Sprintf("/inputmode?project=%s&sortkey=%s&sortorder=%d&template=index&task=%s&searchword=%s&truestatus=%s&page=%d",
 		rcp.SearchOption.Project,
@@ -437,7 +440,7 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 		i.Platepath = platePath.String()
 		i.Scantime = now
 		i.Updatetime = now
-		if i.Type == "org" || i.Type == "main" || i.Type == "mp" || i.Type == "left" {
+		if i.Type == "org" || i.Type == "main" || i.Type == "mp" || i.Type == "plt" || i.Type == "plate" || i.Type == "left" {
 			i.StatusV2 = initStatus
 			if setRendersize {
 				width := int(float64(pinfo.PlateWidth) * admin.DefaultScaleRatioOfUndistortionPlate)
@@ -451,7 +454,7 @@ func handleAddShotSubmit(w http.ResponseWriter, r *http.Request) {
 		}
 		if genTask {
 			// 기본적으로 생성해야할 Task를 추가한다.
-			if i.Type == "org" || i.Type == "main" || i.Type == "mp" || i.Type == "left" {
+			if i.Type == "org" || i.Type == "main" || i.Type == "mp" || i.Type == "plt" || i.Type == "plate" || i.Type == "left" {
 				i.Tasks = make(map[string]Task)
 				for _, task := range tasks {
 					if !task.InitGenerate {

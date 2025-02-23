@@ -11,6 +11,7 @@
 				<a class="dropdown-item" href="/inputmode?project={{$.SearchOption.Project}}&
 					searchword=assettags:{{.}}&
 					sortkey={{$.SearchOption.Sortkey}}&
+					sortorder={{$.SearchOption.Sortorder}}&
 					truestatus={{Join $.AllStatusIDs "," }}&
 					task={{$.SearchOption.Task}}">Go to Tag Page</a>
 				<a class="dropdown-item" href="#" onclick="addAssetTagAtSearchbox('{{.}}')">Add Searchbox</a>
@@ -33,6 +34,7 @@
 						<a class="dropdown-item" href="/inputmode?project={{$.SearchOption.Project}}&
 							searchword=tag:{{.}}&
 							sortkey={{$.SearchOption.Sortkey}}&
+							sortorder={{$.SearchOption.Sortorder}}&
 							truestatus={{Join $.SearchOption.TrueStatus "," }}&
 							task={{$.SearchOption.Task}}">Go to Tag Page</a>
 						<a class="dropdown-item" href="#" onclick="addTagAtSearchbox('{{.}}')">Add Searchbox</a>

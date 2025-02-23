@@ -12,7 +12,7 @@
             <label>Success Shots</label>
             {{range .Success}}
                 <div class="p-1 text-darkmode">
-                    <a href="/inputmode?project={{.Project}}&searchword={{.Name}}&sortkey=id&template=index&task=&truestatus={{Join $.TrueStatus "," }}" class="btn btn-sm btn-success">{{.Name}}</a> OK
+                    <a href="/inputmode?project={{.Project}}&searchword={{.Name}}&sortkey=id&sortorder=1&template=index&task=&truestatus={{Join $.TrueStatus "," }}" class="btn btn-sm btn-success">{{.Name}}</a> OK
                 </div>
             {{end}}
         </div>

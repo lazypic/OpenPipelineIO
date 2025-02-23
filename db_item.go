@@ -147,6 +147,8 @@ func TotalnumV2(client *mongo.Client, project string) (Infobarnum, error) {
 		{"project": project, "type": "org"},
 		{"project": project, "type": "main"},
 		{"project": project, "type": "mp"},
+		{"project": project, "type": "plt"},
+		{"project": project, "type": "plate"},
 		{"project": project, "type": "left"},
 	}}
 	num, err := collection.CountDocuments(ctx, filter)
@@ -1472,6 +1474,8 @@ func SearchAllShotV2(client *mongo.Client, project, sortkey string) ([]Item, err
 	queries = append(queries, bson.M{"project": project, "type": "org"})
 	queries = append(queries, bson.M{"project": project, "type": "main"})
 	queries = append(queries, bson.M{"project": project, "type": "mp"})
+	queries = append(queries, bson.M{"project": project, "type": "plt"})
+	queries = append(queries, bson.M{"project": project, "type": "plate"})
 	queries = append(queries, bson.M{"project": project, "type": "left"})
 	filter := bson.M{"$or": queries}
 
@@ -1530,6 +1534,8 @@ func SearchAllV2(client *mongo.Client, project, sortkey string) ([]Item, error) 
 	queries = append(queries, bson.M{"project": project, "type": "org"})
 	queries = append(queries, bson.M{"project": project, "type": "main"})
 	queries = append(queries, bson.M{"project": project, "type": "mp"})
+	queries = append(queries, bson.M{"project": project, "type": "plt"})
+	queries = append(queries, bson.M{"project": project, "type": "plate"})
 	queries = append(queries, bson.M{"project": project, "type": "left"})
 	queries = append(queries, bson.M{"project": project, "type": "asset"})
 	filter := bson.M{"$or": queries}

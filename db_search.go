@@ -154,6 +154,8 @@ func GenQueryV2(client *mongo.Client, op SearchOption) (SearchOption, bson.M) {
 				{"type": "org"},
 				{"type": "main"},
 				{"type": "mp"},
+				{"type": "plt"},
+				{"type": "plate"},
 				{"type": "left"},
 			}})
 		} else if strings.HasPrefix(word, "type:asset") {
@@ -225,6 +227,8 @@ func GenQueryV2(client *mongo.Client, op SearchOption) (SearchOption, bson.M) {
 				query = append(query, bson.M{"type": "org"})
 				query = append(query, bson.M{"type": "main"})
 				query = append(query, bson.M{"type": "mp"})
+				query = append(query, bson.M{"type": "plt"})
+				query = append(query, bson.M{"type": "plate"})
 				query = append(query, bson.M{"type": "left"})
 			case "asset", "assets", "에셋":
 				query = append(query, bson.M{"type": "asset"})

@@ -6,6 +6,7 @@
 		<a href="/inputmode?project={{$.SearchOption.Project}}&
 				searchword=deadline3d:{{.}}&
 				sortkey={{$.SearchOption.Sortkey}}&
+				sortorder={{$.SearchOption.Sortorder}}&
 				truestatus={{Join $.SearchOption.TrueStatus "," }}&
 				task={{$.SearchOption.Task}}" class="statusuri badge badge-{{CheckDdlinev2 .}}">{{ToShortTime .}}</a>
 	{{end}}
@@ -17,6 +18,7 @@
 		<a href="/inputmode?project={{$.SearchOption.Project}}&
 				searchword=deadline2d:{{.}}&
 				sortkey={{$.SearchOption.Sortkey}}&
+				sortorder={{$.SearchOption.Sortorder}}&
 				truestatus={{ Join $.SearchOption.TrueStatus "," }}&
 				task={{$.SearchOption.Task}}" class="statusuri badge badge-{{CheckDdlinev2 .}}">{{ToShortTime .}}</a>
 	{{end}}
