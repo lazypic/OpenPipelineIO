@@ -51,7 +51,6 @@ func handleAdminSetting(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	//w.Header().Set("Content-Type", "text/html")
 
 	err = TEMPLATES.ExecuteTemplate(w, "adminsetting", rcp)
 	if err != nil {
@@ -135,6 +134,10 @@ func handleAdminSettingSubmit(w http.ResponseWriter, r *http.Request) {
 	s.ReviewUploadPathPermission = r.FormValue("ReviewUploadPathPermission")
 	s.ReviewUploadPathUID = r.FormValue("ReviewUploadPathUID")
 	s.ReviewUploadPathGID = r.FormValue("ReviewUploadPathGID")
+	s.DirectUploadPath = r.FormValue("DirectUploadPath")
+	s.DirectUploadPathPermission = r.FormValue("DirectUploadPathPermission")
+	s.DirectUploadPathUID = r.FormValue("DirectUploadPathUID")
+	s.DirectUploadPathGID = r.FormValue("DirectUploadPathGID")
 	s.InitPassword = r.FormValue("InitPassword")
 	s.OCIOConfig = r.FormValue("OCIOConfig")
 	s.FFmpeg = r.FormValue("FFmpeg")

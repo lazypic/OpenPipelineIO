@@ -36,7 +36,7 @@
                     <div class="col">
                         <div class="form-group">
                             <label for="ScanPlateUploadPath">ScanPlate Upload Path</label>
-                            <input type="text" class="form-control" id="ScanPlateUploadPath" name="ScanPlateUploadPath" placeholder="/tmp/scanplate" value="{{.Setting.ScanPlateUploadPath}}">
+                            <input type="text" class="form-control" id="ScanPlateUploadPath" name="ScanPlateUploadPath" placeholder="/upload/scanplate" value="{{.Setting.ScanPlateUploadPath}}">
                             <small class="form-text text-warning">ScanPlate upload path</small>
                         </div>
                     </div>
@@ -358,7 +358,7 @@
                     <div class="col-6">
                         <div class="form-group">
                             <label for="ReviewUploadPath">Review Upload Path</label>
-                            <input type="text" class="form-control" id="ReviewUploadPath" name="ReviewUploadPath" placeholder="/review/upload" value="{{.Setting.ReviewUploadPath}}">
+                            <input type="text" class="form-control" id="ReviewUploadPath" name="ReviewUploadPath" placeholder="/upload/review" value="{{.Setting.ReviewUploadPath}}">
                         </div>
                     </div>
                     <div class="col-2">
@@ -377,6 +377,32 @@
                         <div class="form-group">
                             <label for="ReviewUploadPathGID">GID</label>
                             <input type="text" class="form-control" id="ReviewUploadPathGID" name="ReviewUploadPathGID" placeholder="500" value="{{.Setting.ReviewUploadPathGID}}">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="DirectUploadPath">Direct Upload Path</label>
+                            <input type="text" class="form-control" id="DirectUploadPath" name="DirectUploadPath" placeholder="/upload/direct" value="{{.Setting.DirectUploadPath}}">
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label for="DirectUploadPathPermission">Permission</label>
+                            <input type="text" class="form-control" id="DirectUploadPathPermission" name="DirectUploadPathPermission" placeholder="0775" value="{{.Setting.DirectUploadPathPermission}}">
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label for="DirectUploadPathUID">UID</label>
+                            <input type="text" class="form-control" id="DirectUploadPathUID" name="DirectUploadPathUID" placeholder="500" value="{{.Setting.DirectUploadPathUID}}">
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label for="DirectUploadPathGID">GID</label>
+                            <input type="text" class="form-control" id="DirectUploadPathGID" name="DirectUploadPathGID" placeholder="500" value="{{.Setting.DirectUploadPathGID}}">
                         </div>
                     </div>
                 </div>

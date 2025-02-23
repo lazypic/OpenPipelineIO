@@ -67,6 +67,10 @@ type Setting struct {
 	ReviewUploadPathPermission     string `json:"reviewuploadpathpermission"`     // 리뷰 업로드 파일이 저장되는 경로의 권한
 	ReviewUploadPathUID            string `json:"reviewuploadpathuid"`            // 리뷰 업로드 파일이 저장되는 경로의 User ID
 	ReviewUploadPathGID            string `json:"reviewuploadpathgid"`            // 리뷰 업로드 파일이 저장되는 경로의 Group ID
+	DirectUploadPath               string `json:"directuploadpath"`               // Direct 업로드 파일이 저장되는 경로
+	DirectUploadPathPermission     string `json:"directuploadpathpermission"`     // Direct 업로드 파일이 저장되는 경로의 권한
+	DirectUploadPathUID            string `json:"directuploadpathuid"`            // Direct 업로드 파일이 저장되는 경로의 User ID
+	DirectUploadPathGID            string `json:"directuploadpathgid"`            // Direct 업로드 파일이 저장되는 경로의 Group ID
 	ProductionStartFrame           int    `json:"prodcutionstartframe"`           // 프로덕션의 시작프레임
 	ProductionPaddingVersionNumber int    `json:"productionpaddingversionnumber"` // 프로덕션의 버전 자리수
 
