@@ -15,7 +15,7 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
         
-        {{if eq .User.AccessLevel 3 4 5 6 7 8 9 10 11}}
+        {{if eq .User.AccessLevel 2 3 4 5 6 7 8 9 10 11}}
           <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 File
@@ -54,8 +54,8 @@
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <a class="dropdown-item" href="/projectinfo">Projects</a>
-            <div class="dropdown-divider"></div>
             {{if eq .User.AccessLevel 3 4 5 6 7 8 9 10 11}}
+              <div class="dropdown-divider"></div>
               {{if eq .User.ID "guest" "demo" }}
                 <span class="fade dropdown-item">Users</span>
                 <div class="dropdown-divider"></div>
@@ -70,24 +70,15 @@
 	      <!--<a class="dropdown-item" href="/publishkey">Publish Key</a>-->
               <div class="dropdown-divider"></div>
             {{end}}
-	    <!--
-            {{if eq .User.AccessLevel 4 5 6 7 8 9 10 11}}
-              <a class="dropdown-item" href="/partners">Partner</a>
-              <a class="dropdown-item" href="/projectsforpartner">Projects For Partner</a>
-              <a class="dropdown-item" href="/endpoints">Endpoint</a>
-              <a class="dropdown-item" href="/scenarios">Scenarios</a>
-              <div class="dropdown-divider"></div>
-            {{end}}
-	    -->
             {{if eq .User.AccessLevel 4 5 6 7 8 9 10 11}}
               <a class="dropdown-item" href="/statistics">Statistics</a>
               <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/divisions">Divisions</a>
+              <a class="dropdown-item" href="/departments">Departments</a>
+              <a class="dropdown-item" href="/teams">Teams</a>
+              <a class="dropdown-item" href="/roles">Roles</a>
+              <a class="dropdown-item" href="/positions">Positions</a>
             {{end}}
-            <a class="dropdown-item" href="/divisions">Divisions</a>
-            <a class="dropdown-item" href="/departments">Departments</a>
-            <a class="dropdown-item" href="/teams">Teams</a>
-            <a class="dropdown-item" href="/roles">Roles</a>
-            <a class="dropdown-item" href="/positions">Positions</a>
           </div>
         </li>
         {{if eq .User.AccessLevel 4 5 6 7 8 9 10 11}}
