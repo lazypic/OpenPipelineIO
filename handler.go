@@ -243,6 +243,8 @@ func webserver(port string) {
 
 	// DirectUpload
 	r.HandleFunc("/directupload", handleDirectupload).Methods("GET")
+	r.HandleFunc("/ws/directupload", directUploadHandler)
+	r.HandleFunc("/ws/directuploadprogress", directUploadProgressHandler)
 
 	// ScanPlate
 	r.HandleFunc("/scanplate", handleScanPlate)

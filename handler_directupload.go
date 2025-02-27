@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -13,6 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"encoding/json"
 )
 
 func handleDirectupload(w http.ResponseWriter, r *http.Request) {
@@ -69,6 +69,11 @@ func handleDirectupload(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type UploadStatus struct {
+	FileName string `json:"fileName"`
+	SavedPath string `json:"savedPath"`
+}
+
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true
@@ -76,9 +81,11 @@ var upgrader = websocket.Upgrader{
 }
 
 func directUploadHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseMultipartForm(10 << 20) // 10MB 제한
+	r.ParseMultipartForm(10 << 30) // 10G 제한, 20 == 10M
 	files := r.MultipartForm.File["files"]
-	totalFiles := len(files)
+	relativePaths := r.MultipartForm.Value["relativePath[]"] // 폴더 구조 유지
+
+	var uploadedFiles []UploadStatus
 
 	for i, fileHeader := range files {
 		file, err := fileHeader.Open()
@@ -89,7 +96,12 @@ func directUploadHandler(w http.ResponseWriter, r *http.Request) {
 		defer file.Close()
 
 		// 저장할 경로 설정
-		savePath := filepath.Join("/home/jason/upload/direct", fileHeader.Filename)
+		if CachedAdminSetting.DirectUploadPath == "" {
+			http.Error(w, "need setup direct upload path", http.StatusInternalServerError)
+			return
+		}
+		savePath := filepath.Join(CachedAdminSetting.DirectUploadPath, relativePaths[i])
+		os.MkdirAll(filepath.Dir(savePath), os.ModePerm)
 		outFile, err := os.Create(savePath)
 		if err != nil {
 			http.Error(w, "파일 저장 실패", http.StatusInternalServerError)
@@ -99,11 +111,13 @@ func directUploadHandler(w http.ResponseWriter, r *http.Request) {
 
 		// 파일 저장
 		io.Copy(outFile, file)
-		progress := (i + 1) * 100 / totalFiles
-		directUploadBroadcastProgress(progress)
-	}
 
-	fmt.Fprintf(w, "파일 업로드 완료!")
+		uploadedFiles = append(uploadedFiles, UploadStatus{FileName: fileHeader.Filename, SavedPath: savePath})
+
+	}
+	jsonResponse, _ := json.Marshal(uploadedFiles)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonResponse)
 }
 
 var clients = make(map[*websocket.Conn]bool)
