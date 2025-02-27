@@ -423,7 +423,7 @@ func processingScanPlateImageItem(scan ScanPlate) {
 
 	// 플레이트 경로를 생성합니다.
 	if scan.GenPlatePath {
-		err = GenPlatePath(item.Platepath+"/"+scan.Ext[1:])
+		err = GenPlatePath(item.Platepath + "/" + scan.Ext[1:])
 		if err != nil {
 			err = SetScanPlateErrStatus(client, scanID, err.Error())
 			if err != nil {

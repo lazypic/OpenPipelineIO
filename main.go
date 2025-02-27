@@ -30,14 +30,14 @@ func init() {
 }
 
 var (
-	DBIP = "127.0.0.1"
-	DBPORT = ":27017"
-	DBNAME = "OpenPipelineIO"
-	DNS = "openpipeline.io"
-	TEMPLATES = template.New("") // init template
-	SHA1VER = "26b300a004abae553650c924514dc550e7385c9e" // first git commit SHA1
-	BUILDTIME = "2012-11-08T10:00:00" // first commit time
-	CachedAdminSetting = Setting{} // init adminsetting for cache
+	DBIP               = "127.0.0.1"
+	DBPORT             = ":27017"
+	DBNAME             = "OpenPipelineIO"
+	DNS                = "openpipeline.io"
+	TEMPLATES          = template.New("")                           // init template
+	SHA1VER            = "26b300a004abae553650c924514dc550e7385c9e" // first git commit SHA1
+	BUILDTIME          = "2012-11-08T10:00:00"                      // first commit time
+	CachedAdminSetting = Setting{}                                  // init adminsetting for cache
 
 	// 주요서비스 인수
 	flagDBIP           = flag.String("dbip", DBIP+DBPORT, "mongodb ip and port")                                                            // mgo용 mongoDB 주소

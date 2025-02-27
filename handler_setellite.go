@@ -1,16 +1,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"mime"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
-	"log"
-	"context"
 
 	"gopkg.in/mgo.v2"
 )
@@ -127,7 +127,7 @@ func handleUploadSetellite(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer client.Disconnect(context.Background())
-	
+
 	type recipe struct {
 		Projectlist []string
 		Message     string

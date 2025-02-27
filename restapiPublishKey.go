@@ -8,8 +8,6 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
-
-
 // handleAPIPulishKey 함수는 모든 PublishKey 항목을 반환하는 restAPI 이다.
 func handleAPIPublishKeys(w http.ResponseWriter, r *http.Request) {
 	client, err := initMongoClient()
@@ -18,7 +16,7 @@ func handleAPIPublishKeys(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer client.Disconnect(context.Background())
-	
+
 	_, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)

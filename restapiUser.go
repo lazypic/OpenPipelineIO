@@ -253,7 +253,7 @@ func handleAPIAutoCompliteUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleAPIInitPassword 함수는 User의 패스워드를 Adminsetting에 설정된 패스워드를 이용해서 패스워드를 리셋한다.
-func handleAPIInitPassword(w http.ResponseWriter, r *http.Request) {	
+func handleAPIInitPassword(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
 		ID          string      `json:"id"`
 		AccessLevel AccessLevel `json:"accesslevel"`
@@ -278,7 +278,7 @@ func handleAPIInitPassword(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	
+
 	// 관리자만 이 API를 사용할 수 있도록 제한합니다.
 	if rcp.AccessLevel != AdminAccessLevel {
 		http.Error(w, "Administrator privileges are required to reset the user's password.", http.StatusUnauthorized)

@@ -14,7 +14,7 @@ type ScanPlate struct {
 	Searchpath            string             `json:"searchpath" bson:"searchpath"`                       // 시퀀스 검색을 시작한 Endpoint
 	ConvertExt            string             `json:"convertext" bson:"convertext"`                       // 만약 소스를 저장할 때 변환하여 저장한다면 사용할 확장자
 	Type                  string             `json:"type" bson:"type"`                                   // 만약 소스를 저장할 때 변환하여 저장한다면 사용할 확장자
-	Episode                  string             `json:"episode" bson:"episode"`                                   // Episode
+	Episode               string             `json:"episode" bson:"episode"`                             // Episode
 	Name                  string             `json:"name" bson:"name"`                                   // 등록이름
 	Project               string             `json:"project" bson:"project"`                             // 프로젝트
 	RenderWidth           int                `json:"renderwidth" bson:"renderwidth"`                     // 렌더링 가로길이

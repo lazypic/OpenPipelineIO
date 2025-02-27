@@ -1019,7 +1019,6 @@ func SetSeq(session *mgo.Session, project, id, seq string) error {
 	return nil
 }
 
-
 // SetSeason 함수는 item에 season 값을 셋팅한다.
 func SetSeason(session *mgo.Session, project, id, season string) error {
 	session.SetMode(mgo.Monotonic, true)

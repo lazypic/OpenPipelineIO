@@ -160,12 +160,10 @@ func setUserV2(client *mongo.Client, u User) error {
 	return nil
 }
 
-
 func setLeaveUserV2(client *mongo.Client, id string, leave bool) error {
 	collection := client.Database(*flagDBName).Collection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
 
 	filter := bson.M{"id": id}
 
@@ -173,7 +171,7 @@ func setLeaveUserV2(client *mongo.Client, id string, leave bool) error {
 		// 사용자가 한번 떠나면 사용자의 엑세스 레벨은 최소값으로 바뀐다.
 		update := bson.M{
 			"$set": bson.M{
-				"isleave":    leave,
+				"isleave":     leave,
 				"accesslevel": UnknownAccessLevel,
 			},
 		}
@@ -194,7 +192,7 @@ func setLeaveUserV2(client *mongo.Client, id string, leave bool) error {
 	}
 
 	return nil
-	
+
 }
 
 func rmTokenV2(client *mongo.Client, id string) error {

@@ -35,7 +35,6 @@ func SetPublishKeyV2(client *mongo.Client, key PublishKey) error {
 	return nil
 }
 
-
 func HasPublishKeyV2(client *mongo.Client, id string) bool {
 	collection := client.Database(*flagDBName).Collection("publishkey")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -112,7 +111,7 @@ func AddPublishKeyV2(client *mongo.Client, key PublishKey) error {
 	if err != nil {
 		return err
 	}
-	
+
 	if n > 0 {
 		return errors.New(key.ID + " PublishKey가 이미 존재합니다")
 	}

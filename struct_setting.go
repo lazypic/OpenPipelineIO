@@ -81,7 +81,7 @@ type Setting struct {
 	ThumbnailImageHeight                 int     `json:"thumbnailimageheight"`                 // Thumbnail Image 세로사이즈
 	InitPassword                         string  `json:"initpassword"`                         // 사용자가 패스워드를 잃어버렸을 때 사용하는 패스워드
 	EnableEndpoint                       bool    `json:"enableendpoint"`                       // Endpoint 활성화
-	EnableDirectupload                       bool    `json:"enabledirectupload"`                       // Direct Upload 활성화
+	EnableDirectupload                   bool    `json:"enabledirectupload"`                   // Direct Upload 활성화
 	FullcalendarSchedulerLicenseKey      string  `json:"fullcalendarschedulerlicensekey"`      // Fullcalendar License Key
 	SlateFontPath                        string  `json:"slatefontpath"`                        // Slate에 사용되는 폰트 경로
 	Protocol                             string  `json:"protocol"`                             // 프로토콜 이름

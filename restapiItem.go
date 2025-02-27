@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"net/http"
-	"time"
 	"net"
+	"net/http"
 	"strconv"
+	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -73,7 +73,6 @@ func postHandleAPIItem(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-
 // handleAPI2RenderSize 함수는 아이템에 RenderSize를 설정한다.
 func handleAPI2SetRenderSize(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
@@ -131,7 +130,6 @@ func handleAPI2SetRenderSize(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-
 // handleAPISetOverscanRatio 함수는 아이템의 OverscanRatio 값을 설정한다.
 func handleAPISetOverscanRatio(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
@@ -186,4 +184,3 @@ func handleAPISetOverscanRatio(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }
-

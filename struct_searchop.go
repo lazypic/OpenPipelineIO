@@ -17,7 +17,7 @@ type SearchOption struct {
 	Project    string   `json:"project"`    // 선택한 프로젝트
 	Searchword string   `json:"searchword"` // 검색어
 	Sortkey    string   `json:"sortkey"`    // 정렬방식
-	Sortorder  int	    `json:"sortorder"`  // 정렬순서 1, -1 
+	Sortorder  int      `json:"sortorder"`  // 정렬순서 1, -1
 	Task       string   `json:"task"`       // Task명
 	TrueStatus []string `json:"truestatus"` // true 상태리스트
 	Shot       bool     `json:"shot"`

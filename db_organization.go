@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"time"
 	"errors"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -284,7 +284,6 @@ func rmPositionV2(client *mongo.Client, id string) error {
 	return nil
 }
 
-
 func addDivisionV2(client *mongo.Client, d Division) error {
 	if d.ID == "" {
 		return errors.New("ID is an empty string. Unable to create the Division")
@@ -292,7 +291,7 @@ func addDivisionV2(client *mongo.Client, d Division) error {
 	collection := client.Database(*flagDBName).Collection("divisions")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
+
 	num, err := collection.CountDocuments(ctx, bson.M{"id": d.ID})
 	if err != nil {
 		return err
@@ -315,8 +314,8 @@ func setDivisionV2(client *mongo.Client, d Division) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	filter := bson.M{"id":d.ID}
-	update := bson.D{{Key:"$set", Value: d}}
+	filter := bson.M{"id": d.ID}
+	update := bson.D{{Key: "$set", Value: d}}
 	result, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
@@ -327,7 +326,6 @@ func setDivisionV2(client *mongo.Client, d Division) error {
 	return nil
 }
 
-
 func addDepartmentV2(client *mongo.Client, d Department) error {
 	if d.ID == "" {
 		return errors.New("ID is an empty string. Unable to create the Department")
@@ -335,7 +333,7 @@ func addDepartmentV2(client *mongo.Client, d Department) error {
 	collection := client.Database(*flagDBName).Collection("departments")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
+
 	num, err := collection.CountDocuments(ctx, bson.M{"id": d.ID})
 	if err != nil {
 		return err
@@ -358,8 +356,8 @@ func setDepartmentV2(client *mongo.Client, d Department) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	filter := bson.M{"id":d.ID}
-	update := bson.D{{Key:"$set", Value: d}}
+	filter := bson.M{"id": d.ID}
+	update := bson.D{{Key: "$set", Value: d}}
 	result, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
@@ -370,8 +368,6 @@ func setDepartmentV2(client *mongo.Client, d Department) error {
 	return nil
 }
 
-
-
 func addTeamV2(client *mongo.Client, t Team) error {
 	if t.ID == "" {
 		return errors.New("ID is an empty string. Unable to create the Team")
@@ -379,7 +375,7 @@ func addTeamV2(client *mongo.Client, t Team) error {
 	collection := client.Database(*flagDBName).Collection("teams")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
+
 	num, err := collection.CountDocuments(ctx, bson.M{"id": t.ID})
 	if err != nil {
 		return err
@@ -402,8 +398,8 @@ func setTeamV2(client *mongo.Client, t Team) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	filter := bson.M{"id":t.ID}
-	update := bson.D{{Key:"$set", Value: t}}
+	filter := bson.M{"id": t.ID}
+	update := bson.D{{Key: "$set", Value: t}}
 	result, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
@@ -414,7 +410,6 @@ func setTeamV2(client *mongo.Client, t Team) error {
 	return nil
 }
 
-
 func addRoleV2(client *mongo.Client, r Role) error {
 	if r.ID == "" {
 		return errors.New("ID is an empty string. Unable to create the Role")
@@ -422,7 +417,7 @@ func addRoleV2(client *mongo.Client, r Role) error {
 	collection := client.Database(*flagDBName).Collection("roles")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
+
 	num, err := collection.CountDocuments(ctx, bson.M{"id": r.ID})
 	if err != nil {
 		return err
@@ -445,8 +440,8 @@ func setRoleV2(client *mongo.Client, r Role) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	filter := bson.M{"id":r.ID}
-	update := bson.D{{Key:"$set", Value: r}}
+	filter := bson.M{"id": r.ID}
+	update := bson.D{{Key: "$set", Value: r}}
 	result, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
@@ -457,7 +452,6 @@ func setRoleV2(client *mongo.Client, r Role) error {
 	return nil
 }
 
-
 func addPositionV2(client *mongo.Client, p Position) error {
 	if p.ID == "" {
 		return errors.New("ID is an empty string. Unable to create the Position")
@@ -465,7 +459,7 @@ func addPositionV2(client *mongo.Client, p Position) error {
 	collection := client.Database(*flagDBName).Collection("positions")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
+
 	num, err := collection.CountDocuments(ctx, bson.M{"id": p.ID})
 	if err != nil {
 		return err
@@ -488,8 +482,8 @@ func setPositionV2(client *mongo.Client, p Position) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	filter := bson.M{"id":p.ID}
-	update := bson.D{{Key:"$set", Value: p}}
+	filter := bson.M{"id": p.ID}
+	update := bson.D{{Key: "$set", Value: p}}
 	result, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
@@ -499,4 +493,3 @@ func setPositionV2(client *mongo.Client, p Position) error {
 	}
 	return nil
 }
-

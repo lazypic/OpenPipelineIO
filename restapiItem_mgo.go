@@ -172,7 +172,7 @@ func handleAPI3Items(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Get Only", http.StatusMethodNotAllowed)
 		return
 	}
-	
+
 	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -4985,7 +4985,7 @@ func handleAPIAddTaskPublish(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
 		return
 	}
-	
+
 	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -5023,7 +5023,7 @@ func handleAPIAddTaskPublish(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "need key", http.StatusBadRequest)
 		return
 	}
-	
+
 	if !HasPublishKeyV2(client, rcp.Key) {
 		http.Error(w, rcp.Key+" key는 등록된 키가 아닙니다. 사용할 수 없습니다", http.StatusBadRequest)
 		return

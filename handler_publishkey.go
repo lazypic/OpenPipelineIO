@@ -1,8 +1,8 @@
 package main
 
 import (
-	"net/http"
 	"context"
+	"net/http"
 )
 
 // handleAddPublishKey 함수는 PublishKey를 추가하는 페이지이다.
@@ -23,7 +23,7 @@ func handleAddPublishKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer client.Disconnect(context.Background())
-	
+
 	type recipe struct {
 		User User
 		SearchOption
@@ -67,7 +67,7 @@ func handleAddPublishKeySubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer client.Disconnect(context.Background())
-	
+
 	key := PublishKey{
 		ID:          r.FormValue("id"),
 		Description: r.FormValue("description"),
@@ -103,7 +103,7 @@ func handlePublishKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer client.Disconnect(context.Background())
-	
+
 	type recipe struct {
 		User        User
 		PublishKeys []PublishKey
@@ -141,14 +141,14 @@ func handleRmPublishKey(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	
+
 	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer client.Disconnect(context.Background())
-	
+
 	type recipe struct {
 		User User
 		SearchOption
@@ -193,7 +193,7 @@ func handleRmPublishKeySubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer client.Disconnect(context.Background())
-	
+
 	id := r.FormValue("id")
 	err = RmPublishKeyV2(client, id)
 	if err != nil {
@@ -220,7 +220,7 @@ func handleEditPublishKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer client.Disconnect(context.Background())
-	
+
 	type recipe struct {
 		User User
 		SearchOption
@@ -272,7 +272,7 @@ func handleEditPublishKeySubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer client.Disconnect(context.Background())
-	
+
 	key := PublishKey{
 		ID:          r.FormValue("id"),
 		Description: r.FormValue("description"),

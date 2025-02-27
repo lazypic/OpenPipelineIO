@@ -372,7 +372,7 @@ func handleAddDivisionSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer client.Disconnect(context.Background())
-	
+
 	id := r.FormValue("ID")
 	if !regexpID.MatchString(id) {
 		http.Error(w, "id는 소문자와 숫자로만 이루어져야 합니다", http.StatusInternalServerError)
@@ -445,7 +445,7 @@ func handleAddTeamSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer client.Disconnect(context.Background())
-	
+
 	// add team
 	id := r.FormValue("ID")
 	if !regexpID.MatchString(id) {
@@ -483,7 +483,7 @@ func handleAddRoleSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer client.Disconnect(context.Background())
-	
+
 	id := r.FormValue("ID")
 	if !regexpID.MatchString(id) {
 		http.Error(w, "id는 소문자와 숫자로만 이루어져야 합니다", http.StatusInternalServerError)
@@ -520,7 +520,7 @@ func handleAddPositionSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer client.Disconnect(context.Background())
-	
+
 	id := r.FormValue("ID")
 	if !regexpID.MatchString(id) {
 		http.Error(w, "id는 소문자와 숫자로만 이루어져야 합니다", http.StatusInternalServerError)

@@ -2,14 +2,13 @@ package main
 
 import (
 	"context"
-	"time"
-	"fmt"
 	"errors"
+	"fmt"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
-
 
 func addSetelliteV2(client *mongo.Client, project string, item Setellite, overwrite bool) error {
 	collection := client.Database(*flagDBName).Collection("setellite")
