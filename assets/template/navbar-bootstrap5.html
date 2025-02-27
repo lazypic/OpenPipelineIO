@@ -20,6 +20,9 @@
                 File
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+		{{if .Setting.EnableDirectupload}}
+                <li><a class="dropdown-item" href="/directupload">Direct Upload</a></li>
+		{{end}}
                 <li><a class="dropdown-item" href="/scanplate">ScanPlate</a></li>
                 <li><a class="dropdown-item" href="/process">Process</a></li>
                 <li><hr class="dropdown-divider"></li>

@@ -21,23 +21,22 @@
 			<div class="row">
 				<input type="checkbox" class="form-check-input" id="{{$.Item.ID}}" name="selectID" style="opacity:0; position:absolute;">
 				<div class="thumbnailbox ml-1">
-					<!--org,left,asset 만 선택할 수 있어야 한다.-->
 					<label class="p-0 m-0 thumbnail" for="{{$.Item.ID}}" onclick="selectCheckbox()">
 						<img id="thumbnail-{{$.Item.ID}}" src="/thumbnail/{{$.Item.Project}}/{{$.Item.ID}}.jpg" onerror="this.src='/assets/img/none.jpg'" class="thumbnail border-{{$.Item.StatusV2}}" data-thumbnail-id="{{$.Item.ID}}" data-thumbnail-project="{{$.Item.Project}}">
 					</label>
 					<div class="top-left">
-						{{if eq $.Item.Type "org" "left"}}
+						{{if eq $.Item.Type "org" "left" "mp" "main" "plt" "plate"}}
 							<div class="row" id="rnum-{{$.Item.ID}}">
 								<span class="black-opbg" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}}onclick="setRnumModal('{{$.Item.ID}}')" data-toggle="modal" data-target="#modal-setrnum"{{end}}>{{if $.Item.Rnum}}{{$.Item.Rnum}}{{else}}no rnum{{end}}</span>
 							</div>
 						{{end}}
-						{{if eq $.Item.Type "org" "left" "asset"}}
+						{{if eq $.Item.Type "org" "main" "mp" "plt" "plate" "left" "asset"}}
 							<div class="row" id="deadline3d-{{$.Item.ID}}">
 								<span class="black-opbg" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#deadline3d" onclick="setDeadline3dModal('{{$.Item.ID}}', '{{ToNormalTime $.Item.Ddline3d}}')"{{end}}>{{if $.Item.Ddline3d}}3D:{{ToShortTime $.Item.Ddline3d}}{{else}}3D:{{end}}</span>
 							</div>
 						{{end}}
 						
-						{{if eq $.Item.Type "org" "left" "asset"}}
+						{{if eq $.Item.Type "org" "mp" "main" "plt" "plate" "left" "asset"}}
 							<div class="row" id="deadline2d-{{$.Item.ID}}">
 								<span class="black-opbg" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#deadline2d" onclick="setDeadline2dModal('{{$.Item.ID}}', '{{ToNormalTime $.Item.Ddline2d}}')"{{end}}>{{if $.Item.Ddline2d}}2D:{{ToShortTime $.Item.Ddline2d}}{{else}}2D:{{end}}</span>
 							</div>
@@ -89,7 +88,7 @@
 							</div>
 						{{else}}
 							<!--재스캔 사용 플레이트 표기-->
-							{{if eq $.Item.Type "org" "left"}}
+							{{if eq $.Item.Type "org" "mp" "main" "plt" "plate" "left"}}
 								<div id="{{$.Item.Project}}-{{$.Item.ID}}-usetype">
 									{{if $.Item.UseType}}
 										<span class="finger badge badge-warning" {{if eq $.User.AccessLevel 5 6 7 8 9 10 11}} data-toggle="modal" data-target="#modal-usetype" onclick="setUsetypeModal('{{$.Item.ID}}')"{{end}}>{{$.Item.UseType}}</span>
@@ -205,7 +204,7 @@
 
 		<!--Task-->
 		<div class="col-sm-12 col-md-6 col-lg-5">
-			{{if eq $.Item.Type "org" "left" "asset"}}
+			{{if eq $.Item.Type "org" "mp" "main" "plt" "plate" "left" "asset"}}
 				<div class="" id="{{$.Item.Name}}-add-taskbutton}}">
 					{{if eq $.User.AccessLevel 3 4 5 6 7 8 9 10 11}}
 						<span class="add" data-toggle="modal" data-target="#modal-addtask" onclick="setAddTaskModal('{{$.Item.Project}}', '{{$.Item.ID}}', '{{$.Item.Type}}')">＋</span>
@@ -307,7 +306,7 @@
 				</div>
 				
 				<div class="ml-3" id="tag-button-{{$.Item.Name}}">
-					{{if eq $.Item.Type "org" "left" "asset"}}
+					{{if eq $.Item.Type "org" "mp" "main" "plt" "plate" "left" "asset"}}
 						{{if eq $.User.AccessLevel 4 5 6 7 8 9 10 11}}
 							<span class="add ml-1" data-toggle="modal" data-target="#modal-addtag" onclick="setAddTagModal('{{$.Item.ID}}')">＋</span>
 							{{if $.Item.Tag}}	
@@ -348,7 +347,7 @@
 			{{end}}
 			
 			<!--ProductionCam-->
-			{{if eq $.Item.Type "org" "mp" "main" "left"}}
+			{{if eq $.Item.Type "org" "mp" "main" "plt" "plate" "left"}}
 			<div class="row">
 				<div id="caminfo-{{$.Item.ID}}">
 					<span class="finger no-decoration-text-button" {{if eq $.User.AccessLevel 3 4 5 6 7 8 9 10 11}}data-toggle="modal" data-target="#modal-cameraoption" onclick="setCameraOptionModal('{{$.Item.Project}}', '{{$.Item.ID}}')"{{end}}>
@@ -379,7 +378,7 @@
 			{{end}}
 			
 			<!--연결소스-->
-			{{if eq $.Item.Type "org" "mp" "main" "left" "asset" }}
+			{{if eq $.Item.Type "org" "mp" "main" "plt" "plate" "left" "asset" }}
 				<div class="row">
 					<span class="text-badge">Sources:</span>
 				</div>
@@ -404,7 +403,7 @@
 			{{end}}
 
 			<!--Reference-->
-			{{if eq $.Item.Type "org" "mp" "main" "left" "asset" }}
+			{{if eq $.Item.Type "org" "mp" "main" "plt" "plate" "left" "asset" }}
 				<div class="row">
 					<span class="text-badge">References:</span>
 				</div>
