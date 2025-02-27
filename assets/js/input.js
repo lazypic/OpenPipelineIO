@@ -535,7 +535,7 @@ function addTask() {
                     "Authorization": "Basic "+ document.getElementById("token").value,
                 },
                 body: new URLSearchParams({
-                    id: document.getElementById('modal-addtask-id').value,
+                    id: id,
                     task: document.getElementById('modal-addtask-taskname').value,
                 })
             })
