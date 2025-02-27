@@ -4043,11 +4043,11 @@ for (var i = 0; i < input.length; i++) {
     autocomplete(input[i])
 }
 
-function setAddTaskModal(project, id, type) {
+function setAddTaskModal(id, type) {
     // 모달을 설정한다.
     document.getElementById("modal-addtask-id").value = id;
     document.getElementById("modal-addtask-title").innerHTML = "Add Task" + multiInputTitle(id);
-    if (type === "org" || type === "main" || type === "mp" || type === "left") {
+    if (type === "org" || type === "main" || type === "mp" || type === "plt" || type === "plate" || type === "left") {
         // Task 셋팅
         fetch('/api/shottasksetting', {
             method: 'GET',
@@ -4107,12 +4107,11 @@ function setAddTaskModal(project, id, type) {
     }
 }
 
-function setRmTaskModal(project, id, type) {
-    document.getElementById("modal-rmtask-project").value = project;
+function setRmTaskModal(id, type) {
     document.getElementById("modal-rmtask-id").value = id;
     document.getElementById("modal-rmtask-title").innerHTML = "Rm Task" + multiInputTitle(id);
     let token = document.getElementById("token").value;
-    if (type === "org" || type === "main" || type === "mp" || type === "left") {
+    if (type === "org" || type === "main" || type === "mp" || type === "plt" || type === "plate" || type === "left") {
         $.ajax({
             url: "/api/shottasksetting",
             type: "get",
