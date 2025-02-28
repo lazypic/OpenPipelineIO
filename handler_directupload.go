@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+	"sync"
+	"fmt"
 
 	"github.com/gorilla/websocket"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -72,6 +74,7 @@ func handleDirectupload(w http.ResponseWriter, r *http.Request) {
 type UploadStatus struct {
 	FileName string `json:"fileName"`
 	SavedPath string `json:"savedPath"`
+	Progress  int    `json:"progress"`
 }
 
 var upgrader = websocket.Upgrader{
@@ -109,31 +112,87 @@ func directUploadHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		defer outFile.Close()
 
-		// 파일 저장
-		io.Copy(outFile, file)
+		// 파일을 청크 단위로 저장하며 진행률 전송
+		buffer := make([]byte, 1024*64) // 64KB 버퍼
+		totalSize := fileHeader.Size
+		written := int64(0)
 
-		uploadedFiles = append(uploadedFiles, UploadStatus{FileName: fileHeader.Filename, SavedPath: savePath})
+		for {
+			n, err := file.Read(buffer)
+			if err != nil && err != io.EOF {
+				http.Error(w, "파일 읽기 실패", http.StatusInternalServerError)
+				return
+			}
+			if n == 0 {
+				break
+			}
 
+			// 파일 저장
+			if _, err := outFile.Write(buffer[:n]); err != nil {
+				http.Error(w, "파일 쓰기 실패", http.StatusInternalServerError)
+				return
+			}
+			written += int64(n)
+
+			// 진행률 계산 및 WebSocket으로 전송
+			progress := int((written * 100) / totalSize)
+			directUploadBroadcastProgress(UploadStatus{
+				FileName:  fileHeader.Filename,
+				SavedPath: savePath,
+				Progress:  progress,
+			})
+
+		}
+		// 완료 시 100% 전송
+		directUploadBroadcastProgress(UploadStatus{
+			FileName:  fileHeader.Filename,
+			SavedPath: savePath,
+			Progress:  100,
+		})
 	}
+
 	jsonResponse, _ := json.Marshal(uploadedFiles)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonResponse)
 }
 
 var clients = make(map[*websocket.Conn]bool)
+var clientsLock sync.Mutex
+
 
 func directUploadProgressHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
+		fmt.Println("WebSocket upgrade error:", err)
 		return
 	}
 	defer conn.Close()
+
+	clientsLock.Lock()
 	clients[conn] = true
+	clientsLock.Unlock()
+
+	fmt.Println("WebSocket client connected for upload progress")
+
+	// WebSocket 연결이 끊어지면 클라이언트 목록에서 삭제
+	for {
+		_, _, err := conn.ReadMessage()
+		if err != nil {
+			clientsLock.Lock()
+			delete(clients, conn)
+			clientsLock.Unlock()
+			fmt.Println("WebSocket client disconnected")
+			break
+		}
+	}
 }
 
-func directUploadBroadcastProgress(progress int) {
+func directUploadBroadcastProgress(status UploadStatus) {
+	clientsLock.Lock()
+	defer clientsLock.Unlock()
+
 	for client := range clients {
-		err := client.WriteJSON(map[string]int{"progress": progress})
+		err := client.WriteJSON(status)
 		if err != nil {
 			client.Close()
 			delete(clients, client)
