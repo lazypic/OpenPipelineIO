@@ -32,5 +32,6 @@ FreeMono Path
 
 ```
 sudo pkg install mongodb50
+sudo sysrc mongod_enable="YES"
 mongo
 ```
