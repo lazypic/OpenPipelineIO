@@ -14,17 +14,19 @@
 </div>
 
 <div class="container pt-2">
-        <div class="pt-1 pb-3">
+        <div class="pt-3 pb-1">
             <h5 class="text-muted">Process list</h5>
         </div>
-	<div class="row">
+	<div class="row g-2">
 		<div class="col-6">
-			<ul id="scheduleList" class="list-group"></ul>
+			<div id="scheduleList" class="list-group"></div>
 		</div>
 		<div class="col-6">
-			<ul id="fileList" class="list-group"></ul>
+			<div id="fileList" class="list-group"></div>
 		</div>
 	</div>
+</div>
+
 </div>
 <div class="container pt-2">
 </div>
@@ -38,25 +40,49 @@
 	const fileInput = document.getElementById("fileInput");
 	const fileList = document.getElementById("fileList");
 	const scheduleList = document.getElementById("scheduleList");
-
 	const socket = new WebSocket('/ws/directuploadprogress');
 
 	socket.onopen = () => console.log("WebSocket 연결 성공");
-	
 	socket.onerror = (error) => console.error("WebSocket 오류:", error);
 	socket.onclose = () => console.log("WebSocket 연결 종료");
-
 	socket.onmessage = (event) => {
 		const data = JSON.parse(event.data);
 		let item = document.getElementById(data.fileName);
+
+		const progressDiv = document.createElement("div");
+        	progressDiv.classList.add("progress");
+        	progressDiv.setAttribute("role", "progressbar");
+        	progressDiv.setAttribute("aria-label", "Example 1px high");
+        	progressDiv.setAttribute("aria-valuenow", "0");
+        	progressDiv.setAttribute("aria-valuemin", "0");
+        	progressDiv.setAttribute("aria-valuemax", "100");
+        	progressDiv.style.height = "1px"; // 높이 설정
+
+        	// <div class="progress-bar"> 생성
+        	const progressBarDiv = document.createElement("div");
+        	progressBarDiv.classList.add("progress-bar", "bg-success");
+        	progressBarDiv.style.width = "0%"; // 진행도 설정
+
+        	// <div class="progress"> 내부에 <div class="progress-bar"> 추가
+        	progressDiv.appendChild(progressBarDiv);
 		if (!item) {
-			item = document.createElement("li");
-			item.className = "list-group-item bg-dark border border-black text-light";
+			item = document.createElement("div");
+			item.className = "list-group-item text-light bg-dark mt-1";
 			item.id = data.fileName;
 			item.textContent = `${data.fileName} - 0%`;
+
+
+        		// <li> 내부 마지막 위치에 추가
+        		item.appendChild(progressDiv);
 			fileList.appendChild(item);
 		}
 		item.textContent = `${data.fileName} - ${data.progress}%`;
+        	item.appendChild(progressDiv);
+		const progressBar = item.querySelector(".progress-bar");
+    		if (progressBar) {
+        		progressBar.style.width = data.progress + "%"; // width 변경
+        		progressBar.setAttribute("aria-valuenow", data.progress);
+   		}
 	};
 
 
@@ -124,10 +150,29 @@
         });
 
         function addScheduleList(fileName) {
-            const li = document.createElement("li");
+            const li = document.createElement("div");
 	    li.id = "schedule_"+fileName;
-            li.classList.add("list-group-item", "text-secondary", "border", "border-black", "bg-dark");
-            li.textContent = "[Schedule] " + fileName;
+            li.classList.add("list-group-item", "text-secondary", "bg-dark", "mt-1", "border-end");
+            li.textContent = "[Scheduled]  " + fileName;
+
+	    const progressDiv = document.createElement("div");
+            progressDiv.classList.add("progress");
+            progressDiv.setAttribute("role", "progressbar");
+            progressDiv.setAttribute("aria-label", "Example 1px high");
+            progressDiv.setAttribute("aria-valuenow", "0");
+            progressDiv.setAttribute("aria-valuemin", "0");
+            progressDiv.setAttribute("aria-valuemax", "100");
+            progressDiv.style.height = "1px"; // 높이 설정
+
+            // <div class="progress-bar"> 생성
+            const progressBarDiv = document.createElement("div");
+            progressBarDiv.classList.add("progress-bar", "bg-success");
+            progressBarDiv.style.width = "0%"; // 진행도 설정
+
+             // <div class="progress"> 내부에 <div class="progress-bar"> 추가
+             progressDiv.appendChild(progressBarDiv);
+
+        	li.appendChild(progressDiv);
             scheduleList.appendChild(li);
         }
 </script>
