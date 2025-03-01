@@ -3,23 +3,30 @@
 <body data-bs-theme="dark">
 {{template "navbar-bootstrap5" .}}
 
-<div class="container py-5 px-2">
-    <div class="col-lg-12 col-md-12 col-sm-12 mx-auto">
+<div class="container pt-3">
         <div class="pt-1 pb-3">
             <h2 class="text-muted">Direct Upload</h2>
         </div>
-		<div id="dropZone" class="text-muted border p-3 text-center">여기에 파일을 드래그하세요</div>
-		<input type="file" id="fileInput" multiple webkitdirectory directory class="form-control d-none">	
-    </div>
+	<div id="dropZone" class="text-muted border border-warning p-5 text-center">
+		Please drag and drop your file(s) here.
+	</div>
+	<input type="file" id="fileInput" multiple webkitdirectory directory class="form-control d-none">	
+</div>
+
+<div class="container pt-2">
+        <div class="pt-1 pb-3">
+            <h5 class="text-muted">Process list</h5>
+        </div>
 	<div class="row">
 		<div class="col-6">
-			<ul id="scheduleList" class="list-group bg-dark text-light"></ul>
+			<ul id="scheduleList" class="list-group"></ul>
 		</div>
 		<div class="col-6">
-			<ul id="fileList" class="list-group bg-dark text-light"></ul>
+			<ul id="fileList" class="list-group"></ul>
 		</div>
 	</div>
-
+</div>
+<div class="container pt-2">
 </div>
 
 {{template "footerBootstrap" .}}
@@ -44,7 +51,7 @@
 		let item = document.getElementById(data.fileName);
 		if (!item) {
 			item = document.createElement("li");
-			item.className = "list-group-item bg-dark text-light";
+			item.className = "list-group-item bg-dark border border-black text-light";
 			item.id = data.fileName;
 			item.textContent = `${data.fileName} - 0%`;
 			fileList.appendChild(item);
@@ -66,16 +73,16 @@
 	// 드래그앤드롭 처리
 	dropZone.addEventListener("dragover", (e) => {
 		e.preventDefault();
-		dropZone.style.background = "#666666";
+		dropZone.style.background = "#383838";
 	});
 
 	dropZone.addEventListener("dragleave", () => {
-		dropZone.style.background = "#333333";
+		dropZone.style.background = "#141414";
 	});
 
 	dropZone.addEventListener("drop", async (e) => {
             e.preventDefault();
-            dropZone.style.background = "#f8f9fa";
+            dropZone.style.background = "#141414";
             const items = e.dataTransfer.items;
             const formData = new FormData();
 
@@ -118,7 +125,8 @@
 
         function addScheduleList(fileName) {
             const li = document.createElement("li");
-            li.classList.add("list-group-item", "text-warning", "bg-dark");
+	    li.id = "schedule_"+fileName;
+            li.classList.add("list-group-item", "text-secondary", "border", "border-black", "bg-dark");
             li.textContent = "[Schedule] " + fileName;
             scheduleList.appendChild(li);
         }
