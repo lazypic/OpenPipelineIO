@@ -2,19 +2,19 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
-	"time"
 	"sync"
-	"fmt"
+	"time"
 
+	"encoding/json"
 	"github.com/gorilla/websocket"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	"encoding/json"
 )
 
 func handleDirectupload(w http.ResponseWriter, r *http.Request) {
@@ -72,7 +72,7 @@ func handleDirectupload(w http.ResponseWriter, r *http.Request) {
 }
 
 type UploadStatus struct {
-	FileName string `json:"fileName"`
+	FileName  string `json:"fileName"`
 	SavedPath string `json:"savedPath"`
 	Progress  int    `json:"progress"`
 }
@@ -158,7 +158,6 @@ func directUploadHandler(w http.ResponseWriter, r *http.Request) {
 
 var clients = make(map[*websocket.Conn]bool)
 var clientsLock sync.Mutex
-
 
 func directUploadProgressHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)

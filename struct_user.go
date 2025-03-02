@@ -66,6 +66,7 @@ type User struct {
 	AccessProjects    []string       `json:"accessprojects"`    // 사용자에게 허가된 프로젝트 리스트
 	EmployeeNumber    string         `json:"employeenumber"`    // 사원번호
 	RocketChatID      string         `json:"rocketchatid"`      // RocketChatID
+	CompanyID         string         `json:"companyid"`         // CompanyID
 }
 
 // Token 자료구조. 사용자가 가입될 때 user.token DB에 저장된다. 모든 유저의 Token를 매번 비교하지않고, Token 키의 유효성을 바로 체크하기 위해서 사용한다.
