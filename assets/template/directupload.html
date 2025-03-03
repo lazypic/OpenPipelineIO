@@ -10,12 +10,7 @@
 	<div id="dropZone" class="text-muted border border-warning p-5 text-center">
 		Please drag and drop your file(s) here.
 	</div>
-	<div class="pt-2 text-center">
-        <button id="fileSelectBtn" class="btn btn-primary">파일 선택</button>
-        <button id="folderSelectBtn" class="btn btn-warning">폴더 선택</button>
-    </div>
-    <input type="file" id="fileInputFiles" multiple class="form-control d-none">
-    <input type="file" id="fileInputFolder" multiple webkitdirectory directory class="form-control d-none">
+	<input type="file" id="fileInput" multiple webkitdirectory directory class="form-control d-none">	
 </div>
 
 <div class="container pt-2">
@@ -40,112 +35,146 @@
 </body>
 <script src="/assets/bootstrap-5.0.2/js/bootstrap.min.js"></script>
 
-<script src="/assets/bootstrap-5.0.2/js/bootstrap.min.js"></script>
-
 <script>
-const dropZone = document.getElementById("dropZone");
-const fileInputFiles = document.getElementById("fileInputFiles");
-const fileInputFolder = document.getElementById("fileInputFolder");
-const fileSelectBtn = document.getElementById("fileSelectBtn");
-const folderSelectBtn = document.getElementById("folderSelectBtn");
-const fileList = document.getElementById("fileList");
-const scheduleList = document.getElementById("scheduleList");
+	const dropZone = document.getElementById("dropZone");
+	const fileInput = document.getElementById("fileInput");
+	const fileList = document.getElementById("fileList");
+	const scheduleList = document.getElementById("scheduleList");
+	const socket = new WebSocket('/ws/directuploadprogress');
 
-const socket = new WebSocket('/ws/directuploadprogress');
+	socket.onopen = () => console.log("WebSocket 연결 성공");
+	socket.onerror = (error) => console.error("WebSocket 오류:", error);
+	socket.onclose = () => console.log("WebSocket 연결 종료");
+	socket.onmessage = (event) => {
+		const data = JSON.parse(event.data);
+		let item = document.getElementById(data.fileName);
 
-socket.onopen = () => console.log("WebSocket 연결 성공");
-socket.onerror = (error) => console.error("WebSocket 오류:", error);
-socket.onclose = () => console.log("WebSocket 연결 종료");
+		const progressDiv = document.createElement("div");
+        	progressDiv.classList.add("progress");
+        	progressDiv.setAttribute("role", "progressbar");
+        	progressDiv.setAttribute("aria-label", "Example 1px high");
+        	progressDiv.setAttribute("aria-valuenow", "0");
+        	progressDiv.setAttribute("aria-valuemin", "0");
+        	progressDiv.setAttribute("aria-valuemax", "100");
+        	progressDiv.style.height = "1px"; // 높이 설정
 
-// 파일 선택 버튼 클릭 시
-fileSelectBtn.addEventListener("click", () => fileInputFiles.click());
-folderSelectBtn.addEventListener("click", () => fileInputFolder.click());
+        	// <div class="progress-bar"> 생성
+        	const progressBarDiv = document.createElement("div");
+        	progressBarDiv.classList.add("progress-bar", "bg-success");
+        	progressBarDiv.style.width = "0%"; // 진행도 설정
 
-// 파일 선택 시 이벤트 핸들링
-fileInputFiles.addEventListener("change", (e) => handleFiles(e.target.files));
-fileInputFolder.addEventListener("change", (e) => handleFiles(e.target.files, true));
+        	// <div class="progress"> 내부에 <div class="progress-bar"> 추가
+        	progressDiv.appendChild(progressBarDiv);
+		if (!item) {
+			item = document.createElement("div");
+			item.className = "list-group-item text-light bg-dark mt-1";
+			item.id = data.fileName;
+			item.textContent = `${data.fileName} - 0%`;
 
-// 드래그 앤 드롭 이벤트
-dropZone.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    dropZone.style.background = "#383838";
-});
 
-dropZone.addEventListener("dragleave", () => {
-    dropZone.style.background = "#141414";
-});
+        		// <li> 내부 마지막 위치에 추가
+        		item.appendChild(progressDiv);
+			fileList.appendChild(item);
+		}
+		item.textContent = `${data.fileName} - ${data.progress}%`;
+        	item.appendChild(progressDiv);
+		const progressBar = item.querySelector(".progress-bar");
+    		if (progressBar) {
+        		progressBar.style.width = data.progress + "%"; // width 변경
+        		progressBar.setAttribute("aria-valuenow", data.progress);
+   		}
+	};
 
-dropZone.addEventListener("drop", async (e) => {
-    e.preventDefault();
-    dropZone.style.background = "#141414";
-    handleFiles(e.dataTransfer.files, true);
-});
 
-// 파일 업로드 처리
-function handleFiles(files, isFolder = false) {
-    const formData = new FormData();
-    for (const file of files) {
-        formData.append("files", file);
-        formData.append("relativePath[]", isFolder ? file.webkitRelativePath : file.name);
-        addScheduleList(isFolder ? file.webkitRelativePath : file.name);
-    }
+	// input 클릭 시 파일 선택
+	fileInput.addEventListener("change", (e) => {
+		handleFiles(e.target.files);
+	});
 
-    fetch("/ws/directupload", { method: "POST", body: formData })
-        .then(response => response.json())
-        .then(data => console.log("업로드 완료:", data));
-}
+	// 드래그앤드롭존 클릭하면 input 실행
+	dropZone.addEventListener("click", () => {
+		fileInput.click();
+	});
 
-// 업로드 스케줄 목록 추가
-function addScheduleList(fileName) {
-    const li = document.createElement("div");
-    li.id = "schedule_" + fileName;
-    li.classList.add("list-group-item", "text-secondary", "bg-dark", "mt-1");
-    li.textContent = "[Scheduled] " + fileName;
+	// 드래그앤드롭 처리
+	dropZone.addEventListener("dragover", (e) => {
+		e.preventDefault();
+		dropZone.style.background = "#383838";
+	});
 
-    const progressDiv = document.createElement("div");
-    progressDiv.classList.add("progress");
-    progressDiv.style.height = "1px";
+	dropZone.addEventListener("dragleave", () => {
+		dropZone.style.background = "#141414";
+	});
 
-    const progressBarDiv = document.createElement("div");
-    progressBarDiv.classList.add("progress-bar", "bg-success");
-    progressBarDiv.style.width = "0%";
+	dropZone.addEventListener("drop", async (e) => {
+            e.preventDefault();
+            dropZone.style.background = "#141414";
+            const items = e.dataTransfer.items;
+            const formData = new FormData();
 
-    progressDiv.appendChild(progressBarDiv);
-    li.appendChild(progressDiv);
-    scheduleList.appendChild(li);
-}
+            async function traverseFileTree(item, path = "") {
+                return new Promise((resolve) => {
+                    if (item.isFile) {
+                        item.file((file) => {
+                            formData.append("files", file);
+                            formData.append("relativePath[]", path + file.name);
+                            addScheduleList(path + file.name);
+                            resolve();
+                        });
+                    } else if (item.isDirectory) {
+                        const dirReader = item.createReader();
+                        dirReader.readEntries(async (entries) => {
+                            for (const entry of entries) {
+                                await traverseFileTree(entry, path + item.name + "/");
+                            }
+                            resolve();
+                        });
+                    }
+                });
+            }
 
-// WebSocket을 이용한 업로드 진행 상태 업데이트
-socket.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    let item = document.getElementById(data.fileName);
+            const promises = [];
+            for (const item of items) {
+                const entry = item.webkitGetAsEntry();
+                if (entry) promises.push(traverseFileTree(entry));
+            }
 
-    if (!item) {
-        item = document.createElement("div");
-        item.className = "list-group-item text-light bg-dark mt-1";
-        item.id = data.fileName;
-        item.textContent = `${data.fileName} - 0%`;
+            await Promise.all(promises);
 
-        const progressDiv = document.createElement("div");
-        progressDiv.classList.add("progress");
-        progressDiv.style.height = "1px";
+            fetch("/ws/directupload", { method: "POST", body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    //alert("업로드 완료");
+                    //console.log(data);
+                });
+        });
 
-        const progressBarDiv = document.createElement("div");
-        progressBarDiv.classList.add("progress-bar", "bg-success");
-        progressBarDiv.style.width = "0%";
+        function addScheduleList(fileName) {
+            const li = document.createElement("div");
+	    li.id = "schedule_"+fileName;
+            li.classList.add("list-group-item", "text-secondary", "bg-dark", "mt-1");
+            li.textContent = "[Scheduled]  " + fileName;
 
-        progressDiv.appendChild(progressBarDiv);
-        item.appendChild(progressDiv);
-        fileList.appendChild(item);
-    }
+	    const progressDiv = document.createElement("div");
+            progressDiv.classList.add("progress");
+            progressDiv.setAttribute("role", "progressbar");
+            progressDiv.setAttribute("aria-label", "Example 1px high");
+            progressDiv.setAttribute("aria-valuenow", "0");
+            progressDiv.setAttribute("aria-valuemin", "0");
+            progressDiv.setAttribute("aria-valuemax", "100");
+            progressDiv.style.height = "1px"; // 높이 설정
 
-    item.textContent = `${data.fileName} - ${data.progress}%`;
-    const progressBar = item.querySelector(".progress-bar");
-    if (progressBar) {
-        progressBar.style.width = data.progress + "%";
-        progressBar.setAttribute("aria-valuenow", data.progress);
-    }
-};
+            // <div class="progress-bar"> 생성
+            const progressBarDiv = document.createElement("div");
+            progressBarDiv.classList.add("progress-bar", "bg-success");
+            progressBarDiv.style.width = "0%"; // 진행도 설정
+
+             // <div class="progress"> 내부에 <div class="progress-bar"> 추가
+             progressDiv.appendChild(progressBarDiv);
+
+        	li.appendChild(progressDiv);
+            scheduleList.appendChild(li);
+        }
 </script>
 
 </html>
