@@ -18,10 +18,10 @@
             <h5 class="text-muted">Process list</h5>
         </div>
 	<div class="row g-2">
-		<div class="col-6">
+		<div class="col col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
 			<div id="scheduleList" class="list-group"></div>
 		</div>
-		<div class="col-6">
+		<div class="col col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
 			<div id="fileList" class="list-group"></div>
 		</div>
 	</div>
@@ -152,7 +152,7 @@
         function addScheduleList(fileName) {
             const li = document.createElement("div");
 	    li.id = "schedule_"+fileName;
-            li.classList.add("list-group-item", "text-secondary", "bg-dark", "mt-1", "border-end");
+            li.classList.add("list-group-item", "text-secondary", "bg-dark", "mt-1");
             li.textContent = "[Scheduled]  " + fileName;
 
 	    const progressDiv = document.createElement("div");
