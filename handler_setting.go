@@ -205,6 +205,9 @@ func handleAdminSettingSubmit(w http.ResponseWriter, r *http.Request) {
 	s.ProductionPaddingVersionNumber = productionPaddingVersionNumber
 	s.EnableEndpoint = str2bool(r.FormValue("EnableEndpoint"))
 	s.EnableDirectupload = str2bool(r.FormValue("EnableDirectupload"))
+	s.EnableDirectuploadWithDate = str2bool(r.FormValue("EnableDirectuploadWithDate"))
+	s.EnableDirectuploadWithProject = str2bool(r.FormValue("EnableDirectuploadWithProject"))
+	s.EnableDirectuploadWithCompanyID = str2bool(r.FormValue("EnableDirectuploadWithCompanyID"))
 	s.FullcalendarSchedulerLicenseKey = r.FormValue("FullcalendarSchedulerLicenseKey")
 	s.AudioCodec = r.FormValue("audiocodec")
 	// DB에 값을 저장합니다.

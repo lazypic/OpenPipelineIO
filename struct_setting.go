@@ -82,6 +82,9 @@ type Setting struct {
 	InitPassword                         string  `json:"initpassword"`                         // 사용자가 패스워드를 잃어버렸을 때 사용하는 패스워드
 	EnableEndpoint                       bool    `json:"enableendpoint"`                       // Endpoint 활성화
 	EnableDirectupload                   bool    `json:"enabledirectupload"`                   // Direct Upload 활성화
+	EnableDirectuploadWithDate           bool    `json:"enabledirectuploadwithdate"`           // Enable Direct Upload with Date path.
+	EnableDirectuploadWithProject        bool    `json:"enabledirectuploadwithproject"`        // Enable Direct Upload with Project path.
+	EnableDirectuploadWithCompanyID      bool    `json:"enabledirectuploadwithcompanyid"`      // Enable Direct Upload with CompanyID path.
 	FullcalendarSchedulerLicenseKey      string  `json:"fullcalendarschedulerlicensekey"`      // Fullcalendar License Key
 	SlateFontPath                        string  `json:"slatefontpath"`                        // Slate에 사용되는 폰트 경로
 	Protocol                             string  `json:"protocol"`                             // 프로토콜 이름
