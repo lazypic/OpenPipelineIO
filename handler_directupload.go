@@ -151,11 +151,20 @@ func directUploadHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// add project path
-		if len(projects) > 0 {
-			selectProject := projects[0]
-			if selectProject != "" {
-				targetPath = filepath.Join(targetPath, selectProject)
+		if CachedAdminSetting.EnableDirectuploadWithProject {
+			if len(projects) > 0 {
+				selectProject := projects[0]
+				if selectProject != "" {
+					targetPath = filepath.Join(targetPath, selectProject)
+				}
 			}
+		}
+
+		// add date path
+		if CachedAdminSetting.EnableDirectuploadWithDate {
+			now := time.Now()
+			formattedDate := now.Format("060102")
+			targetPath = filepath.Join(targetPath, formattedDate)
 		}
 
 		savePath := filepath.Join(targetPath, relativePaths[i])
