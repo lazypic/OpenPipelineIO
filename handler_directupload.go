@@ -84,6 +84,22 @@ var upgrader = websocket.Upgrader{
 }
 
 func directUploadHandler(w http.ResponseWriter, r *http.Request) {
+	ssid, err := GetSessionID(r)
+	if err != nil {
+		http.Redirect(w, r, "/signin", http.StatusSeeOther)
+		return
+	}
+	if ssid.AccessLevel == 0 {
+		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
+		return
+	}
+	client, err := initMongoClient()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer client.Disconnect(context.Background())
+
 	r.ParseMultipartForm(10 << 30) // 10G 제한, 20 == 10M
 	files := r.MultipartForm.File["files"]
 	relativePaths := r.MultipartForm.Value["relativePath[]"] // 폴더 구조 유지
@@ -103,7 +119,22 @@ func directUploadHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "need setup direct upload path", http.StatusInternalServerError)
 			return
 		}
-		savePath := filepath.Join(CachedAdminSetting.DirectUploadPath, relativePaths[i])
+		targetPath := CachedAdminSetting.DirectUploadPath
+
+		// add CompanyID path
+		if CachedAdminSetting.EnableDirectuploadWithCompanyID {
+			u, err := getUserV2(client, ssid.ID)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			if u.CompanyID != "" {
+				targetPath = filepath.Join(targetPath, u.CompanyID)
+			} else {
+				targetPath = filepath.Join(targetPath, u.ID)
+			}
+		}
+		savePath := filepath.Join(targetPath, relativePaths[i])
 		os.MkdirAll(filepath.Dir(savePath), os.ModePerm)
 		outFile, err := os.Create(savePath)
 		if err != nil {
