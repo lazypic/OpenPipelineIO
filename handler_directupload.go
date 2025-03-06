@@ -63,6 +63,20 @@ func handleDirectupload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 만약 사용자에게 AccessProjects가 설정되어있다면 해당리스트를 사용한다.
+	if len(rcp.User.AccessProjects) != 0 {
+		var accessProjects []string
+		for _, i := range rcp.Projectlist {
+			for _, j := range rcp.User.AccessProjects {
+				if i != j {
+					continue
+				}
+				accessProjects = append(accessProjects, j)
+			}
+		}
+		rcp.Projectlist = accessProjects
+	}
+
 	rcp.Setting = CachedAdminSetting
 	err = TEMPLATES.ExecuteTemplate(w, "directupload", rcp)
 	if err != nil {
@@ -103,6 +117,7 @@ func directUploadHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(10 << 30) // 10G 제한, 20 == 10M
 	files := r.MultipartForm.File["files"]
 	relativePaths := r.MultipartForm.Value["relativePath[]"] // 폴더 구조 유지
+	projects := r.MultipartForm.Value["project"] // 폴더 구조 유지
 
 	var uploadedFiles []UploadStatus
 
@@ -134,6 +149,15 @@ func directUploadHandler(w http.ResponseWriter, r *http.Request) {
 				targetPath = filepath.Join(targetPath, u.ID)
 			}
 		}
+
+		// add project path
+		if len(projects) > 0 {
+			selectProject := projects[0]
+			if selectProject != "" {
+				targetPath = filepath.Join(targetPath, selectProject)
+			}
+		}
+
 		savePath := filepath.Join(targetPath, relativePaths[i])
 		os.MkdirAll(filepath.Dir(savePath), os.ModePerm)
 		outFile, err := os.Create(savePath)

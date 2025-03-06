@@ -3,10 +3,21 @@
 <body data-bs-theme="dark">
 {{template "navbar-bootstrap5" .}}
 
+{{if .Setting.EnableDirectuploadWithProject}}
+	<div class="container pt-3 pb-2">
+		<div class="form-group">
+			<h3 class="text-muted">Select Project</h3>
+			<select id="directupload-project" class="form-control">
+				{{range .Projectlist}}<option value="{{.}}">{{.}}</option>{{end}}
+			</select>
+		</div>
+	</div>
+{{end}}
+
 <div class="container pt-3">
-        <div class="pt-1 pb-3">
-            <h2 class="text-muted">Direct Upload</h2>
-        </div>
+	<div class="pt-1 pb-3">
+		<h3 class="text-muted">Direct Upload</h3>
+	</div>
 	<div id="dropZone" class="text-muted border border-warning p-5 text-center">
 		Please drag and drop your file(s) here.
 	</div>
@@ -40,6 +51,7 @@
 	const fileInput = document.getElementById("fileInput");
 	const fileList = document.getElementById("fileList");
 	const scheduleList = document.getElementById("scheduleList");
+	const projectSelect = document.getElementById("directupload-project");
 	const socket = new WebSocket('/ws/directuploadprogress');
 
 	socket.onopen = () => console.log("WebSocket 연결 성공");
@@ -111,6 +123,9 @@
             dropZone.style.background = "#141414";
             const items = e.dataTransfer.items;
             const formData = new FormData();
+
+			const selectedProject = projectSelect ? projectSelect.value : "";
+    		formData.append("project", selectedProject);
 
             async function traverseFileTree(item, path = "") {
                 return new Promise((resolve) => {
