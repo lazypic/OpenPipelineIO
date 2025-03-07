@@ -117,7 +117,7 @@ func directUploadHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(10 << 30) // 10G 제한, 20 == 10M
 	files := r.MultipartForm.File["files"]
 	relativePaths := r.MultipartForm.Value["relativePath[]"] // 폴더 구조 유지
-	projects := r.MultipartForm.Value["project"] // 폴더 구조 유지
+	projects := r.MultipartForm.Value["project"]             // 폴더 구조 유지
 
 	var uploadedFiles []UploadStatus
 

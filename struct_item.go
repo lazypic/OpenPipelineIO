@@ -39,6 +39,7 @@ type Item struct {
 	Name             string          `json:"name"`             // 샷이름 SS_0010
 	Episode          string          `json:"episode"`          // 에피소드명
 	Seq              string          `json:"seq"`              // 시퀀스이름 SS_0010 에서 SS문자에 해당하는값. 에셋이면 "" 문자열이 들어간다.
+	Scene            string          `json:"scene"`            // Scene
 	Cut              string          `json:"cut"`              // 시퀀스이름 SS_0010 에서 0010문자에 해당하는값. 에셋이면 "" 문자열이 들어간다.
 	Type             string          `json:"type"`             // org, org1, main, mp, mp1, src, asset..
 	Assettype        string          `json:"assettype"`        // char, env, prop, comp, plant, vehicle, group, global
@@ -260,7 +261,7 @@ func (i *Item) CheckError() error {
 	case "CON", "PRN", "AUX", "NUL",
 		"COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8",
 		"COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9":
-		return errors.New("OS 예약어 입니다. 해당 문자열을 사용할 수 없습니다")
+		return errors.New("OS 예약어 입니다. 해당 문자열로 디렉토리를 만들 수 없기 때문에 사용할 수 없습니다")
 	default:
 		return nil
 	}
