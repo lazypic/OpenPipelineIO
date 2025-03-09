@@ -11,7 +11,6 @@ import (
 	"github.com/digital-idea/ditime"
 )
 
-// handleAddProject 함수는 프로젝트를 추가하는 페이지이다.
 func handleAddProject(w http.ResponseWriter, r *http.Request) {
 	ssid, err := GetSessionID(r)
 	if err != nil {
@@ -73,11 +72,21 @@ func handleAddProjectSubmit(w http.ResponseWriter, r *http.Request) {
 	}
 	defer client.Disconnect(context.Background())
 	id := r.FormValue("ID")
+	mkdir := str2bool(r.FormValue("Mkdir"))
 	p := *NewProject(id)
 	err = addProjectV2(client, p)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+	// create directory
+	if mkdir {
+		path := CachedAdminSetting.RootPath + "/" + id
+		err = GenProjectPath(path)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 	http.Redirect(w, r, "/projectinfo", http.StatusSeeOther)
 }

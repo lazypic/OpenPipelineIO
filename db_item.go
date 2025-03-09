@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"reflect"
 	"time"
 
 	"github.com/digital-idea/ditime"
@@ -221,16 +222,14 @@ func RmTag(client *mongo.Client, id, inputTag string, isContain bool) (string, e
 	}
 	var newTags []string
 	for _, tag := range i.Tag {
-		if isContain {
-			if strings.Contains(tag, inputTag) {
-				continue
-			}
-		}
-		if inputTag == tag {
+		// isContain이 true이면 tag에 inputTag가 포함되어 있으면 제거
+		// isContain이 false이면 tag가 inputTag와 정확히 일치하면 제거
+		if (isContain && strings.Contains(tag, inputTag)) || (!isContain && tag == inputTag) {
 			continue
 		}
 		newTags = append(newTags, tag)
 	}
+
 	i.Tag = newTags
 	// 만약 태그에 권정보가 없더라도 권관련 태그는 날아가면 안된다. setItem을 이용한다.
 
@@ -1609,6 +1608,51 @@ func rmTaskPublishV2(client *mongo.Client, id, taskname, key, createtime, path s
 	}
 	if result.MatchedCount == 0 {
 		return errors.New("no document found with id" + item.ID)
+	}
+	return nil
+}
+
+
+// RenameTag 함수는 item의 Tag를 리네임한다.
+func RenameTagV2(client *mongo.Client, project, before, after string) error {
+	collection := client.Database(*flagDBName).Collection("items")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var items []Item
+	cursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		return err
+	}
+	defer cursor.Close(ctx)
+
+	// 커서 순회하면서 items에 추가
+	if err = cursor.All(ctx, &items); err != nil {
+		return err
+	}
+
+	for _, i := range items {
+		beforeTags := i.Tag
+		var newTags []string
+		for _, t := range i.Tag {
+			if t == before {
+				newTags = append(newTags, after)
+			} else {
+				newTags = append(newTags, t)
+			}
+		}
+		if !reflect.DeepEqual(beforeTags, newTags) {
+			update := bson.M{
+				"$set": bson.M{
+					"tag":        newTags,
+					"updatetime": time.Now().Format(time.RFC3339),
+				},
+			}
+			_, err = collection.UpdateOne(ctx, bson.M{"id": i.ID}, update)
+			if err != nil {
+				return err
+			}
+		}
 	}
 	return nil
 }

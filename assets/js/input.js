@@ -3369,7 +3369,7 @@ function renameTag(project, before, after) {
         },
         dataType: "json",
         success: function(data) {
-            alert(`${data.project}프로젝트의 ${data.before} Tag가 ${data.after} Tag로 변경되었습니다.\n새로고침 해주세요.`);
+            alert(`The "${data.before}" tag in the "${data.project}" project has been changed to "${data.after}" tag.\nPlease refresh the page.`);
         },
         error: function(request,status,error){
             alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
@@ -3420,7 +3420,11 @@ function rmTag() {
                 return response.json()
             })
             .then((data) => {
-                document.getElementById(`tag-${data.id}-${data.tag}`).remove();
+                if (isContain) {
+                    document.querySelectorAll(`[id^="tag-${data.id}-"][id*="${data.tag}"]`).forEach(el => el.remove());
+                } else {
+                    document.getElementById(`tag-${data.id}-${data.tag}`).remove();
+                }
                 // 요소갯수에 따라 버튼을 설정한다.
                 if (document.getElementById(`tags-${data.id}`).childElementCount > 0) {
                     document.getElementById("tag-button-"+data.id).innerHTML = `
@@ -3456,7 +3460,11 @@ function rmTag() {
             return response.json()
         })
         .then((data) => {
-            document.getElementById(`tag-${data.id}-${data.tag}`).remove();
+            if (isContain) {
+                document.querySelectorAll(`[id^="tag-${data.id}-"][id*="${data.tag}"]`).forEach(el => el.remove());
+            } else {
+                document.getElementById(`tag-${data.id}-${data.tag}`).remove();
+            }
             // 요소갯수에 따라 버튼을 설정한다.
             if (document.getElementById(`tags-${data.id}`).childElementCount > 0) {
                 document.getElementById("tag-button-"+data.id).innerHTML = `
@@ -5783,7 +5791,11 @@ function rmAssetTag() {
                 return response.json()
             })
             .then((data) => {
-                document.getElementById(`assettag-${data.id}-${data.assettag}`).remove();
+                if (isContain) {
+                    document.querySelectorAll(`[id^="assettag-${data.id}-"][id*="${data.assettag}"]`).forEach(el => el.remove());
+                } else {
+                    document.getElementById(`assettag-${data.id}-${data.assettag}`).remove();
+                }
                 // 요소갯수에 따라 버튼을 설정한다.
                 if (document.getElementById(`assettags-${data.id}`).childElementCount > 0) {
                     document.getElementById("assettags-button-"+data.id).innerHTML = `
@@ -5820,7 +5832,11 @@ function rmAssetTag() {
             return response.json()
         })
         .then((data) => {
-            document.getElementById(`assettag-${data.id}-${data.assettag}`).remove();
+            if (isContain) {
+                document.querySelectorAll(`[id^="assettag-${data.id}-"][id*="${data.assettag}"]`).forEach(el => el.remove());
+            } else {
+                document.getElementById(`assettag-${data.id}-${data.assettag}`).remove();
+            }
             // 요소갯수에 따라 버튼을 설정한다.
             if (document.getElementById(`assettags-${data.id}`).childElementCount > 0) {
                 document.getElementById("assettags-button-"+data.id).innerHTML = `

@@ -338,7 +338,7 @@
 				<div class="ml-3" id="assettags-button-{{.ID}}">
 					{{if eq $.User.AccessLevel 4 5 6 7 8 9 10 11}}
 						<span class="add ml-1" data-toggle="modal" data-target="#modal-addassettag" onclick="setAddAssetTagModal('{{.ID}}')">＋</span>
-						{{if .Tag}}	
+						{{if .Assettags}}
 							<span class="remove ml-0" data-toggle="modal" data-target="#modal-rmassettag" onclick="setRmAssetTagModal('{{.ID}}')">－</span>
 						{{end}}
 					{{end}}

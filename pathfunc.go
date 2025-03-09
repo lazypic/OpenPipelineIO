@@ -757,6 +757,7 @@ func ThumbnailMovPath(item Item) (string, error) {
 	return path.String(), nil
 }
 
+
 func ShotRootPath(item Item) (string, error) {
 	// /Users/woong/show/{{.Project}}/seq
 	var path bytes.Buffer
@@ -859,6 +860,37 @@ func GenPlatePath(path string) error {
 		return err
 	}
 	gid, err := strconv.Atoi(CachedAdminSetting.PlatePathGID)
+	if err != nil {
+		return err
+	}
+	err = os.Chown(path, uid, gid)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func GenProjectPath(path string) error {
+	// 존재하면 폴더를 만들필요가 없다. 바로 리턴한다.
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		return nil
+	}
+	// 퍼미션을 가지고 온다.
+	per, err := strconv.ParseInt(CachedAdminSetting.ProjectPathPermission, 8, 64)
+	if err != nil {
+		return err
+	}
+	// 폴더를 생성한다.
+	err = os.MkdirAll(path, os.FileMode(per))
+	if err != nil {
+		return err
+	}
+	// uid, gid 를 설정한다.
+	uid, err := strconv.Atoi(CachedAdminSetting.ProjectPathUID)
+	if err != nil {
+		return err
+	}
+	gid, err := strconv.Atoi(CachedAdminSetting.ProjectPathGID)
 	if err != nil {
 		return err
 	}

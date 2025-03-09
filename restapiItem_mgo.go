@@ -3641,7 +3641,6 @@ func handleAPIAddAssetTag(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid assettag rule", http.StatusBadRequest)
 		return
 	}
-	fmt.Println(rcp)
 	rcp.Assettag = assettag
 	err = AddAssetTagV2(client, rcp.ID, rcp.Assettag)
 	if err != nil {
@@ -3662,10 +3661,6 @@ func handleAPIAddAssetTag(w http.ResponseWriter, r *http.Request) {
 
 // handleAPIRenameTag 함수는 아이템의 태그를 변경합니다.
 func handleAPIRenameTag(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
 		Project string `json:"project"`
 		Before  string `json:"before"`
@@ -3673,18 +3668,15 @@ func handleAPIRenameTag(w http.ResponseWriter, r *http.Request) {
 		UserID  string `json:"userid"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
-	_, _, err = net.SplitHostPort(r.RemoteAddr)
+	defer client.Disconnect(context.Background())
+
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3692,29 +3684,23 @@ func handleAPIRenameTag(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	project := r.FormValue("project")
 	if project == "" {
-		http.Error(w, "project를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need project", http.StatusBadRequest)
 		return
 	}
 	rcp.Project = project
 	before := r.FormValue("before")
 	if before == "" {
-		http.Error(w, "before를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need current tag", http.StatusBadRequest)
 		return
 	}
 	rcp.Before = strings.Replace(before, " ", "", -1) // 빈 공백을 제거한다.
 	after := r.FormValue("after")
 	if after == "" {
-		http.Error(w, "after를 설정해주세요", http.StatusBadRequest)
+		http.Error(w, "need change tag", http.StatusBadRequest)
 		return
 	}
 	rcp.After = strings.Replace(after, " ", "", -1) // 빈 공백을 제거한다.
-	err = RenameTag(session, rcp.Project, rcp.Before, rcp.After)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Rename Tag: %s > %s\nProject: %s, Author: %s", rcp.Before, rcp.After, rcp.Project, rcp.UserID))
+	err = RenameTagV2(client, rcp.Project, rcp.Before, rcp.After)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
