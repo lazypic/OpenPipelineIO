@@ -326,7 +326,7 @@ func searchMovs(searchpath string) ([]ScanPlate, error) {
 				Ext:         ext,
 				Length:      length,
 				FrameIn:     CachedAdminSetting.ProductionStartFrame,
-				FrameOut:    CachedAdminSetting.ProductionStartFrame + length,
+				FrameOut:    CachedAdminSetting.ProductionStartFrame + length - 1,
 				RenderIn:    1,
 				RenderOut:   length,
 				ConvertExt:  ext,
