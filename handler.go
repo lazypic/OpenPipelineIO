@@ -365,7 +365,7 @@ func webserver(port string) {
 	r.HandleFunc("/excel-submit", handleExcelSubmit).Methods("POST")
 	r.HandleFunc("/json-submit", handleJSONSubmit).Methods("POST")
 	r.HandleFunc("/exportexcel-submit", handleExportExcelSubmit).Methods("POST")
-	r.HandleFunc("/exportjson-submit", handleExportJSONSubmit)
+	r.HandleFunc("/exportjson-submit", handleExportJSONSubmit).Methods("POST")
 	r.HandleFunc("/upload-excel", handleUploadExcel)
 	r.HandleFunc("/upload-json", handleUploadJSON)
 	r.HandleFunc("/download-excel-template", handleDownloadExcelTemplate).Methods("GET")

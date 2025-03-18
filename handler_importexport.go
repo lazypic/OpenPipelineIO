@@ -1439,10 +1439,6 @@ func handleExportExcelSubmit(w http.ResponseWriter, r *http.Request) {
 
 // handleExportJSONSubmit 함수는 export json을 처리한다.
 func handleExportJSONSubmit(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	ssid, err := GetSessionID(r)
 	if err != nil {
 		http.Redirect(w, r, "/signin", http.StatusSeeOther)
@@ -1452,12 +1448,12 @@ func handleExportJSONSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/invalidaccess", http.StatusSeeOther)
 		return
 	}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
+	defer client.Disconnect(context.Background())
 	project := r.FormValue("project")
 	format := r.FormValue("format")
 	sortkey := r.FormValue("sortkey")
@@ -1466,19 +1462,19 @@ func handleExportJSONSubmit(w http.ResponseWriter, r *http.Request) {
 	var searchItems []Item
 	switch format {
 	case "shot":
-		searchItems, err = SearchAllShot(session, project, sortkey)
+		searchItems, err = SearchAllShotV2(client, project, sortkey)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	case "asset":
-		searchItems, err = SearchAllAsset(session, project, sortkey)
+		searchItems, err = SearchAllAssetV2(client, project, sortkey)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	case "", "all":
-		searchItems, err = SearchAll(session, project, sortkey)
+		searchItems, err = SearchAllV2(client, project, sortkey)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -1869,6 +1865,7 @@ func handleDownloadJSONFile(w http.ResponseWriter, r *http.Request) {
 	op.Assets = true
 	op.Type2d = true
 	op.Type3d = true
+	op.Sortorder = 1
 	items, err := SearchV2(client, op)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
