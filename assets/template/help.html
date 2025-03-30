@@ -3,27 +3,22 @@
 {{template "navbar-bootstrap5" .}}
 
 {{template "help_introduce" .}}
-{{template "help_github"}}
 {{template "help_colorconcept"}}
-{{template "help_toolbar"}}
+<!--
 {{template "help_search"}}
+-->
 {{template "help_tag"}}
 {{template "help_deadline"}}
 {{template "help_thumbnail"}}
-{{template "help_mail"}}
 {{template "help_tasks" .}}
 {{template "help_note"}}
 {{template "help_comment"}}
-{{template "help_edittask"}}
 
 
 <div class="p-5 bg-darklight text-center text-darkmode">
 	<h3 class="p-2">RestAPI</h3>
 	<p class="h6 font-weight-light">
-		개발자라면 Python, Javascript, Ajax, node.JS, C#, C++, C, JAVA, Go 등을 이용해서 OpenPipelineIO의 정보를 가지고 오거나 바꿀 수 있습니다.
-	</p>
-	<p class="h6 font-weight-light">
-		인터넷이 연결되어 있다면 아래 링크를 통해 RestAPI를 학습할 수 있습니다.
+		We support RestAPI for Python, Javascript, Ajax, node.JS, C#, C++, C, JAVA, Go
 	</p>
 	<p class="h6 font-weight-light">
 		<a href="https://github.com/lazypic/OpenPipelineIO/blob/master/documents/rest_project.md" class="btn btn-sm btn-outline-light">Project</a>
@@ -33,32 +28,6 @@
 		<a href="https://github.com/lazypic/OpenPipelineIO/blob/master/documents/rest_tasksetting.md" class="btn btn-sm btn-outline-light">Task</a>	
 	</p>
 </div>
-
-<div class="p-5 text-center text-darkmode">
-	<h3 class="p-2">Security</h3>
-	<p class="h6 font-weight-light help-text">
-		MPAA 프로젝트 보안사고 대응방법 입니다.<br>
-		보안팀, IT팀 에게 사고내용 보고<br>
-		운영진(PD,PM,IT,관리직 및 임원,CEO) 보고<br>
-		보안문제 파급효과 및 우선대처상황 분석 회의소집<br>
-		처리가능한 문제부터 우선처리<br>
-		클라이언트에게 상황전달, 사업파트너 통지<br>
-		사법당국 통지 : 1007, 10th Fl, Monaco Bldg, 1316-5 Seocho-dong, Seocho-gu, Seoul 137-856, Korea<br>
-		온라인신고 : <a href="http://www.mpaa.org/contact-us/" class="text-light">http://www.mpaa.org/contact-us/</a><br>
-		저작권침해 24시간 제보전화 : 싱가포르(아시아태평양지역) +65 6253-1033<br>
-		추후 발생하는 사고 세부사항을 관련부서에 보고<br>
-	</p>
-</div>
-
-<div class="p-5 bg-darklight text-darkmode text-center">
-	<h3 class="p-2">Recovery</h3>
-	<p class="h6 font-weight-light help-text">
-		OpenPipelineIO 서버는 <a href="https://github.com/lazypic/OpenPipelineIO" class="text-light">Github</a>를 이용해서 복원할 수 있습니다.<br>
-		하지만, 프로젝트에 사용되는 데이터베이스는 매일 백업이 필요합니다.<br>
-		백업방법: <a href="https://github.com/lazypic/OpenPipelineIO/blob/master/documents/dbbackup.md" class="text-light">https://github.com/lazypic/OpenPipelineIO/blob/master/documents/dbbackup.md</a>
-	</p>
-</div>
-	
 
 {{template "footerBootstrap" .}}
 

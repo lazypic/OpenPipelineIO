@@ -23,6 +23,7 @@
 		{{if .Setting.EnableDirectupload}}
                 <li><a class="dropdown-item" href="/directupload">Direct Upload</a></li>
 		{{end}}
+        	{{if eq .User.AccessLevel 3 4 5 6 7 8 9 10 11}}
                 <li><a class="dropdown-item" href="/scanplate">ScanPlate</a></li>
                 <li><a class="dropdown-item" href="/process">Process</a></li>
                 <li><hr class="dropdown-divider"></li>
@@ -37,6 +38,7 @@
                 <li><a class="dropdown-item" href="/importjson">Import .json</a></li>
                 <li><span class="dropdown-item finger" onclick="exportJsonCurrentPage()">Export Current .json</span></li>
                 <li><a class="dropdown-item" href="/exportjson">Export All .json</a></li>
+		{{end}}
               </ul>
           </li>
         {{end}}
@@ -51,22 +53,16 @@
           </ul>
         </li>
         {{end}}
+        {{if eq .User.AccessLevel 3 4 5 6 7 8 9 10 11}}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             List
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="/projectinfo">Projects</a></li>
-            <li><hr class="dropdown-divider"></li>
-            {{if eq .User.AccessLevel 3 4 5 6 7 8 9 10 11}}
-              {{if eq .User.ID "guest" "demo" }}
-                <li><span class="fade dropdown-item">Users</span></li>
-                <li><hr class="dropdown-divider"></li>
-              {{else}}
+            	<li><a class="dropdown-item" href="/projectinfo">Projects</a></li>
+            	<li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="/users">Users</a></li>
                 <li><hr class="dropdown-divider"></li>
-              {{end}}
-            {{end}}
             {{if eq .User.AccessLevel 4 5 6 7 8 9 10 11}}
               <li><a class="dropdown-item" href="/tasksettings">Task</a></li>
               <li><a class="dropdown-item" href="/status">Status</a></li>
@@ -83,6 +79,7 @@
             {{end}}
           </ul>
         </li>
+        {{end}}
         {{if eq .User.AccessLevel 4 5 6 7 8 9 10 11}}
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -179,9 +176,11 @@
                 <li><a class="dropdown-item" href="/signout">SignOut</a></li>
             </ul>
         </li>
+        {{if lt .User.AccessLevel 2}}
         <li class="nav-item">
           <button id="foldoption" class="btn btn-sm btn-outline-success mt-1" onclick="foldingmenu();">Collapse Searchbox ▲</button>
         </li>
+	{{end}}
       </ul>
     </div>
   </div>

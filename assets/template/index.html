@@ -2,25 +2,39 @@
 {{template "headBootstrap" .}}
 <body>
     {{template "datalist" .}}
-    <div id="floatingmenu">
-        {{template "navbar" .}}
-        <div id="searchbox">
-            {{template "searchbarV2" .}}
-            {{template "deadlinelist" .}}
-            {{template "taglist" .}}
-            {{template "info2" .}}
-        </div>
-    </div>
-    
-    
-    {{template "modal" .}}
-    <div id="blinkspace"></div><!--기본 550px 여유를 두고 검색바가 펼쳐지면 items가 밀려서 출력되어야 한다.-->
-    <div class="pt-3"></div> <!--검색바가 가려지더라도 조금의 여백을 남기기위해 설정한 값-->
-    {{template "listview" .}}
-    {{if ne .TotalPageNum 0}}<!--전체 페이지가 없다면 페이지 템플릿을 띄우지 않는다.-->
-        {{template "page" .}}
+	<div id="floatingmenu">
+		{{template "navbar" .}}
+    		{{if eq .User.AccessLevel 3 4 5 6 7 8 9 10 11}}
+			<div id="searchbox">
+        			{{template "searchbarV2" .}}
+				{{template "deadlinelist" .}}
+				{{template "taglist" .}}
+				{{template "info2" .}}
+			</div>
+		{{end}}
+	</div>
+    {{if eq .User.AccessLevel 0 1 2}}
+    	<div class="container pt-5">
+    	<div class="pt-5 pb-2">
+        	<h4 class="section-heading">Invalid Access Level</h4>
+   	 </div>
+    	<div class="row">
+       		<div class="col-sm pb-5">
+                	<label>To use <b>OpenPipelineIO</b>, each account requires the appropriate level of access permissions.<br>
+           		Please obtain access permission through the administrator and <a href="/signin" class="text-warning">Sign-In</a> in again.</label>
+       		</div>
+    	</div>
+	</div>
+    {{else}}
+    	{{template "modal" .}}
+	<div id="blinkspace"></div> <!--top margin 550px-->
+	<div class="pt-3"></div> <!--make little bit space-->
+	{{template "listview" .}}
+	{{if ne .TotalPageNum 0}}
+       		{{template "page" .}}
+    	{{end}}
+    	{{template "calendarview" .}}
     {{end}}
-    {{template "calendarview" .}}
     {{template "footerBootstrap" .}}
 </body>
 <script src="/assets/js/jquery-3.1.1.min.js"></script>

@@ -5,48 +5,45 @@
         <div class="mx-auto">
             <div class="row">
                 <div class="col">
-                    <span class="add" title="Task를 추가합니다.">＋</span>
-                    <span class="remove ml-1" title="Task를 제거합니다.">－</span>
+                    <span class="add" title="Add Task">＋</span>
+                    <span class="remove ml-1" title="Remove Task">－</span>
                 </div>
             </div>
             <div class="mt-1 ml-1 mb-3">
                 <div class="row">
                     <div class="col">
-                        <span class="finger mt-1 badge badge-confirm statusbox_daily" title="해당 날짜에 mov가 업데이트되면 파란테두리가 생성됩니다.">model</span>
-                        <span class="mt-1 ml-1 badge badge-outline-darkmode" title="1차 마감일">0120</span>
-                        <span class="mt-1 ml-1 badge badge-darkmode" title="2차 마감일">0131</span>
-                        <span class="mt-1 ml-1 badge badge-light" title="아티스트 이름">김한웅</span>
-                        <span class="mt-1 ml-1 badge badge-light" title="재생될 미디어가 연결되어 있다면 재생 표시가 표기됩니다.">▶</span>
-                        <span class="ml-1 add" title="Task 정보를 수정합니다.">≡</span>
+                        <span class="finger mt-1 badge badge-confirm statusbox_daily" title="Set blue border when update mov.">model</span>
+                        <span class="mt-1 ml-1 badge badge-outline-darkmode" title="deadline">0120</span>
+                        <span class="mt-1 ml-1 badge badge-light" title="Artist">Jason</span>
+                        <span class="mt-1 ml-1 badge badge-light" title="media">▶</span>
+                        <span class="ml-1 add" title="edit task">≡</span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
-                        <span class="finger mt-1 badge badge-wip statusbox_deadline" title="마감일이라면 빨간 테두리가 생성됩니다.">light</span>
-                        <span class="mt-1 ml-1 badge badge-outline-darkmode" title="1차 마감일">0206</span>
-                        <span class="mt-1 ml-1 badge badge-darkmode" title="2차 마감일">0218</span>
-                        <span class="mt-1 ml-1 badge badge-light" title="아티스트 이름">배서영</span>
-                        <span class="mt-1 ml-1 badge badge-light" title="재생될 미디어가 연결되어 있다면 재생 표시가 표기됩니다.">▶</span>
-                        <span class="ml-1 add" title="Task 정보를 수정합니다.">≡</span>
+                        <span class="finger mt-1 badge badge-wip statusbox_deadline" title="set red border when deadline.">light</span>
+                        <span class="mt-1 ml-1 badge badge-outline-darkmode" title="deadline">0206</span>
+                        <span class="mt-1 ml-1 badge badge-light" title="artist">Alex&nbsp;&nbsp;</span>
+                        <span class="mt-1 ml-1 badge badge-light" title="media">▶</span>
+                        <span class="ml-1 add" title="edit task">≡</span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
-                        <span class="finger mt-1 badge badge-ready statusbox" title="Web File System을 띄웁니다.">comp</span>
-                        <span class="mt-1 ml-1 badge badge-outline-darkmode" title="1차 마감일">0224</span>
-                        <span class="mt-1 ml-1 badge badge-darkmode" title="2차 마감일">0306</span>
-                        <span class="mt-1 ml-1 badge badge-light" title="아티스트 이름">김한웅</span>
-                        <span class="mt-1 ml-1 badge badge-light" title="재생될 미디어가 연결되어 있다면 재생 표시가 표기됩니다.">▶</span>
-                        <span class="ml-1 add" title="Task 정보를 수정합니다.">≡</span>
+                        <span class="finger mt-1 badge badge-ready statusbox" title="task">comp</span>
+                        <span class="mt-1 ml-1 badge badge-outline-darkmode" title="deadline">0224</span>
+                        <span class="mt-1 ml-1 badge badge-light" title="artist">Jason</span>
+                        <span class="mt-1 ml-1 badge badge-light" title="media">▶</span>
+                        <span class="ml-1 add" title="Edit Task">≡</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <p class="h6 font-weight-light help-text">
-        각 아이템에 <span class="add">＋</span><span class="remove ml-1">－</span> 버튼을 이용하여 Task를 선언할 수 있습니다.<br>
-        Task명, 1차/2차마감일, 아티스트명, 재생파일, Task 정보수정 버튼 순서로 나열되어 있습니다.<br>
-        Task명을 클릭하면 작업 폴더로 바로 연결되는 <a href="{{.Setting.WFS}}" class="text-white">WFS(Web File System)</a> 서비스가 실행됩니다.
+    Each item allows you to manage tasks using the <span class="add">＋</span> and <span class="remove">－</span> buttons.<br>
+    Tasks are displayed in the following order: Task name, Deadline, Artist name, Playback file, and Edit Task Info button.<br>
+    By developing a custom protocol, you can enable the Task area to directly link to the corresponding work folder when clicked.<br>
     </p>
 </div>
 {{end}}
