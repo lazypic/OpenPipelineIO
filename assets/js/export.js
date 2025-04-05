@@ -126,6 +126,7 @@ function exportExcelCurrentPage() {
     let task = document.getElementById("searchbox-task").value
     let searchword = document.getElementById("searchbox-searchword").value
     let sortkey = document.getElementById("searchbox-sortkey").value
+    let sortorder = document.getElementById("searchbox-sortorder").value
     let truestatusList = []
     
     let checkStatus = document.querySelectorAll('*[id^="searchbox-checkbox-"]');
@@ -137,7 +138,7 @@ function exportExcelCurrentPage() {
     truestatus = truestatusList.join(",")
     
     // 요청
-    let url = `/download-excel-file?project=${project}&task=${task}&searchword=${searchword}&sortkey=${sortkey}&truestatus=${truestatus}`
+    let url = `/download-excel-file?project=${project}&task=${task}&searchword=${searchword}&sortkey=${sortkey}&sortorder=${sortorder}&truestatus=${truestatus}`
     location.href = url
 }
 

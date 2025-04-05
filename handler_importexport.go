@@ -1547,6 +1547,11 @@ func handleDownloadExcelFile(w http.ResponseWriter, r *http.Request) {
 	}
 	op.Searchword = searchword
 	op.Sortkey = q.Get("sortkey")
+	sortOrder, err := strconv.Atoi(q.Get("sortorder"))
+	if err != nil {
+		op.Sortorder = 1
+	}
+	op.Sortorder = sortOrder
 	op.TrueStatus = strings.Split(q.Get("truestatus"), ",")
 	op.Shot = true
 	op.Assets = true
