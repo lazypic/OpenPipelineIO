@@ -149,6 +149,15 @@ Python, Go, Java, Javascript, node.JS, C++, C, C# 등 수많은 언어를 활용
 - [OpenPipelineIO의 역사](documents/history.md)
 - License: BSD 3-Clause License
 
+
+### Support Companys
+
+- DigitalIdea
+- Magnon
+- MMHUB
+- D1TUS
+- 75mm-Studio
+
 ### License
 
 - OpenPipelineIO: BSD 3-Clause License
