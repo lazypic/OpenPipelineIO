@@ -174,8 +174,8 @@
             </div>
         </li>
       </ul>
-	{{if lt .User.AccessLevel 2}}
-	<span id="foldoption" class="btn btn-sm btn-outline-success my-2 my-sm-0" onclick="foldingmenu();" >Collapse Searchbox ▲</span>
+	{{if gt .User.AccessLevel 2}}
+	  <span id="foldoption" class="btn btn-sm btn-outline-success my-2 my-sm-0" onclick="foldingmenu();" >Collapse Searchbox ▲</span>
 	{{end}}
     </div>
   </nav>

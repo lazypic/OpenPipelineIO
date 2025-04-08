@@ -175,7 +175,7 @@
                 <li><a class="dropdown-item" href="/signout">SignOut</a></li>
             </ul>
         </li>
-        {{if lt .User.AccessLevel 2}}
+        {{if gt .User.AccessLevel 2}}
         <li class="nav-item">
           <button id="foldoption" class="btn btn-sm btn-outline-success mt-1" onclick="foldingmenu();">Collapse Searchbox ▲</button>
         </li>
