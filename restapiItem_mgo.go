@@ -3304,25 +3304,21 @@ func handleAPISetJustTimecodeOut(w http.ResponseWriter, r *http.Request) {
 
 // handleAPISetFinver 함수는 아이템에 파이널 버전값을 설정한다.
 func handleAPISetFinver(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Post Only", http.StatusMethodNotAllowed)
-		return
-	}
 	type Recipe struct {
 		Project string `json:"project"`
-		Name    string `json:"name"`
+		ID    string `json:"id"`
 		Version string `json:"version"`
 		UserID  string `json:"userid"`
 		Error   string `json:"error"`
 	}
 	rcp := Recipe{}
-	session, err := mgo.Dial(*flagDBIP)
+	client, err := initMongoClient()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer session.Close()
-	rcp.UserID, _, err = TokenHandler(r, session)
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -3333,53 +3329,29 @@ func handleAPISetFinver(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	for key, values := range r.PostForm {
-		switch key {
-		case "project":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Project = v
-		case "name":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Name = v
-		case "version":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			rcp.Version = v
-
-		case "userid":
-			v, err := PostFormValueInList(key, values)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if rcp.UserID == "unknown" && v != "" {
-				rcp.UserID = v
-			}
-		}
+	project := r.FormValue("project")
+	if project == "" {
+		http.Error(w, "need project", http.StatusBadRequest)
+		return
 	}
-	err = SetFinver(session, rcp.Project, rcp.Name, rcp.Version)
+	rcp.Project = project
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need item id", http.StatusBadRequest)
+		return
+	}
+	rcp.ID = id 
+	version := r.FormValue("version")
+	if version == "" {
+		http.Error(w, "need version", http.StatusBadRequest)
+		return
+	}
+	rcp.Version = version 
+	err = SetFinverV2(client, rcp.ID, rcp.Version)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// slack log
-	err = slacklog(session, rcp.Project, fmt.Sprintf("Set Finversion: %s\nProject: %s, Name: %s, Author: %s", rcp.Version, rcp.Project, rcp.Name, rcp.UserID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// json 으로 결과 전송
 	data, err := json.Marshal(rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

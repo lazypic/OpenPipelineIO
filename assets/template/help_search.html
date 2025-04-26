@@ -3,7 +3,7 @@
 	<h3 class="pt-5">Search</h3>
 
 	<div class="row justify-content-center align-items-center m-3">
-		<div class="col-lg-7">
+		<div class="col-lg-10">
 			<div class="input-group mb-3">
 				<select name="Project" class="form-select custom-select rounded-start" id="Project">
 					<option value="project1">project1</option>
@@ -12,19 +12,22 @@
 				</select>
 				<select name="Task" class="form-select custom-select">
 					<option value="">All</option>
-					<option value="light">light</option>
-					<option value="comp">comp</option>
+					<option value="light">task1</option>
+					<option value="comp">task2</option>
 				</select>
 				<input class="form-control" id="search" placeholder="Search word.." type="text" name="Searchword" value="" style="width:50%">
 				<select name="Sortkey" class="col-2 form-select custom-select">
-					<option value="id">정렬: 샷네임</option>
-					<option value="rnum">정렬: 롤넘버</option>
-					<option value="ddline3d">정렬: 3D마감</option>
-					<option value="ddline2d">정렬: 2D마감</option>
-					<option value="scanframe">정렬: 스캔길이</option>
-					<option value="scantime">정렬: 스캔날짜</option>
-					<option value="taskpredate">정렬: Task 1차마감</option>
-					<option value="taskdate">정렬: Task 2차마감</option>
+					<option value="id">Sort: Name</option>
+					<option value="rnum">Sort: Rnum</option>
+					<option value="ddline3d">Sort: Deadline 3D</option>
+					<option value="ddline2d">Sort: Deadline 2D</option>
+					<option value="scanframe">Sort: Scan length</option>
+					<option value="scantime">Sort: Scan date</option>
+					<option value="taskdate">Sort: Taskdate</option>
+				</select>
+				<select name="Sortorder" class="col-2 form-select custom-select">
+					<option value="1">Sort</option>
+					<option value="-1">Reverse Sort</option>
 				</select>
 				<button class="btn btn-darkmode" type="button">
 					Search
@@ -85,9 +88,10 @@
 		</div>
 		<div class="row pl-3 pr-3">
 			<div class="col">
-				<span class="btn btn-sm btn-outline-darkmode mb-2" title="Ctrl + Alt + Shift + m">
-					선택모드
-				</span>
+				<img src="/assets/img/arrows-spin-solid.svg" width="24" height="24" class="finger mb-2" data-toggle="tooltip" data-placement="bottom" title="SelectMode Ctrl+Alt+Shift+m">
+				<img src="/assets/img/listview.svg" width="24" height="24" class="finger mb-2" data-toggle="tooltip" data-placement="bottom" title="ListView">
+				<img src="/assets/img/calendar.svg" width="24" height="24" class="finger mb-2 mr-3 me-5" data-toggle="tooltip" data-placement="bottom" title="CalendarView">
+				
 				<a class="btn btn-sm btn-outline-darkmode mb-2 statusuri">2D <span class="badge badge-darkmode">10</span></a>
 				<a class="btn btn-sm btn-outline-darkmode mb-2 statusuri">3D <span class="badge badge-darkmode">5</span></a>
 				<a class="btn btn-sm btn-outline-darkmode mb-2 statusuri">Shot <span class="badge badge-darkmode">15</span></a>
@@ -98,77 +102,63 @@
 	
 
 	<p class="h6 font-weight-light">
-		<p class="h6 font-weight-light">검색어를 이용해서 원하는 결과를 검색할 수 있습니다.</p>
-		<p class="h6 font-weight-light">검색 범위를 Task로 제한하고 싶다면 Task를 All에서 원하는 Task로 선택해주세요.</p>
-		<p class="h6 font-weight-light"><span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='검색어1 검색어2 검색어3'">검색어1&nbsp;&nbsp;&nbsp;검색어2&nbsp;&nbsp;&nbsp;...</span> : 검색어를 연속을 입력하면, 매 검색어가 포함된 결과가 검색됩니다.</p>
-		<p class="h6 font-weight-light"><span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='user:김한웅'">user:김한웅</span> : 아티스트명을 검색어로 사용할 수 있습니다.</p>
-		<p class="h6 font-weight-light"><span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='user:notassign'">user:notassign</span> : 아티스트가 설정되지 않은 리스트를 검색합니다.</p>
+		<p class="h6 font-weight-light"><span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='word1 word2 word3'">word1&nbsp;&nbsp;&nbsp;word2&nbsp;&nbsp;&nbsp;...</span> : AND(&) search.</p>
+		<p class="h6 font-weight-light"><span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='user:jason'">user:jason</span> : search artist.</p>
+		<p class="h6 font-weight-light"><span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='user:notassign'">user:notassign</span> : search not assign task.</p>
 		
 		<p class="h6 font-weight-light">
 			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='All'">All</span>
 			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='all'">all</span>
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='올'">올</span>
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='미ㅣ'">미ㅣ</span>
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='전체'">전체</span>
-			 : 전체 데이터를 검색합니다.
+			 : search total items.
 		</p>
 		<p class="h6 font-weight-light">
 			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='shot'">shot</span>
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='샷'">샷</span>
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='전샷'">전샷</span>
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='전체샷'">전체샷</span>
-			 : 샷만 검색합니다.
+			 : search only shot
 		</p>
 		<p class="h6 font-weight-light">
 			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='asset'">asset</span>
 			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='assets'">assets</span>
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='에셋'">에셋</span>
-			 : 에셋리스트를 보여줍니다.
+			 : search only asset
 		</p>
 		<p class="h6 font-weight-light">
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='0109'">0109</span> : 당일 마감되어야 하는 테스크 마감일, 샷 마감일을 검색합니다.
+			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='0109'">0109</span> : search deadline date
+		</p>
+		
+		<p class="h6 font-weight-light">
+			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='name:SS_0010'">name:SS_0010</span> : search name attribute.
 		</p>
 		<p class="h6 font-weight-light">
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='2020-01-09'">2020-01-09</span> : 해당 날짜의 데일리 mov를 검색합니다.
+			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='rnum:A0001'">rnum:A0001</span> : searcn rollnumber attribute.
 		</p>
 		<p class="h6 font-weight-light">
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='1권'">1권</span> ... <span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='8권'">8권</span> 으로 검색이 가능합니다.
+			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='tag:태그명'">tag:tagname</span> : search tag.
 		</p>
 		<p class="h6 font-weight-light">
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='name:SS_0010'">name:SS_0010</span> : 명확하게 샷, 에셋 네임을 검색하고 싶을 때 사용합니다.
+			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='deadline2d:2020-01-30'">deadline2d:2020-01-30</span> : search deadline for 2D
 		</p>
 		<p class="h6 font-weight-light">
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='rnum:A0001'">rnum:A0001</span> : 1권 첫번째 샷을 의미하는 rnum:A0001 형태로 검색하면 해당 Roll Number를 검색할 수 있습니다.
+			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='deadline3d:2020-01-30'">deadline3d:2020-01-30</span> : search deadline for 3D
 		</p>
 		<p class="h6 font-weight-light">
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='tag:태그명'">tag:태그명</span> : 태그명으로 태그검색이 가능합니다.
+			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='2D'">2D</span> <span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='3D'">3D</span> : search 2D or 3D type items.
 		</p>
 		<p class="h6 font-weight-light">
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='deadline2d:2020-01-30'">deadline2d:2020-01-30</span> : 마감일2D 2020-01-30 샷 검색
+			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='00:12:23:12'">00:12:23:12</span> : search timecode
 		</p>
 		<p class="h6 font-weight-light">
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='deadline3d:2020-01-30'">deadline3d:2020-01-30</span> : 마감일3D 2020-01-30 샷 검색
+			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='tasks.light.status:done'">tasks.light.status:done</span> : search done status in light task
 		</p>
 		<p class="h6 font-weight-light">
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='2D'">2D</span> <span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='3D'">3D</span> : 각각 2D, 3D샷이 검색됩니다.
+			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='task:concept task:light jason'">task:concept task:light jason</span> : search jason user in concept task and light task
 		</p>
 		<p class="h6 font-weight-light">
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='00:12:23:12'">00:12:23:12</span> : 타임코드를 검색합니다.(스캔 타임코드, 작업 타임코드)
+			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='user:jason or user:alex'">user:jason or user:alex</span> : search user of jason or alex items
 		</p>
 		<p class="h6 font-weight-light">
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='tasks.light.status:done'">tasks.light.status:done</span> : light 테스크의 상태가 done인 값만 검색
+			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='season:S01'">season:S01</span> : search "S01" in season
 		</p>
 		<p class="h6 font-weight-light">
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='task:concept task:light 김한웅'">task:concept task:light 김한웅</span> : concept과 light에 김한웅이 할당된 항목 검색
-		</p>
-		<p class="h6 font-weight-light">
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='user:김한웅 or user:박지섭'">user:김한웅 or user:박지섭</span> : 이름이 김한웅,박지섭 둘다 들어간 Task 검색
-		</p>
-		<p class="h6 font-weight-light">
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='season:S01'">season:S01</span> : 시즌명이 S01인 아이템을 검색
-		</p>
-		<p class="h6 font-weight-light">
-			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='episode:E01'">episode:E01</span> : 에피소드명이 E01인 아이템을 검색
+			<span class="btn btn-outline-light btn-sm" onclick="document.getElementById('search').value='episode:E01'">episode:E01</span> : search "E01" in episode
 		</p>
 	</p>
 </div>

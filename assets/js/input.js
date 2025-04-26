@@ -5855,10 +5855,9 @@ function rmAssetTag() {
     }
 }
 
-// 썸네일 엘리먼트들
+// 썸네일 엘리먼트들에 드레그앤 드롭 이벤트 처리
 const thumbnails = document.getElementsByClassName("thumbnail");
 
-// 드래그 앤 드롭 이벤트 처리
 Array.from(thumbnails).forEach((thumbnail) => {
   thumbnail.addEventListener("dragover", (event) => {
     event.preventDefault();
@@ -5866,7 +5865,18 @@ Array.from(thumbnails).forEach((thumbnail) => {
 
   thumbnail.addEventListener("drop", (event) => {
     event.preventDefault();
-    const file = event.dataTransfer.files[0];
+    const files = event.dataTransfer.files;
+    if (files.length > 1) {
+	    alert("must be drop one image");
+	    return;
+    }
+
+    const file = files[0];
+    if (!file) {
+	    alert("No valid file");
+	    return;
+    }
+
     const project = thumbnail.getAttribute("data-thumbnail-project");    
     const id = thumbnail.getAttribute("data-thumbnail-id");
     if (project != null && id != null) {
@@ -5890,14 +5900,28 @@ function uploadImage(file, project, id) {
     },
     body: formData
   })
-  .then(response => response.json())
+  .then(async response => {
+  const contentType = response.headers.get("content-type") || "";
+  const isJSON = contentType.includes("application/json");
+
+  if (!response.ok) {
+    const errorText = isJSON ? await response.json() : await response.text();
+    throw new Error(isJSON ? errorText.error : errorText);
+  }
+
+  return response.json();
+  })
   .then(data => {
-    imgURL = "/thumbnail/"+data.project+"/"+data.id+".jpg?" + new Date().getTime();
+    const imgURL = "/thumbnail/"+data.project+"/"+data.id+".jpg?" + new Date().getTime();
     const thumbnail = document.getElementById("thumbnail-" + data.id)
-    thumbnail.src = imgURL;
-    thumbnail.onload = () => {}; //화면갱신
+    if (thumbnail) {
+      thumbnail.src = imgURL;
+      thumbnail.onload = () => {}; //화면갱신
+    } else {
+      console.warn("Thumbnail element not found for id: ", data.id)
+    }
   })
   .catch(error => {
-    console.error("Error:", error);
+    console.error("Error:", error.message);
   });
 }

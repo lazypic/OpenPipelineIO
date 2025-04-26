@@ -15,6 +15,15 @@ import (
 	"github.com/disintegration/imaging"
 )
 
+func writeJSONError(w http.ResponseWriter, message string, statusCode int) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(statusCode)
+	json.NewEncoder(w).Encode(map[string]string{
+		"error": message,
+	})
+}
+
+
 // handleAPIUploadThumbnail 함수는 thumbnail 이미지를 업로드 하는 RestAPI 이다.
 func handleAPIUploadThumbnail(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
@@ -59,111 +68,107 @@ func handleAPIUploadThumbnail(w http.ResponseWriter, r *http.Request) {
 	}
 	project := r.FormValue("project")
 	if project == "" {
-		http.Error(w, "need project", http.StatusBadRequest)
+		writeJSONError(w, "need project", http.StatusBadRequest)
 		return
 	}
 	rcp.Project = project
 
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "need id", http.StatusBadRequest)
+		writeJSONError(w, "need id", http.StatusBadRequest)
 		return
 	}
 	rcp.ID = id
 
-	if len(r.MultipartForm.File) == 0 { // 파일이 없다면 에러처리한다.
-		http.Error(w, "need thumbnail image path", http.StatusBadRequest)
+	files := r.MultipartForm.File["image"]
+
+	if len(files) != 1 { // 파일이 없다면 에러처리한다.
+		writeJSONError(w, "multiple file cannot be set", http.StatusBadRequest)
 		return
 	}
 
-	// 썸네일이 존재한다면 썸네일을 처리한다.
-	for _, files := range r.MultipartForm.File {
-		if len(files) != 1 { // 파일이 복수일 때
-			http.Error(w, "multiple files cannot be set", http.StatusBadRequest)
+	f := files[0]
+	rcp.UploadFilename = f.Filename // 파일명을 추출한다.
+	if f.Size == 0 {
+		writeJSONError(w, "file size is 0 bytes", http.StatusBadRequest)
+		return
+	}
+	file, err := f.Open()
+	if err != nil {
+		writeJSONError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer file.Close()
+
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		writeJSONError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	img, format, err := image.Decode(bytes.NewReader(data))
+	if err != nil {
+		writeJSONError(w, "invalid image file", http.StatusBadRequest)
+		return
+	}
+	if format != "jpeg" && format != "png" {
+		writeJSONError(w, "unsupported image format: "+format, http.StatusBadRequest)
+		return
+	}
+
+
+	// adminsetting에 설정된 썸네일 템플릿에 실제 값을 넣는다.
+	var thumbImgPath bytes.Buffer
+	thumbImgPathTmpl, err := template.New("thumbImgPath").Parse(CachedAdminSetting.ThumbnailImagePath)
+	if err != nil {
+		writeJSONError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = thumbImgPathTmpl.Execute(&thumbImgPath, rcp)
+	if err != nil {
+		writeJSONError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// 썸네일 이미지가 이미 존재하는 경우 이미지 파일을 지운다.
+	if _, err := os.Stat(thumbImgPath.String()); os.IsExist(err) {
+		err = os.Remove(thumbImgPath.String())
+		if err != nil {
+			writeJSONError(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		for _, f := range files {
-			rcp.UploadFilename = f.Filename // 파일명을 추출한다. 추후 파일명으로 연산을 하고 싶은 상황이 된다면 진행할 것
-			if f.Size == 0 {
-				http.Error(w, "file size is 0 bytes", http.StatusBadRequest)
-				return
-			}
-			file, err := f.Open()
+	}
+	// 썸네일 경로를 생성한다.
+	path, _ := path.Split(thumbImgPath.String())
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		// 폴더를 생성한다.
+		err = os.MkdirAll(path, os.FileMode(permission))
+		if err != nil {
+			writeJSONError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		// 위 폴더가 잘 생성되어 존재한다면 폴더의 권한을 설정한다.
+		if _, err := os.Stat(path); os.IsExist(err) {
+			err = os.Chown(path, uid, gid)
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				continue
-			}
-			defer file.Close()
-			switch f.Header.Get("Content-Type") {
-			case "image/jpeg", "image/png":
-				data, err := ioutil.ReadAll(file)
-				if err != nil {
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
-				// adminsetting에 설정된 썸네일 템플릿에 실제 값을 넣는다.
-				var thumbImgPath bytes.Buffer
-				thumbImgPathTmpl, err := template.New("thumbImgPath").Parse(CachedAdminSetting.ThumbnailImagePath)
-				if err != nil {
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
-				err = thumbImgPathTmpl.Execute(&thumbImgPath, rcp)
-				if err != nil {
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
-				// 썸네일 이미지가 이미 존재하는 경우 이미지 파일을 지운다.
-				if _, err := os.Stat(thumbImgPath.String()); os.IsExist(err) {
-					err = os.Remove(thumbImgPath.String())
-					if err != nil {
-						http.Error(w, err.Error(), http.StatusInternalServerError)
-						return
-					}
-				}
-				// 썸네일 경로를 생성한다.
-				path, _ := path.Split(thumbImgPath.String())
-				if _, err := os.Stat(path); os.IsNotExist(err) {
-					// 폴더를 생성한다.
-					err = os.MkdirAll(path, os.FileMode(permission))
-					if err != nil {
-						http.Error(w, err.Error(), http.StatusInternalServerError)
-						return
-					}
-					// 위 폴더가 잘 생성되어 존재한다면 폴더의 권한을 설정한다.
-					if _, err := os.Stat(path); os.IsExist(err) {
-						err = os.Chown(path, uid, gid)
-						if err != nil {
-							http.Error(w, err.Error(), http.StatusInternalServerError)
-							return
-						}
-					}
-				}
-				// 사용자가 업로드한 데이터를 이미지 자료구조로 만들고 리사이즈 한다.
-				img, _, err := image.Decode(bytes.NewReader(data)) // 전송된 바이트 파일을 이미지 자료구조로 변환한다.
-				if err != nil {
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
-				resizedImage := imaging.Fill(img, CachedAdminSetting.ThumbnailImageWidth, CachedAdminSetting.ThumbnailImageHeight, imaging.Center, imaging.Lanczos)
-				err = imaging.Save(resizedImage, thumbImgPath.String())
-				if err != nil {
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
-				rcp.Path = thumbImgPath.String()
-			default:
-				http.Error(w, "not support format", http.StatusBadRequest)
+				writeJSONError(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 		}
 	}
-	data, err := json.Marshal(rcp)
+	// 사용자가 업로드한 데이터를 이미지 자료구조로 만들고 리사이즈 한다.
+	resizedImage := imaging.Fill(img, CachedAdminSetting.ThumbnailImageWidth, CachedAdminSetting.ThumbnailImageHeight, imaging.Center, imaging.Lanczos)
+	err = imaging.Save(resizedImage, thumbImgPath.String())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeJSONError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	rcp.Path = thumbImgPath.String()
+
+	json, err := json.Marshal(rcp)
+	if err != nil {
+		writeJSONError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write(data)
+	w.Write(json)
 }

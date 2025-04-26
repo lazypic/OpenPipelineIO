@@ -1789,25 +1789,6 @@ func SetJustTimecodeOut(session *mgo.Session, id, timecode string) error {
 	return nil
 }
 
-// SetFinver 함수는 item에 파이널 버전을 셋팅한다.
-func SetFinver(session *mgo.Session, project, name, version string) error {
-	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return err
-	}
-	typ, err := Type(session, project, name)
-	if err != nil {
-		return err
-	}
-	id := name + "_" + typ
-	c := session.DB(*flagDBName).C("items")
-	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"finver": version, "updatetime": time.Now().Format(time.RFC3339)}})
-	if err != nil {
-		return err
-	}
-	return nil
-}
 
 // SetFindate 함수는 item에 최종 데이터 아웃풋 날짜를 셋팅한다.
 func SetFindate(session *mgo.Session, project, name, date string) error {

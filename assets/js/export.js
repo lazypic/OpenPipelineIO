@@ -170,6 +170,7 @@ function exportCsvCurrentPage() {
     let task = document.getElementById("searchbox-task").value
     let searchword = document.getElementById("searchbox-searchword").value
     let sortkey = document.getElementById("searchbox-sortkey").value
+    let sortorder = document.getElementById("searchbox-sortorder").value
     let truestatusList = []
     let truestatus = ""
     let checkStatus = document.querySelectorAll('*[id^="searchbox-checkbox-"]');
@@ -189,7 +190,7 @@ function exportCsvCurrentPage() {
     }
     let titleString = titles.join(",")
     // 요청
-    let url = `/download-csv-file?project=${project}&task=${task}&searchword=${searchword}&sortkey=${sortkey}&truestatus=${truestatus}&titles=${titleString}`
+    let url = `/download-csv-file?project=${project}&task=${task}&searchword=${searchword}&sortkey=${sortkey}&sortorder=${sortorder}&truestatus=${truestatus}&titles=${titleString}`
     location.href = url
 }
 
