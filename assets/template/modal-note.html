@@ -1,6 +1,6 @@
 {{define "modal-note"}}
     <!-- Modal: Set Note-->
-    <div class="modal fade" id="modal-setnote" tabindex="-1" role="dialog" aria-labelledby="modal-setnote" aria-hidden="true">
+    <div class="modal" id="modal-setnote" tabindex="-1" role="dialog" aria-labelledby="modal-setnote" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content bg-darkmode">
                 <div class="modal-header">
@@ -30,7 +30,7 @@
     </div>
 
     <!-- Modal: Edit Note-->
-    <div class="modal fade" id="modal-editnote" tabindex="-1" role="dialog" aria-labelledby="modal-editnote" aria-hidden="true">
+    <div class="modal" id="modal-editnote" tabindex="-1" role="dialog" aria-labelledby="modal-editnote" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content bg-darkmode">
                 <div class="modal-header">
@@ -56,7 +56,7 @@
     </div>
 
     <!-- Modal: Camera Option -->
-    <div class="modal fade" id="modal-cameraoption" tabindex="-1" role="dialog" aria-labelledby="modal-cameraoption" aria-hidden="true">
+    <div class="modal" id="modal-cameraoption" tabindex="-1" role="dialog" aria-labelledby="modal-cameraoption" aria-hidden="true">
         <div class="modal-dialog" role="document">
         <div class="modal-content bg-darkmode">
             <div class="modal-header">
@@ -102,7 +102,7 @@
     </div>
 
     <!-- Modal: ObjectID -->
-    <div class="modal fade" id="modal-objectid" tabindex="-1" role="dialog" aria-labelledby="modal-objectid" aria-hidden="true">
+    <div class="modal" id="modal-objectid" tabindex="-1" role="dialog" aria-labelledby="modal-objectid" aria-hidden="true">
         <div class="modal-dialog" role="document">
         <div class="modal-content bg-darkmode">
             <div class="modal-header">
@@ -126,6 +126,31 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-darkmode" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-outline-warning" onclick="setObjectID(document.getElementById('modal-objectid-project').value, document.getElementById('modal-objectid-id').value, document.getElementById('modal-objectid-in').value, document.getElementById('modal-objectid-out').value)" data-dismiss="modal">EDIT</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Modal: Output -->
+    <div class="modal" id="modal-output" tabindex="-1" role="dialog" aria-labelledby="modal-output" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content bg-darkmode">
+            <div class="modal-header">
+            <h5 class="modal-title" id="modal-output-title">Output Info</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true" class="text-darkmode">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" class="form-control" id="modal-output-id">
+                <div class="form-group">
+                    <input type="number" id="modal-output-finver" value="0" class="form-control">
+                    <small class="form-text text-mute">Finver</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-darkmode" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-warning" onclick="setFinver(document.getElementById('modal-output-id').value, document.getElementById('modal-output-finver').value)" data-dismiss="modal">EDIT</button>
             </div>
         </div>
         </div>

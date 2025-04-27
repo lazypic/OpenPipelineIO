@@ -787,6 +787,25 @@ function setCameraPubPath() {
     });
 }
 
+function setOutputModal(id) {
+    document.getElementById("modal-output-id").value = id;
+    let token = document.getElementById("token").value;
+    $.ajax({
+        url: `/api2/item?id=${id}`,
+        headers: {
+            "Authorization": "Basic "+ token
+        },
+        dataType: "json",
+        success: function(data) {
+            document.getElementById('modal-output-finver').value = data.finver;
+        },
+        error: function(request,status,error){
+            alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
+        }
+    });
+}
+
+
 function setCameraOptionModal(project, id) {
     document.getElementById("modal-cameraoption-project").value = project;
     document.getElementById("modal-cameraoption-id").value = id;
@@ -3564,6 +3583,31 @@ function setObjectIDModal(project, id) {
         }
     });
 }
+
+function setFinver(id, version) {
+    let token = document.getElementById("token").value;
+    let userid = document.getElementById("userid").value;
+    $.ajax({
+        url: "/api/setfinver",
+        type: "POST",
+        data: {
+            id: id,
+            version: version,
+            userid: userid,
+        },
+        headers: {
+            "Authorization": "Basic "+ token
+        },
+        dataType: "json",
+        success: function(data) {
+            document.getElementById("finver-"+data.id).innerHTML = `<span>v${data.version}</span>`;
+        },
+        error: function(request,status,error){
+            alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
+        }
+    });
+}
+
 
 function setObjectID(project, id, innum, outnum) {
     let token = document.getElementById("token").value;

@@ -3305,7 +3305,6 @@ func handleAPISetJustTimecodeOut(w http.ResponseWriter, r *http.Request) {
 // handleAPISetFinver 함수는 아이템에 파이널 버전값을 설정한다.
 func handleAPISetFinver(w http.ResponseWriter, r *http.Request) {
 	type Recipe struct {
-		Project string `json:"project"`
 		ID    string `json:"id"`
 		Version string `json:"version"`
 		UserID  string `json:"userid"`
@@ -3329,12 +3328,6 @@ func handleAPISetFinver(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	project := r.FormValue("project")
-	if project == "" {
-		http.Error(w, "need project", http.StatusBadRequest)
-		return
-	}
-	rcp.Project = project
 	id := r.FormValue("id")
 	if id == "" {
 		http.Error(w, "need item id", http.StatusBadRequest)
