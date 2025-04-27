@@ -498,9 +498,7 @@
 			</div>
 			<div class="row">
 				<span class="finger no-decoration-text-button" {{if eq $.User.AccessLevel 3 4 5 6 7 8 9 10 11}}data-toggle="modal" data-target="#modal-output" onclick="setOutputModal('{{$id}}')"{{end}}>OUT:
-				{{if .Finver}}
-				<span id="finver-{{$id}}">v{{.Finver}}</span>
-				{{end}}
+				<span id="finver-{{.ID}}">{{if .Finver}}v{{.Finver}}{{end}}</span>
 				</span>
 			</div>
 		</div>
