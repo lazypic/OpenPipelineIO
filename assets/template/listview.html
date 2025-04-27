@@ -440,10 +440,10 @@
 			{{end}}
 			
 			
-			<!--Scaninfo-->
+			<!--IO-->
 			<div class="row">
 				<div id="scaninfo-{{.Name}}">
-					<span class="text-badge">ScanInfo:</span>
+					<span class="text-badge">IN: </span>
 				</div>
 				<div id="scantime-{{.Name}}">
 					{{if .Scantime}}
@@ -493,6 +493,14 @@
 				<div id="scantimecodeout-{{.ID}}">
 					{{if .ScanTimecodeOut}}
 						<span class="text-badge ml-1">{{.ScanTimecodeOut}}</span>
+					{{end}}
+				</div>
+			</div>
+			<div class="row">
+				<span class="text-badge">OUT: </span>
+				<div id="finver-{{.ID}}">
+					{{if .Finver}}
+						<span class="text-badge ml-1">Final Version: {{.Finver}}</span>
 					{{end}}
 				</div>
 			</div>

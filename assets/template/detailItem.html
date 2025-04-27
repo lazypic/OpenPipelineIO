@@ -427,10 +427,10 @@
 			{{end}}
 			
 			
-			<!--Scaninfo-->
+			<!--In/Out-->
 			<div class="row">
 				<div id="scaninfo-{{$.Item.Name}}">
-					<span class="text-badge">ScanInfo:</span>
+					<span class="text-badge">IN:</span>
 				</div>
 				<div id="scantime-{{$.Item.Name}}">
 					{{if $.Item.Scantime}}
@@ -482,6 +482,12 @@
 						<span class="text-badge ml-1">{{$.Item.ScanTimecodeOut}}</span>
 					{{end}}
 				</div>
+			</div>
+			<div class="row">
+				<span class="text-badge">OUT:</span>
+				{{if $.Item.Finver}}
+					<span class="text-badge ml-1">Finver: {{$.Item.Finver}}</span>
+				{{end}}
 			</div>
 
 		</div>
