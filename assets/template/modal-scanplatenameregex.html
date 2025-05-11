@@ -10,6 +10,11 @@
                 <div class="modal-body">
                     <div class="d-grid gap-2">
                         <button class="btn btn-outline-darkmode" onclick="
+                            document.getElementById('regex').value='(?P<name>\\w+)(?P<ext>.\\w+)';
+                            " data-bs-dismiss="modal">
+                            Original Name
+                        </button>
+                        <button class="btn btn-outline-darkmode" onclick="
                             document.getElementById('regex').value='(?P<name>\\w+)_org_v(?P<version>\\w+)(?P<ext>.\\w+)';
                             " data-bs-dismiss="modal">
                             SS_0010_org_v01.jpg
