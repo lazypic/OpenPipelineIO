@@ -2166,6 +2166,48 @@ function setSeq(seq) {
     });
 }
 
+function setScene(scene) {
+    $.ajax({
+        url: "/api/setscene",
+        type: "POST",
+        data: {
+            id: document.getElementById('modal-iteminfo-id').value,
+            scene: scene,
+        },
+        headers: {
+            "Authorization": "Basic "+ document.getElementById("token").value,
+        },
+        dataType: "json",
+        success: function(data) {
+            return data;
+        },
+        error: function(request,status,error){
+            alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
+        }
+    });
+}
+
+function setCut(cut) {
+    $.ajax({
+        url: "/api/setcut",
+        type: "POST",
+        data: {
+            id: document.getElementById('modal-iteminfo-id').value,
+            cut: cut,
+        },
+        headers: {
+            "Authorization": "Basic "+ document.getElementById("token").value,
+        },
+        dataType: "json",
+        success: function(data) {
+            return data;
+        },
+        error: function(request,status,error){
+            alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
+        }
+    });
+}
+
 
 function setSeason(season) {
     $.ajax({
@@ -2382,6 +2424,7 @@ function setIteminfoModal(project, id) {
             document.getElementById('modal-iteminfo-name').value = data.name;
             document.getElementById('modal-iteminfo-type').value = data.type;
             document.getElementById('modal-iteminfo-seq').value = data.seq;
+            document.getElementById('modal-iteminfo-scene').value = data.scene;
             document.getElementById('modal-iteminfo-cut').value = data.cut;
             document.getElementById('modal-iteminfo-episode').value = data.episode;
             document.getElementById('modal-iteminfo-platepath').value = data.platepath;

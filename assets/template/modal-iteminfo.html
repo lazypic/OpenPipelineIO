@@ -25,14 +25,14 @@
                             <input type="text" id="modal-iteminfo-name" value="" class="form-control form-control-sm" disabled>
                         </div>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col">
                         <div class="form-group">
                             <label>Type</label>
                             <input type="text" id="modal-iteminfo-type" value="" class="form-control form-control-sm" disabled>
                         </div>
                     </div>
+                </div>
+                <div class="row">
                     <div class="col">
                         <div class="form-group">
                             <label>Seq</label>
@@ -41,8 +41,14 @@
                     </div>
                     <div class="col">
                         <div class="form-group">
+                            <label>Scene</label>
+                            <input type="text" id="modal-iteminfo-scene" value="" class="form-control form-control-sm" onchange="setScene(this.value)">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
                             <label>Cut</label>
-                            <input type="text" id="modal-iteminfo-cut" value="" class="form-control form-control-sm" disabled>
+                            <input type="text" id="modal-iteminfo-cut" value="" class="form-control form-control-sm" onchange="setCut(this.value)">
                         </div>
                     </div>
                 </div>

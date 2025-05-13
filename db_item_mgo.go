@@ -1004,20 +1004,6 @@ func SetObjectID(session *mgo.Session, project, name string, in, out int) error 
 	return nil
 }
 
-// SetSeq 함수는 item에 seq 값을 셋팅한다.
-func SetSeq(session *mgo.Session, project, id, seq string) error {
-	session.SetMode(mgo.Monotonic, true)
-	err := HasProject(session, project)
-	if err != nil {
-		return err
-	}
-	c := session.DB(*flagDBName).C("items")
-	err = c.Update(bson.M{"id": id}, bson.M{"$set": bson.M{"seq": seq, "updatetime": time.Now().Format(time.RFC3339)}})
-	if err != nil {
-		return err
-	}
-	return nil
-}
 
 // SetSeason 함수는 item에 season 값을 셋팅한다.
 func SetSeason(session *mgo.Session, project, id, season string) error {

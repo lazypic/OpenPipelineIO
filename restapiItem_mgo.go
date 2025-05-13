@@ -1753,13 +1753,112 @@ func handleAPISetSeq(w http.ResponseWriter, r *http.Request) {
 	rcp.ID = id
 	rcp.Seq = r.FormValue("seq")
 
-	err = SetSeqV2(client, rcp.ID, rcp.Seq)
+	err = SetSeq(client, rcp.ID, rcp.Seq)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// json 으로 결과 전송
+	data, err := json.Marshal(rcp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+// handleAPISetScene 함수는 아이템의 scene 값을 설정한다.
+func handleAPISetScene(w http.ResponseWriter, r *http.Request) {
+	type Recipe struct {
+		ID     string `json:"id"`
+		Scene    string `json:"scene"`
+		UserID string `json:"userid"`
+	}
+	rcp := Recipe{}
+	client, err := initMongoClient()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+	r.ParseForm()
+
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
+		return
+	}
+	rcp.ID = id
+	rcp.Scene = r.FormValue("scene")
+
+	err = SetScene(client, rcp.ID, rcp.Scene)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data, err := json.Marshal(rcp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+// handleAPISetCut 함수는 아이템의 cut 값을 설정한다.
+func handleAPISetCut(w http.ResponseWriter, r *http.Request) {
+	type Recipe struct {
+		ID     string `json:"id"`
+		Cut    string `json:"cut"`
+		UserID string `json:"userid"`
+	}
+	rcp := Recipe{}
+	client, err := initMongoClient()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer client.Disconnect(context.Background())
+	rcp.UserID, _, err = TokenHandlerV2(r, client)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+	_, _, err = net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+	r.ParseForm()
+
+	id := r.FormValue("id")
+	if id == "" {
+		http.Error(w, "need id", http.StatusBadRequest)
+		return
+	}
+	rcp.ID = id
+	rcp.Cut = r.FormValue("cut")
+
+	err = SetCut(client, rcp.ID, rcp.Cut)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	data, err := json.Marshal(rcp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
