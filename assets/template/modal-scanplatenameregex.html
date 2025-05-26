@@ -10,12 +10,12 @@
                 <div class="modal-body">
                     <div class="d-grid gap-2">
                         <button class="btn btn-outline-darkmode" onclick="
-                            document.getElementById('regex').value='(?P<name>\\w+)(?P<ext>.\\w+)';
+                            document.getElementById('regex').value='(?P<name>[-\\w]+)(?P<ext>.\\w+)';
                             " data-bs-dismiss="modal">
                             original_name.mov
                         </button>
                         <button class="btn btn-outline-darkmode" onclick="
-                            document.getElementById('regex').value='(?P<name>\\w+).(?P<frame>\\w+)(?P<ext>.\\w+)';
+                            document.getElementById('regex').value='(?P<name>[-\\w]+).(?P<frame>\\w+)(?P<ext>.\\w+)';
                             " data-bs-dismiss="modal">
                             original_name.0001.ext
                         </button>
