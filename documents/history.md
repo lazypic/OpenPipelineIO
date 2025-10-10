@@ -1,6 +1,6 @@
 # History
 
-- '25. 2: 75mm-studio OpenPipelineIO 서버구축
+- '25. 5: 75mm-studio OpenPipelineIO 서버구축
 - '25. 2: (주)FM 협업 서버구축
 - '23. 3: (주)매그논스튜디오 테스트 서버구축
 - '23. 1: MMHUB OpenPipelineIO 서버구축
