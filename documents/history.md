@@ -1,5 +1,6 @@
 # History
 
+- '25. 10: (주)비치다데이터와 인프라 기반 솔루션 시장 확장에 대한 비즈니스 협의 검토
 - '25. 5: (주)75mm-Studios OpenPipelineIO 서버구축
 - '25. 4: (주)D1TUS OpenPipelineIO 서버구축
 - '25. 2: (주)FM 협업 OpenPipelineIO 서버구축
