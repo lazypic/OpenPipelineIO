@@ -2,7 +2,7 @@
 
 - '25. 5: (주)75mm-studio OpenPipelineIO 서버구축
 - '25. 4: (주)D1TUS OpenPipelineIO 서버구축
-- '25. 2: (주)FM 협업 서버구축
+- '25. 2: (주)FM 협업 OpenPipelineIO 서버구축
 - '23. 3: (주)매그논스튜디오 테스트 서버구축
 - '23. 1: MMHUB OpenPipelineIO 서버구축
 - '22. 12. 31: (주)바른손디지털아이디어 기술지원 종료
