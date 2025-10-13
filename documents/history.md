@@ -1,6 +1,6 @@
 # History
 
-- '25. 5: (주)75mm-studio OpenPipelineIO 서버구축
+- '25. 5: (주)75mm-Studios OpenPipelineIO 서버구축
 - '25. 4: (주)D1TUS OpenPipelineIO 서버구축
 - '25. 2: (주)FM 협업 OpenPipelineIO 서버구축
 - '23. 3: (주)매그논스튜디오 테스트 서버구축
