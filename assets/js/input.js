@@ -5567,7 +5567,7 @@ function rmUser() {
 	fetch(`/api2/user?id=${id}`, {
 		method: 'DELETE',
 		headers: {
-            "Authorization": "Basic " + token
+	   		"Authorization": "Basic " + token,
 			"Content-Type": "application/json"
 		}
 	})
