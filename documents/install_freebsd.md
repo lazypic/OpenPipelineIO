@@ -1,7 +1,7 @@
 # Install FreeBSD
 
 ```bash
-pkg install mongodb70
+pkg install mongodb80
 pkg install node
 pkg install npm
 pkg install mongodb-tools
