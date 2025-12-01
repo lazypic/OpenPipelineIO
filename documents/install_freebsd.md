@@ -2,6 +2,7 @@
 
 ```bash
 pkg install mongodb80
+sysrc mongod_enable="YES"
 pkg install node
 pkg install npm
 pkg install mongodb-tools
@@ -28,10 +29,5 @@ FreeMono Path
 /usr/local/share/fonts/freefont-ttf/FreeMono.ttf
 ```
 
-## Install mongodb50-5.0.29
 
-```
-sudo pkg install mongodb50
-sudo sysrc mongod_enable="YES"
-mongo
-```
+
