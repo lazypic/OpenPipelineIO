@@ -5561,21 +5561,34 @@ function playOriginal(project, name) {
 }
 
 function rmUser() {
-    let id = document.getElementById("modal-rmuser-id").value
-    $.ajax({
-        url: "/api2/user?id="+id,
-        type: "DELETE",
-        headers: {
-            "Authorization": "Basic "+ document.getElementById("token").value
-        },
-        dataType: "json",
-        success: function(data) {
-            location.reload()
-        },
-        error: function(request,status,error){
-            alert("code:"+request.status+"\n"+"status:"+status+"\n"+"msg:"+request.responseText+"\n"+"error:"+error);
-        }
-    });
+    const id = document.getElementById("modal-rmuser-id").value
+	const token = document.getElementById("token").value;
+ 
+	fetch(`/api2/user?id=${id}`, {
+		method: 'DELETE',
+		headers: {
+            "Authorization": "Basic " + token
+			"Content-Type": "application/json"
+		}
+	})
+	.then(async (response) => {
+		if (!response.ok) {
+			const text = await response.text();
+			throw {
+				status: response.status,
+				statusText: response.statusText,
+				responseText: text
+			};
+		}
+		location.reload();
+	})
+	.catch((err) => {
+		alert(
+            "code:" + err.status + "\n" +
+			"status:" + err.statusText + "\n" +
+			"msg:" + err.responseText
+		);
+	});
 }
 
 function setModalGotoFrame() {
